@@ -71,7 +71,7 @@ const path = require('node:path');
       }
     }
     await page.locator('#tab-characters').click();
-    await page.locator('.character-art').scrollIntoViewIfNeeded();
+    await page.locator('.character-art').first().scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>document.querySelector('.character-art').naturalWidth>0);
     await page.locator('#characters').screenshot({path:path.join(__dirname,'characters.png')});
     await page.goto(url+'#relationships');
