@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>青波市 | 開発記録</title><style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#101722;color:#eaf0f6;font:15px/1.75 system-ui,-apple-system,"Noto Sans JP",sans-serif}header{padding:64px 22px 42px;background:linear-gradient(135deg,#142b43,#17212f 60%,#20334a)}main,header>div{max-width:940px;margin:auto}main{padding:22px 18px 80px}h1{font-size:clamp(32px,7vw,56px);margin:0}h2{font-size:23px;margin:0 0 14px}h3{margin:22px 0 8px}p{margin:8px 0 14px}.sub,.muted{color:#a9b7c9}.tag{display:inline-block;border:1px solid #456077;border-radius:20px;padding:2px 11px;margin:3px;font-size:12px}.card{background:#192331;border:1px solid #304256;border-radius:15px;padding:24px;margin:18px 0}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}nav a{color:#cfe7ff;text-decoration:none;border:1px solid #52667c;border-radius:20px;padding:5px 12px}table{border-collapse:collapse;width:100%;min-width:600px}th,td{text-align:left;padding:10px;border-bottom:1px solid #354454;vertical-align:top}th{color:#9db9d2} .scroll{overflow-x:auto}.r{color:#ff9393}.g{color:#92e2a7}.b{color:#96bfff}ul{padding-left:22px}small{color:#a9b7c9}footer{color:#a9b7c9;text-align:center;padding:25px}a{color:#9dc9ff}</style></head><body><header><div><span class="tag">PROJECT ARCHIVE</span><span class="tag">v0.6 · 2026-10-24</span><h1>青波市</h1><p class="sub">AONAMI CITY — 世界観・ゲームシステム・キャラクター・開発履歴</p><p>2006年ごろから始まる架空の海辺の街。暮らし、学び、出会い、成長し、次の世代へ受け継ぐライフシミュレーション構想。</p><nav><a href="#world">世界観</a><a href="#game">ゲーム</a><a href="#class">RGBクラス</a><a href="#skills">スキル</a><a href="#characters">人物</a><a href="#legacy">承継</a><a href="#history">履歴</a></nav></div></header><main>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#101722;color:#eaf0f6;font:15px/1.75 system-ui,-apple-system,"Noto Sans JP",sans-serif}header{padding:64px 22px 42px;background:linear-gradient(135deg,#142b43,#17212f 60%,#20334a)}main,header>div{max-width:940px;margin:auto}main{padding:22px 18px 80px}h1{font-size:56px;margin:0}h2{font-size:23px;margin:0 0 14px}h3{margin:22px 0 8px}p{margin:8px 0 14px}.sub,.muted{color:#a9b7c9}.tag{display:inline-block;border:1px solid #456077;border-radius:20px;padding:2px 11px;margin:3px;font-size:12px}.card{background:#192331;border:1px solid #304256;border-radius:15px;padding:24px;margin:18px 0}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}nav a{color:#cfe7ff;text-decoration:none;border:1px solid #52667c;border-radius:20px;padding:5px 12px}table{border-collapse:collapse;width:100%;min-width:600px}th,td{text-align:left;padding:10px;border-bottom:1px solid #354454;vertical-align:top}th{color:#9db9d2} .scroll{overflow-x:auto}.r{color:#ff9393}.g{color:#92e2a7}.b{color:#96bfff}ul{padding-left:22px}small{color:#a9b7c9}footer{color:#a9b7c9;text-align:center;padding:25px}a{color:#9dc9ff}details{margin:16px 0}summary{cursor:pointer;color:#cfe7ff;font-weight:600}code{overflow-wrap:anywhere}section{scroll-margin-top:20px}a:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline-offset:4px}</style></head><body><header><div><span class="tag">PROJECT ARCHIVE</span><span class="tag">v0.7 · 2026-10-24</span><h1>青波市</h1><p class="sub">AONAMI CITY — 世界観・ゲームシステム・キャラクター・開発履歴</p><p>2006年ごろから始まる架空の海辺の街。暮らし、学び、出会い、成長し、次の世代へ受け継ぐライフシミュレーション構想。</p><nav><a href="#world">世界観</a><a href="#game">ゲーム</a><a href="#class">RGBクラス</a><a href="#skills">Rスキル</a><a href="#g-skills">Gスキル</a><a href="#b-schools">B・学校</a><a href="#characters">人物</a><a href="#art">作画</a><a href="#story">物語案</a><a href="#legacy">承継</a><a href="#history">履歴</a></nav></div></header><main>
 <section class="card" id="world"><h2>01. 世界観</h2><p>架空の日本風海辺都市「青波市」。日常生活と物語を中心に、住民がそれぞれの人生を歩む。時代の始まりは2006年ごろ（仮）。</p><p>物語タイトル候補『あの夏、君と走った。』は未確定。第1期の主要人物は9人。背景住民・脇役の人数には制限を設けない。</p><p><strong>シーズンの色テーマ（構想）</strong>：Season 1 RGB ／ Season 2 CMYK ／ Season 3 白・黒・灰 ／ Season 4 無色・透明・未知。</p></section>
 <section class="card" id="game"><h2>02. ゲーム構想</h2><p>無料で遊べるブラウザ向け、スマートフォンにも対応する軽量な2.5Dアイソメトリック・ライフシミュレーター。</p><h3>BUILD MODE</h3><p>道路、家、部屋、壁、家具、学校、病院、公園、カフェ、職場、訓練施設などをモジュール式で配置・拡張・改装。</p><h3>LIFE MODE</h3><p>NPCの自律生活、日課、訓練、仕事、技能習得、交友、恋愛、結婚、家族、子ども、加齢、世代交代、師弟関係。</p><h3>制作方針</h3><p>最初は少人数NPCと家・訓練場・広場から始める。セーブはローカル保存を想定。マルチプレイや高度なAIは将来拡張。実装済みを意味するものではない。</p><p>キャラクターのデータは共通に保ち、ゲーム内2.5D、カラーアニメ、白黒漫画、Live2D、3D映像は別の表現として制作する。</p></section>
 <section class="card" id="class"><h2>03. RGB・9クラス</h2><div class="scroll"><table><tr><th>系統</th><th>クラス</th><th>方向性（解釈）</th></tr><tr><td class="r">R / RED</td><td>ナイト / Knight<br>ファイター / Fighter<br>ウォーリア / Warrior</td><td>防護・戦闘・武器技術</td></tr><tr><td class="g">G / GREEN</td><td>レンジャー / Ranger<br>アサシン / Assassin<br>スカウト / Scout</td><td>探索・機動・精密行動</td></tr><tr><td class="b">B / BLUE</td><td>エレメンタルメージ / Elemental Mage<br>メージ / Mage<br>クレリック / Cleric</td><td>元素・魔法・支援</td></tr></table></div><p><small>9つのクラス名はユーザー提示の設定。各クラスの方向性の説明は設計上の解釈。</small></p></section>
@@ -17,23 +17,93 @@
 <tr><td>Warrior</td><td>Sword Theory (ST)</td><td>剣術理論</td><td>RAN</td><td>MCT</td></tr>
 <tr><td>Warrior</td><td>Sword Practice (SP)</td><td>剣術実習</td><td>ATS</td><td>MCT + ST</td></tr>
 <tr><td>Knight</td><td>Movement Strategy (MS)</td><td>移動戦術</td><td>SPD</td><td>MCT</td></tr>
-<tr><td>Knight</td><td>Weapon Handling (WH)</td><td>武器操作術</td><td>ATS</td><td>MCT + MS</td></tr></table></div><p>剣術実習の技候補：straight（直線斬り／突き、要確認）、slice（斬撃）。RANとATSの正確な意味は未確定。</p><h3>G・B専門スキル（未承認の提案）</h3><div class="scroll"><table><tr><th>クラス</th><th>スキル案</th><th>能力</th><th>Req.</th></tr>
+<tr><td>Knight</td><td>Weapon Handling (WH)</td><td>武器操作術</td><td>ATS</td><td>MCT + MS</td></tr></table></div><p>剣術実習の技候補：straight（直線斬り／突き、要確認）、slice（斬撃）。RANとATSの正確な意味は未確定。</p><details><summary>以前のG・B簡略スキル案（未承認・現行原案ではない）</summary><div class="scroll"><table><tr><th>クラス</th><th>スキル案</th><th>能力</th><th>Req.</th></tr>
 <tr><td>Ranger</td><td>射撃理論 / Ranged Combat Theory</td><td>RAN</td><td>IE</td></tr><tr><td>Ranger</td><td>精密射撃 / Precision Shooting</td><td>ATS</td><td>射撃理論</td></tr>
 <tr><td>Assassin</td><td>隠密行動 / Stealth Movement</td><td>SPD</td><td>MCT</td></tr><tr><td>Assassin</td><td>急所分析 / Weak Point Analysis</td><td>ATK</td><td>隠密行動</td></tr>
 <tr><td>Scout</td><td>地形観察 / Terrain Observation</td><td>RAN</td><td>IE</td></tr><tr><td>Scout</td><td>索敵行動 / Reconnaissance</td><td>SPD</td><td>地形観察</td></tr>
 <tr><td>Elemental Mage</td><td>元素理解 / Elemental Understanding</td><td>MAG</td><td>IE</td></tr><tr><td>Elemental Mage</td><td>元素制御 / Elemental Control</td><td>ATS</td><td>元素理解 + MCT</td></tr>
 <tr><td>Mage</td><td>魔法理論 / Magic Theory</td><td>MAG</td><td>IE</td></tr><tr><td>Mage</td><td>魔力操作 / Mana Control</td><td>ATS</td><td>魔法理論 + MCT</td></tr>
-<tr><td>Cleric</td><td>治癒理論 / Healing Theory</td><td>MAG</td><td>IE</td></tr><tr><td>Cleric</td><td>回復術 / Restoration</td><td>RES</td><td>治癒理論 + MCT</td></tr></table></div></section>
-<section class="card" id="characters"><h2>05. 第1期・主要人物9人（仮配置）</h2><div class="scroll"><table><tr><th>人物</th><th>クラス方向</th><th>長所・課題</th></tr>
-<tr><td>ハル</td><td>Knight</td><td>観察・責任感／自己決定。17歳男性、柔らかな黒髪・穏やかな目元（外見は仮）</td></tr>
-<tr><td>レン</td><td>Fighter</td><td>身体能力・競争心／冷静な判断。17歳男性、短い茶黒髪・鋭い目元（仮）</td></tr>
-<tr><td>ソウタ</td><td>Warrior</td><td>粘り強さ／自信。18歳男性、がっしりした肩幅（仮）</td></tr>
-<tr><td>ユナ</td><td>Ranger</td><td>行動力・環境適応／計画性</td></tr>
-<tr><td>アオイ</td><td>Assassin</td><td>集中・感受性／信頼</td></tr>
-<tr><td>ミナ</td><td>Scout</td><td>情報収集・交流／判断</td></tr>
-<tr><td>新規人物A</td><td>Elemental Mage</td><td>自然への関心／制御</td></tr>
-<tr><td>ルイ</td><td>Mage</td><td>学習・分析／柔軟性</td></tr>
-<tr><td>新規人物B</td><td>Cleric</td><td>共感・支援／自己ケア</td></tr></table></div><p><strong>確定：</strong>主要人物は9人。<strong>未確定：</strong>人物とクラスの対応、ソウタ・アオイ・ミナ・新規2名の採用、年齢、性別、性格、容姿。</p><h3>ビジュアル</h3><p>カラーアニメ美形スタイルと白黒漫画スタイルを併用（暫定）。男女・年齢・顔立ち・体格に多様性を持たせる。クラス色は髪色や善悪を強制しない。日常服とクラス衣装は分ける。人物の同一性を表現間で維持する。</p></section>
+<tr><td>Cleric</td><td>治癒理論 / Healing Theory</td><td>MAG</td><td>IE</td></tr><tr><td>Cleric</td><td>回復術 / Restoration</td><td>RES</td><td>治癒理論 + MCT</td></tr></table></div></details></section>
+
+<section class="card" id="daily-magic"><h2>魔法のある日常</h2>
+<p><strong>採用した方向：</strong>魔法は普通にあり、得意なことや学び方は人それぞれ。</p>
+<p>学校で魔法の基礎を学び、料理・修理・医療・音楽など、戦闘以外の暮らしにも使う。元素を扱う人も、道具や回路を通して扱う人もいる。普段着を基本に、道具や小さな装飾で学び方の違いを見せる。</p>
+<p>海風のある街で学校・仕事・訓練の合間に友達と過ごす。小さな成長や失敗、誰かとの時間が街の記憶になる。強さだけで人物の価値を決めない。</p>
+<h3>近接3人の街での役割（具体例案）</h3>
+<div class="scroll"><table><tr><th>クラス</th><th>学ぶこと</th><th>日常の活躍例</th></tr>
+<tr><td>Fighter</td><td>身体の使い方・距離感・とっさの判断</td><td>スポーツ、救助の補助、身軽さを生かす仕事</td></tr>
+<tr><td>Knight</td><td>防護・位置取り・周囲との連携</td><td>行事の安全係、人を誘導する訓練</td></tr>
+<tr><td>Warrior</td><td>武器や道具の扱い・力の調整</td><td>訓練試合、障害物を取り除く共同作業</td></tr>
+</table></div><p>同じ学校で異なる訓練を選ぶ。共通の制服・訓練着にグローブ・盾・練習剣などで違いを出す。クラスは性格を固定しない。実習や学校制度の細部は未確定。</p></section>
+<section class="card" id="g-skills"><h2>G系統 — ユーザー提示の原案</h2>
+<p>General：Physical Training（PT / HP）。Throwing / Shooting（RAN）— Req. PT。</p>
+<p>Options：Upper Body Training（UBT / ATK）— Req. PT。Lower Body Training（LBT / DEF）— Req. PT。Intelligence Training（IT / MAG）、Mind Control Training（MCT / RES）。後者2つの前提は未指定。</p>
+<div class="scroll"><table><tr><th>クラス</th><th>スキル</th><th>能力</th><th>Req.（原案の表記）</th></tr>
+<tr><td>Ranger</td><td>Rifle 1</td><td>未指定</td><td>Shooting＋UBT</td></tr>
+<tr><td>Ranger</td><td>Rifle 2〜4</td><td>未指定</td><td>IT 1〜3＋MCT 1〜3</td></tr>
+<tr><td>Ranger</td><td>Heavy Rifle 1</td><td>未指定</td><td>Rifle 2</td></tr>
+<tr><td>Ranger</td><td>Heavy Rifle 2〜4</td><td>未指定</td><td>IT 1〜3＋MCT 1〜3＋WH 1〜3</td></tr>
+<tr><td>Assassin</td><td>Assassination 1</td><td>ATS</td><td>Throwing＋UBT</td></tr>
+<tr><td>Assassin</td><td>Assassination 2〜4</td><td>未指定</td><td>IT 1〜3＋MCT 1〜3＋BU 1〜3（Fighter）</td></tr>
+<tr><td>Scout</td><td>Movement Strategy 1</td><td>SPD</td><td>PT</td></tr>
+<tr><td>Scout</td><td>Movement Strategy 2〜4</td><td>未指定</td><td>PT 2〜4</td></tr>
+</table></div><p>2・3・4と前提1・2・3の個別対応、前の段階の技能が必要かどうかは未確認。Throwing／Shootingの分岐、RのIEとGのITの関係も未確定。</p></section>
+<section class="card" id="b-schools"><h2>B系統 — 4つの学校</h2>
+<p><strong>ユーザー提示の原案。</strong>学校ごとに学び方・操作・成長の仕方が異なる。</p>
+<p>General：Physics（HP）、Academics（MAG）、Psycologics（RES・原文表記）。Optionは未記載。用語の正式な綴り・定義は未確定。</p>
+<h3>Elementary Academy — 線形魔法</h3>
+<div class="scroll"><table><tr><th>級</th><th>技能・条件</th></tr>
+<tr><td>Class 10</td><td>EM: Water（HP）— Req. Psycologics<br>EM: Earth（DEF）— Req. EM: Water</td></tr>
+<tr><td>Class 9</td><td>Mana Inspiration（MI / MP）<br>Elemental Mix Magic（EMM）：Water &amp; Earth</td></tr>
+<tr><td>Class 8</td><td>Advanced Mana Inspiration（AMI / MP）<br>EM: Wind（SPD）— Req. MI<br>EMM: Wind &amp; Water＝高圧・押す・水分<br>EMM: Wind &amp; Earth＝counter（定義未確定）</td></tr>
+<tr><td>Class 7</td><td>EM: Fire（MAG）— Req. AMI<br>EMM: Fire &amp; Water＝counter（定義未確定）<br>EMM: Fire &amp; Earth＝dry（乾燥）<br>EMM: Fire &amp; Wind＝低圧・引く</td></tr>
+<tr><td>Class 6 — Elemental Sublet</td><td>EMM: F&amp;E＋Wi&amp;Wa＝shot<br>EMM: F&amp;E＋F&amp;Wi＝shot(pull)<br>Sublet・shotの正式な名称と働きは未確定</td></tr>
+<tr><td>Class 5 — Elemental Mage</td><td>上位属性魔法（AEM）7種：Water（Ice）、Earth（Heal）、Earth（Poison）、Wind、Fire（Flame）、Fire（Thunder）、Fire（Light）。<br>Poison — Req. AEM: Earth。Light — Req. AEM: Thunder。Windの効果は未記載。</td></tr>
+<tr><td>Class 4</td><td>7種のAEMから2種</td></tr>
+<tr><td>3rd Class</td><td>7種のAEMから4種</td></tr>
+<tr><td>2nd Class</td><td>全7種のAEM</td></tr>
+<tr><td>1st Class</td><td>全7種のAEM。2級との差は未記載。</td></tr>
+</table></div>
+<p>略記：F＝Fire、E＝Earth、Wi＝Wind、Wa＝Water。EMはこの技能表ではElemental Magic、人物・クラスの会話ではElemental Mageを指す。原文のliniear-magicの正式名称は未確定。</p>
+<h3>Mage Academy — 回路魔法</h3><div class="scroll"><table><tr><th>区分</th><th>原案の条件</th></tr>
+<tr><td>Elemental Scholar Class</td><td>unqualified（意味未確定）</td></tr>
+<tr><td>Elemental Mage Class</td><td>Req. Elemental Mage（Class 5〜1st Class）。マナ5,000以上＋消費マナ1,000以上のスキルを持つ。</td></tr>
+<tr><td>Mage Class</td><td>A〜E Class。マナ10,000以上＋消費マナ2,000以上のスキルを持つ。</td></tr>
+<tr><td>Arch Mage Class</td><td>F〜I Class。マナ15,000以上＋消費マナ3,000以上のスキルを持つ。</td></tr>
+</table></div>
+<h3>Cleris Missionary School</h3><p>1〜13段階（Grade）。シンプルなプレイ、成長しやすいが潜在力は低め、ワンタップで詠唱する設計。</p>
+<ul><li>Engineering（工学）</li><li>Education（教育）</li><li>Humanities（人文）— Literature Club</li><li>Medicine（医療）— Medic Club</li><li>Liberal Arts — Art Club、Music Club、Atheletic Club（原文表記）</li><li>Social Sciences（社会科学）— Volunteer Club</li><li>Natural Sciences（自然科学）— Culinary Club</li></ul>
+<h3>Nacsha Missionary School — Full Open</h3><ul><li>すべてのスキルを解放可能。</li><li>ランダムなskill-techが生成される。</li><li>1ボタンで詠唱。タップ・長押しで変化する。</li><li>10,000回の詠唱で技能を習熟し、100%の性能を持てる原案。</li><li>魔法回路1〜4：<code>100p^1〜4</code>（数式・単位の意味は未確定）。</li></ul>
+<p>学校間の転籍、入学条件、段階の呼称や数値は今後の設計対象。現実の物理現象や学校制度を説明するものではなく、ゲーム内設定。</p></section>
+<section class="card" id="art"><h2>作画・衣装の検討履歴</h2>
+<p>自然な顔立ち、髪や布の質感、きれいで読みやすい漫画の描き込みを求める。人物の同一性をカラーアニメ・白黒漫画・ゲーム内表現で保つ。クラス色は髪色や善悪を強制しない。</p>
+<ul><li><strong>最初の比較：</strong>01青春アニメ・02漫画セル画・03ちびキャラを好み、メインは02と決定。</li><li><strong>幅広い12方向の比較：</strong>01少女漫画・03日常アニメ・06水彩・07色鉛筆・10ちびキャラを好む。これらを混ぜた案も制作。</li><li><strong>その後の希望：</strong>もっと現実感と、洗練されたAI画像のような美しさ、漫画としての仕上がりが必要。</li><li><strong>新しい6方向の比較：</strong>01繊細な半写実漫画・02アニメゲーム立ち絵・04Webtoon・05ファッション漫画調を候補に選択。</li><li><strong>衣装：</strong>以前の服が垢抜けないという感想。色数・丈・シルエット・靴まで整えた制服、ブレザー、訓練着、探索向け街着を比較。最終衣装は未決定。</li><li><strong>最新テスト：</strong>同じ学校の中学生9人の方向を評価。レンジャーの落ち着きと、EM／メージの外見交換を次の修正点に指定。</li></ul>
+<p>比較番号は画像シリーズごとのもの。同じ番号でも別シリーズでは意味が異なる。02を基準として選んだ後も探索を続けており、頭身・色指定・全衣装が最終確定したわけではない。</p><p>今後の検討候補：9人の顔アップ、通常・笑顔・困った顔の表情、普段着と訓練着、ゲーム内の縮小表示での識別性。</p></section>
+<section class="card" id="story"><h2>第1期ストーリー案</h2>
+<p><strong>提案段階・採用確認前。</strong>タイトル『あの夏、君と走った。』も仮。</p>
+<p>2006年、海辺の青波市。違う訓練コースを選んだ中学生9人が学校の共同実習に集まる。課題は、海辺の古い交流施設を夏祭りまでにもう一度使える場所にすること。</p>
+<p>誰のための場所にするか、予算を何に使うか、昔から使っていた住民の希望をどう受け止めるか。得意な技能があっても答えはすぐには出ない。</p>
+<ul><li>近接3人：作業と安全を支えるが、力だけでは解決できない対立に出会う。</li><li>Ranger・Assassin・Scout：街を調べ、人の話を集め、情報を伝える難しさを知る。</li><li>EM・Mage・Cleric：設備や魔法に取り組み、努力と才能、助けることと無理をすることの違いに向き合う。</li></ul>
+<p>中盤、施設に残る古い魔法回路が動き始める。以前ここを作った子どもたちの、完成しなかった計画が見つかる。9人は、そのまま完成させるか、自分たちの場所へ作り変えるかを選ぶ。</p>
+<p>夏祭りの後も暮らしは続く。施設はゲーム内の拠点となり、次の学年、仕事、次の世代へ受け継がれる。帰り道の寄り道、訓練後の会話、初めて名前で呼び合う瞬間などを見せ場にする案。</p></section>
+
+<section class="card" id="characters">
+<h2>主要人物9人 — 最新テスト設定</h2>
+<p><strong>全員を中学生にそろえるテスト。</strong>近接3人とレンジャーは女子、アサシン・スカウト・EMは男子。メージとクレリックの性別は未指定で、画像では仮に男子・女子を使用。正式な名前・学年は未確定。</p>
+<div class="scroll"><table><tr><th>クラス</th><th>指定・方向</th><th>外見テスト案</th></tr>
+<tr><td>Fighter</td><td>中学生女子</td><td>短い黒髪、赤い髪留め。活発な表情、共通訓練着とグローブ。細部は仮。</td></tr>
+<tr><td>Knight</td><td>中学生女子</td><td>黒髪の低いポニーテール、穏やかな目元。訓練着と練習盾。細部は仮。</td></tr>
+<tr><td>Warrior</td><td>中学生女子</td><td>茶髪のポニーテール。素直で繊細な表情、訓練着と練習剣。細部は仮。</td></tr>
+<tr><td>Ranger</td><td>女子。最新指定：もっと落ち着いた感じ</td><td>穏やかな目元、控えめな笑顔、静かに周囲を観察する立ち姿へ。敬礼ポーズをやめる。髪型・緑系の実習服は仮。</td></tr>
+<tr><td>Assassin</td><td>男子・背が高い</td><td>長身で細身、黒髪、静かな雰囲気。緑のカーディガン・制服パンツは仮。</td></tr>
+<tr><td>Scout</td><td>男子・可愛い系</td><td>柔らかな茶髪と親しみやすい顔。淡い緑の上着・地図・小さな鞄は仮。</td></tr>
+<tr><td>Elemental Mage（EM）</td><td>男子・「雄才」（原文。「秀才・学習型」という解釈は未確認）</td><td>最新指定で、以前のメージの外見に交換：茶髪・眼鏡なし。</td></tr>
+<tr><td>Mage</td><td>天才。性別は未指定</td><td>最新指定で、以前のEMの外見に交換：黒〜青黒髪・眼鏡。画像の男子という表現はテスト案。</td></tr>
+<tr><td>Cleric</td><td>癒し系。性別は未指定</td><td>優しい表情。画像の茶髪の三つ編み・女子・医療部風衣装はテスト案。</td></tr>
+</table></div>
+<p>EMとメージは外見案を交換し、メージが天才という設定は維持。髪型・衣装・性格・名前まで確定したわけではない。クラスは性格を固定しない。</p>
+<details><summary>以前の人物配置（履歴・最新テストには未適用）</summary><p>ハル→Knight、レン→Fighter、ソウタ→Warrior、ユナ→Ranger、アオイ→Assassin、ミナ→Scout、新規A→Elemental Mage、ルイ→Mage、新規B→Cleric。ハル17歳男性・レン17歳男性・ソウタ18歳男性という旧仮案は、最新の中学生キャラ設定とは分ける。</p><p>旧案の長所・課題：ハル＝観察・責任感／自己決定、レン＝身体能力・競争心／冷静な判断、ソウタ＝粘り強さ／自信、ユナ＝行動力・環境適応／計画性、アオイ＝集中・感受性／信頼、ミナ＝情報収集・交流／判断、新規A＝自然への関心／制御、ルイ＝学習・分析／柔軟性、新規B＝共感・支援／自己ケア。新キャラへの対応は未確定。</p></details>
+</section>
 <section class="card" id="legacy"><h2>06. クラス習得・転職・複数クラス・承継</h2><p><strong>採用方針：C. 素質＋努力の複合型。</strong>生得的な適性は成長速度に影響するが、クラスや人生の上限を固定しない。</p><ul><li>General・Optionの基礎を学び、専門スキルの条件を満たしてクラスに進む。</li><li>転職しても習得済みスキルは原則保持する。</li><li>複数クラスを習得できる。同時装備できる専門スキル枠は検討中。</li><li>親からは素質・財産・文化を、親や師匠からは教育を通じて知識や技術を承継できる。</li><li>子どもは親のコピーにならず、別クラスも自由に目指せる。</li></ul><p>専門クラス解放の細部、スキル枠、数値式、能力上限は未確定。以前の成長計算例はバランス検討用で正式仕様ではない。</p></section>
-<section class="card" id="history"><h2>07. 更新履歴・検討事項</h2><p><strong>v0.1</strong> RのGeneral・Option・Fighter・Warrior・Knightスキルを記録。</p><p><strong>v0.2</strong> G/Bの専門スキル案を追加（日英）。</p><p><strong>v0.3</strong> 素質＋努力のクラス制度、転職、複数クラス、属性承継の方針。</p><p><strong>v0.4</strong> 9人の初期クラス方向、生活と訓練の連動。</p><p><strong>v0.5</strong> ハル・レン・ソウタの外見原型案。</p><p><strong>v0.6</strong> triathlonリポジトリに統合記録ページを新設。</p><h3>未確定事項</h3><ul><li>RAN / ATSの正式定義</li><li>G/Bのスキル採用可否</li><li>9人の正式な人物設定とキャラクターデザイン</li><li>クラスが世界でどう認識されるか（公然の能力か、特別な出来事で現れるか）</li><li>ゲーム内実装と数値バランス</li></ul><p><small>このページは会話で確認できる記録をまとめたものです。過去の未確認情報は断定せず、随時追記します。</small></p></section>
+<section class="card" id="history"><h2>更新履歴・検討事項</h2><p><strong>v0.7 · 2026-10-24</strong> G原案、Bの4学校、魔法のある日常、全員中学生のテスト、レンジャーの雰囲気変更、EM／メージの外見交換、作画・衣装の履歴と未承認ストーリー案を追記。</p><p><strong>v0.1</strong> RのGeneral・Option・Fighter・Warrior・Knightスキルを記録。</p><p><strong>v0.2</strong> G/Bの専門スキル案を追加（日英）。</p><p><strong>v0.3</strong> 素質＋努力のクラス制度、転職、複数クラス、属性承継の方針。</p><p><strong>v0.4</strong> 9人の初期クラス方向、生活と訓練の連動。</p><p><strong>v0.5</strong> ハル・レン・ソウタの外見原型案。</p><p><strong>v0.6</strong> triathlonリポジトリに統合記録ページを新設。</p><h3>未確定事項</h3><ul><li>RAN / ATSの正式定義</li><li>Gの前提レベル対応とIE／ITの関係、BのOption・用語・未記載効果・2級と1級の違い</li><li>9人の正式な名前・学年・人物設定、メージとクレリックの性別、「雄才」の意図、テスト設定の正式採用と最終作画・衣装</li><li>第1期ストーリー案の採否、魔法の制約、実習の危険度</li><li>魔法が普通にある方向を踏まえた、各クラスの資格制度や学校間の移動</li><li>ゲーム内実装と数値バランス</li></ul><p><small>このページは会話で確認できる記録をまとめたものです。過去の未確認情報は断定せず、随時追記します。</small></p></section>
 </main><footer>青波市 / AONAMI CITY · Development Archive · 2026</footer></body></html>
