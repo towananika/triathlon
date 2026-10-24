@@ -18,6 +18,8 @@ const path = require('node:path');
     assert.match(await page.locator('#world').textContent(),/独自の文明史/);
     assert.match(await page.locator('#world').textContent(),/ソウル/);
     assert.match(await page.locator('#world').textContent(),/生き残った者たち/);
+    assert.match(await page.locator('#characters').textContent(),/BEM.*新入生首席/);
+    assert.match(await page.locator('#characters').textContent(),/BM.*全国1位/);
     assert.match(await page.locator('#relationships').textContent(),/同意/);
     assert.match(await page.locator('#relationships').textContent(),/成人期/);
     assert.equal(await page.locator('#story-legacy').getAttribute('open'),null);
