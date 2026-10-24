@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>青波市 | ゲーム企画</title>
+<title>TRIATHLON | 青波市</title>
+<meta name="description" content="海辺の街、9つの学び、受け継がれる日々。TRIATHLONの世界・キャラクター・育成システムを紹介する開発中のゲームサイト。">
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#101722;color:#eaf0f6;font:15px/1.75 system-ui,-apple-system,"Noto Sans JP",sans-serif}header{padding:64px 22px 42px;background:linear-gradient(135deg,#142b43,#17212f 60%,#20334a)}main,header>div{max-width:940px;margin:auto}main{padding:22px 18px 80px}h1{font-size:56px;margin:0}h2{font-size:23px;margin:0 0 14px}h3{margin:22px 0 8px}p{margin:8px 0 14px}.sub,.muted{color:#a9b7c9}.tag{display:inline-block;border:1px solid #456077;border-radius:20px;padding:2px 11px;margin:3px;font-size:12px}.card{background:#192331;border:1px solid #304256;border-radius:15px;padding:24px;margin:18px 0}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}nav a{color:#cfe7ff;text-decoration:none;border:1px solid #52667c;border-radius:20px;padding:5px 12px}table{border-collapse:collapse;width:100%;min-width:600px}th,td{text-align:left;padding:10px;border-bottom:1px solid #354454;vertical-align:top}th{color:#9db9d2} .scroll{overflow-x:auto}.r{color:#ff9393}.g{color:#92e2a7}.b{color:#96bfff}ul{padding-left:22px}small{color:#a9b7c9}footer{color:#a9b7c9;text-align:center;padding:25px}a{color:#9dc9ff}details{margin:16px 0}summary{cursor:pointer;color:#cfe7ff;font-weight:600}code{overflow-wrap:anywhere}section{scroll-margin-top:20px}a:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline-offset:4px}
 header{padding:28px 22px 20px;background:#142334}
@@ -20,11 +21,17 @@ nav button:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline
 .card{overflow-wrap:anywhere}
 @media(max-width:540px){header{padding:24px 18px 16px}.card{padding:18px}nav button{padding:10px 8px}}
 </style>
+<link rel="stylesheet" href="game-site.css">
 </head>
 <body>
+<div class="masthead"><a class="brand" href="#overview">TRIATHLON<span>青波市 / AONAMI CITY</span></a><span class="development">IN DEVELOPMENT</span></div>
+<section class="keyvisual" aria-label="青波市のコンセプトアート">
+<div class="hero-copy"><p class="eyebrow">A LIFE. A CLASS. A NEW CHAPTER.</p><h1>TRIATHLON</h1><p class="hero-jp">この街で、<br>自分だけの明日を。</p><p class="hero-lead">海辺の街、9つの学び、受け継がれる日々。</p><a class="explore" href="#map">青波市をめぐる <span aria-hidden="true">↓</span></a></div>
+<div class="hero-caption">AONAMI CITY <span>世界観コンセプト / ゲーム画面ではありません</span></div>
+</section>
 <header><div>
 <span class="tag">ライフシミュレーション</span><span class="tag">企画・開発中</span>
-<h1>青波市</h1>
+<p class="section-brand">WORLD GUIDE <span>青波市</span></p>
 <p class="sub">AONAMI CITY — 暮らし、学び、出会い、次の世代へ。</p>
 <nav role="tablist" aria-label="ゲームの区分"><button type="button" role="tab" id="tab-overview" aria-controls="panel-overview" aria-selected="true" tabindex="0" data-view="overview">ゲーム概要</button>
 <button type="button" role="tab" id="tab-world" aria-controls="panel-world" aria-selected="false" tabindex="-1" data-view="world">世界観</button>
@@ -149,10 +156,11 @@ nav button:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline
 <section class="card" id="downloads"><h2>統合記録ファイル</h2><p>これまでの青波市の世界観・ゲーム構想・主要人物・RGBクラス・スキル・学校制度・物語・作画方針・更新履歴をまとめた保存版です。</p><p><a href="./records/aonami_complete_record_v0_9.md" download>📄 統合開発記録 v0.9（Markdownファイル）をダウンロード</a></p><p><a href="https://github.com/towananika/triathlon/blob/main/records/aonami_complete_record_v0_9.md">GitHubでファイルを読む</a></p><p><small>最新の設定と過去の仮案は区別して記録しています。</small></p></section>
 <section class="card" id="history"><h2>更新履歴・検討事項</h2><p><strong>v0.9 · 2026-10-24</strong> 全記録のMarkdownファイルを追加し、資料・履歴からダウンロードできるようにした。</p><p><strong>v0.8 · 2026-10-24</strong> ゲーム概要・世界観・キャラクター・育成と学校・物語・資料の6区分へ整理。スキル表を系統ごとに開閉する構成に変更。設定内容は維持。</p><p><strong>v0.7 · 2026-10-24</strong> G原案、Bの4学校、魔法のある日常、全員中学生のテスト、レンジャーの雰囲気変更、EM／メージの外見交換、作画・衣装の履歴と未承認ストーリー案を追記。</p><p><strong>v0.1</strong> RのGeneral・Option・Fighter・Warrior・Knightスキルを記録。</p><p><strong>v0.2</strong> G/Bの専門スキル案を追加（日英）。</p><p><strong>v0.3</strong> 素質＋努力のクラス制度、転職、複数クラス、属性承継の方針。</p><p><strong>v0.4</strong> 9人の初期クラス方向、生活と訓練の連動。</p><p><strong>v0.5</strong> ハル・レン・ソウタの外見原型案。</p><p><strong>v0.6</strong> triathlonリポジトリに統合記録ページを新設。</p><h3>未確定事項</h3><ul><li>RAN / ATSの正式定義</li><li>Gの前提レベル対応とIE／ITの関係、BのOption・用語・未記載効果・2級と1級の違い</li><li>9人の正式な名前・学年・人物設定、メージとクレリックの性別、「雄才」の意図、テスト設定の正式採用と最終作画・衣装</li><li>第1期ストーリー案の採否、魔法の制約、実習の危険度</li><li>魔法が普通にある方向を踏まえた、各クラスの資格制度や学校間の移動</li><li>ゲーム内実装と数値バランス</li></ul><p><small>このページは会話で確認できる記録をまとめたものです。過去の未確認情報は断定せず、随時追記します。</small></p></section>
 </div></main>
-<footer>青波市 / AONAMI CITY · v0.9 · 2026-10-24</footer>
+<footer><strong>TRIATHLON</strong><br>青波市 / AONAMI CITY · v0.10 · 2026-10-24<br><small>企画・開発中。公開中のページはゲーム紹介・設定資料です。</small></footer>
+<script src="game-site.js"></script>
 <script>
 (function () {
-  var groups = [{"id":"overview","sections":["game"]},{"id":"world","sections":["world","daily-magic"]},{"id":"characters","sections":["characters","art"]},{"id":"systems","sections":["class","legacy","skills","g-skills","b-schools"]},{"id":"story","sections":["story"]},{"id":"archive","sections":["history"]}];
+  var groups = [{"id":"overview","sections":["game"]},{"id":"world","sections":["world","daily-magic","map","monsters"]},{"id":"characters","sections":["characters","art"]},{"id":"systems","sections":["class","legacy","skills","g-skills","b-schools"]},{"id":"story","sections":["story"]},{"id":"archive","sections":["history"]}];
   var buttons = Array.from(document.querySelectorAll('[role="tab"]'));
   function resolve(hash) {
     var value;
@@ -161,6 +169,7 @@ nav button:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline
   }
   function render() {
     var group = resolve(location.hash);
+    document.body.dataset.view = group.id;
     groups.forEach(function(g) {
       var selected = g.id === group.id, button = document.getElementById("tab-" + g.id);
       document.getElementById("panel-" + g.id).hidden = !selected;
