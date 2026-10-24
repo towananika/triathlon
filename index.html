@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>青波市 | 開発記録</title><style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#101722;color:#eaf0f6;font:15px/1.75 system-ui,-apple-system,"Noto Sans JP",sans-serif}header{padding:64px 22px 42px;background:linear-gradient(135deg,#142b43,#17212f 60%,#20334a)}main,header>div{max-width:940px;margin:auto}main{padding:22px 18px 80px}h1{font-size:clamp(32px,7vw,56px);margin:0}h2{font-size:23px;margin:0 0 14px}h3{margin:22px 0 8px}p{margin:8px 0 14px}.sub,.muted{color:#a9b7c9}.tag{display:inline-block;border:1px solid #456077;border-radius:20px;padding:2px 11px;margin:3px;font-size:12px}.card{background:#192331;border:1px solid #304256;border-radius:15px;padding:24px;margin:18px 0}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}nav a{color:#cfe7ff;text-decoration:none;border:1px solid #52667c;border-radius:20px;padding:5px 12px}table{border-collapse:collapse;width:100%;min-width:600px}th,td{text-align:left;padding:10px;border-bottom:1px solid #354454;vertical-align:top}th{color:#9db9d2} .scroll{overflow-x:auto}.r{color:#ff9393}.g{color:#92e2a7}.b{color:#96bfff}ul{padding-left:22px}small{color:#a9b7c9}footer{color:#a9b7c9;text-align:center;padding:25px}a{color:#9dc9ff}</style></head><body><header><div><span class="tag">PROJECT ARCHIVE</span><span class="tag">v0.6 · 2026-10-24</span><h1>青波市</h1><p class="sub">AONAMI CITY — 世界観・ゲームシステム・キャラクター・開発履歴</p><p>2006年ごろから始まる架空の海辺の街。暮らし、学び、出会い、成長し、次の世代へ受け継ぐライフシミュレーション構想。</p><nav><a href="#world">世界観</a><a href="#game">ゲーム</a><a href="#class">RGBクラス</a><a href="#skills">スキル</a><a href="#characters">人物</a><a href="#legacy">承継</a><a href="#history">履歴</a></nav></div></header><main>
+<section class="card" id="world"><h2>01. 世界観</h2><p>架空の日本風海辺都市「青波市」。日常生活と物語を中心に、住民がそれぞれの人生を歩む。時代の始まりは2006年ごろ（仮）。</p><p>物語タイトル候補『あの夏、君と走った。』は未確定。第1期の主要人物は9人。背景住民・脇役の人数には制限を設けない。</p><p><strong>シーズンの色テーマ（構想）</strong>：Season 1 RGB ／ Season 2 CMYK ／ Season 3 白・黒・灰 ／ Season 4 無色・透明・未知。</p></section>
+<section class="card" id="game"><h2>02. ゲーム構想</h2><p>無料で遊べるブラウザ向け、スマートフォンにも対応する軽量な2.5Dアイソメトリック・ライフシミュレーター。</p><h3>BUILD MODE</h3><p>道路、家、部屋、壁、家具、学校、病院、公園、カフェ、職場、訓練施設などをモジュール式で配置・拡張・改装。</p><h3>LIFE MODE</h3><p>NPCの自律生活、日課、訓練、仕事、技能習得、交友、恋愛、結婚、家族、子ども、加齢、世代交代、師弟関係。</p><h3>制作方針</h3><p>最初は少人数NPCと家・訓練場・広場から始める。セーブはローカル保存を想定。マルチプレイや高度なAIは将来拡張。実装済みを意味するものではない。</p><p>キャラクターのデータは共通に保ち、ゲーム内2.5D、カラーアニメ、白黒漫画、Live2D、3D映像は別の表現として制作する。</p></section>
+<section class="card" id="class"><h2>03. RGB・9クラス</h2><div class="scroll"><table><tr><th>系統</th><th>クラス</th><th>方向性（解釈）</th></tr><tr><td class="r">R / RED</td><td>ナイト / Knight<br>ファイター / Fighter<br>ウォーリア / Warrior</td><td>防護・戦闘・武器技術</td></tr><tr><td class="g">G / GREEN</td><td>レンジャー / Ranger<br>アサシン / Assassin<br>スカウト / Scout</td><td>探索・機動・精密行動</td></tr><tr><td class="b">B / BLUE</td><td>エレメンタルメージ / Elemental Mage<br>メージ / Mage<br>クレリック / Cleric</td><td>元素・魔法・支援</td></tr></table></div><p><small>9つのクラス名はユーザー提示の設定。各クラスの方向性の説明は設計上の解釈。</small></p></section>
+<section class="card" id="skills"><h2>04. スキルシステム（日英）</h2><p>General → Option → 専門スキル。習得条件は「Req.」で管理する。</p><div class="scroll"><table><tr><th>分類</th><th>英語</th><th>日本語</th><th>能力</th><th>Req.</th></tr>
+<tr><td>General</td><td>Physical Training (PT)</td><td>基礎体力訓練</td><td>HP</td><td>—</td></tr>
+<tr><td>General</td><td>Upper Body Training (UBT)</td><td>上半身強化訓練</td><td>ATK</td><td>PT</td></tr>
+<tr><td>General</td><td>Lower Body Training (LBT)</td><td>下半身強化訓練</td><td>DEF</td><td>PT</td></tr>
+<tr><td>Option</td><td>Offensive Strategy (OS)</td><td>攻撃戦術</td><td>ATK</td><td>UBT</td></tr>
+<tr><td>Option</td><td>Defensive Strategy (DS)</td><td>防御戦術</td><td>DEF</td><td>LBT</td></tr>
+<tr><td>Option</td><td>Intelligence Education (IE)</td><td>知識教育</td><td>MAG</td><td>—</td></tr>
+<tr><td>Option</td><td>Mind Control Training (MCT)</td><td>精神統制訓練</td><td>RES</td><td>—</td></tr>
+<tr><td>Fighter</td><td>Battle Understanding (BU)</td><td>戦闘理解</td><td>ATK</td><td>OS</td></tr>
+<tr><td>Fighter</td><td>Dodge Understanding (DU)</td><td>回避理解</td><td>SPD</td><td>DS</td></tr>
+<tr><td>Warrior</td><td>Sword Theory (ST)</td><td>剣術理論</td><td>RAN</td><td>MCT</td></tr>
+<tr><td>Warrior</td><td>Sword Practice (SP)</td><td>剣術実習</td><td>ATS</td><td>MCT + ST</td></tr>
+<tr><td>Knight</td><td>Movement Strategy (MS)</td><td>移動戦術</td><td>SPD</td><td>MCT</td></tr>
+<tr><td>Knight</td><td>Weapon Handling (WH)</td><td>武器操作術</td><td>ATS</td><td>MCT + MS</td></tr></table></div><p>剣術実習の技候補：straight（直線斬り／突き、要確認）、slice（斬撃）。RANとATSの正確な意味は未確定。</p><h3>G・B専門スキル（未承認の提案）</h3><div class="scroll"><table><tr><th>クラス</th><th>スキル案</th><th>能力</th><th>Req.</th></tr>
+<tr><td>Ranger</td><td>射撃理論 / Ranged Combat Theory</td><td>RAN</td><td>IE</td></tr><tr><td>Ranger</td><td>精密射撃 / Precision Shooting</td><td>ATS</td><td>射撃理論</td></tr>
+<tr><td>Assassin</td><td>隠密行動 / Stealth Movement</td><td>SPD</td><td>MCT</td></tr><tr><td>Assassin</td><td>急所分析 / Weak Point Analysis</td><td>ATK</td><td>隠密行動</td></tr>
+<tr><td>Scout</td><td>地形観察 / Terrain Observation</td><td>RAN</td><td>IE</td></tr><tr><td>Scout</td><td>索敵行動 / Reconnaissance</td><td>SPD</td><td>地形観察</td></tr>
+<tr><td>Elemental Mage</td><td>元素理解 / Elemental Understanding</td><td>MAG</td><td>IE</td></tr><tr><td>Elemental Mage</td><td>元素制御 / Elemental Control</td><td>ATS</td><td>元素理解 + MCT</td></tr>
+<tr><td>Mage</td><td>魔法理論 / Magic Theory</td><td>MAG</td><td>IE</td></tr><tr><td>Mage</td><td>魔力操作 / Mana Control</td><td>ATS</td><td>魔法理論 + MCT</td></tr>
+<tr><td>Cleric</td><td>治癒理論 / Healing Theory</td><td>MAG</td><td>IE</td></tr><tr><td>Cleric</td><td>回復術 / Restoration</td><td>RES</td><td>治癒理論 + MCT</td></tr></table></div></section>
+<section class="card" id="characters"><h2>05. 第1期・主要人物9人（仮配置）</h2><div class="scroll"><table><tr><th>人物</th><th>クラス方向</th><th>長所・課題</th></tr>
+<tr><td>ハル</td><td>Knight</td><td>観察・責任感／自己決定。17歳男性、柔らかな黒髪・穏やかな目元（外見は仮）</td></tr>
+<tr><td>レン</td><td>Fighter</td><td>身体能力・競争心／冷静な判断。17歳男性、短い茶黒髪・鋭い目元（仮）</td></tr>
+<tr><td>ソウタ</td><td>Warrior</td><td>粘り強さ／自信。18歳男性、がっしりした肩幅（仮）</td></tr>
+<tr><td>ユナ</td><td>Ranger</td><td>行動力・環境適応／計画性</td></tr>
+<tr><td>アオイ</td><td>Assassin</td><td>集中・感受性／信頼</td></tr>
+<tr><td>ミナ</td><td>Scout</td><td>情報収集・交流／判断</td></tr>
+<tr><td>新規人物A</td><td>Elemental Mage</td><td>自然への関心／制御</td></tr>
+<tr><td>ルイ</td><td>Mage</td><td>学習・分析／柔軟性</td></tr>
+<tr><td>新規人物B</td><td>Cleric</td><td>共感・支援／自己ケア</td></tr></table></div><p><strong>確定：</strong>主要人物は9人。<strong>未確定：</strong>人物とクラスの対応、ソウタ・アオイ・ミナ・新規2名の採用、年齢、性別、性格、容姿。</p><h3>ビジュアル</h3><p>カラーアニメ美形スタイルと白黒漫画スタイルを併用（暫定）。男女・年齢・顔立ち・体格に多様性を持たせる。クラス色は髪色や善悪を強制しない。日常服とクラス衣装は分ける。人物の同一性を表現間で維持する。</p></section>
+<section class="card" id="legacy"><h2>06. クラス習得・転職・複数クラス・承継</h2><p><strong>採用方針：C. 素質＋努力の複合型。</strong>生得的な適性は成長速度に影響するが、クラスや人生の上限を固定しない。</p><ul><li>General・Optionの基礎を学び、専門スキルの条件を満たしてクラスに進む。</li><li>転職しても習得済みスキルは原則保持する。</li><li>複数クラスを習得できる。同時装備できる専門スキル枠は検討中。</li><li>親からは素質・財産・文化を、親や師匠からは教育を通じて知識や技術を承継できる。</li><li>子どもは親のコピーにならず、別クラスも自由に目指せる。</li></ul><p>専門クラス解放の細部、スキル枠、数値式、能力上限は未確定。以前の成長計算例はバランス検討用で正式仕様ではない。</p></section>
+<section class="card" id="history"><h2>07. 更新履歴・検討事項</h2><p><strong>v0.1</strong> RのGeneral・Option・Fighter・Warrior・Knightスキルを記録。</p><p><strong>v0.2</strong> G/Bの専門スキル案を追加（日英）。</p><p><strong>v0.3</strong> 素質＋努力のクラス制度、転職、複数クラス、属性承継の方針。</p><p><strong>v0.4</strong> 9人の初期クラス方向、生活と訓練の連動。</p><p><strong>v0.5</strong> ハル・レン・ソウタの外見原型案。</p><p><strong>v0.6</strong> triathlonリポジトリに統合記録ページを新設。</p><h3>未確定事項</h3><ul><li>RAN / ATSの正式定義</li><li>G/Bのスキル採用可否</li><li>9人の正式な人物設定とキャラクターデザイン</li><li>クラスが世界でどう認識されるか（公然の能力か、特別な出来事で現れるか）</li><li>ゲーム内実装と数値バランス</li></ul><p><small>このページは会話で確認できる記録をまとめたものです。過去の未確認情報は断定せず、随時追記します。</small></p></section>
+</main><footer>青波市 / AONAMI CITY · Development Archive · 2026</footer></body></html>
