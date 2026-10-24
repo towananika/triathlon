@@ -125,8 +125,19 @@
   document.querySelectorAll('.class-profile').forEach(function(profile,index){
     var button=document.createElement('button');button.type='button';button.className='profile-link';button.textContent='人物を見る';button.addEventListener('click',function(){state.person=people[index].id;renderPerson();save();location.hash='dossier';});profile.append(button);
   });
-  document.querySelector('#theme').insertAdjacentHTML('beforeend','<div class="feature-links"><a href="#atlas"><span>WORLD ATLAS</span>地球から街を考える <b aria-hidden="true">→</b></a><a href="#dossier"><span>CHARACTER FILES</span>9人の内面を知る <b aria-hidden="true">→</b></a></div>');
+  document.querySelector('#theme').insertAdjacentHTML('beforeend','<div class="feature-links"><a href="#atlas"><span>WORLD ATLAS</span>地球から街を考える <b aria-hidden="true">→</b></a><a href="#dossier"><span>SEASON 1 / RGB</span>第1期・9人の内面を知る <b aria-hidden="true">→</b></a><a href="#season2"><span>SEASON 2 / CMY</span>第2期・新しい9人 <b aria-hidden="true">→</b></a></div>');
   document.querySelector('#world').insertAdjacentHTML('beforeend','<p><a href="#atlas">地球と都市構想</a> / <a href="#civilizations">R・G・Bの社会と信仰</a></p>');
   document.querySelector('#downloads h2').insertAdjacentHTML('afterend','<h3>大型アップデート v0.12</h3><p>地球マップ・人物図鑑の更新と、R・G・Bの社会設定を記録。</p><p><a href="records/update_v0_12.md" download>v0.12 更新・追加設定をダウンロード</a></p>');
   document.querySelector('#history h2').insertAdjacentHTML('afterend','<p><strong>v0.12 · 2026-10-24</strong> 国境のない地球の海岸線マップ、候補地と街の方針の下書き、9人の人物図鑑・個人メモ・JSON書き出しを追加。人物の願い・不安・日常技能は未確定の提案として区別。</p>');
+  var seasonTwo=[
+    {color:'Cyan',tag:'C / CYAN',items:[['バトルメージ','女子','二面性のあるアイドル。二面性の具体的な内容は未指定。'],['メージ','女子','性格・外見・役割の詳細は未指定。第1期のBMとは別枠。'],['プリスト','女子','性格・外見・役割の詳細は未指定。表記は指定どおり「プリスト」。']]},
+    {color:'Magenta',tag:'M / MAGENTA',items:[['ホリーナイト','男子','優しい系。'],['バーサーカー','男子','ファイターの男子版に近いが、少し危ない感じ。危うさの具体的な内容は未指定。'],['ガーディアン','女子','自然に一人でいる、神秘的な雰囲気。']]},
+    {color:'Yellow',tag:'Y / YELLOW',items:[['アサシン','女子','クールさと親しさを併せ持つ。第1期のアサシンとは別枠。'],['エクスプローラ','女子','スカウトの女子版に近いが、欲が強い。何を望むかは未指定。'],['メカニック','男子','パソコン好き。']]}
+  ];
+  var second=document.createElement('section');second.id='season2';second.className='card';
+  second.innerHTML='<p class="kicker">SEASON 2 / CYAN · MAGENTA · YELLOW</p><h2>第2期、新しい9つの個性。</h2><p>第1期のRGBとは別に、Cyan・Magenta・Yellowの3系統が登場する。クラスと性別、人物像は最新指定を記録。固有名・年齢・学年・所属・スキル・物語への登場順は未設定。</p><div class="season-two-grid">'+seasonTwo.map(function(group){return '<section class="season-two-family" data-color="'+group.color+'"><p class="kicker">'+group.tag+'</p><h3>'+group.color+'</h3>'+group.items.map(function(person){return '<article class="season-two-character"><span class="person-gender">'+person[1]+'</span><h4>'+person[0]+'</h4><p>'+person[2]+'</p></article>';}).join('')+'</section>';}).join('')+'</div><p><small>第1期の中学生設定と人物画像は外見テスト。第2期の年齢や作画へ自動適用せず、同名クラスも別の人物枠として扱います。</small></p>';
+  document.querySelector('#dossier').after(second);
+  document.querySelector('#panel-characters').insertAdjacentHTML('afterbegin','<div class="season-jumps" aria-label="期ごとの人物紹介"><a href="#dossier">第1期 / RGB</a><a href="#season2">第2期 / CMY</a></div>');
+  document.querySelector('#downloads h2').insertAdjacentHTML('afterend','<h3>第2期キャラクター v0.13</h3><p><a href="records/season_two_v0_13.md" download>第2期・CMYの9人をダウンロード</a></p>');
+  document.querySelector('#history h2').insertAdjacentHTML('afterend','<p><strong>v0.13 · 2026-10-24</strong> 第2期CMYの9人を追加。第1期と区分し、同名クラス・年齢・所属・未指定の人物像を混同しない形で記録。</p>');
 })();
