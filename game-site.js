@@ -35,9 +35,9 @@
     ['G','Ranger','レンジャー','静かで、芯がある。','女子 / 落ち着いた表情・確かな意思'],
     ['G','Assassin','アサシン','気配と隙間を読み取る。','男子 / 長身'],
     ['G','Scout','スカウト','まだ知らない道を見つける。','男子 / 可愛い系'],
-    ['B','Elemental Mage','エレメンタルメージ / BEM','新入生首席。','男子 / 茶髪・眼鏡なしのテスト'],
+    ['B','Elemental Mage','エレメンタルメージ / BEM','新入生首席。少し生意気。','男子 / 茶髪・眼鏡なしのテスト'],
     ['B','Mage','メージ / BM','全国1位の天才。それでも、謙虚。','対象分野は未設定 / 青黒髪・眼鏡のテスト'],
-    ['B','Cleric','クレリック','誰かの日常を、そっと支える。','癒し系 / 性別は未確定']
+    ['B','Cleric','クレリック','王道のクレリックらしい、癒し系。','白系聖職服の案 / 性別は未確定']
   ];
   document.querySelector('#characters h2').insertAdjacentHTML('beforebegin', '<p class="kicker">NINE PATHS, MANY LIVES</p>');
   document.querySelector('#characters h2').insertAdjacentHTML('afterend', '<div class="filters" role="group" aria-label="クラス系統で絞り込み"><button type="button" data-family="all" aria-pressed="true">ALL</button><button type="button" data-family="R" aria-pressed="false">R / 近接</button><button type="button" data-family="G" aria-pressed="false">G / 探索</button><button type="button" data-family="B" aria-pressed="false">B / 魔法</button></div><div class="class-grid">' + classes.map(function (c, i) {
