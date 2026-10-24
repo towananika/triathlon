@@ -52,5 +52,5 @@
   });
   document.querySelector('#art h2').insertAdjacentHTML('afterend', '<img class="character-art" src="assets/character-study.png" width="1024" height="1536" loading="lazy" alt="中学生9人の衣装・作画比較シート。近接、探索、魔法の3系統。"><p class="art-note">以前の外見テスト。レンジャーの落ち着いた表情、EMとメージの外見交換は未反映。</p>');
   document.querySelector('#story').insertAdjacentHTML('beforeend', '<h3>夏へ向かう、3つの章</h3><span class="proposal">章構成の新構想</span><ol class="chapter-list"><li><div><b>出会いと共同実習</b>違う得意を持つ9人。街の声を集め、交流施設の再生計画を立てる。</div></li><li><div><b>旧水路に残されたもの</b>動き始めた回路を調査。昔の計画と、今の住民の願いの違いを知る。</div></li><li><div><b>自分たちの夏祭り</b>何を残し、何を変えるか。選んだ改装や関係が、祭りとその後の日常に表れる。</div></li></ol>');
-  document.querySelector('#history h2').insertAdjacentHTML('afterend', '<p><strong>v0.9 · 2026-10-24</strong> 青・ターコイズを軸にゲーム紹介サイトへ刷新。クラス絞り込み、エリア紹介、モンスター・章構成の新構想を追加。従来の設定資料は保持。</p>');
+  document.querySelector('#history h2').insertAdjacentHTML('afterend', '<p><strong>v0.10 · 2026-10-24</strong> 青・ターコイズを軸にゲーム紹介サイトへ刷新。クラス絞り込み、エリア紹介、モンスター・章構成の新構想を追加。従来の設定資料は保持。</p>');
 })();
