@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TRIATHLON | 青波市</title>
-<meta name="description" content="海辺の街、9つの学び、受け継がれる日々。TRIATHLONの世界・キャラクター・育成システムを紹介する開発中のゲームサイト。">
+<title>TRIATHLON | 同じ地球、違う未来</title>
+<meta name="description" content="地球の地理、独自の文明史、改善された近未来。人は誰かと、どう親しくなり、どう自分として生きるか。TRIATHLONの世界と物語。">
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#101722;color:#eaf0f6;font:15px/1.75 system-ui,-apple-system,"Noto Sans JP",sans-serif}header{padding:64px 22px 42px;background:linear-gradient(135deg,#142b43,#17212f 60%,#20334a)}main,header>div{max-width:940px;margin:auto}main{padding:22px 18px 80px}h1{font-size:56px;margin:0}h2{font-size:23px;margin:0 0 14px}h3{margin:22px 0 8px}p{margin:8px 0 14px}.sub,.muted{color:#a9b7c9}.tag{display:inline-block;border:1px solid #456077;border-radius:20px;padding:2px 11px;margin:3px;font-size:12px}.card{background:#192331;border:1px solid #304256;border-radius:15px;padding:24px;margin:18px 0}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}nav a{color:#cfe7ff;text-decoration:none;border:1px solid #52667c;border-radius:20px;padding:5px 12px}table{border-collapse:collapse;width:100%;min-width:600px}th,td{text-align:left;padding:10px;border-bottom:1px solid #354454;vertical-align:top}th{color:#9db9d2} .scroll{overflow-x:auto}.r{color:#ff9393}.g{color:#92e2a7}.b{color:#96bfff}ul{padding-left:22px}small{color:#a9b7c9}footer{color:#a9b7c9;text-align:center;padding:25px}a{color:#9dc9ff}details{margin:16px 0}summary{cursor:pointer;color:#cfe7ff;font-weight:600}code{overflow-wrap:anywhere}section{scroll-margin-top:20px}a:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline-offset:4px}
 header{padding:28px 22px 20px;background:#142334}
@@ -24,15 +24,15 @@ nav button:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline
 <link rel="stylesheet" href="game-site.css">
 </head>
 <body>
-<div class="masthead"><a class="brand" href="#overview">TRIATHLON<span>青波市 / AONAMI CITY</span></a><span class="development">IN DEVELOPMENT</span></div>
-<section class="keyvisual" aria-label="青波市のコンセプトアート">
-<div class="hero-copy"><p class="eyebrow">A LIFE. A CLASS. A NEW CHAPTER.</p><h1>TRIATHLON</h1><p class="hero-jp">この街で、<br>自分だけの明日を。</p><p class="hero-lead">海辺の街、9つの学び、受け継がれる日々。</p><a class="explore" href="#map">青波市をめぐる <span aria-hidden="true">↓</span></a></div>
-<div class="hero-caption">AONAMI CITY <span>世界観コンセプト / ゲーム画面ではありません</span></div>
+<div class="masthead"><a class="brand" href="#overview">TRIATHLON<span>SAME EARTH. DIFFERENT FUTURE.</span></a><span class="development">IN DEVELOPMENT</span></div>
+<section class="keyvisual" aria-label="海辺の都市のビジュアル検討案。地球上の位置は未設定">
+<div class="hero-copy"><p class="eyebrow">SAME EARTH. DIFFERENT FUTURE.</p><h1>TRIATHLON</h1><p class="hero-jp">同じ地球で、<br>違う未来を。</p><p class="hero-lead">誰かと親しく。自分らしく。<br>暮らしと文明を、ともにつくる。</p><a class="explore" href="#world">世界を知る <span aria-hidden="true">↓</span></a></div>
+<div class="hero-caption">CITY CONCEPT <span>旧青波市案の都市イメージ / 現実の地形・ゲーム画面ではありません</span></div>
 </section>
 <header><div>
 <span class="tag">ライフシミュレーション</span><span class="tag">企画・開発中</span>
-<p class="section-brand">WORLD GUIDE <span>青波市</span></p>
-<p class="sub">AONAMI CITY — 暮らし、学び、出会い、次の世代へ。</p>
+<p class="section-brand">WORLD GUIDE <span>地球から、もう一つの文明へ</span></p>
+<p class="sub">TRIATHLON — 人は誰かと、どう親しくなり、どう自分として生きるか。</p>
 <nav role="tablist" aria-label="ゲームの区分"><button type="button" role="tab" id="tab-overview" aria-controls="panel-overview" aria-selected="true" tabindex="0" data-view="overview">ゲーム概要</button>
 <button type="button" role="tab" id="tab-world" aria-controls="panel-world" aria-selected="false" tabindex="-1" data-view="world">世界観</button>
 <button type="button" role="tab" id="tab-characters" aria-controls="panel-characters" aria-selected="false" tabindex="-1" data-view="characters">キャラクター</button>
@@ -41,14 +41,16 @@ nav button:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline
 <button type="button" role="tab" id="tab-archive" aria-controls="panel-archive" aria-selected="false" tabindex="-1" data-view="archive">資料・履歴</button></nav>
 </div></header>
 <main><div role="tabpanel" id="panel-overview" aria-labelledby="tab-overview">
+<section class="card" id="theme"><p class="kicker">THE HEART OF TRIATHLON</p><h2>人は誰かと、どう親しくなり、<br>どう自分として生きるか。</h2><p>恋愛と性を重要な柱にしながら、友情・家族・仕事・一人の時間も描く。誰かと結ばれることだけを成功にせず、自分で選んだ関係と生き方に価値を持たせる。</p><p>地形が同じでも、文明の歩みは変わる。同じ社会で暮らしていても、一人ひとりの人生の答えは違う。</p><a href="#world">世界の土台へ</a> / <a href="#relationships">関係と物語へ</a></section>
 <section class="card" id="game"><h2>ゲーム構想</h2><p>無料で遊べるブラウザ向け、スマートフォンにも対応する軽量な2.5Dアイソメトリック・ライフシミュレーター。</p><h3>BUILD MODE</h3><p>道路、家、部屋、壁、家具、学校、病院、公園、カフェ、職場、訓練施設などをモジュール式で配置・拡張・改装。</p><h3>LIFE MODE</h3><p>NPCの自律生活、日課、訓練、仕事、技能習得、交友、恋愛、結婚、家族、子ども、加齢、世代交代、師弟関係。</p><h3>制作方針</h3><p>最初は少人数NPCと家・訓練場・広場から始める。セーブはローカル保存を想定。マルチプレイや高度なAIは将来拡張。実装済みを意味するものではない。</p><p>キャラクターのデータは共通に保ち、ゲーム内2.5D、カラーアニメ、白黒漫画、Live2D、3D映像は別の表現として制作する。</p></section>
 </div>
 <div role="tabpanel" id="panel-world" aria-labelledby="tab-world">
-<section class="card" id="world"><h2>世界観</h2><p>架空の日本風海辺都市「青波市」。日常生活と物語を中心に、住民がそれぞれの人生を歩む。時代の始まりは2006年ごろ（仮）。</p><p>物語タイトル候補『あの夏、君と走った。』は未確定。第1期の主要人物は9人。背景住民・脇役の人数には制限を設けない。</p><p><strong>シーズンの色テーマ（構想）</strong>：Season 1 RGB ／ Season 2 CMYK ／ Season 3 白・黒・灰 ／ Season 4 無色・透明・未知。</p></section>
+<section class="card" id="world"><p class="kicker">WORLD FOUNDATION</p><h2>地球は同じ。選んだ歴史が違う。</h2><p><strong>現実の地球 × 独自の文明史 × 改善された近未来社会。</strong>現実の地理を土台に、別の文明が発展する世界。現実の都市をそのまま再現することを目的にはしない。</p><div class="scroll"><table><tr><th>要素</th><th>現在の設定</th></tr><tr><td>地理</td><td>地球の大陸・島・海・山・川を土台にする。</td></tr><tr><td>都市と社会</td><td>現実の都市・建造物・国家・国境・歴史は初期の前提にせず、独自に形成される。</td></tr><tr><td>文明水準</td><td>現代と同等以上。現在社会から改善された、近い未来の感覚。</td></tr><tr><td>人々</td><td>「生き残った者たち」。何を生き残ったか、人数・時期・由来は未設定。</td></tr></table></div><h3>例えば、ソウルに当たる場所なら</h3><p>山や川という条件は同じでも、都市計画・技術・文化・文明のスタートによって街の形は変わる。偶然、現実のソウルに似た都市になることも、まったく違う都市になることもある。「ソウル」という名前を引き継ぐ必要もない。</p><p><strong>解釈の訂正：</strong>「文明を削除」は現実の人工物や文明史を白紙にする設定であり、現代人の都市が突然消滅した事件や、原始時代からの再出発を確定したものではない。</p><details><summary>旧世界案と未確定事項</summary><p>架空の日本風海辺都市「青波市」、2006年ごろという舞台は旧案。地域名としての再利用や地球上の位置は未確定。現在の街の画像は旧案のイメージで、実在する地形を表すものではない。</p><p>主要人物9人・中学生という設定は外見テストとして保持。シーズンの色テーマ案はRGB、CMYK、白・黒・灰、無色・透明・未知。最終的な年代・初期都市・文明史との接続は今後決める。</p></details></section>
+<section class="card" id="society"><p class="kicker">LIFE & CIVILIZATION</p><h2>便利さの先に、どんな暮らしを。</h2><span class="proposal">社会制度・運用の細部は検討中</span><h3>生活の安心と、人生の選択</h3><p>食事・住居・医療・基礎教育の安心を支え、生きるためだけの労働を減らす方向を検討する。それでも、孤独・嫉妬・すれ違いまで自動的になくなる世界にはしない。</p><h3>都市に表れる価値観</h3><p>効率、自然、交流、静けさ。同じ川沿いでも、橋・住宅・広場の置き方で暮らしが変わる。唯一の正解都市を目指すのではなく、人々の願いと選択が街に残る。</p><h3>技術・魔法・クラス</h3><p>魔法のある日常とRGBの学びを引き継ぐ。魔法の資源・設備・習熟・安全管理のルールは設計対象。クラスは学んだ能力であり、職業・身分・人の価値を固定するものにはしない。</p><p><strong>物語の対立案：</strong>便利な橋を造りたい人と、静かな川辺を守りたい人。よい願い同士がぶつかり、話し合いと選択の後も暮らしが続く。</p></section>
 <section class="card" id="daily-magic"><h2>魔法のある日常</h2>
 <p><strong>採用した方向：</strong>魔法は普通にあり、得意なことや学び方は人それぞれ。</p>
 <p>学校で魔法の基礎を学び、料理・修理・医療・音楽など、戦闘以外の暮らしにも使う。元素を扱う人も、道具や回路を通して扱う人もいる。普段着を基本に、道具や小さな装飾で学び方の違いを見せる。</p>
-<p>海風のある街で学校・仕事・訓練の合間に友達と過ごす。小さな成長や失敗、誰かとの時間が街の記憶になる。強さだけで人物の価値を決めない。</p>
+<p>独自の文明が育った都市で、学校・仕事・訓練の合間に友達と過ごす。小さな成長や失敗、誰かとの時間が街の記憶になる。強さだけで人物の価値を決めない。海辺の街は地域例の一つで、世界全体を限定しない。</p>
 <h3>近接3人の街での役割（具体例案）</h3>
 <div class="scroll"><table><tr><th>クラス</th><th>学ぶこと</th><th>日常の活躍例</th></tr>
 <tr><td>Fighter</td><td>身体の使い方・距離感・とっさの判断</td><td>スポーツ、救助の補助、身軽さを生かす仕事</td></tr>
@@ -144,23 +146,24 @@ nav button:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline
 <p>学校間の転籍、入学条件、段階の呼称や数値は今後の設計対象。現実の物理現象や学校制度を説明するものではなく、ゲーム内設定。</p></div></details></section>
 </div>
 <div role="tabpanel" id="panel-story" aria-labelledby="tab-story">
-<section class="card" id="story"><h2>第1期ストーリー案</h2>
+<section class="card" id="relationships"><p class="kicker">RELATIONSHIPS & IDENTITY</p><h2>誰と生きるか。どう自分でいるか。</h2><p>恋愛と性を重要な柱にしつつ、友情・家族・仕事・一人の時間も残す。恋愛しない人生、友情を選ぶことにも同じだけ価値を持たせる。</p><h3>憧れを、自分の姿にする</h3><p>「男子としてかっこよくありたい」「女子としてきれいでありたい」という気持ちを、装い・振る舞い・相手への接し方の物語にする。性別ごとに唯一の理想像を強制せず、かっこいい女子やきれいな男子も含め、一人ひとりが選ぶ魅力を描く。</p><h3>親密さと境界線</h3><p>同意、断る自由、距離を置く自由、相手との違いを尊重する。関係は一方的に攻略して獲得する報酬ではなく、互いに選び、変化していくものとして設計する。</p><p><strong>年代ごとの扱い：</strong>現在の中学生キャラクターは外見テスト。未成年期は年齢相応の恋心、身体の変化への戸惑い、距離感を描く。成人の性的関係を扱う場合は成人期として明確に分ける。具体的な表現範囲・対象年齢は未確定。</p></section>
+<section class="card" id="story"><h2>物語の方向</h2><p>地球のどこに、どんな社会を作るか。その中で、誰と、どんな自分として生きるか。文明の選択と、一人ひとりの関係の選択をつなげる。</p><p>生存者の過去、文明の始まり方、物語開始時点の都市、主人公・年代・具体的な筋書きは未設定。文明崩壊や都市再建の事件を既定の事実にはしない。</p><details id="story-legacy"><summary>旧青波市・学校実習ストーリー（履歴・新世界への採用未定）</summary>
 <p><strong>提案段階・採用確認前。</strong>タイトル『あの夏、君と走った。』も仮。</p>
 <p>2006年、海辺の青波市。違う訓練コースを選んだ中学生9人が学校の共同実習に集まる。課題は、海辺の古い交流施設を夏祭りまでにもう一度使える場所にすること。</p>
 <p>誰のための場所にするか、予算を何に使うか、昔から使っていた住民の希望をどう受け止めるか。得意な技能があっても答えはすぐには出ない。</p>
 <ul><li>近接3人：作業と安全を支えるが、力だけでは解決できない対立に出会う。</li><li>Ranger・Assassin・Scout：街を調べ、人の話を集め、情報を伝える難しさを知る。</li><li>EM・Mage・Cleric：設備や魔法に取り組み、努力と才能、助けることと無理をすることの違いに向き合う。</li></ul>
 <p>中盤、施設に残る古い魔法回路が動き始める。以前ここを作った子どもたちの、完成しなかった計画が見つかる。9人は、そのまま完成させるか、自分たちの場所へ作り変えるかを選ぶ。</p>
-<p>夏祭りの後も暮らしは続く。施設はゲーム内の拠点となり、次の学年、仕事、次の世代へ受け継がれる。帰り道の寄り道、訓練後の会話、初めて名前で呼び合う瞬間などを見せ場にする案。</p></section>
+<p>夏祭りの後も暮らしは続く。施設はゲーム内の拠点となり、次の学年、仕事、次の世代へ受け継がれる。帰り道の寄り道、訓練後の会話、初めて名前で呼び合う瞬間などを見せ場にする案。</p></details></section>
 </div>
 <div role="tabpanel" id="panel-archive" aria-labelledby="tab-archive">
-<section class="card" id="downloads"><h2>統合記録ファイル</h2><p>これまでの青波市の世界観・ゲーム構想・主要人物・RGBクラス・スキル・学校制度・物語・作画方針・更新履歴をまとめた保存版です。</p><p><a href="./records/aonami_complete_record_v0_9.md" download>📄 統合開発記録 v0.9（Markdownファイル）をダウンロード</a></p><p><a href="https://github.com/towananika/triathlon/blob/main/records/aonami_complete_record_v0_9.md">GitHubでファイルを読む</a></p><p><small>最新の設定と過去の仮案は区別して記録しています。</small></p></section>
+<section class="card" id="downloads"><h2>設定記録ファイル</h2><h3>最新の世界設定 v0.11</h3><p>中心テーマ、地球の地理と独自文明、近未来社会、人間関係の方針、旧案との違いを記録。世界設定はこの最新版を優先します。</p><p><a href="./records/world_foundation_v0_11.md" download>最新世界設定 v0.11をダウンロード</a> / <a href="https://github.com/towananika/triathlon/blob/main/records/world_foundation_v0_11.md">GitHubで読む</a></p><h3>過去の統合開発記録 v0.9</h3><p>RGBクラス・技能原案・学校・人物・作画の詳細を含む保存版。旧青波市・2006年の世界観も含む過去資料で、現在の世界設定とは区別してください。</p><p><a href="./records/aonami_complete_record_v0_9.md" download>旧統合記録 v0.9をダウンロード</a> / <a href="https://github.com/towananika/triathlon/blob/main/records/aonami_complete_record_v0_9.md">GitHubで読む</a></p></section>
 <section class="card" id="history"><h2>更新履歴・検討事項</h2><p><strong>v0.9 · 2026-10-24</strong> 全記録のMarkdownファイルを追加し、資料・履歴からダウンロードできるようにした。</p><p><strong>v0.8 · 2026-10-24</strong> ゲーム概要・世界観・キャラクター・育成と学校・物語・資料の6区分へ整理。スキル表を系統ごとに開閉する構成に変更。設定内容は維持。</p><p><strong>v0.7 · 2026-10-24</strong> G原案、Bの4学校、魔法のある日常、全員中学生のテスト、レンジャーの雰囲気変更、EM／メージの外見交換、作画・衣装の履歴と未承認ストーリー案を追記。</p><p><strong>v0.1</strong> RのGeneral・Option・Fighter・Warrior・Knightスキルを記録。</p><p><strong>v0.2</strong> G/Bの専門スキル案を追加（日英）。</p><p><strong>v0.3</strong> 素質＋努力のクラス制度、転職、複数クラス、属性承継の方針。</p><p><strong>v0.4</strong> 9人の初期クラス方向、生活と訓練の連動。</p><p><strong>v0.5</strong> ハル・レン・ソウタの外見原型案。</p><p><strong>v0.6</strong> triathlonリポジトリに統合記録ページを新設。</p><h3>未確定事項</h3><ul><li>RAN / ATSの正式定義</li><li>Gの前提レベル対応とIE／ITの関係、BのOption・用語・未記載効果・2級と1級の違い</li><li>9人の正式な名前・学年・人物設定、メージとクレリックの性別、「雄才」の意図、テスト設定の正式採用と最終作画・衣装</li><li>第1期ストーリー案の採否、魔法の制約、実習の危険度</li><li>魔法が普通にある方向を踏まえた、各クラスの資格制度や学校間の移動</li><li>ゲーム内実装と数値バランス</li></ul><p><small>このページは会話で確認できる記録をまとめたものです。過去の未確認情報は断定せず、随時追記します。</small></p></section>
 </div></main>
-<footer><strong>TRIATHLON</strong><br>青波市 / AONAMI CITY · v0.10 · 2026-10-24<br><small>企画・開発中。公開中のページはゲーム紹介・設定資料です。</small></footer>
+<footer><strong>TRIATHLON</strong><br>SAME EARTH. DIFFERENT FUTURE. · v0.11 · 2026-10-24<br><small>企画・開発中。公開中のページはゲーム紹介・設定資料です。</small></footer>
 <script src="game-site.js"></script>
 <script>
 (function () {
-  var groups = [{"id":"overview","sections":["game"]},{"id":"world","sections":["world","daily-magic","map","monsters"]},{"id":"characters","sections":["characters","art"]},{"id":"systems","sections":["class","legacy","skills","g-skills","b-schools"]},{"id":"story","sections":["story"]},{"id":"archive","sections":["history"]}];
+  var groups = [{"id":"overview","sections":["theme","game"]},{"id":"world","sections":["world","society","daily-magic","map","monsters"]},{"id":"characters","sections":["characters","art"]},{"id":"systems","sections":["class","legacy","skills","g-skills","b-schools"]},{"id":"story","sections":["relationships","story"]},{"id":"archive","sections":["downloads","history"]}];
   var buttons = Array.from(document.querySelectorAll('[role="tab"]'));
   function resolve(hash) {
     var value;
