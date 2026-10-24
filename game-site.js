@@ -30,13 +30,13 @@
   selectPlace('school');
   var classes = [
     ['R','Fighter','ファイター','身体を使い、瞬間を見極める。','中学生女子 / グローブ'],
-    ['R','Knight','ナイト','守るために、一歩前へ。','中学生女子 / 練習盾'],
+    ['R','Knight','ナイト','裕福な家庭で育った、上品な女子。','中学生女子 / 丁寧な所作・仕立てのよい制服の案'],
     ['R','Warrior','ウォーリア','積み重ねた技で、道を開く。','中学生女子 / 練習剣'],
-    ['G','Ranger','レンジャー','静かに観察し、狙いを定める。','女子 / 落ち着いた雰囲気'],
+    ['G','Ranger','レンジャー','静かで、芯がある。','女子 / 落ち着いた表情・確かな意思'],
     ['G','Assassin','アサシン','気配と隙間を読み取る。','男子 / 長身'],
     ['G','Scout','スカウト','まだ知らない道を見つける。','男子 / 可愛い系'],
     ['B','Elemental Mage','エレメンタルメージ / BEM','新入生首席。','男子 / 茶髪・眼鏡なしのテスト'],
-    ['B','Mage','メージ / BM','全国1位。対象分野・評価制度は未設定。','天才 / 青黒髪・眼鏡のテスト'],
+    ['B','Mage','メージ / BM','全国1位の天才。それでも、謙虚。','対象分野は未設定 / 青黒髪・眼鏡のテスト'],
     ['B','Cleric','クレリック','誰かの日常を、そっと支える。','癒し系 / 性別は未確定']
   ];
   document.querySelector('#characters h2').insertAdjacentHTML('beforebegin', '<p class="kicker">NINE PATHS, MANY LIVES</p>');
@@ -50,10 +50,10 @@
       document.querySelectorAll('.class-profile').forEach(function (profile) { profile.hidden = family !== 'all' && profile.dataset.group !== family; });
     });
   });
-  document.querySelector('#art h2').insertAdjacentHTML('afterend', '<img class="character-art" src="assets/character-study.png" width="1024" height="1536" loading="lazy" alt="中学生9人の衣装・作画比較シート。近接、探索、魔法の3系統。"><p class="art-note">以前の外見テスト。レンジャーの落ち着いた表情、EMとメージの外見交換は未反映。</p>');
+  document.querySelector('#art h2').insertAdjacentHTML('afterend', '<img class="character-art" src="assets/character-study.png" width="1024" height="1536" loading="lazy" alt="中学生9人の過去の衣装・作画比較シート。近接、探索、魔法の3系統。"><p class="art-note">過去の外見テスト。ナイトの裕福で上品な雰囲気、レンジャーの静かな芯、メージの謙虚さ、EMとメージの外見交換は未反映。</p>');
   document.querySelector('#story-legacy').insertAdjacentHTML('beforeend', '<h3>夏へ向かう、3つの章</h3><span class="proposal">旧案の章構成 / 採用未定</span><ol class="chapter-list"><li><div><b>出会いと共同実習</b>違う得意を持つ9人。街の声を集め、交流施設の再生計画を立てる。</div></li><li><div><b>旧水路に残されたもの</b>動き始めた回路を調査。昔の計画と、今の住民の願いの違いを知る。</div></li><li><div><b>自分たちの夏祭り</b>何を残し、何を変えるか。選んだ改装や関係が、祭りとその後の日常に表れる。</div></li></ol>');
   document.querySelector('#world').insertAdjacentHTML('beforeend', '<p><a href="#society">社会の設計方針</a> / <a href="#map">地域サンプルを見る</a></p>');
   document.querySelector('#history h2').insertAdjacentHTML('afterend', '<p><strong>v0.11 · 2026-10-24</strong> 地球の地理・独自の文明史・改善された近未来を世界の土台に採用。関係と自分らしい生き方を中心テーマに反映。生存者の過去と社会制度の細部は未設定として区別し、旧青波市・2006年・学校実習案は履歴に移した。</p>');
-  document.querySelector('#history h2').insertAdjacentHTML('afterend', '<p><strong>v0.11 人物追記 · 2026-10-24</strong> BEM＝新入生首席、BM＝全国1位を人物表・クラス紹介・最新設定記録へ反映。順位の評価制度や対象分野は未設定。</p>');
+  document.querySelector('#history h2').insertAdjacentHTML('afterend', '<p><strong>v0.11 人物追記 · 2026-10-24</strong> BEM＝新入生首席、BM＝全国1位かつ謙虚。ナイトは裕福な家庭育ちの上品さ、レンジャーは静かで芯のある人物へ更新。外見の細部は提案、順位の評価制度や対象分野は未設定。</p>');
   document.querySelector('#history h2').insertAdjacentHTML('afterend', '<p><strong>v0.10 · 2026-10-24</strong> 青・ターコイズを軸にゲーム紹介サイトへ刷新。クラス絞り込み、エリア紹介、モンスター・章構成の新構想を追加。従来の設定資料は保持。</p>');
 })();
