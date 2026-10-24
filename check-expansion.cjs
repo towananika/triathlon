@@ -10,6 +10,11 @@ const path = require('node:path');
     const errors=[];
     page.on('pageerror',e=>errors.push(e.message));
     const url=process.env.PAGE_URL||pathToFileURL(path.join(__dirname,'index.html')).href;
+    await page.goto(url+'#season2');
+    await page.locator('#season2').waitFor({state:'visible'});
+    assert.equal(await page.locator('.season-two-character').count(),9);
+    for(const color of ['Cyan','Magenta','Yellow']) assert.match(await page.locator('#season2').innerText(),new RegExp(color));
+    for(const word of ['バトルメージ','メージ','プリスト','ホリーナイト','バーサーカー','ガーディアン','アサシン','エクスプローラ','メカニック','二面性','欲が強い','パソコン好き']) assert.match(await page.locator('#season2').innerText(),new RegExp(word));
     await page.goto(url+'#atlas');
     await page.locator('#atlas').waitFor({state:'visible'});
     assert((await page.locator('.earth-land').getAttribute('d')).length>1000);
@@ -69,7 +74,7 @@ const path = require('node:path');
     assert.equal(await page.locator('#region-choice').inputValue(),'custom');
     for(const width of [320,390,1280]) {
       await page.setViewportSize({width,height:900});
-      for(const section of ['atlas','dossier','civilizations','education']) {
+      for(const section of ['atlas','dossier','civilizations','education','season2']) {
         await page.goto(url+'#'+section);
         await page.locator('#'+section).waitFor({state:'visible'});
         assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
