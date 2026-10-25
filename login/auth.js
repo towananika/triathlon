@@ -43,3 +43,15 @@ window.triMailSignup = async (mail, pass, name) => {
   return r;
 };
 window.triMailReset = (mail) => sendPasswordResetEmail(auth, mail);
+
+// データベース（Firestore）。必要なページだけが呼ぶ。だれが読めるかは Firebase のルールで決まる
+let dbp = null;
+window.triDB = () => dbp || (dbp = import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js').then((f) => ({ ...f, db: f.getFirestore(app) })));
+// ログインした人の名前と最後に来た日を残す（管理ページの利用者一覧に出る。失敗しても何もしない）
+onAuthStateChanged(auth, (u) => {
+  if (!u) return;
+  window.triDB().then((f) => f.setDoc(f.doc(f.db, 'users', u.uid), {
+    name: u.displayName || '', email: u.email || '', via: (u.providerData[0] && u.providerData[0].providerId) || '', last: f.serverTimestamp()
+  }, { merge: true })).catch(() => {});
+});
+window.triUid = () => auth.currentUser && auth.currentUser.uid;
