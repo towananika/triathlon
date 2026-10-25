@@ -34,28 +34,34 @@ main{max-width:1040px;margin:0 auto;padding:28px 16px 56px}.kick{color:#9a7630;f
 #marks .lm{cursor:pointer}#marks .lm-n{display:none;font-size:5.5px;font-weight:700;fill:#2a2622;paint-order:stroke;stroke:#fff;stroke-width:1.6px}.cbox.z2 #marks .lm-n{display:block}
 #spots{display:none}.cbox.terrain #spots{display:block}.cbox.aerial #streets{opacity:.35}.cbox.terrain #streets{opacity:.3}
 .cbox.aerial #moving .car{filter:none}
+#nisui{display:none}.stage.incity{background:#fff;border-color:#eadfcd;touch-action:auto}.stage.incity #nisui{display:block}.stage.incity #world,.stage.incity .tools,.stage.incity .zoom{display:none}
+.stage.incity .city{border:0;border-radius:0}.ctabs .back{background:#2a2622!important;color:#fff!important;border-color:#2a2622!important}
+.ku{display:none}body.incity .ku{display:grid}
+.prov{fill-opacity:.32;stroke:#fff;stroke-width:.8;cursor:pointer}.prov:hover{fill-opacity:.5}.prov.sel{fill-opacity:.6;stroke:#2a2622;stroke-width:1.4}
+.plab{font-size:12px;font-weight:700;fill:#2a2622;paint-order:stroke;stroke:#fbf8f2;stroke-width:3px;pointer-events:none;text-anchor:middle}
+.nlab{font-size:16px;font-weight:800;paint-order:stroke;stroke:#fbf8f2;stroke-width:4px;pointer-events:none;text-anchor:middle}
+.info .st{display:flex;gap:12px;flex-wrap:wrap;margin:4px 0;font-size:12px;color:#7a6f63}.info .go{margin-top:8px;border:0;background:#2a2622;color:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-weight:700;cursor:pointer}
 </style></head><body>
 <script src="../site-nav.js?v=0.30.2"></script>
 <main>
 <p class="kick">MAP</p><h1>地図</h1>
-<p class="meta">ゆびで回せる地球儀です。「平面」にすると、ふつうの世界地図になります。場所の名前を押すと、そこへ飛びます。</p>
+<p class="meta">ゆびで回せる地球儀です。拡大すると、国の中の州（行政区）が出ます。州や町を押すと説明が出ます。二水まで近づくと、町の地図に切りかわります。</p>
 <div class="wrap">
  <div class="stage" id="stage">
   <svg id="world" viewBox="0 0 600 600" role="img" aria-label="TRIATHLON の世界地図"></svg>
   <div class="tools" role="group" aria-label="地図の形"><button type="button" id="b-globe" aria-pressed="true">🌐 地球儀</button><button type="button" id="b-flat" aria-pressed="false">🗺️ 平面</button><button type="button" id="b-home">📍 二水へ</button></div>
   <div class="zoom"><button type="button" id="z-in" aria-label="大きく">＋</button><button type="button" id="z-out" aria-label="小さく">−</button></div>
+  <div id="nisui"><div class="city" id="cityview"><div class="ctabs" role="group" aria-label="地図の見え方"><button type="button" id="b-back" class="back">🌐 地球へ</button><button type="button" data-m="terrain" aria-pressed="false">⛰️ 地形</button><button type="button" data-m="plan" aria-pressed="true">🏙️ 都市計画</button><button type="button" data-m="aerial" aria-pressed="false">🛰️ 空から</button></div><div class="cbox"><div class="cin" id="cin"><canvas id="cv" width="720" height="580" aria-hidden="true"></canvas><svg id="city" viewBox="0 0 360 290" role="img" aria-label="二水市の地図"></svg></div><div class="czoom" role="group" aria-label="拡大と動き"><button type="button" id="cz-in" aria-label="大きく">＋</button><button type="button" id="cz-out" aria-label="小さく">−</button><button type="button" id="cz-0" aria-label="元の大きさ">⟲</button><button type="button" id="c-move" aria-pressed="true" aria-label="動きを止める">⏸</button></div></div><div class="cinfo" id="cinfo">名所（●）を押すと、説明が出ます。ピンチやホイールで拡大、指でずらせます。車・電車・船・飛行機が動いています。</div><p class="cnote" id="cnote"></p>
+<div class="legend" id="legend"></div></div></div>
  </div>
  <div class="side">
   <div class="box"><h3>場所</h3><ul class="plist" id="plist"></ul></div>
   <div class="box info" id="info"><p>場所を選ぶと、ここに説明が出ます。</p></div>
-  <p class="note">3つの国のほかは、まだだれも知らない土地です。国の広さと町の位置は仮のものです。</p>
+  <p class="note">3つの国のほかは、まだだれも知らない土地です。国と州の広さ、町の位置は仮のものです。</p>
  </div>
 </div>
 
-<h2 id="nisui">二水市の地図</h2>
-<p class="meta">水和国の首都・二水。二つの川が町を3つの区に分けます。「地形」「都市計画」「空から」を切りかえて見られます。★はキャラの好きな場所です。</p>
-<div class="city"><div class="ctabs" role="group" aria-label="地図の見え方"><button type="button" data-m="terrain" aria-pressed="false">⛰️ 地形</button><button type="button" data-m="plan" aria-pressed="true">🏙️ 都市計画</button><button type="button" data-m="aerial" aria-pressed="false">🛰️ 空から</button></div><div class="cbox"><div class="cin" id="cin"><canvas id="cv" width="720" height="580" aria-hidden="true"></canvas><svg id="city" viewBox="0 0 360 290" role="img" aria-label="二水市の地図"></svg></div><div class="czoom" role="group" aria-label="拡大と動き"><button type="button" id="cz-in" aria-label="大きく">＋</button><button type="button" id="cz-out" aria-label="小さく">−</button><button type="button" id="cz-0" aria-label="元の大きさ">⟲</button><button type="button" id="c-move" aria-pressed="true" aria-label="動きを止める">⏸</button></div></div><div class="cinfo" id="cinfo">名所（●）を押すと、説明が出ます。ピンチやホイールで拡大、指でずらせます。車・電車・船・飛行機が動いています。</div><p class="cnote" id="cnote"></p>
-<div class="legend" id="legend"></div></div>
+
 <div class="ku" id="ku"></div>
 </main>
 <script src="../vendor/d3-7.9.0.min.js"></script>
@@ -73,6 +79,23 @@ var NATIONS=[
  {name:'文光国',n:'n2',c:[127.9,39.4],r:1.3,col:'#4c56a8'},
  {name:'改神国',n:'n3',c:[132.5,34.0],r:2.6,col:'#a86412'}
 ];
+// 州（行政区）。[名前, 国, 西,南,東,北, 中心の町, 人口(仮), 説明]
+var PROV=[
+ ['二水州','n1',125.8,37.0,127.6,38.3,'二水','約120万','水和国の首都がある州。二つの川の合流点に町が広がる。川守隊の本部もここ。'],
+ ['平川州','n1',127.6,36.4,129.7,38.3,'平川','約40万','東の山と平らな川の谷。米と木材を二水へ運ぶ。'],
+ ['玉石州','n1',125.8,34.2,127.6,37.0,'玉石','約60万','西の海辺と田んぼ。灯石のかけら（玉石）が浜で拾える。'],
+ ['南田州','n1',127.6,34.6,129.7,36.4,'南田','約50万','南の港と田畑。改神国への船が出る。'],
+ ['明山州','n2',126.8,38.3,130.6,39.6,'明山','約70万','文光国の首都。学者が治める学園都市で、灯石と光の研究の中心。'],
+ ['北林州','n2',126.8,39.6,129.9,41.3,'北林','約20万','深い森と雪の州。森の民が多く、道は冬に閉ざされる。'],
+ ['星原州','n2',124.2,38.3,126.8,41.0,'星原','約30万','広い草原。夜空がよく見え、星を読む学者の村がある。'],
+ ['白港州','n3',129.6,33.0,131.0,34.6,'白港','約90万','改神国の首都。白い石の港で、祈りの鐘が朝夕に鳴る。'],
+ ['花田州','n3',131.0,33.0,132.4,34.6,'花田','約30万','花と茶の段々畑。巡礼の人が通る道ぞいの州。'],
+ ['火山州','n3',130.2,30.8,132.2,33.0,'火山','約35万','煙をあげる山のふもと。温泉と、黒い石の工房がある。']
+];
+var NAT={n1:'水和国',n2:'文光国',n3:'改神国'};
+function poly(w,s,e,n){var r=[],i;for(i=0;i<=8;i++)r.push([w+(e-w)*i/8,s]);for(i=0;i<=8;i++)r.push([e,s+(n-s)*i/8]);for(i=8;i>=0;i--)r.push([w+(e-w)*i/8,n]);for(i=8;i>=0;i--)r.push([w,s+(n-s)*i/8]);
+ var f={type:'Feature',geometry:{type:'Polygon',coordinates:[r]}};if(d3.geoArea(f)>2*Math.PI)r.reverse();return f;}
+PROV.forEach(function(p){p.f=poly(p[2],p[3],p[4],p[5]);p.c=[(p[2]+p[4])/2,(p[3]+p[5])/2];});
 var svg=d3.select('#world'),W=600,H=600,mode='globe',k=1.8;
 var land=topojson.feature(window.triathlonLand,window.triathlonLand.objects.land);
 var gl=d3.geoGraticule10();
@@ -85,14 +108,22 @@ function makeProj(){
  if(mode==='globe')proj.rotate(rot);else proj.rotate([rot[0],0,0]).center([0,-rot[1]]);
  path.projection(proj);
 }
-var gOcean=svg.append('path').attr('class','ocean'),gGrat=svg.append('path').attr('class','grat'),gLand=svg.append('path').attr('class','land'),gNat=svg.append('g'),gPin=svg.append('g'),gRim=svg.append('path').attr('class','rim');
+svg.append('defs').append('clipPath').attr('id','landclip').append('path').attr('id','landclipP');
+var gOcean=svg.append('path').attr('class','ocean'),gGrat=svg.append('path').attr('class','grat'),gLand=svg.append('path').attr('class','land'),gNat=svg.append('g').attr('clip-path','url(#landclip)'),gLab=svg.append('g'),gPin=svg.append('g'),gRim=svg.append('path').attr('class','rim');
 function draw(){
  makeProj();
  svg.classed('flat',mode!=='globe');
  gOcean.attr('d',path({type:'Sphere'}));gRim.attr('d',path({type:'Sphere'}));
  gGrat.attr('d',path(gl));gLand.attr('d',path(land));
- var nat=gNat.selectAll('path').data(NATIONS);
- nat.enter().append('path').attr('class',function(d){return 'nation '+d.n}).merge(nat).attr('d',function(d){return path(d3.geoCircle().center(d.c).radius(d.r)())});
+ d3.select('#landclipP').attr('d',path(land));
+ var pv=gNat.selectAll('path').data(PROV);
+ pv.enter().append('path').attr('class',function(d){return 'prov '+d[1]}).on('click',function(e,d){pinfo(d)}).merge(pv).attr('d',function(d){return path(d.f)}).classed('sel',function(d){return d===selP}).style('stroke-width',k>=4?null:'0');
+ var labs=[];if(k<2.5){}else if(k<4)NATIONS.forEach(function(n){labs.push({t:n.name,c:n.c,cl:'nlab',col:n.col})});else PROV.forEach(function(p){labs.push({t:p[0],c:p.c,cl:'plab',dy:PLACES.some(function(x){return x.name===p[6]})?34:18})});
+ var lb=gLab.selectAll('text').data(labs);lb.exit().remove();
+ lb.enter().append('text').merge(lb).attr('class',function(d){return d.cl}).style('fill',function(d){return d.col||null}).text(function(d){return d.t}).each(function(d){
+  var vis=mode!=='globe'||d3.geoDistance(d.c,[-rot[0],-rot[1]])<Math.PI/2,q=proj(d.c);d3.select(this).style('display',vis&&q?null:'none');if(q)d3.select(this).attr('x',q[0]).attr('y',q[1]+(d.dy||0));});
+ // 二水にじゅうぶん近づいたら町の地図へ
+ if(k>=20&&!anim0&&d3.geoDistance(PLACES[0].ll,[-rot[0],-rot[1]])<0.02){anim0=1;enterCity();}
  var pin=gPin.selectAll('g').data(PLACES);
  var en=pin.enter().append('g').attr('class',function(d){return 'pin '+d.cls}).attr('tabindex',0).attr('role','button').attr('aria-label',function(d){return d.name}).on('click',function(e,d){go(d)}).on('keydown',function(e,d){if(e.key==='Enter')go(d)});
  en.append('circle').attr('r',7);en.append('text').attr('x',11).attr('y',6);
@@ -103,9 +134,14 @@ function draw(){
   g.attr('transform','translate('+p[0]+','+p[1]+')');g.select('text').text(d.name);
  });
 }
-function info(d){var el=document.getElementById('info');el.innerHTML='<h3>'+d.name+'<small style="font-weight:400;color:#7a6f63;margin-left:6px">'+d.sub+'</small></h3><p>'+d.text+'</p>'+(d.link?'<p style="margin-top:6px"><a href="'+d.link+'">'+d.lt+' →</a></p>':'');}
+var selP=null,anim0=0;
+function pinfo(p){selP=p;var cs=PLACES.filter(function(x){return x.name===p[6]})[0];document.getElementById('info').innerHTML='<h3>'+p[0]+'<small style="font-weight:400;color:#7a6f63;margin-left:6px">'+NAT[p[1]]+'</small></h3><div class="st"><span>中心の町：'+p[6]+'</span><span>人口：'+p[7]+'（仮）</span></div><p>'+p[8]+'</p>'+(p[0]==='二水州'?'<button type="button" class="go" id="b-in2">🏙️ 二水市の地図に入る</button>':'');var b=document.getElementById('b-in2');if(b)b.onclick=enterCity;draw();}
+function enterCity(){var s=document.getElementById('stage');s.classList.add('incity');document.body.classList.add('incity');if(location.hash!=='#nisui')history.replaceState(null,'','#nisui');window.dispatchEvent(new Event('resize'));}
+function leaveCity(){document.getElementById('stage').classList.remove('incity');document.body.classList.remove('incity');history.replaceState(null,'',location.pathname);anim0=0;k=Math.min(k,8);draw();}
+document.getElementById('b-back').onclick=leaveCity;
+function info(d){var el=document.getElementById('info');el.innerHTML='<h3>'+d.name+'<small style="font-weight:400;color:#7a6f63;margin-left:6px">'+d.sub+'</small></h3><p>'+d.text+'</p>'+(d.link?'<button type="button" class="go" id="b-in">🏙️ 二水市の地図に入る</button>':'');var b=document.getElementById('b-in');if(b)b.onclick=enterCity;}
 var anim;
-function go(d,zoom){info(d);var from=rot.slice(),to=[-d.ll[0],-d.ll[1],0],k0=k,k1=zoom||Math.max(k,6);
+function go(d,zoom){if(document.body.classList.contains('incity'))leaveCity();info(d);var from=rot.slice(),to=[-d.ll[0],-d.ll[1],0],k0=k,k1=zoom||Math.max(k,6);
  if(anim)anim.stop();anim=d3.timer(function(t){var s=Math.min(1,t/900),e=d3.easeCubicInOut(s);rot=d3.interpolate(from,to)(e);k=k0+(k1-k0)*e;draw();if(s>=1)anim.stop();});}
 // 回す・ずらす
 var start,r0;
@@ -124,6 +160,7 @@ document.getElementById('b-home').onclick=function(){go(PLACES[0],8)};
 document.getElementById('plist').innerHTML=PLACES.map(function(d,i){var n=NATIONS.filter(function(x){return x.n===d.n})[0];return '<li><button type="button" data-i="'+i+'"><b><span class="dot" style="background:'+n.col+'"></span>'+d.name+'</b><small>'+d.sub+'</small></button></li>'}).join('');
 document.getElementById('plist').addEventListener('click',function(e){var b=e.target.closest('button');if(b)go(PLACES[+b.dataset.i]);});
 draw();
+if(location.hash==='#nisui'){rot=[-PLACES[0].ll[0],-PLACES[0].ll[1],0];k=8;draw();enterCity();}
 })();
 
 // 二水市の都市計画
