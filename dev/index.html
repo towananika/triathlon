@@ -75,10 +75,21 @@
 </div>
 </section>
 
+<section class="sec" aria-labelledby="rule-h">
+<div class="sec-head"><div><p class="kick" aria-hidden="true">Rules</p><h2 id="rule-h">生産とマーケット（案）</h2></div><a class="more" href="https://github.com/towananika/triathlon/blob/main/records/production_rules_v0_22_1.md">記録 →</a></div>
+<div class="kv">
+<div><b>⚙️ AIは表どおりに作るだけ</b><p>アイテムごとのレシピ（材料・作業時間・スキル）を計算して作る。新しいアイテムは作れない。計算はプログラムなので、トークンを使わない。</p></div>
+<div><b>📈 需要で増産</b><p>注文が在庫より多いとき、1日1回だけ増産。値段は「作業時間×1時間の賃金＋材料費」で、需要により1日最大±10%。</p></div>
+<div><b>🤝 得意分野で分ける</b><p>人：新しいデザイン、センスの判断、AIに解けない問題。AI：くり返しの生産、計算、たくさん作ること。</p></div>
+<div><b>🏪 マーケット</b><p>量産市場（人もAIも売る）、一点物市場（人だけが売る）、依頼板（AIが出した問題を人が解く）。</p></div>
+</div>
+</section>
+
 <section class="sec" aria-labelledby="todo-h">
 <p class="kick" aria-hidden="true">Open</p><h2 id="todo-h">まだ決めていないこと</h2>
 <ul class="todo">
 <li>モールの作り方<small>買い方（ゲームのお金か課金か）、AIキャラのお金の出どころ、需要と生産の仕組み</small></li>
+<li>生産のルールで決めること<small>報酬のお金、依頼板の問題の種類、1日の長さと増産の上限</small></li>
 <li>地域の通貨名「文」「両」<small>仮の名前</small></li>
 <li>3つの都市の名前<small>仮の名前</small></li>
 <li>海外で探しやすい題名・副題<small>「TRIATHLON」は一般的な言葉</small></li>
@@ -100,7 +111,7 @@
 </ul>
 </section>
 </main>
-<footer class="foot"><p class="logo-s">TRIATHLON <span class="devtag">開発版</span></p><p><span id="ver">v0.22</span> · 管理者だけが見られるページです</p></footer>
+<footer class="foot"><p class="logo-s">TRIATHLON <span class="devtag">開発版</span></p><p><span id="ver">v0.22.1</span> · 管理者だけが見られるページです</p></footer>
 <script src="../news/news.js?v=0.22"></script>
 <script>
 (function () {
