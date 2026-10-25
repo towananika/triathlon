@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="TRIATHLON 試作：0歳で生まれたキャラを、毎月のAPと暮らしの予定で育てる">
+<title>ゲームをはじめる | TRIATHLON</title>
+<style>
+/* 育成の試作。ルールだけで動く（AIの文章生成は使わない）。保存はこの端末だけ */
+:root{color-scheme:light;--ink:#163744;--sub:#4f6b75;--line:#cbdedf;--bg:#f6fafa;--teal:#007f87;--R:#d94b4b;--G:#2e9b5f;--B:#2f6fd6;--W:#8a9aa3;--warm:#c96a12}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{max-width:720px;margin:0 auto;padding:16px 16px 40px;display:grid;gap:14px}
+h1{margin:0;font-size:24px}h2{margin:0 0 8px;font-size:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}
+.lead{margin:0;color:var(--sub);font-size:15px}
+.btn{font:inherit;font-weight:800;font-size:16px;min-height:48px;border:0;border-radius:14px;padding:0 20px;background:var(--teal);color:#fff;cursor:pointer}
+.btn.sub{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.who{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.who b{font-size:22px}.who span{color:var(--sub);font-size:14px}
+.money{font-size:20px;font-weight:800}.money.neg{color:#b3261e}
+.bars{display:grid;gap:10px}
+.bar{display:grid;grid-template-columns:28px 1fr 64px;gap:8px;align-items:center}
+.bar i{font-style:normal;font-weight:800;color:var(--c)}
+.bar .t{height:14px;background:#edf2f3;border-radius:99px;overflow:hidden}.bar .t span{display:block;height:100%;background:var(--c);border-radius:99px}
+.bar small{text-align:right;color:var(--sub);font-size:13px}
+.tag{display:inline-block;font-size:12px;font-weight:800;border-radius:99px;padding:0 8px;margin-right:4px;background:#eef6f6}
+.ap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.ap div{border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
+.ap b{display:block;color:var(--c);font-size:14px}
+.ap .n{font-size:22px;font-weight:800}
+.ap button{font:inherit;font-size:18px;width:36px;height:40px;padding:0;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer}
+.weeks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.weeks label{display:grid;gap:2px;font-size:12px;font-weight:800;color:var(--sub)}
+.weeks select{font:inherit;font-size:16px;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:0 8px;background:#fff;color:var(--ink)}
+.log{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:260px;overflow:auto;font-size:14px}
+.log li{border-left:3px solid var(--line);padding-left:8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:14px}
+.stats div{background:#f4f7f8;border-radius:8px;padding:6px 8px}.stats b{display:block;font-size:18px}
+.note{font-size:13px;color:var(--sub);margin:6px 0 0}
+input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:0 10px;width:100%}
+</style>
+</head>
+<body>
+<script src="../site-nav.js?v=0.24"></script>
+<main>
+<div><h1>ゲームをはじめる（試作）</h1><p class="lead">0歳で生まれたキャラを、毎月のAPと暮らしの予定で育てます。生きるにはお金がかかります。稼いで、休んで、学んで、遊んで、暮らしを回しましょう。</p></div>
+
+<section class="card" id="start" hidden>
+<h2>うまれる</h2>
+<p class="lead">名前を決めると、キャラが生まれます。最初のAP・得意・性別は、生まれた環境で決まります。</p>
+<div class="row" style="margin-top:10px"><input type="text" id="name" maxlength="12" placeholder="名前（例：ハル）" aria-label="名前"><button class="btn" id="born" type="button">うまれる</button></div>
+</section>
+
+<div id="game" hidden style="display:grid;gap:14px">
+<section class="card">
+<div class="who"><b id="nm"></b><span id="age"></span></div>
+<p class="lead" id="env"></p>
+<div class="row" style="justify-content:space-between;margin-top:8px"><span>所持金 <span class="money" id="money"></span> SUNA</span><span>調子 <b id="cond"></b>/100</span></div>
+</section>
+
+<section class="card">
+<h2>ステータス</h2>
+<div class="bars" id="bars"></div>
+<p class="note" id="ctl"></p>
+</section>
+
+<section class="card">
+<h2>今月の AP（5ポイント）</h2>
+<p class="lead">どれに伸ばしたいかを選びます。でも、思いどおりに伸びるとは限りません。自我と知能が育つほど、思いどおりになります。</p>
+<div class="ap" id="ap" style="margin-top:10px"></div>
+</section>
+
+<section class="card">
+<h2>今月の予定</h2>
+<p class="lead" id="plan-lead"></p>
+<div class="weeks" id="weeks" style="margin-top:10px"></div>
+</section>
+
+<div class="row"><button class="btn" id="m1" type="button">1か月すすめる</button><button class="btn sub" id="y1" type="button">1年すすめる</button><button class="btn sub" id="reset" type="button">最初から</button></div>
+
+<section class="card"><h2>できごと</h2><ul class="log" id="log"></ul></section>
+</div>
+</main>
+<script>
+(function () {
+  'use strict';
+  var KEY = 'triathlon-play-v1', C3 = ['R', 'G', 'B'], NAMES = { R: '体', G: '技', B: '心' };
+  var ACT = { play: '遊ぶ', rest: '休む', learn: '啓発（学ぶ）', work: '稼ぐ' };
+  var LIVING = 100;          // 18歳からの1か月の生活費（SUNA）。食べ物45・住まい40・ほか15
+  var ENV = [['川辺の家', 'R'], ['工房の家', 'G'], ['学園の近くの家', 'B'], ['灯台館の近くの家', 'W']];
+  var $ = function (i) { return document.getElementById(i); };
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function ri(a, b) { return Math.floor(rnd(a, b + 1)); }
+  function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  var s = null;
+  try { s = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+
+  // RGB の 45AP を 9〜27 で分ける。W（かくれ）は別に 9〜27
+  function split45() {
+    for (;;) { var r = ri(9, 27), g = ri(9, 27), b = 45 - r - g; if (b >= 9 && b <= 27) return { R: r, G: g, B: b }; }
+  }
+  function born(name) {
+    var ap = split45(), good = [], aff = {};
+    var n = ri(1, 4), pool = ['R', 'G', 'B', 'W'].sort(function () { return Math.random() - .5; });
+    good = pool.slice(0, n);
+    ['R', 'G', 'B', 'W'].forEach(function (k) { aff[k] = Math.round(good.indexOf(k) >= 0 ? rnd(5, 30) : rnd(-30, 5)); });
+    var home = ENV.filter(function (e) { return good.indexOf(e[1]) >= 0; }).map(function (e) { return e[0]; })[0] || '二水の家';
+    s = { name: name, sex: Math.random() < .5 ? 'f' : 'm', month: 0, ap: ap, W: ri(9, 27), aff: aff, good: good, home: home,
+      learn: 0, cond: 80, money: 0, plan: ['play', 'rest', 'play', 'rest'], pick: { R: 2, G: 2, B: 1 }, log: [] };
+    say('二水市の' + home + 'に、' + name + 'が生まれた。');
+    save(); show();
+  }
+  function age() { return Math.floor(s.month / 12); }
+  // 知能：心（B）と学び、年齢で育つ（0〜100）
+  function intel() { return clamp(Math.round(s.ap.B * Math.min(1, (age() + 1) / 20) * 2 + s.learn), 0, 100); }
+  // 自我：2歳までは 0。16歳でほぼそろい、知能が高いほど思いどおり
+  function control() { return clamp((age() - 2) / 14, 0, 1) * (0.6 + 0.4 * intel() / 100); }
+  // 生殖能力（0〜100）。男女で育ち方と下がり方がちがう
+  function fert() {
+    var a = s.month / 12;
+    if (s.sex === 'f') return a < 10 ? 5 : a < 15 ? 5 + (a - 10) * 19 : a < 30 ? 100 : a < 45 ? 100 - (a - 30) * 4.7 : a < 55 ? 30 - (a - 45) * 2.5 : 5;
+    return a < 11 ? 5 : a < 16 ? 5 + (a - 11) * 19 : a < 35 ? 100 : a < 60 ? 100 - (a - 35) * 2 : a < 80 ? 50 - (a - 60) * 1.5 : 20;
+  }
+  // 詳細ステータス＝もとの値 ×（10＋生殖能力）/110 ×（10＋知能）/110
+  function detail() {
+    var f = (10 + fert()) / 110 * (10 + intel()) / 110, R = s.ap.R, G = s.ap.G, B = s.ap.B;
+    return { HP: Math.round(R * 10 * f), ATK: Math.round((R + G / 2) * f), DEF: Math.round(R * 0.8 * f), SPD: Math.round(G * f), MP: Math.round(B * 10 * f), MAT: Math.round((B + G / 2) * f) };
+  }
+  function allowed() {
+    var a = age(), list = [];
+    if (a >= 3) list.push('play', 'rest');
+    if (a >= 6) list.push('learn');
+    if (a >= 13) list.push('work');
+    return list;
+  }
+  function say(t) { s.log.unshift('〔' + age() + '歳' + (s.month % 12) + 'か月〕' + t); s.log = s.log.slice(0, 60); }
+
+  function month() {
+    var a = age(), c = control(), got = { R: 0, G: 0, B: 0 }, hit = 0, want = [];
+    C3.forEach(function (k) { for (var i = 0; i < s.pick[k]; i++) want.push(k); });
+    // 5AP：思いどおりに入るか、自我のままに散らばるか
+    want.forEach(function (k) {
+      var to = Math.random() < c ? k : C3[ri(0, 2)];
+      if (to === k) hit++;
+      var gain = 1 * (1 + s.aff[to] / 100) * (1 + s.W / 100) * (0.5 + s.cond / 200);
+      s.ap[to] = Math.round((s.ap[to] + gain) * 100) / 100; got[to] += gain;
+    });
+    // 予定（4週）。3歳までは寝て遊ぶだけ
+    var ok = allowed(), earned = 0;
+    (a < 3 ? ['rest', 'play', 'rest', 'play'] : s.plan).forEach(function (w) {
+      if (ok.length && ok.indexOf(w) < 0) w = 'rest';
+      if (w === 'work') { var e = 40 * (a < 18 ? 0.5 : 1) * (1 + s.ap.G / 100) * s.cond / 100; earned += e; s.cond -= 10; }
+      if (w === 'rest') s.cond += 15;
+      if (w === 'learn') { s.learn = Math.min(40, s.learn + 0.25); s.cond -= 5; }
+      if (w === 'play') s.cond += 10;
+    });
+    s.money += earned;
+    var cost = a >= 18 ? LIVING : 0;
+    s.money -= cost;
+    if (s.money < 0) s.cond -= 15;
+    s.cond = clamp(Math.round(s.cond - 5), 0, 100);
+    s.money = Math.round(s.money * 100) / 100;
+    s.month++;
+    var msg = 'AP：' + C3.map(function (k) { return NAMES[k] + '+' + got[k].toFixed(1); }).join(' ') + (a >= 2 ? '（思いどおり ' + hit + '/5）' : '（まだ自我がない）');
+    if (earned) msg += '　稼ぎ +' + earned.toFixed(1);
+    if (cost) msg += '　生活費 −' + cost;
+    say(msg);
+    if (age() === 3 && s.month % 12 === 0) say('自我が芽生えた。「遊ぶ」「休む」を選べるようになった。');
+    if (age() === 6 && s.month % 12 === 0) say('学校に入った。「啓発（学ぶ）」を選べるようになった。');
+    if (age() === 13 && s.month % 12 === 0) say('手伝いで稼げるようになった（半分の稼ぎ）。');
+    if (age() === 18 && s.month % 12 === 0) say('ひとり立ち。ここから毎月 ' + LIVING + ' SUNA の生活費がかかる。');
+  }
+
+  function show() {
+    $('start').hidden = !!s; $('game').hidden = !s;
+    if (!s) return;
+    var a = age(), d = detail(), max = Math.max(40, s.ap.R, s.ap.G, s.ap.B);
+    $('nm').textContent = s.name + (s.sex === 'f' ? '（女の子）' : '（男の子）');
+    $('age').textContent = a + '歳' + (s.month % 12) + 'か月';
+    $('env').innerHTML = esc(s.home) + 'で生まれた。得意：' + s.good.filter(function (k) { return k !== 'W'; }).map(function (k) { return '<span class="tag" style="color:var(--' + k + ')">' + NAMES[k] + '</span>'; }).join('') + (s.good.length === 1 && s.good[0] === 'W' ? 'まだ見えない' : '');
+    $('money').textContent = s.money.toFixed(2); $('money').className = 'money' + (s.money < 0 ? ' neg' : '');
+    $('cond').textContent = s.cond;
+    $('bars').innerHTML = C3.map(function (k) {
+      return '<div class="bar" style="--c:var(--' + k + ')"><i>' + k + '</i><div class="t"><span style="width:' + (s.ap[k] / max * 100) + '%"></span></div><small>' + NAMES[k] + ' ' + s.ap[k].toFixed(1) + '</small></div>';
+    }).join('');
+    $('ctl').textContent = a < 2 ? 'まだ自我がありません。APは自由に散らばります。' : '思いどおりに伸びる見込み：' + Math.round(control() * 100) + '%';
+    $('ap').innerHTML = C3.map(function (k) {
+      return '<div style="--c:var(--' + k + ')"><b>' + k + '・' + NAMES[k] + '</b><span class="n">' + s.pick[k] + '</span><div class="row" style="justify-content:center"><button type="button" data-k="' + k + '" data-d="-1" aria-label="' + NAMES[k] + 'を減らす">−</button><button type="button" data-k="' + k + '" data-d="1" aria-label="' + NAMES[k] + 'を増やす">＋</button></div></div>';
+    }).join('');
+    var ok = allowed();
+    $('plan-lead').textContent = a < 3 ? 'まだ予定は選べません。寝て、遊んで育ちます。' : '1か月を4週に分けて、週ごとに行動を予約します。' + (a < 18 ? '18歳までは家が生活費を出してくれます。' : '毎月 ' + LIVING + ' SUNA の生活費がかかります。');
+    $('weeks').innerHTML = a < 3 ? '' : [0, 1, 2, 3].map(function (i) {
+      return '<label>' + (i + 1) + '週目<select data-w="' + i + '">' + ok.map(function (k) { return '<option value="' + k + '"' + (s.plan[i] === k ? ' selected' : '') + '>' + ACT[k] + '</option>'; }).join('') + '</select></label>';
+    }).join('');
+    $('log').innerHTML = s.log.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('');
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-k]'); if (!b || !s) return;
+    var k = b.dataset.k, d = +b.dataset.d, sum = s.pick.R + s.pick.G + s.pick.B;
+    if (d > 0) { if (sum >= 5) { var o = C3.filter(function (x) { return x !== k && s.pick[x] > 0; })[0]; if (!o) return; s.pick[o]--; } s.pick[k]++; }
+    else { if (!s.pick[k]) return; s.pick[k]--; var o2 = C3.filter(function (x) { return x !== k; })[0]; s.pick[o2]++; }
+    save(); show();
+  });
+  document.addEventListener('change', function (e) { if (e.target.dataset.w != null) { s.plan[+e.target.dataset.w] = e.target.value; save(); } });
+  $('born').onclick = function () { born($('name').value.trim() || 'ハル'); };
+  $('m1').onclick = function () { month(); save(); show(); };
+  $('y1').onclick = function () { for (var i = 0; i < 12; i++) month(); save(); show(); };
+  $('reset').onclick = function () { if (confirm('最初からやり直しますか？')) { s = null; try { localStorage.removeItem(KEY); } catch (e) {} show(); } };
+  show();
+})();
+</script>
+</body>
+</html>
