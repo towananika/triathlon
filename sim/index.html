@@ -42,7 +42,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 .rain line{animation:fall .55s linear infinite}.snowf circle{animation:snow 6s linear infinite}.cl{animation:drift 90s linear infinite}.fl{animation:flash 7s infinite}.star{animation:tw 3s ease-in-out infinite}.pet{animation:snow 9s linear infinite}
 @media (prefers-reduced-motion:reduce){.rain line,.snowf circle,.cl,.fl,.star,.pet{animation:none}}
 </style></head><body>
-<script src="../site-nav.js?v=0.36"></script>
+<script src="../site-nav.js?v=0.37"></script>
 <main>
 <p class="kick">TODAY IN THE WORLD</p>
 <div class="sky" id="sky"><svg id="scene" viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice" role="img" aria-label="今日の空"></svg><div class="ov"><div class="d" id="o-d"></div><div class="t" id="o-t"></div><div class="w" id="o-w"></div><div class="s" id="o-s"></div></div></div>
@@ -53,7 +53,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 <ul class="ev" id="ev"></ul>
 
 <h2>9人は、いま</h2>
-<div class="slots" id="slots"><button type="button" data-s="morning">朝</button><button type="button" data-s="day">昼</button><button type="button" data-s="after">放課後</button><button type="button" data-s="night">夜</button></div>
+<div class="slots" id="slots"><button type="button" data-s="morning">朝</button><button type="button" data-s="day">昼</button><button type="button" data-s="after">夕方</button><button type="button" data-s="night">夜</button></div>
 <div class="nine" id="nine"></div>
 
 <h2>開拓と出会い</h2>
@@ -73,11 +73,12 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 <details><summary>💰 経済（仕事・物の値段・お金）</summary><div id="eco"></div></details>
 <details><summary>🎎 文化（食べ物・祭り・ことば・信仰・芸術）</summary><div class="nat" id="cul"></div></details>
 <details><summary>🌡️ 各地の気候</summary><div class="scroll" id="cli"></div></details>
-<p class="note">この世界は、毎日少しずつ動いています。現実の1日が、世界の1日です（2026年10月25日＝新暦312年4月1日）。数字は物語のための目安です。</p>
+<p class="note">この世界は、毎日少しずつ動いています。現実の1日が、世界の1日です（世界は新暦312年にはじまり、2026年10月25日に10年進めて、この日が新暦322年4月1日）。数字は物語のための目安です。</p>
 </main>
 <script src="../cast/cast-data.js?v=0.19"></script>
-<script src="development.js?v=1"></script>
-<script src="world-sim.js?v=development-1"></script>
+<script src="development.js?v=0.37"></script>
+<script src="checkpoint.js?v=0.37"></script>
+<script src="world-sim.js?v=0.37"></script>
 <script>
 (function () {
   'use strict';
@@ -89,7 +90,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
     var target = Number(button.dataset.target), result = S.untilModern(target, 36500);
     $('civil-result').textContent = '仮の未来計算：' + (result.reached ? result.date.label + '、開始から約' + (result.day/365).toFixed(1) + '年で' + target + 'か国が到達。' : '100年以内には条件を満たしませんでした。') + '既存3か国の基盤整備を扱う仮モデルです。現代社会全体の再現や交通網の再計画ではなく、結果を現在のニュースには送りません。';
   };
-  var NCOL = ['#2f7d4a', '#4c56a8', '#a86412'], SLOT = { morning: '朝', day: '昼', after: '放課後', night: '夜' };
+  var NCOL = ['#2f7d4a', '#4c56a8', '#a86412'], SLOT = { morning: '朝', day: '昼', after: '夕方', night: '夜' };
   $('where').innerHTML = S.PROV.map(function (p, i) { return '<option value="' + i + '">' + p[0] + '（' + p[1] + '）の空</option>'; }).join('');
 
   // ---- 空の絵 ----
@@ -197,7 +198,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
     [].forEach.call($('slots').children, function (b) { b.setAttribute('aria-pressed', String(b.dataset.s === sl)); });
     if (day > TODAY) { $('nine').innerHTML = '<p class="note">まだ来ていない日です。</p>'; return; }
     var cls = {}; (window.CHARS || []).forEach(function (c) { var n = (window.SEED && SEED[c.id] || {}).name; if (n) cls[n] = c.c; });
-    $('nine').innerHTML = S.people(day, RUN.state, sl).map(function (p) { return '<div class="' + (cls[p.name] || '') + '"><b>' + esc(p.name) + '</b><small>📍' + esc(p.at) + '</small><p>' + esc(p.what) + '</p></div>'; }).join('');
+    $('nine').innerHTML = S.people(day, RUN.state, sl).map(function (p) { return '<div class="' + (cls[p.name] || '') + '"><b>' + esc(p.name) + '</b><small>📍' + esc(p.at) + '</small>' + (p.job ? '<p class="note" style="margin:0">' + esc(p.job) + '</p>' : '') + '<p>' + esc(p.what) + '</p></div>'; }).join('');
   }
   function expo(st) {
     if (day > TODAY) { $('exp').innerHTML = '<p class="note">まだ来ていない日です。</p>'; return; }
