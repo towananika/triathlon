@@ -10,10 +10,10 @@
   var FONT_LOGO = '"Montserrat",system-ui,sans-serif', FONT_HEAD = '"Noto Sans JP","Noto Sans SC","Noto Sans TC","Noto Sans KR","Noto Sans",system-ui,sans-serif';
   var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['saga/', '📖', '物語'], ['cast/', '👥', 'キャラ'], ['mall/', '🛍️', 'モール']];
   // 公開しているのは今の期だけ（「期」という言葉も出さない）。1〜4期と設定資料は管理者だけに見せる
-  var admin = false; try { admin = !!localStorage.getItem('tri-admin'); } catch (e) {}
+  var admin = false;
   if (admin) document.documentElement.classList.add('tri-admin');
   var MORE = admin ? [['dev/', '🛠️', '開発版'], ['guide.html', '📘', '設定資料（世界ガイド）'], ['settings/', '📋', '設定リスト'], ['guide.html#simulation', '🏡', '暮らしの試作'], ['news/rules.html', '📏', 'アップデートの基準']]
-    : [['news/rules.html', '📏', 'アップデートの基準'], ['login/', '🔑', '管理者ログイン']];
+    : [['news/rules.html', '📏', 'アップデートの基準'], ['login/', '🔑', 'ログイン']];
   var path = location.pathname.replace(/index\.html$/, ''), rootPath = new URL(root).pathname;
   function cur(p) {
     if (p.indexOf('#') >= 0) return false;
@@ -46,7 +46,7 @@
   document.head.appendChild(st);
   var bar = document.createElement('div');
   bar.className = 'tri-nav';
-  bar.innerHTML = '<a class="tri-brand" href="' + root + '" aria-label="TRIATHLON ホーム">TRIATHLON</a>' + (admin ? '<a class="tri-dev" href="' + root + 'dev/">開発版</a>' : '') +
+  bar.innerHTML = '<a class="tri-brand" href="' + root + '" aria-label="TRIATHLON ホーム">TRIATHLON</a><a class="tri-login" href="' + root + 'login/" style="font-size:13px;color:#007f87;padding:8px 4px;white-space:nowrap">ログイン</a>' + (admin ? '<a class="tri-dev" href="' + root + 'dev/">開発版</a>' : '') +
     '<div class="tri-top" role="navigation" aria-label="おもなページ">' + MAIN.map(function (it) { return link(it, ''); }).join('') + '</div>' +
     '<details class="tri-menu"><summary>☰ その他</summary><div class="tri-more" role="navigation" aria-label="そのほかのページ">' + MORE.map(function (it) { return link(it, ''); }).join('') + '</div></details>';
   var bottom = document.createElement('div');
@@ -56,6 +56,8 @@
   bottom.innerHTML = MAIN.map(function (it) { return link(it, ''); }).join('');
   document.body.insertBefore(bar, document.body.firstChild);
   document.body.appendChild(bottom);
+  var topStyle = document.createElement('link'); topStyle.rel = 'stylesheet'; topStyle.href = root + 'back-to-top.css'; document.head.appendChild(topStyle);
+  var topScript = document.createElement('script'); topScript.src = root + 'back-to-top.js'; document.body.appendChild(topScript);
   document.addEventListener('click', function (e) {
     var m = bar.querySelector('.tri-menu');
     if (m.open && (!m.contains(e.target) || e.target.closest('.tri-more a'))) m.open = false;
