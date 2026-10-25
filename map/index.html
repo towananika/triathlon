@@ -9,6 +9,8 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
 .plab{font-size:12px;font-weight:700;fill:#2a2622;paint-order:stroke;stroke:#fbf8f2;stroke-width:3px;pointer-events:none;text-anchor:middle}
 .nlab{font-size:16px;font-weight:800;paint-order:stroke;stroke:#fbf8f2;stroke-width:4px;pointer-events:none;text-anchor:middle}
 .pin{cursor:pointer}.pin circle{fill:#c0392b;stroke:#fff;stroke-width:1.5}.pin text{font-size:16px;font-weight:700;fill:#2a2622;paint-order:stroke;stroke:#fbf8f2;stroke-width:3px}
+.civ path{fill-opacity:.18;stroke-opacity:.5;stroke-width:1;stroke-dasharray:4 3;cursor:pointer}.civ text{font-size:14px;font-weight:800;paint-order:stroke;stroke:#fbf8f2;stroke-width:4px;text-anchor:middle;cursor:pointer}
+.col{cursor:pointer}.col rect{stroke:#fff;stroke-width:1.5}.col text{font-size:13px;font-weight:700;fill:#2a2622;paint-order:stroke;stroke:#fbf8f2;stroke-width:3px}
 .wxl text{font-size:12px;font-weight:700;fill:#2a2622;paint-order:stroke;stroke:#fff;stroke-width:3px;text-anchor:middle}
 .scale text{font-size:11px;font-weight:700;fill:#2a2622;paint-order:stroke;stroke:#fff;stroke-width:3px}
 .gbar{position:absolute;top:10px;left:10px;right:10px;z-index:6;max-width:400px}
@@ -26,15 +28,15 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
 .toast{position:absolute;left:50%;bottom:84px;transform:translateX(-50%);background:#2a2622;color:#fff;border-radius:999px;padding:8px 16px;font-size:13px;z-index:9;white-space:nowrap}
 @media (max-width:760px){main{padding:6px 6px 6px}h1.mt small{display:none}.gcard{left:8px;right:8px;width:auto;top:auto;bottom:8px;max-height:48%;border-radius:16px 16px 12px 12px}.glayer{bottom:auto;top:62px}.lmenu{bottom:auto;top:46px}.zoom{top:62px;bottom:auto}}
 </style></head><body>
-<script src="../site-nav.js?v=0.33"></script>
+<script src="../site-nav.js?v=0.34"></script>
 <main>
 <h1 class="mt">マップ <small>回す・拡大する・押すと説明</small></h1>
 <div class="stage" id="stage">
  <svg id="world" role="img" aria-label="TRIATHLON の世界地図"></svg>
- <div class="gbar"><div class="gsearch"><span aria-hidden="true">🔍</span><input id="q" type="search" placeholder="国・州・町をさがす" autocomplete="off" aria-label="さがす"><button type="button" id="q-x" aria-label="消す" hidden>✕</button></div><ul class="gres" id="gres" hidden></ul></div>
+ <div class="gbar"><div class="gsearch"><span aria-hidden="true">🔍</span><input id="q" type="search" placeholder="国・州・開拓地をさがす" autocomplete="off" aria-label="さがす"><button type="button" id="q-x" aria-label="消す" hidden>✕</button></div><ul class="gres" id="gres" hidden></ul></div>
  <div class="glayer"><button type="button" id="b-layer" aria-expanded="false">🗂️ レイヤー</button><div class="lmenu" id="lmenu" hidden>
   <b>重ねる</b><label><input type="checkbox" id="ly-prov" checked> 州の境界</label><label><input type="checkbox" id="ly-wx"> 今日の天気</label><label><input type="checkbox" id="ly-mood"> 暮らしの満足</label>
-  <p>3つの国のほかは、まだだれも知らない土地です。国と州の広さ、町の位置は仮のものです。</p></div></div>
+  <p>3つの国のほかは、まだだれも知らない土地です。🚩は開拓地、点線の輪は出会った文明です（世界シミュレーションで毎日ふえます）。国と州の広さ、町の位置は仮のものです。</p></div></div>
  <div class="zoom"><button type="button" id="z-in" aria-label="大きく">＋</button><button type="button" id="z-out" aria-label="小さく">−</button></div>
  <div class="gcard" id="card" hidden></div>
 </div>
@@ -42,6 +44,6 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
 <script src="../vendor/d3-7.9.0.min.js"></script>
 <script src="../vendor/topojson-client-3.1.0.min.js"></script>
 <script src="../assets/data/land-110m.js"></script>
-<script src="../sim/world-sim.js?v=0.33"></script>
-<script src="map.js?v=0.33"></script>
+<script src="../sim/world-sim.js?v=0.34"></script>
+<script src="map.js?v=0.34"></script>
 </body></html>

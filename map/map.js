@@ -60,7 +60,7 @@
   defs.append('clipPath').attr('id', 'landclip').append('path').attr('id', 'landclipP');
   var gOcean = svg.append('path').attr('class', 'ocean'), gGrat = svg.append('path').attr('class', 'grat'), gLand = svg.append('path').attr('class', 'land');
   var gProv = svg.append('g').attr('clip-path', 'url(#landclip)');
-  var gRim = svg.append('path').attr('class', 'rim'), gLab = svg.append('g'), gWx = svg.append('g').attr('class', 'wxl'), gPin = svg.append('g'), gScale = svg.append('g').attr('class', 'scale');
+  var gCiv = svg.append('g'), gRim = svg.append('path').attr('class', 'rim'), gCol = svg.append('g'), gLab = svg.append('g'), gWx = svg.append('g').attr('class', 'wxl'), gPin = svg.append('g'), gScale = svg.append('g').attr('class', 'scale');
 
   // 1km が何px か
   function pxkm() { return proj.scale() / 6371; }
@@ -68,7 +68,7 @@
   function simData() {
     if (SIMD || !SIM) return SIMD;
     var d = SIM.today(), x = SIM.run(d, 1);
-    SIMD = { d: d, wx: PROV.map(function (p, i) { return SIM.climate(i, d); }), mood: x.state.prov.map(function (p) { return p.mood; }), ferry: x.state.ferry, date: x.date.label };
+    SIMD = { d: d, wx: PROV.map(function (p, i) { return SIM.climate(i, d); }), mood: x.state.prov.map(function (p) { return p.mood; }), ferry: x.state.ferry, date: x.date.label, col: x.state.col, civ: x.state.civ };
     return SIMD;
   }
   function visible(ll) { return d3.geoDistance(ll, [-rot[0], -rot[1]]) < Math.PI / 2 - .02; }
@@ -103,7 +103,30 @@
       .on('click', function (e, d) { openPlace(d); }).on('keydown', function (e, d) { if (e.key === 'Enter') openPlace(d); });
     en.append('circle').attr('r', 7); en.append('text').attr('x', 11).attr('y', 6).text(function (d) { return d.name; });
     en.merge(pin).each(function (d) { var q = proj(d.ll), g = d3.select(this), hide = false; g.style('display', q && visible(d.ll) && !hide ? null : 'none'); if (q) g.attr('transform', 'translate(' + q[0] + ',' + q[1] + ')'); });
+    drawWorld(pk);
     drawScale(pk);
+  }
+
+  // ---- 開拓地と、出会った文明（世界シミュレーションから） ----
+  var NCOL = ['#2f7d4a', '#4c56a8', '#a86412'];
+  function drawWorld(pk) {
+    var S = simData(), cols = S ? S.col : [], civs = S ? S.civ.filter(function (v) { return v.known; }) : [];
+    var cv = gCiv.selectAll('g').data(civs); cv.exit().remove();
+    var ce = cv.enter().append('g').attr('class', 'civ').on('click', function (e, v) { openId('v-' + S.civ.indexOf(v)); });
+    ce.append('path'); ce.append('text');
+    ce.merge(cv).each(function (v) {
+      var C = SIM.CIVS[S.civ.indexOf(v)], ll = [C[2], C[1]], g = d3.select(this), q = proj(ll);
+      g.select('path').attr('d', path(d3.geoCircle().center(ll).radius(Math.max(2, Math.sqrt(C[3]) / 7))())).style('fill', C[6]).style('stroke', C[6]);
+      g.select('text').text(C[0]).style('fill', C[6]).style('display', q && visible(ll) ? null : 'none').attr('x', q ? q[0] : 0).attr('y', q ? q[1] : 0);
+    });
+    var cl = gCol.selectAll('g').data(cols); cl.exit().remove();
+    var en = cl.enter().append('g').attr('class', 'col').attr('tabindex', 0).attr('role', 'button').on('click', function (e, c) { openId('x-' + c.site); });
+    en.append('rect').attr('x', -5).attr('y', -5).attr('width', 10).attr('height', 10).attr('rx', 2); en.append('text').attr('x', 9).attr('y', 5);
+    en.merge(cl).each(function (c) {
+      var X = SIM.SITES[c.site], ll = [X[3], X[2]], q = proj(ll), g = d3.select(this);
+      g.style('display', q && visible(ll) && k >= 1.6 ? null : 'none').attr('transform', q ? 'translate(' + q[0] + ',' + q[1] + ')' : null).attr('aria-label', X[0]);
+      g.select('rect').style('fill', NCOL[c.nat]); g.select('text').text(X[0] + (k >= 3 ? '（' + c.stage + '）' : ''));
+    });
   }
 
   // ---- 目安の距離 ----
@@ -182,6 +205,17 @@
     var t = id.slice(0, 1), v = id.slice(2), i = +v;
     if (t === 'c') { var d = PLACES.filter(function (q) { return q.id === v; })[0]; if (d) openPlace(d); return; }
     if (t === 'p') { var p = PROV[i]; if (!p) return; flyTo(p.c, Math.max(6, Math.min(k, 10))); openProv(p); }
+    var S = simData();
+    if (t === 'x' && S) {
+      var c = S.col.filter(function (q) { return q.site === i; })[0], X = SIM.SITES[i]; if (!c) return;
+      showCard({ id: id, title: '🚩 ' + X[0], sub: SIM.NATS[c.nat].name + 'の' + c.stage, stats: ['人口：約' + Math.round(c.pop).toLocaleString() + '人', 'ひらいた日：' + SIM.wdate(c.day).label], text: X[5] + '。' + SIM.NATS[c.nat].name + 'の開拓団がひらいた土地です。', zoom: function () { flyTo([X[3], X[2]], 12); } });
+      flyTo([X[3], X[2]], Math.max(k, 5));
+    }
+    if (t === 'v' && S) {
+      var v = S.civ[i], C = SIM.CIVS[i]; if (!v || !v.known) return;
+      showCard({ id: id, title: '🌏 ' + C[0], sub: '出会った文明', stats: ['人口：約' + Math.round(v.pop) + '万', '出会った日：' + SIM.wdate(v.day).label, '最初に出会った国：' + SIM.NATS[v.by].name], text: C[5] });
+      flyTo([C[2], C[1]], Math.max(k, 3));
+    }
   }
 
   // ---- さがす ----
@@ -190,6 +224,11 @@
     if (IDX) return IDX; IDX = [];
     PLACES.forEach(function (d) { IDX.push({ id: 'c-' + d.id, i: '📍', t: d.name, s: d.sub }); });
     PROV.forEach(function (p, i) { IDX.push({ id: 'p-' + i, i: '🗺️', t: p[0], s: NAT[p[1]] + 'の州' }); });
+    var S = simData();
+    if (S) {
+      S.col.forEach(function (c) { IDX.push({ id: 'x-' + c.site, i: '🚩', t: SIM.SITES[c.site][0], s: SIM.NATS[c.nat].name + 'の' + c.stage }); });
+      S.civ.forEach(function (v, i) { if (v.known) IDX.push({ id: 'v-' + i, i: '🌏', t: v.name, s: '出会った文明' }); });
+    }
     return IDX;
   }
   function find(id) { return index().filter(function (x) { return x.id === id; })[0]; }

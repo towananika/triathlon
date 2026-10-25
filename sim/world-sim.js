@@ -3,6 +3,7 @@
 // 中身：州ごとの気候（気温・雨・雪・台風）→ 8つの産業の生産 → 食べ物・材料・製品の在庫と値段 → 州どうしの取引
 // → 仕事の移り変わり・失業 → 暮らしの満足 → 人口（生まれる・亡くなる・引っこす）。二水の洞のにぎわいと、9人の一日もここから。
 // ユーザーの町は、あとで towns として足せるようにしてある（いまは空）。
+// 3つの国は開拓団を出して新しい土地をひらき（SITES）、その先で知らなかった文明（CIVS）に出会う。
 (function (root) {
   'use strict';
   var EPOCH = Date.UTC(2026, 9, 24, 15); // 日本時間 2026-10-25 0:00
@@ -60,6 +61,21 @@
     { cur: '玉', fx: .8, name: '文光国', sys: '学者の評議会（1年ごとに議長が交代）', head: '議長', parties: [['評議会', '学問と灯石の研究を国の柱にする', .14, [.40, .40, .20]]], prov: [4, 5, 6], army: '山岳警備隊' },
     { cur: '金', fx: 1.5, name: '改神国', sys: '神殿と祭司長（任期なし）', head: '祭司長', parties: [['神殿', '祈りと港の商いで国をまとめる', .13, [.30, .40, .30]]], prov: [7, 8, 9], army: '白港の海軍' }
   ];
+  // 開拓の候補地：[名前, 国, 緯度, 経度, 海をこえるか, 土地のようす]（国ごとに上から順に開く）
+  var SITES = [
+    ['風島', 0, 33.4, 126.6, 1, '南の海に浮かぶ、風の強い火山の島'], ['北原', 1, 41.8, 125.9, 0, '北林の先の、白樺と草の原'], ['雲島', 2, 34.4, 129.3, 1, '白港と東の陸のあいだの、霧の島'],
+    ['石原', 0, 40.1, 123.6, 1, '西の海をわたった先の、石の多い半島'], ['白河', 1, 43.6, 128.4, 0, '北の大河のほとり。冬はこおる'], ['長浜', 2, 35.4, 133.0, 1, '東の大きな陸の、長い砂浜'],
+    ['西岸', 0, 36.6, 120.6, 1, '西の大陸の、山がちな岬'], ['遠浜', 2, 36.6, 136.6, 1, '東の陸の奥、雪の多い浜'], ['黒森', 1, 45.8, 131.0, 0, '黒い針葉樹の森が続く土地']
+  ];
+  // まだだれも知らない文明：[名前, 中心の緯度, 経度, 人口(万), 近い候補地, 説明, 色]
+  var CIVS = [
+    ['大河の民', 34.8, 115.5, 900, [3, 6], '西の大陸の大きな川ぞいに、たくさんの町と田んぼをもつ古い国。文字と暦がある。', '#b5651d'],
+    ['白樺の民', 46.5, 127.5, 40, [1, 4, 8], '北の森と草原を、季節ごとに移りながら暮らす人びと。馬と弓が得意。', '#5b8c5a'],
+    ['東雲国', 35.6, 137.6, 300, [5, 7], '東の大きな陸にある、山と海の国。鉄をきたえる技にすぐれる。', '#c0392b'],
+    ['珊瑚の民', 26.4, 127.9, 15, [0, 2], '南の島々を舟でつなぐ海の人びと。星を読んで海をわたる。', '#1e8bc3']
+  ];
+  var STAGE = [[0, '開拓地'], [1000, '村'], [5000, '町'], [20000, '市']];
+  function stageOf(n) { var t = STAGE[0][1]; STAGE.forEach(function (x) { if (n >= x[0]) t = x[1]; }); return t; }
   var CHAIRS = ['明山リン', '星原ソウ', '北林カナ', '明山ハク', '星原ユイ'];
   var CAL = [[4, 1, '二水学園の入学式'], [5, 15, '新緑の遠足'], [6, 20, '中間テスト'], [7, 25, '灯籠祭りの準備がはじまる'], [8, 15, '灯籠祭り'], [9, 20, '体育祭・三種リレー'],
     [10, 18, '学園対抗戦'], [11, 15, '文化祭'], [12, 10, '冬の川守訓練'], [1, 7, '新年の灯流し'], [2, 20, '期末テスト'], [3, 10, '卒業式']];
@@ -97,7 +113,8 @@
   function init() {
     var s = { prov: [], dong: [], towns: [], flood: 0, nat: NATS.map(function (N, i) {
       return { name: N.name, party: 0, chair: 0, approval: 55, soldiers: [1.4, .8, 1.1][i], equip: [50, 45, 60][i], budget: 0, unrest: 0, fx: N.fx, debt: 0, cpi: 100, cpiHist: [], trade: 0, tradeY: 0, gdpY: 0 };
-    }), rel: [[0, 20, 10], [20, 0, -10], [10, -10, 0]], treaty: {} };
+    }), rel: [[0, 20, 10], [20, 0, -10], [10, -10, 0]], treaty: {}, col: [], last: [-60, -60, -60],
+      civ: CIVS.map(function (c) { return { name: c[0], known: false, day: null, by: null, pop: c[3], rel: [0, 0, 0], trade: false }; }) };
     PROV.forEach(function (P) {
       var o = { name: P[0], nat: P[1], pop: P[2], unemp: .04, share: P[6].slice(), stock: { food: P[2] * 120, mat: P[2] * 20, goods: P[2] * 30 }, price: { food: 1, mat: 1.2, goods: 2 },
         out: {}, income: 0, mood: 60, short: 0, wx: null, base: P[6].slice() };
@@ -229,6 +246,48 @@
       s.rel[a][b] = s.rel[b][a] = clamp(rel + drift, -100, 100);
     });
 
+    // 6.5 開拓と、知らなかった文明との出会い
+    s.nat.forEach(function (n, i) {
+      var next = SITES.filter(function (x, k) { return x[1] === i && !s.col.some(function (c) { return c.site === k; }); })[0];
+      if (!next || d - s.last[i] < 90 || n.approval < 30) return;
+      if (r() < .007 * (n.approval / 55) * (next[4] && /storm|typhoon/.test(s.prov[NATS[i].prov[0]].wx.k) ? 0 : 1)) {
+        var k = SITES.indexOf(next), size = Math.round(150 + r() * 350);
+        s.col.push({ site: k, nat: i, pop: size, day: d, stage: '開拓地' }); s.last[i] = d;
+        ev.push({ k: 'exp', t: n.name + 'の開拓団（' + size + '人）が' + (next[4] ? '海をわたって' : '') + next[0] + 'に着き、開拓地をひらいた。' + next[5], where: next[0] });
+      }
+    });
+    s.col.forEach(function (c) {
+      var S = SITES[c.site], cw = climate(NATS[c.nat].prov[0], d), cap = S[4] ? 15000 : 30000, g = (.003 + (s.nat[c.nat].mood - 60) * .0001) * (1 - c.pop / cap) + (r() - .5) * .002; // 土地の広さで、育つ上限がある
+      if (/storm|typhoon/.test(cw.k)) g -= .004;
+      if (cw.t < -12) g -= .002;
+      c.pop = Math.max(50, c.pop * (1 + g) + (r() < .03 ? Math.round(20 + r() * 80) : 0)); // ときどき本国から移り住む人
+      var st = stageOf(c.pop);
+      if (st !== c.stage) { c.stage = st; ev.push({ k: 'exp', t: S[0] + 'の開拓地が大きくなり、' + st + 'になった（約' + Math.round(c.pop).toLocaleString() + '人）', where: S[0] }); }
+      if (r() < .004) ev.push({ k: 'exp', t: S[0] + 'で' + pick(r, ['はじめての畑のとり入れ', '小さな港ができた', '学校がひらいた', '本国との定期船が出はじめた', '井戸が掘られた', '道が本国までつながった']), where: S[0] });
+    });
+    s.civ.forEach(function (v, j) {
+      var C = CIVS[j];
+      v.pop *= 1 + .00004 + (r() - .5) * .0002; // 知らないあいだも、それぞれに栄えている
+      if (!v.known) {
+        var near = s.col.filter(function (c) { return C[4].indexOf(c.site) >= 0; })[0];
+        if ((near && r() < .02 * (d - near.day > 20 ? 1 : 0)) || r() < .0003) {
+          var by = near ? near.nat : Math.floor(r() * 3);
+          v.known = true; v.day = d; v.by = by;
+          v.rel = [0, 1, 2].map(function (k) { return k === by ? Math.round(-10 + r() * 40) : Math.round(-5 + r() * 20); });
+          ev.push({ k: 'civ', t: (near ? SITES[near.site][0] + 'の開拓団' : NATS[by].name + 'の船') + 'が、知らなかった人びと「' + C[0] + '」に出会った。' + C[5], where: near ? SITES[near.site][0] : NATS[by].name });
+        }
+        return;
+      }
+      [0, 1, 2].forEach(function (k) {
+        var rel = v.rel[k], dr = (10 - rel) * .002 + (r() - .5) * .6;
+        if (r() < .004) { dr -= 6; ev.push({ k: 'dip', t: C[0] + 'と' + NATS[k].name + 'のあいだで、ことばの行き違いからもめごと', where: C[0] }); }
+        if (r() < .006) { dr += 5; ev.push({ k: 'dip', t: NATS[k].name + 'が' + C[0] + 'に使いを送り、贈りものをかわした', where: C[0] }); }
+        v.rel[k] = clamp(rel + dr, -100, 100);
+      });
+      var best = Math.max.apply(0, v.rel);
+      if (!v.trade && best > 30) { v.trade = true; ev.push({ k: 'dip', t: C[0] + 'との行き来がはじまり、めずらしい品が市場にならびはじめた', where: C[0] }); }
+    });
+
     // 7. できごと（州）
     s.prov.forEach(function (p, i) {
       if (p.wx.k === 'typhoon') ev.push({ k: 'weather', t: p.name + 'に台風が来た（雨' + p.wx.mm + 'mm）', where: p.name });
@@ -296,6 +355,6 @@
     return { day: d, date: wdate(d), state: s, hist: hist, log: log };
   }
 
-  root.TRI_SIM = { NATS: NATS, CHAIRS: CHAIRS, EPOCH: EPOCH, today: today, wdate: wdate, climate: climate, WX: WX, run: run, people: people, slotOf: slotOf, PROV: PROV, SECT: SECT, DONG: DONG, CH: CH };
+  root.TRI_SIM = { SITES: SITES, CIVS: CIVS, NATS: NATS, CHAIRS: CHAIRS, EPOCH: EPOCH, today: today, wdate: wdate, climate: climate, WX: WX, run: run, people: people, slotOf: slotOf, PROV: PROV, SECT: SECT, DONG: DONG, CH: CH };
   if (typeof module === 'object' && module.exports) module.exports = root.TRI_SIM;
 })(typeof window !== 'undefined' ? window : globalThis);

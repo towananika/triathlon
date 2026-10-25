@@ -32,13 +32,14 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 .rel{display:grid;gap:8px;margin:4px 0 12px}.rel div{font-size:14px}.rel .bar{height:8px;position:relative;background:linear-gradient(90deg,#f6d1cc,#efe7d8 50%,#cfe8da)}.rel .bar i{position:absolute;top:-3px;width:4px;height:14px;background:#2a2622;border-radius:2px}
 .sect{display:flex;height:16px;border-radius:8px;overflow:hidden;margin:6px 0}.sect i{display:block;height:100%}
 .leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px}.leg span{display:inline-flex;gap:4px;align-items:center}.leg i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.exp{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}.exp div{background:#fff;border:1px solid #eadfcd;border-left:5px solid var(--c);border-radius:12px;padding:8px 12px;font-size:13px}.exp b{font-size:16px}.exp small{color:#7a6f63;margin-left:6px}.exp p{margin:2px 0 0}.exp a{color:#00677a;font-weight:700}
 .note{font-size:12px;color:#7a6f63}
 @media (max-width:600px){.sky{aspect-ratio:auto;height:300px}.sky .ov .t{font-size:46px}.fc{grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}.fc b{font-size:18px}.fc div{font-size:11px}}
 @keyframes fall{to{transform:translateY(420px)}}@keyframes snow{to{transform:translate(30px,420px)}}@keyframes drift{to{transform:translateX(900px)}}@keyframes flash{0%,92%,100%{opacity:0}94%{opacity:.85}96%{opacity:.2}97%{opacity:.7}}@keyframes tw{50%{opacity:.25}}@keyframes spin{to{transform:rotate(360deg)}}
 .rain line{animation:fall .55s linear infinite}.snowf circle{animation:snow 6s linear infinite}.cl{animation:drift 90s linear infinite}.fl{animation:flash 7s infinite}.star{animation:tw 3s ease-in-out infinite}.pet{animation:snow 9s linear infinite}
 @media (prefers-reduced-motion:reduce){.rain line,.snowf circle,.cl,.fl,.star,.pet{animation:none}}
 </style></head><body>
-<script src="../site-nav.js?v=0.33"></script>
+<script src="../site-nav.js?v=0.34"></script>
 <main>
 <p class="kick">TODAY IN THE WORLD</p>
 <div class="sky" id="sky"><svg id="scene" viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice" role="img" aria-label="今日の空"></svg><div class="ov"><div class="d" id="o-d"></div><div class="t" id="o-t"></div><div class="w" id="o-w"></div><div class="s" id="o-s"></div></div></div>
@@ -52,6 +53,9 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 <div class="slots" id="slots"><button type="button" data-s="morning">朝</button><button type="button" data-s="day">昼</button><button type="button" data-s="after">放課後</button><button type="button" data-s="night">夜</button></div>
 <div class="nine" id="nine"></div>
 
+<h2>開拓と出会い</h2>
+<div class="exp" id="exp"></div>
+
 <h2>二水の町のにぎわい</h2>
 <div class="dong" id="dong"></div>
 
@@ -63,7 +67,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 <p class="note">この世界は、毎日少しずつ動いています。現実の1日が、世界の1日です（2026年10月25日＝新暦312年4月1日）。数字は物語のための目安です。</p>
 </main>
 <script src="../cast/cast-data.js?v=0.19"></script>
-<script src="world-sim.js?v=0.33"></script>
+<script src="world-sim.js?v=0.34"></script>
 <script>
 (function () {
   'use strict';
@@ -138,7 +142,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 
   // ---- 計算 ----
   function calc() { RUN = S.run(day, 1); }
-  var ICON = { school: '🎒', weather: '🌧️', prov: '🏙️', town: '🏘️', pol: '🏛️', dip: '🤝', mil: '🛡️' };
+  var ICON = { exp: '🚩', civ: '🌏', school: '🎒', weather: '🌧️', prov: '🏙️', town: '🏘️', pol: '🏛️', dip: '🤝', mil: '🛡️' };
   function render() {
     var w = S.wdate(day), wx = S.climate(pi, day), P = S.PROV[pi], sl = day === TODAY ? slot : 'day';
     $('scene').innerHTML = scene(wx, sl, w.m, day * 97 + pi * 13 + 5);
@@ -159,6 +163,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
     }
     people();
     var st = RUN.state;
+    expo(st);
     $('dong').innerHTML = st.dong.slice().sort(function (a, b) { return b.busy - a.busy; }).map(function (g) { return '<div><b>' + esc(g.name) + '</b>' + esc(g.ku) + '・' + esc(g.use) + '<div class="bar"><i style="width:' + Math.min(100, g.busy) + '%"></i></div></div>'; }).join('');
     details(st);
   }
@@ -168,6 +173,21 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
     if (day > TODAY) { $('nine').innerHTML = '<p class="note">まだ来ていない日です。</p>'; return; }
     var cls = {}; (window.CHARS || []).forEach(function (c) { var n = (window.SEED && SEED[c.id] || {}).name; if (n) cls[n] = c.c; });
     $('nine').innerHTML = S.people(day, RUN.state, sl).map(function (p) { return '<div class="' + (cls[p.name] || '') + '"><b>' + esc(p.name) + '</b><small>📍' + esc(p.at) + '</small><p>' + esc(p.what) + '</p></div>'; }).join('');
+  }
+  function expo(st) {
+    if (day > TODAY) { $('exp').innerHTML = '<p class="note">まだ来ていない日です。</p>'; return; }
+    var h = st.col.map(function (c) {
+      var X = S.SITES[c.site];
+      return '<div style="--c:' + NCOL[c.nat] + '"><b>🚩 ' + X[0] + '</b><small>' + S.NATS[c.nat].name + 'の' + c.stage + '</small><p>約' + Math.round(c.pop).toLocaleString() + '人・' + esc(X[5]) + '</p><p><a href="../map/#p=x-' + c.site + '">マップで見る</a></p></div>';
+    }).concat(st.civ.filter(function (v) { return v.known; }).map(function (v) {
+      var C = S.CIVS[st.civ.indexOf(v)], best = Math.max.apply(0, v.rel);
+      return '<div style="--c:' + C[6] + '"><b>🌏 ' + C[0] + '</b><small>出会った文明</small><p>' + esc(C[5]) + '</p><p>' + (v.trade ? '行き来がある' : best > 10 ? 'おだやかな関係' : 'まだ様子を見ている') + '・<a href="../map/#p=v-' + st.civ.indexOf(v) + '">マップで見る</a></p></div>';
+    }));
+    if (!h.length) h = st.nat.map(function (n, i) {
+      var nx = S.SITES.filter(function (x) { return x[1] === i; })[0];
+      return '<div style="--c:' + NCOL[i] + '"><b>⛵ ' + n.name + '</b><small>開拓団を準備中</small><p>うわさの行き先：' + nx[0] + '（' + esc(nx[5]) + '）</p></div>';
+    });
+    $('exp').innerHTML = h.join('') + '<p class="note" style="grid-column:1/-1">まだだれも知らない土地には、それぞれに暮らす人びとがいるかもしれません。</p>';
   }
   function f1(x) { return (+x).toFixed(1); }
   function details(st) {
