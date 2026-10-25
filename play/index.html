@@ -260,7 +260,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
         '<small>HP ' + k.hp + '% / MP ' + k.mp + '%・AP ' + (k.pool || 0) + '</small>') + '</button>';
     }).join('') : '') + (kids.length < MAX_KIDS ? '<button type="button" class="btn sub add">＋ もう1人 生命を預かる（あと' + (MAX_KIDS - kids.length) + '人）</button>' : '');
     $('game').classList.toggle('womb', !!s.womb);
-    $('birthnow').hidden = !s.womb;
+    $('birthnow').hidden = !(DEV && s.womb);
     if (s.womb) {
       $('nm').textContent = 'お腹の中の子'; $('age').textContent = (9 - s.womb) + 'か月目（あと' + s.womb + 'か月）';
       $('env').textContent = 'お腹の中で45APが育っています（' + 5 * (9 - s.womb) + ' / 45）。生まれるまでは何もできません。';
@@ -317,7 +317,9 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   // s.t0＝最後に時間を数えた時刻、s.p＝今の月がどこまで進んだか（0〜1）。開いたときにまとめて進める（1回に最大120か月）
   var DAY = 24 * 3600 * 1000;
   // 開いている間：お腹の中は20秒で1か月（9か月で3分）、生まれてからは5分で1か月（1年＝1時間）
-  function openMs() { return s.womb ? 20 * 1000 : 5 * 60 * 1000; }
+  // 開発版（play/?dev）：20秒で1か月。「すぐ生まれる」も出す。秘密の中身はなく、確認しやすくするだけ
+  var DEV = /[?&]dev\b/.test(location.search);
+  function openMs() { return s.womb || DEV ? 20 * 1000 : 5 * 60 * 1000; }
   function monthMs() { var a = age(); return a < LAW.school ? DAY / 72 : a < TEEN ? 2 * DAY / 48 : a < LAW.work ? 7 * DAY / 60 : DAY / 2; }
   function isOpen() { return document.visibilityState === 'visible'; }
   function tick() {
@@ -327,7 +329,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     s = kids[cur];
     save(); if (moved) show();
     var left = Math.ceil((1 - s.p) * (isOpen() ? openMs() : monthMs()) / 1000);
-    $('clock').textContent = '次の月まで あと' + (left >= 3600 ? Math.floor(left / 3600) + '時間' + Math.floor(left % 3600 / 60) + '分' : left >= 60 ? Math.floor(left / 60) + '分' + left % 60 + '秒' : left + '秒');
+    $('clock').textContent = (DEV ? '【開発版：20秒で1か月】' : '') + '次の月まで あと' + (left >= 3600 ? Math.floor(left / 3600) + '時間' + Math.floor(left % 3600 / 60) + '分' : left >= 60 ? Math.floor(left / 60) + '分' + left % 60 + '秒' : left + '秒');
   }
   function advance() {
     var now = Date.now(), dt = Math.max(0, now - (s.t0 || now)), n = 0;
