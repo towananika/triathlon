@@ -3,50 +3,40 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="TRIATHLON のお知らせとアップデート。版ごとの変更点と、変わったページへのリンク。">
+<meta name="description" content="TRIATHLON のお知らせとアップデート。版ごとに1ページで、変更点と変わったページへのリンクをまとめています。">
 <title>お知らせ・アップデート | TRIATHLON</title>
-<link rel="stylesheet" href="news.css?v=0.17">
+<link rel="stylesheet" href="news.css?v=0.18">
 </head>
 <body>
-<div class="top"><a class="brand" href="../">TRIATHLON<span>SAME EARTH. DIFFERENT FUTURE.</span></a><a class="home" href="../">トップへ</a></div>
+<script src="../site-nav.js?v=0.18"></script>
 <main>
-<header class="head"><p class="kicker">NEWS & UPDATES</p><h1>お知らせ・アップデート</h1><p class="lead">版ごとに、何が変わったかと、そのページへのリンクをまとめています。</p></header>
+<header class="head"><p class="kicker">NEWS & UPDATES</p><h1>お知らせ・アップデート</h1><p class="lead">版ごとに1ページ。押すと、その版で何が変わったかと、変わったページへのリンクが見られます。</p><a class="rules" href="rules.html">📏 アップデートの基準 →</a></header>
 <section class="latest" id="latest" aria-label="最新の更新"></section>
-<div class="filter" role="group" aria-label="種類で絞り込み"><button type="button" data-f="" aria-pressed="true">すべて</button><button type="button" data-f="update" aria-pressed="false">アップデート</button><button type="button" data-f="info" aria-pressed="false">お知らせ</button></div>
+<div class="filter" role="group" aria-label="種類で絞り込み"><button type="button" data-f="" aria-pressed="true">すべて</button><button type="button" data-f="update" aria-pressed="false">アップデート</button><button type="button" data-f="info" aria-pressed="false">お知らせ</button><button type="button" data-f="fix" aria-pressed="false">修正</button></div>
 <ol class="list" id="list"></ol>
 </main>
-<footer><a href="../">TRIATHLON トップ</a> / <a href="../saga/">物語</a> / <a href="../cast/">キャラ図鑑</a> / <a href="../settings/">設定リスト</a></footer>
-<script src="news.js?v=0.17"></script>
+<footer><a href="../">TRIATHLON トップ</a> / <a href="rules.html">アップデートの基準</a></footer>
+<script src="news.js?v=0.18"></script>
 <script>
 (function () {
   'use strict';
-  var CAT = {update:'アップデート', info:'お知らせ', fix:'修正'}, KIND = {new:'追加', change:'変更', doc:'記録'};
+  var CAT = {update:'アップデート', info:'お知らせ', fix:'修正'};
   var list = window.TRI_NEWS || [], filter = '';
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  function href(p){ return '../' + p; }
-  function links(n){
-    return '<ul class="links">' + n.links.map(function(l){
-      return '<li><a href="' + esc(href(l[2])) + '"' + (/\.md$/.test(l[2]) ? ' download' : '') + '><em class="k-' + l[0] + '">' + KIND[l[0]] + '</em><span>' + esc(l[1]) + (l[3] ? '<small>' + esc(l[3]) + '</small>' : '') + '</span><i aria-hidden="true">→</i></a></li>';
-    }).join('') + '</ul>';
-  }
+  function url(n){ return 'v.html?id=' + encodeURIComponent(n.id); }
   function meta(n, isNew){
     return '<p class="meta"><span class="cat c-' + n.cat + '">' + CAT[n.cat] + '</span>' + (n.ver ? '<span class="ver">' + esc(n.ver) + '</span>' : '') + (n.date ? '<time>' + n.date.replace(/-/g, '.') + '</time>' : '') + (isNew ? '<span class="new">NEW</span>' : '') + '</p>';
   }
   var newest = list[0];
-  document.getElementById('latest').innerHTML = newest ? meta(newest, true) + '<h2>' + esc(newest.title) + '</h2><p>' + esc(newest.lead) + '</p>' + links(newest) : '';
-  function aid(n){ return n.ver ? n.ver.replace(/[^\w.]/g, '_') : 'info-' + n.date; }
+  if (newest) document.getElementById('latest').innerHTML = meta(newest, true) + '<h2>' + esc(newest.title) + '</h2><p>' + esc(newest.lead) + '</p><a class="go" href="' + url(newest) + '">この版のページを開く →</a>';
   function render(){
-    var h = decodeURIComponent(location.hash.slice(1));
     document.getElementById('list').innerHTML = list.slice(1).filter(function(n){ return !filter || n.cat === filter; }).map(function(n){
-      return '<li class="item" id="' + esc(aid(n)) + '"><details' + (aid(n) === h ? ' open' : '') + '><summary>' + meta(n, false) + '<h2>' + esc(n.title) + '</h2></summary><p>' + esc(n.lead) + '</p>' + links(n) + '</details></li>';
-    }).join('');
+      return '<li><a class="card-link" href="' + url(n) + '">' + meta(n, false) + '<h2>' + esc(n.title) + '</h2><p>' + esc(n.lead) + '</p><span class="go">この版のページへ →</span></a></li>';
+    }).join('') || '<li><p class="lead">この種類のお知らせはまだありません。</p></li>';
     document.querySelectorAll('[data-f]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.f === filter)); });
   }
   document.querySelector('.filter').addEventListener('click', function(e){ var b = e.target.closest('[data-f]'); if (!b) return; filter = b.dataset.f; render(); });
   render();
-  window.addEventListener('hashchange', render);
-  var t = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
-  if (t) t.scrollIntoView();
 })();
 </script>
 </body>
