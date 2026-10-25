@@ -21,6 +21,8 @@ h1{margin:0;font-size:24px}h2{margin:0 0 8px;font-size:18px}
 .who b{font-size:22px}.who span{color:var(--sub);font-size:14px}
 .money{font-size:16px;font-weight:800}
 .bars{display:grid;gap:10px}
+.miles{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}.miles li{padding:8px;border-radius:10px;background:#fff8e6;border:1px solid #f0d58c;font-size:13px}.miles li small{display:block;color:var(--sub);font-size:11px}.miles li.no{background:#f2f4f5;border-color:#e1e6e8;color:#9aa5aa}
+.toast{position:fixed;left:50%;bottom:84px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:60;background:#163744;color:#fff;padding:10px 16px;border-radius:999px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.25);transition:.3s;max-width:calc(100% - 32px);text-align:center}.toast.on{opacity:1;transform:translate(-50%,0)}
 .devbar{position:sticky;top:0;z-index:50;background:repeating-linear-gradient(45deg,#c27600 0 14px,#d98a12 14px 28px);color:#fff;font-weight:800;text-align:center;padding:6px 10px;font-size:14px;letter-spacing:.05em}
 body.dev{box-shadow:inset 0 0 0 4px #c27600}body.dev .hud{top:40px}
 .life{margin-top:10px;display:grid;gap:4px}.lh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.lh span{font-size:13px;color:var(--sub)}.lh b{font-size:18px}.lh .up{color:#1f8a4c}.lh .down{color:#b3261e}
@@ -116,11 +118,15 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 <h2>今月の予定</h2>
 <p class="lead" id="plan-lead"></p>
 <div class="weeks" id="weeks" style="margin-top:10px"></div>
+<div id="jobbox" hidden style="margin-top:12px"><label>仕事（「働く」の週に、この仕事をします）<select id="job"></select></label><p class="note" id="jobnext"></p></div>
 </section>
+
+<section class="card"><h2>記念</h2><p class="note" id="milecount"></p><ul class="miles" id="miles"></ul></section>
 
 <p class="note">ゲームの時間は自動で流れます。開いている間は5分で1か月（1年＝1時間）。お腹の中の9か月は約3分です。閉じている間はゆっくり進み、次に開いたときにまとめて反映します（0〜5歳は約1日、6〜9歳は約2日、10〜14歳は約1週間、15歳からは1日で約2か月）。予定は変えるまで同じものが続きます。10〜14歳は二次成長で得意が見えはじめるので、育てる方向を決める時期です。下のボタンは試作用の早送りです。</p>
 <div class="row"><button class="btn sub" id="birthnow" type="button">すぐ生まれる</button><button class="btn sub" id="m1" type="button">早送り：1か月</button><button class="btn sub" id="y1" type="button">早送り：1年</button><button class="btn sub" id="reset" type="button">最初から</button></div>
 
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <section class="card logcard"><h2>できごと</h2><ul class="log" id="log"></ul></section>
 </div>
 </main>
@@ -199,6 +205,36 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     if (a < LAW.school) return ['care', 'care', 'care', 'care'];      // 育児：家で育てられる
     return ['school', 'school', 'school', 'care'];                     // 教育：学校で学び、家で休む
   }
+  // 仕事：ステータスが育つと解放。「働く」の週の稼ぎ＝40 × 給料の倍率 × 腕前
+  var JOBS = [
+    { id: 'help', name: '家の手伝い', k: '', need: 0, pay: 1 },
+    { id: 'r1', name: '荷運び', k: 'R', need: 100, pay: 1.2 }, { id: 'r2', name: '大工', k: 'R', need: 300, pay: 1.8 }, { id: 'r3', name: '救助隊', k: 'R', need: 600, pay: 2.8 },
+    { id: 'g1', name: '工房の見習い', k: 'G', need: 100, pay: 1.2 }, { id: 'g2', name: '職人', k: 'G', need: 300, pay: 1.8 }, { id: 'g3', name: '名工', k: 'G', need: 600, pay: 2.8 },
+    { id: 'b1', name: '塾の手伝い', k: 'B', need: 100, pay: 1.2 }, { id: 'b2', name: '研究助手', k: 'B', need: 300, pay: 1.8 }, { id: 'b3', name: '学者', k: 'B', need: 600, pay: 2.8 }
+  ];
+  function canJob(j) { return !j.k || s.ap[j.k] >= j.need; }
+  function job() { var j = JOBS.filter(function (x) { return x.id === s.job; })[0]; return j && canJob(j) ? j : JOBS[0]; }
+  // 記念：達成するとお祝いが出て、リストに残る。まだのものは「？？？」
+  var MILES = [
+    ['born', '誕生', function () { return true; }], ['one', '1歳の誕生日', function () { return age() >= 1; }],
+    ['self', '自我が芽生えた', function () { return age() >= 3; }], ['school', '入学', function () { return age() >= LAW.school; }],
+    ['teen', '二次成長', function () { return age() >= TEEN; }], ['grad', '義務教育を終えた', function () { return age() >= LAW.work; }],
+    ['adult', 'ひとり立ち', function () { return age() >= LAW.adult; }], ['pay', '初めての給料', function () { return (s.paid || 0) > 0; }],
+    ['m1k', '貯金 1,000 SUNA', function () { return s.money >= 1000; }], ['m10k', '貯金 10,000 SUNA', function () { return s.money >= 10000; }],
+    ['s100', 'ステータス100', function () { return Math.max(s.ap.R, s.ap.G, s.ap.B) >= 100; }], ['s300', 'ステータス300', function () { return Math.max(s.ap.R, s.ap.G, s.ap.B) >= 300; }],
+    ['job1', '仕事が増えた', function () { return JOBS.some(function (j) { return j.need === 100 && canJob(j); }); }],
+    ['job2', '一人前の仕事', function () { return JOBS.some(function (j) { return j.need === 300 && canJob(j); }); }],
+    ['job3', '一流の仕事', function () { return JOBS.some(function (j) { return j.need === 600 && canJob(j); }); }],
+    ['life90', '予想寿命90歳', function () { return lifeNow() >= 90; }]
+  ];
+  var toastQ = [];
+  function checkMiles() {
+    if (!s || s.womb) return;
+    s.miles = s.miles || {};
+    MILES.forEach(function (m) { if (!s.miles[m[0]] && m[2]()) { s.miles[m[0]] = age() + '歳' + (s.month % 12) + 'か月'; say('記念：' + m[1]); toastQ.push('✨ 記念：' + m[1]); } });
+    toastQ = toastQ.slice(-3);
+  }
+  function toastNext() { var el = $('toast'); if (!toastQ.length) { el.className = 'toast'; return; } el.textContent = toastQ.shift(); el.className = 'toast on'; setTimeout(toastNext, 2400); }
   function say(t) { s.log.unshift('〔' + age() + '歳' + (s.month % 12) + 'か月〕' + t); s.log = s.log.slice(0, 60); }
 
   // 付与：配分（体・技・心の割合）と使うAPの数を決めて「付与する」を1回押す。
@@ -218,13 +254,14 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     }
     if (!auto) s.pool -= n;
     var msg = (auto ? '自動で' : '') + n + 'APを付与：' + C3.map(function (k) { return NAMES[k] + '+' + got[k]; }).join(' ') + '（思いどおり ' + hit + '/' + n + '）';
-    say(msg);
+    say(msg); checkMiles();
     return msg;
   }
   function month() {
     if (s.womb) {   // お腹の中：何もできない。1か月ごとに5APずつ育つ（中身は生まれるまで見えない）
       s.womb--;
       say(s.womb ? 'お腹の中で育っている（' + (9 - s.womb) + 'か月目）。' : '二水市の' + s.home + 'に、' + s.name + 'が生まれた。お腹の中で育った45APが付いた。');
+      checkMiles();
       return;
     }
     var a = age(), autoAp = s.auto && s.pick.R + s.pick.G + s.pick.B > 0;
@@ -240,13 +277,13 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
       if (w === 'work' && a < LAW.adult && ++workWeeks > LAW.minorWork) w = 'rest';   // 18歳未満は法律で月2週まで
       if (w === 'care') { s.hp += 20; s.mp += 10; }
       if (w === 'school') { s.learn = Math.min(40, s.learn + 0.2); s.mp -= 8 * calm; s.hp += 5; }
-      if (w === 'work') { var e = 40 * (a < LAW.adult ? 0.5 : 1) * skill * (s.hp < 20 ? 0.5 : 1) * (s.mp < 20 ? 0.5 : 1); earned += e; s.hp -= 25; s.mp -= 10 * calm; }
+      if (w === 'work') { var e = 40 * job().pay * (a < LAW.adult ? 0.5 : 1) * skill * (s.hp < 20 ? 0.5 : 1) * (s.mp < 20 ? 0.5 : 1); earned += e; s.hp -= 25; s.mp -= 10 * calm; }
       if (w === 'rest') { s.hp += 30; s.mp += 10; }
       if (w === 'learn') { s.learn = Math.min(40, s.learn + 0.25); s.mp -= 15 * calm; }
       if (w === 'play') { s.mp += 15; s.hp -= 5; }
       s.hp = clamp(s.hp, 0, 100); s.mp = clamp(s.mp, 0, 100);
     });
-    s.money += earned;
+    s.money += earned; if (earned) s.paid = (s.paid || 0) + earned;
     var cost = a >= 18 ? LIVING : 0;
     s.money -= cost;
     if (s.money < 0) s.mp -= 15 * calm;
@@ -262,6 +299,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     if (earned) msg += '　稼ぎ +' + earned.toFixed(1);
     if (cost) msg += '　生活費 −' + cost;
     if (msg) say(msg.replace(/^　/, ""));
+    checkMiles();
     if (age() === 3 && s.month % 12 === 0) say('自我が芽生えた。APが少しずつ思いどおりになっていく。');
     if (age() === TEEN && s.month % 12 === 0) say('二次成長が始まった。この1年の伸びから、得意なものが見えはじめる。');
     if (age() === LAW.school && s.month % 12 === 0) say('二水の法律で、義務教育が始まった。学校に通う。');
@@ -322,7 +360,19 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     $('weeks').innerHTML = !ok.length ? '' : [0, 1, 2, 3].map(function (i) {
       return '<label>' + (i + 1) + '週目<select data-w="' + i + '">' + ok.map(function (k) { return '<option value="' + k + '"' + (s.plan[i] === k ? ' selected' : '') + '>' + ACT[k] + '</option>'; }).join('') + '</select></label>';
     }).join('');
+    $('jobbox').hidden = !ok.length;
+    if (ok.length) {
+      var cj = job();
+      $('job').innerHTML = JOBS.filter(canJob).map(function (j) { return '<option value="' + j.id + '"' + (j.id === cj.id ? ' selected' : '') + '>' + j.name + '（給料×' + j.pay + '）</option>'; }).join('');
+      var nx = JOBS.filter(function (j) { return !canJob(j); }).sort(function (x, y) { return (x.need - s.ap[x.k]) - (y.need - s.ap[y.k]); })[0];
+      $('jobnext').textContent = nx ? 'つぎの仕事：' + nx.name + '（' + NAMES[nx.k] + ' ' + nx.need + 'で解放、あと' + (nx.need - s.ap[nx.k]) + '）' : 'すべての仕事が解放されました。';
+    }
+    s.miles = s.miles || {};
+    var got = MILES.filter(function (m) { return s.miles[m[0]]; }).length;
+    $('milecount').textContent = got + ' / ' + MILES.length + ' 達成';
+    $('miles').innerHTML = MILES.map(function (m) { var w = s.miles[m[0]]; return w ? '<li>✨ ' + m[1] + '<small>' + w + '</small></li>' : '<li class="no">？？？</li>'; }).join('');
     $('log').innerHTML = s.log.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('');
+    if (toastQ.length && !$('toast').classList.contains('on')) toastNext();
   }
 
   document.addEventListener('click', function (e) {
@@ -337,6 +387,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   $('apauto').onchange = function () { if (!s) return; s.auto = $('apauto').checked; save(); };
   $('apn').oninput = function () { $('apnv').textContent = $('apn').value; };
   $('apspend').onclick = function () { if (!s) return; $('aplast').textContent = spend(); save(); show(); };
+  $('job').onchange = function () { if (!s) return; s.job = $('job').value; say('仕事を「' + job().name + '」にした。'); save(); show(); };
   document.addEventListener('change', function (e) { if (e.target.dataset.w != null) { s.plan[+e.target.dataset.w] = e.target.value; save(); } });
   $('born').onclick = function () { born(); tick(); };
   $('nickset').onclick = function () { if (age() < 18) return; s.nick = $('nick').value.trim().slice(0, 12); say(s.nick ? 'ニックネームを「' + s.nick + '」にした。' : 'ニックネームを外した。'); save(); show(); };
