@@ -33,11 +33,11 @@
 </style>
 </head>
 <body>
-<script src="site-nav.js?v=0.46"></script>
+<script src="site-nav.js?v=0.47"></script>
 <script src="stories/stories.js?v=0.45"></script>
 <script src="cast/cast-data.js?v=0.19"></script>
 <script src="notes/notes.js?v=0.46"></script>
-<script src="daily/daily.js?v=0.43"></script>
+<script src="daily/daily.js?v=0.47"></script>
 <main>
 <section class="hero" aria-labelledby="hero-title">
 <div class="hero-in">
@@ -100,8 +100,8 @@
 </div>
 </section>
 </main>
-<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.46</span></p></footer>
-<script src="news/news.js?v=0.46"></script>
+<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.47</span></p></footer>
+<script src="news/news.js?v=0.47"></script>
 <script>
 (function () {
   'use strict';
@@ -136,6 +136,10 @@
     var line = night ? it.body.split('\n').filter(function (l) { return l.trim(); })[0] : it.scene.split('\n')[0];
     document.getElementById('now').href = 'daily/?id=' + it.id;
     document.getElementById('now').innerHTML = '<p class="kick" aria-hidden="true">' + (night ? 'Good Night' : 'Today\'s Meal') + '</p><b id="now-h">' + (night ? '🌙 おやすみの話' : '🍚 今日のごはん') + '：' + esc(it.title) + '</b><p>' + esc(line) + '</p><span class="go">' + (night ? '3分で読む →' : '場面と作り方 →') + '</span>'; }
+  // 二水の暦：行事の日は、いまの時間がその行事になる
+  if (DL && DL.cal) { var td = new Date(Date.now() + 9 * 36e5), ce = DL.cal.filter(function (c) { return c[0] === td.getUTCMonth() + 1 && c[1] === td.getUTCDate(); })[0];
+    if (ce) { document.getElementById('now').href = 'daily/';
+      document.getElementById('now').innerHTML = '<p class="kick" aria-hidden="true">Today in Nisui</p><b id="now-h">🏮 今日の二水：' + esc(ce[2]) + '</b><p>' + esc(ce[4]) + '</p><small>' + esc(ce[3]) + '</small>'; } }
   // 9人
   if (window.CHARS) {
     document.getElementById('nine').innerHTML = CHARS.filter(function (c) { return c.s === 1; }).map(function (c) {

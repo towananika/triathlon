@@ -21,7 +21,7 @@ h1{font-size:24px;margin:0 0 4px;color:var(--blue);line-height:1.4}.kick{font-si
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .memo{background:#2a2a22;border-color:#4a4532}}:root[data-theme="dark"] .memo{background:#2a2a22;border-color:#4a4532}
 .door{margin:22px 0 0;font-size:14px;color:var(--mute)}.door a{color:var(--blue)}.more{border-top:1px dashed var(--line);padding-top:12px}
 </style></head><body>
-<script src="../site-nav.js?v=0.46"></script>
+<script src="../site-nav.js?v=0.47"></script>
 <main id="m"><p>読みこみ中…</p></main>
 <script src="notes.js?v=0.46"></script>
 <script>
@@ -38,7 +38,7 @@ h1{font-size:24px;margin:0 0 4px;color:var(--blue);line-height:1.4}.kick{font-si
     var b=l.match(/^\*\*(.+)\*\*$/);if(b){fp();h+='<h3>'+esc(b[1])+'</h3>';return}
     if(l.trim())pa+=l.trim();else fp()});fp();return h+(ul?'</ul>':'')}
   var M=window.TRI_MEMO||{},door=new URLSearchParams(location.search).get('door')==='1';
-  var HERE='<p class="kick">🏫 学園図書館の奥の書棚・西岸区 学園大路 12・☎ 1000-1112-0001</p>';
+  var HERE='';
   var DOOR='<p class="door"><a href="?door=1">まなびやの扉（からだと心のノートをまとめて読む）→</a></p>';
   var i=N.findIndex(function(n){return n.id===id});
   if(i<0&&door){document.title='まなびやの扉 | TRIATHLON';

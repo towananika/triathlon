@@ -46,6 +46,7 @@
     '.tri-nav a:focus-visible,.tri-nav summary:focus-visible,.tri-bottom a:focus-visible{outline:3px solid #c27600;outline-offset:2px}' +
     '@media(max-width:899px){body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}}' +
     '@media(max-width:899px){.tri-btn.play{display:none}}@media(max-width:379px){.tri-btn{padding:0 12px}.tri-nav{gap:8px;padding:8px 12px}.tri-brand{font-size:16px;letter-spacing:.12em}.tri-dev{font-size:11px;padding:3px 7px}.tri-menu summary{padding:0 12px}}' +
+    '.tri-place{margin:0 auto;max-width:960px;padding:6px 16px 0;font-size:12px;color:#7d8c93;letter-spacing:.02em}' +
     '@media(min-width:900px){.tri-top{display:flex}.tri-bottom{display:none}.tri-nav{padding:8px 5%}}';
   var st = document.createElement('style');
   st.textContent = css;
@@ -62,6 +63,12 @@
   bottom.setAttribute('aria-label', 'おもなページ（下）');
   bottom.innerHTML = TABS.map(function (it) { return link(it, it[0] === 'stories/' ? 'tab-play' : ''); }).join('');
   document.body.insertBefore(bar, document.body.firstChild);
+  // 町の建物：サイトの仕組みは、二水の町の建物にある（studio/text/world/buildings_v1.md）
+  var PLACE = { 'stories': ['📖', '灯台館', '西岸区 岬口路 1', '1000-1101-0001'], 'map': ['🔭', '灯台館の見晴らし台', '西岸区 岬口路 1', '1000-1101-0001'], 'sim': ['🔭', '灯台館の見晴らし台', '西岸区 岬口路 1', '1000-1101-0001'],
+    'cast': ['🏠', '二水学園 学生寮', '西岸区 学園大路 24', '1000-1124-0001'], 'notes': ['📚', '学園図書館の奥の書棚', '西岸区 学園大路 12', '1000-1112-0001'], 'life': ['🏛️', '町の役所「一生の記録室」', '中洲区 川守路 2', '1000-1202-0001'],
+    'news': ['📌', '役所前の掲示板', '中洲区 川守路 2', '1000-1202-0001'], 'album': ['📷', '写真館', '中洲区 中路 18', '1000-1218-0001'], 'share': ['✉️', '郵便局', '中洲区 中路 5', '1000-1205-0001'], 'daily': ['🍵', '船着き場の茶屋', '南岸区 渡口路 3', '1000-1303-0001'] };
+  var pl = PLACE[path.slice(rootPath.length).split('/')[0]];
+  if (pl) { var pe = document.createElement('p'); pe.className = 'tri-place'; pe.textContent = pl[0] + ' ' + pl[1] + '・' + pl[2] + '・☎ ' + pl[3]; bar.after(pe); }
   // 共通のフッター（ゲーム画面には出さない）
   function addFoot() {
     if (/\/play\/$/.test(path)) return;
