@@ -20,7 +20,7 @@ main{max-width:1040px;margin:0 auto;padding:28px 16px 56px}.kick{color:#9a7630;f
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
 .info p{margin:0;font-size:13px;color:#5a5048}.info a{color:#9a7630;font-weight:700}
 .note{font-size:12px;color:#7a6f63}
-.city{background:#fff;border:1px solid #eadfcd;border-radius:16px;padding:10px}.cbox{position:relative;border-radius:10px;overflow:hidden}#cv{position:absolute;inset:0;width:100%;height:100%;display:none}#city{position:relative;width:100%;height:auto;display:block}.cbox.terrain #cv,.cbox.aerial #cv{display:block}.cbox.terrain #planbase,.cbox.aerial #planbase{display:none}.cbox.terrain #roads{opacity:.55}.cbox.terrain #tram,.cbox.terrain .stars{opacity:.5}.ctabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.ctabs button{border:1px solid #d7cbb4;background:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-size:13px;font-weight:700;color:#2a2622;cursor:pointer}.ctabs button[aria-pressed="true"]{background:#2a2622;color:#fff;border-color:#2a2622}.cnote{margin:8px 4px 0;font-size:12px;color:#7a6f63}
+.city{background:#fff;border:1px solid #eadfcd;border-radius:16px;padding:10px}.cbox{position:relative;border-radius:10px;overflow:hidden}#cv{position:absolute;inset:0;width:100%;height:100%;display:none}#city{position:relative;width:100%;height:auto;display:block}.cbox.terrain #cv,.cbox.aerial #cv,.cbox.plan.relief #cv{display:block}.cbox.plan.relief #planbase{opacity:.5}.cbox.terrain #planbase,.cbox.aerial #planbase{display:none}.cbox.terrain #roads{opacity:.55}.cbox.terrain #tram,.cbox.terrain .stars{opacity:.5}.ctabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.ctabs button{border:1px solid #d7cbb4;background:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-size:13px;font-weight:700;color:#2a2622;cursor:pointer}.ctabs button[aria-pressed="true"]{background:#2a2622;color:#fff;border-color:#2a2622}.cnote{margin:8px 4px 0;font-size:12px;color:#7a6f63}
 #city text{font-family:system-ui,"Noto Sans JP",sans-serif}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 4px 0;font-size:13px}.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:14px;height:14px;border-radius:4px;display:inline-block}
 .ku{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:14px}
@@ -225,9 +225,10 @@ function aerial(){var im=ctx.createImageData(W,H),d=im.data;
  ctx.fillStyle='#f3efe6';ctx.beginPath();ctx.arc(96,148,2.6,0,7);ctx.fill();
  ctx.restore();
  var gr=ctx.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.85);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(0,0,0,.22)');ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);}
-var NOTE={terrain:'色は高さ：緑の低い平地から、茶色の高い丘まで。線は10mごとの等高線。北の森がいちばん高く（約85m）、川の南は平らな低地です。',plan:'色は土地の使い方。太い白線は大通り、細い白線は町の道、赤い点線は路面電車、黒い線は橋です。',aerial:'空から見た様子（イメージ）。南岸は屋根が密集し、北の丘は森と学園の大きな建物です。'};
+var NOTE={terrain:'色は高さ：緑の低い平地から、茶色の高い丘まで。線は10mごとの等高線。北の森がいちばん高く（約85m）、川の南は平らな低地です。',plan:'色は土地の使い方。下に地形の起伏と等高線を重ねています。太い白線は大通り、細い白線は町の道、赤い点線は路面電車、黒い線は橋です。',aerial:'空から見た様子（イメージ）。南岸は屋根が密集し、北の丘は森と学園の大きな建物です。'};
 var drawn={};
 function setMode(m){['terrain','plan','aerial'].forEach(function(x){box.classList.toggle(x,x===m)});document.querySelectorAll('.ctabs button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.m===m))});note.textContent=NOTE[m];
+ if(m==='plan'){setTimeout(function(){if(!box.classList.contains('plan'))return;prep();terrain();box.classList.add('relief');},30);}else box.classList.remove('relief');
  if(m!=='plan')prep();if(m==='terrain'&&!drawn.t){terrain();}if(m==='aerial')aerial();}
 document.querySelector('.ctabs').addEventListener('click',function(e){var b=e.target.closest('button');if(b)setMode(b.dataset.m)});
 setMode('plan');
