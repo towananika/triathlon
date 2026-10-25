@@ -55,3 +55,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--warm);outline-offse
 .kick{margin:0 0 2px;font-size:12px;color:var(--blue)}
 .sec-head .kick{display:block}
 .hero .kick{color:var(--card);opacity:.85;font-size:12px;margin:0}
+
+/* 夜モード（20時〜朝5時）：目にやさしい夜の黒。真っ黒は使わない */
+html.night{color-scheme:dark;--ink:#E3EBEA;--sub:#9fb0b4;--line:#2b3a42;--bg:#131B20;--card:#1B262C;--mist:#1f3a3c;--soft:#22323a;--blue:#7fb0e8}
+html.night .foot{background:#0f1a24}
