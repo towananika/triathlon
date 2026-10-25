@@ -86,7 +86,7 @@
     entry.setAttribute('aria-label', u.name + '（ログイン中）');
   }
   document.addEventListener('tri-user', function (e) { showUser(e.detail); });
-  if (!document.querySelector('script[src*="login/auth.js"],script[src^="auth.js"]')) { var au = document.createElement('script'); au.type = 'module'; au.src = root + 'login/auth.js?v=0.27.3'; document.head.appendChild(au); }
+  if (!document.querySelector('script[src*="login/auth.js"],script[src^="auth.js"]')) { var au = document.createElement('script'); au.type = 'module'; au.src = root + 'login/auth.js?v=0.27.4'; document.head.appendChild(au); }
   var topStyle = document.createElement('link'); topStyle.rel = 'stylesheet'; topStyle.href = root + 'back-to-top.css'; document.head.appendChild(topStyle);
   var topScript = document.createElement('script'); topScript.src = root + 'back-to-top.js'; document.body.appendChild(topScript);
   document.addEventListener('click', function (e) {
