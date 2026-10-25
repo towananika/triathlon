@@ -2,7 +2,7 @@
 // ログイン中の人は window.TRI_USER に入り、変わるたびに 'tri-user' イベントを出す。
 // ここは「だれか」を知るためだけに使う。ページの中身を隠す鍵には使わない（AGENTS.md）。
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, OAuthProvider, signInWithPopup, signInWithRedirect, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, OAuthProvider, signInWithPopup, signInWithRedirect, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updateProfile } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 
 // 公開してよい値（Firebaseのウェブ用設定）
 const app = initializeApp({
@@ -34,3 +34,12 @@ window.triLogin = async (kind) => {
   }
 };
 window.triLogout = () => signOut(auth);
+
+// メールとパスワード（Firebaseで「メール/パスワード」をオンにしておく）
+window.triMailLogin = (mail, pass) => signInWithEmailAndPassword(auth, mail, pass);
+window.triMailSignup = async (mail, pass, name) => {
+  const r = await createUserWithEmailAndPassword(auth, mail, pass);
+  if (name) { await updateProfile(r.user, { displayName: name }); window.TRI_USER = { name, photo: '', email: mail }; document.dispatchEvent(new CustomEvent('tri-user', { detail: window.TRI_USER })); }
+  return r;
+};
+window.triMailReset = (mail) => sendPasswordResetEmail(auth, mail);
