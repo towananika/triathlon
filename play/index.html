@@ -25,9 +25,6 @@ h1{margin:0;font-size:24px}h2{margin:0 0 8px;font-size:18px}
 .toast{position:fixed;left:50%;bottom:84px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:60;background:#163744;color:#fff;padding:10px 16px;border-radius:999px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.25);transition:.3s;max-width:calc(100% - 32px);text-align:center}.toast.on{opacity:1;transform:translate(-50%,0)}
 .devbar{position:sticky;top:0;z-index:50;background:repeating-linear-gradient(45deg,#c27600 0 14px,#d98a12 14px 28px);color:#fff;font-weight:800;text-align:center;padding:6px 10px;font-size:14px;letter-spacing:.05em}
 body.dev{box-shadow:inset 0 0 0 4px #c27600}body.dev .hud{top:40px}
-.life{margin-top:10px;display:grid;gap:4px}.lh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.lh span{font-size:13px;color:var(--sub)}.lh b{font-size:18px}.lh .up{color:#1f8a4c}.lh .down{color:#b3261e}
-.lbar{position:relative;height:12px;border-radius:99px;background:#edf2f3;overflow:hidden}.lbar span{position:absolute;top:0;bottom:0}.lbar .lived{left:0;background:#2f7f87}.lbar .rest{background:#9fd3d6}.lbar i{position:absolute;top:0;bottom:0;width:2px;background:#163744}
-.lax{display:flex;justify-content:space-between;font-size:11px;color:var(--sub)}.lsp{width:100%;height:36px;color:#2f7f87;background:#f5f9f8;border-radius:6px}
 #game.womb>*:not(.whocard):not(.logcard):not(.note):not(.row){display:none!important}
 .hud{position:sticky;top:8px;z-index:5;display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center;padding:8px 10px;border-radius:999px;background:#163744;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.18)}
 .hud .coin{display:flex;align-items:center;gap:6px;font-weight:800;white-space:nowrap}.hud .coin i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:linear-gradient(#ffe27a,#e0a81a);color:#7a4b00;font-style:normal;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}.hud .coin small{font-size:11px;opacity:.75}.hud .money.neg{color:#ff9b9b}
@@ -92,7 +89,6 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 <div class="who"><b id="nm"></b><span id="age"></span></div>
 <p class="note" id="clock"></p>
 <p class="lead" id="env"></p>
-<div class="life" id="life" aria-label="予想寿命"></div>
 <div class="row" id="nickrow" hidden style="margin-top:8px"><input type="text" id="nick" maxlength="12" placeholder="ニックネーム（18歳から）" aria-label="ニックネーム" style="flex:1;min-width:0"><button class="btn sub" id="nickset" type="button">変える</button></div>
 </section>
 
@@ -224,8 +220,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     ['s100', 'ステータス100', function () { return Math.max(s.ap.R, s.ap.G, s.ap.B) >= 100; }], ['s300', 'ステータス300', function () { return Math.max(s.ap.R, s.ap.G, s.ap.B) >= 300; }],
     ['job1', '仕事が増えた', function () { return JOBS.some(function (j) { return j.need === 100 && canJob(j); }); }],
     ['job2', '一人前の仕事', function () { return JOBS.some(function (j) { return j.need === 300 && canJob(j); }); }],
-    ['job3', '一流の仕事', function () { return JOBS.some(function (j) { return j.need === 600 && canJob(j); }); }],
-    ['life90', '予想寿命90歳', function () { return lifeNow() >= 90; }]
+    ['job3', '一流の仕事', function () { return JOBS.some(function (j) { return j.need === 600 && canJob(j); }); }]
   ];
   var toastQ = [];
   function checkMiles() {
@@ -331,15 +326,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     $('nickrow').hidden = a < 18;
     $('age').textContent = a + '歳' + (s.month % 12) + 'か月';
     $('env').textContent = s.home + 'で生まれた。';
-    // 予想寿命グラフ：いまの年齢（濃い）と残りの見込み（うすい）。下の線は、これまでの予想の移り変わり
-    var LF = lifeNow(), now = s.month / 12, X = 100, hist = (s.lifeLog || []).concat([Math.round(LF * 10) / 10]);
-    var pts = hist.map(function (v, i) { return (hist.length < 2 ? 0 : i / (hist.length - 1) * 100).toFixed(1) + ',' + (30 - (v - 55) / 45 * 28).toFixed(1); }).join(' ');
-    var d0 = hist.length > 1 ? Math.round((LF - hist[hist.length - 2]) * 10) / 10 : 0;
-    $('life').innerHTML = '<div class="lh"><span>予想寿命</span><b>' + LF.toFixed(1) + '歳</b>' + (d0 ? '<small class="' + (d0 > 0 ? 'up' : 'down') + '">' + (d0 > 0 ? '▲' : '▼') + Math.abs(d0).toFixed(1) + '（この1年）</small>' : '') + '</div>' +
-      '<div class="lbar"><span class="lived" style="width:' + (now / X * 100) + '%"></span><span class="rest" style="left:' + (now / X * 100) + '%;width:' + (Math.max(0, LF - now) / X * 100) + '%"></span><i style="left:' + (LF / X * 100) + '%"></i></div>' +
-      '<div class="lax"><span>0</span><span>50</span><span>100歳</span></div>' +
-      (hist.length > 1 ? '<svg class="lsp" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true"><polyline points="' + pts + '" fill="none" stroke="currentColor" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg><div class="lax"><span>0歳</span><span>予想の移り変わり</span><span>いま</span></div>' : '') +
-      '<p class="note" style="margin:4px 0 0">体も心も元気だと延び、無理（HP・MPが少ない、毎週働く）やお金が足りないと縮みます。</p>';   // 得意はかくれステータスなので見せない
+    // 予想寿命は内部だけで動かし、画面には出さない（攻略に使われないように）   // 得意はかくれステータスなので見せない
     $('money').textContent = s.money.toFixed(2); $('money').className = 'money' + (s.money < 0 ? ' neg' : '');
     $('hp').textContent = s.hp; $('mp').textContent = s.mp;
     $('hpbar').style.width = s.hp + '%'; $('mpbar').style.width = s.mp + '%';
