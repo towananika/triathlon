@@ -105,10 +105,10 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   function save() { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
 
   // RGB の 45AP を 9〜27 で分ける。W（かくれ）は別に 9〜27
-  // 生まれたときの 45AP を R・G・B・W（かくれ）の4つにランダムに分ける。どれも最小9（4つで45なので、最大は18になる）
+  // 生まれたときの 45AP を R・G・B・W（かくれ）の4つにランダムに分ける。どれも最小6、残りの21を1ずつ配る（最大27）
   function split45() {
-    var ap = { R: 9, G: 9, B: 9, W: 9 }, k = ['R', 'G', 'B', 'W'];
-    for (var i = 0; i < 9; i++) ap[k[ri(0, 3)]]++;
+    var ap = { R: 6, G: 6, B: 6, W: 6 }, k = ['R', 'G', 'B', 'W'];
+    for (var i = 0; i < 21; i++) ap[k[ri(0, 3)]]++;
     return ap;
   }
   // 名前は生まれたときにランダムで決まる（漢字圏の5か国で呼びやすい短い名前）。18歳からニックネームを付けられる
@@ -129,7 +129,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   function intel() { return clamp(Math.round(s.ap.B * Math.min(1, (age() + 1) / 20) * 2 + s.learn), 0, 100); }
   // 自我：2歳までは 0。16歳でほぼそろい、知能が高いほど思いどおり
   // かくれの INT と W（White）は、選んだステータスに AP を入れやすくする。効果は小さめ（すぐ気づかれないように）
-  function control() { return clamp((age() - 2) / 14, 0, 1) * clamp(0.75 + 0.1 * intel() / 100 + 0.15 * (s.W - 9) / 18, 0, 1); }
+  function control() { return clamp((age() - 2) / 14, 0, 1) * clamp(0.75 + 0.1 * intel() / 100 + 0.15 * (s.W - 6) / 21, 0, 1); }
   // 生殖能力（0〜100）。男女で育ち方と下がり方がちがう
   function fert() {
     var a = s.month / 12;
