@@ -81,7 +81,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 <h2>ステータス</h2>
 <div class="bars" id="bars"></div>
 <div class="row apleft" style="justify-content:space-between;margin-top:10px"><span>毎月付与できるAP　あと <b id="apleft"></b> / 5</span><button class="btn sub" id="apclear" type="button">やり直す</button></div>
-<p class="note">＋で、毎月伸ばしたいものにAPを付与します。付与は毎月続きます。残ったAPはランダムに散らばります。思いどおりに伸びるかは、自我と知能しだいです。</p>
+<p class="note">生まれたときの45APは自動で付きます。その後は毎月5AP。＋で、伸ばしたいものに付与を試みます（毎月続きます）。思いどおりに入るかは知能しだいで、外れたAPや付与しなかったAPはランダムに散らばります。</p>
 <p class="note" id="grow"></p>
 <p class="note" id="ctl"></p>
 </section>
@@ -121,7 +121,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   // 子どもは3人まで。kids に全員、s は今見ている子
   var MAX_KIDS = 3, kids = [], cur = 0, s = null;
   try { var saved = JSON.parse(localStorage.getItem(KEY)); if (saved) { kids = saved.kids || [saved]; cur = saved.cur || 0; } } catch (e) {}   // v0.24.7 までの1人の保存も読む
-  kids.forEach(function (k) { if (k.hp == null) { k.hp = k.mp = k.cond || 80; delete k.cond; } });   // v0.24 の保存（調子）から引きつぐ
+  kids.forEach(function (k) { if (k.hp == null) { k.hp = k.mp = k.cond || 80; delete k.cond; } ['R', 'G', 'B'].forEach(function (c) { k.ap[c] = Math.round(k.ap[c]); }); });   // v0.24 の保存（調子）から引きつぐ
   cur = Math.min(cur, Math.max(0, kids.length - 1)); s = kids[cur] || null;
   function save() { try { localStorage.setItem(KEY, JSON.stringify({ kids: kids, cur: cur })); } catch (e) {} }
 
@@ -152,7 +152,8 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   function intel() { return clamp(Math.round(s.ap.B * Math.min(1, (age() + 1) / 20) * 2 + s.learn), 0, 100); }
   // 自我：2歳までは 0。16歳でほぼそろい、知能が高いほど思いどおり
   // かくれの INT と W（White）は、選んだステータスに AP を入れやすくする。効果は小さめ（すぐ気づかれないように）
-  function control() { return clamp((age() - 2) / 14, 0, 1) * clamp(0.75 + 0.1 * intel() / 100 + 0.15 * (s.W - 6) / 21, 0, 1); }
+  // 付与が思いどおりに入る確率：自我（2歳から育つ）× 知能しだい（W は少しだけ助ける）
+  function control() { return clamp((age() - 2) / 14, 0, 1) * clamp(0.3 + 0.6 * intel() / 100 + 0.1 * (s.W - 6) / 21, 0, 1); }
   // 生殖能力（0〜100）。男女で育ち方と下がり方がちがう
   function fert() {
     var a = s.month / 12;
@@ -186,8 +187,9 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     want.forEach(function (k) {
       var to = k && Math.random() < c ? k : (a < LAW.work && s.voice && Math.random() < 0.5 ? s.voice : C3[ri(0, 2)]);   // 声かけ：散らばるAPが寄りやすい
       if (to === k) hit++;
-      var gain = 1 * (1 + s.aff[to] / 100) * (0.5 + (s.hp + s.mp) / 400);
-      s.ap[to] = Math.round((s.ap[to] + gain) * 100) / 100; got[to] += gain;
+      // RGB は整数。入る量の期待値は 得意（±30%）× 体と心の調子（0.5〜1）。1を超えた分は確率で +1
+      var e = (1 + s.aff[to] / 100) * (0.5 + (s.hp + s.mp) / 400), gain = Math.floor(e) + (Math.random() < e - Math.floor(e) ? 1 : 0);
+      s.ap[to] += gain; got[to] += gain;
       s.yr = s.yr || { R: 0, G: 0, B: 0 }; s.yr[to] += gain;
     });
     // 予定（4週）。3歳までは寝て遊ぶだけ
@@ -214,7 +216,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     s.money = Math.round(s.money * 100) / 100;
     s.month++;
     if (s.month % 12 === 0) { s.last = s.yr; s.yr = { R: 0, G: 0, B: 0 }; }   // 1年の伸びを残す（10歳から見せる）
-    var msg = 'AP：' + C3.map(function (k) { return NAMES[k] + '+' + got[k].toFixed(1); }).join(' ') + (a >= 2 ? '（思いどおり ' + hit + '/5）' : '（まだ自我がない）');
+    var msg = 'AP：' + C3.map(function (k) { return NAMES[k] + '+' + got[k]; }).join(' ') + (a >= 2 ? '（思いどおり ' + hit + '/5）' : '（まだ自我がない）');
     if (earned) msg += '　稼ぎ +' + earned.toFixed(1);
     if (cost) msg += '　生活費 −' + cost;
     say(msg);
@@ -246,12 +248,12 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     $('hpbar').style.width = s.hp + '%'; $('mpbar').style.width = s.mp + '%';
     var left = 5 - s.pick.R - s.pick.G - s.pick.B;
     $('bars').innerHTML = C3.map(function (k) {
-      return '<div class="bar" style="--c:var(--' + k + ')"><i>' + k + '</i><div class="t"><span style="width:' + (s.ap[k] / max * 100) + '%"></span></div><small>' + NAMES[k] + ' ' + s.ap[k].toFixed(1) + '</small><span class="plus"><em>' + (s.pick[k] || '') + '</em><button type="button" data-k="' + k + '" aria-label="' + NAMES[k] + 'にAPを付与"' + (left ? '' : ' disabled') + '>＋</button></span></div>';
+      return '<div class="bar" style="--c:var(--' + k + ')"><i>' + k + '</i><div class="t"><span style="width:' + (s.ap[k] / max * 100) + '%"></span></div><small>' + NAMES[k] + ' ' + s.ap[k] + '</small><span class="plus"><em>' + (s.pick[k] || '') + '</em><button type="button" data-k="' + k + '" aria-label="' + NAMES[k] + 'にAPを付与"' + (left ? '' : ' disabled') + '>＋</button></span></div>';
     }).join('');
     $('apleft').textContent = left;
     var L = s.last, top = L && C3.reduce(function (x, k) { return L[k] > L[x] ? k : x; }, 'R');
-    $('grow').textContent = a < TEEN || !L ? '' : 'この1年の伸び：' + C3.map(function (k) { return NAMES[k] + '+' + L[k].toFixed(1); }).join(' ') + '　いちばん伸びたのは「' + NAMES[top] + '」';
-    $('ctl').textContent = a < 2 ? 'まだ自我がありません。APは自由に散らばります。' : '思いどおりに伸びる見込み：' + Math.round(control() * 100) + '%';
+    $('grow').textContent = a < TEEN || !L ? '' : 'この1年の伸び：' + C3.map(function (k) { return NAMES[k] + '+' + Math.round(L[k]); }).join(' ') + '　いちばん伸びたのは「' + NAMES[top] + '」';
+    $('ctl').textContent = a < 2 ? 'まだ自我がありません。APは自由に散らばります。' : '付与が入る見込み（知能しだい）：' + Math.round(control() * 100) + '%';
     var ok = allowed();
     $('voicebox').hidden = a >= LAW.work;
     $('voice').innerHTML = VOICE.map(function (v) { return '<button type="button" class="btn' + (s.voice === v[0] ? '' : ' sub') + '" data-v="' + v[0] + '" aria-pressed="' + (s.voice === v[0]) + '">' + v[1] + '</button>'; }).join('');
