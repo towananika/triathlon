@@ -1,8 +1,13 @@
 // お知らせ・アップデートの一覧（新しい順）。1件が1ページ（news/v.html?id=…）になる。
 // id は版ページのURL。links のパスはサイトのトップから。changes は [種類, 内容]（new 追加 / change 変更 / fix 修正）。
-// posted＝お知らせを投稿した日時、updated＝サイトに反映した日時（日本時間）。同じこともあるが、別々に書く。ないときは date を使う。
+// date＝一覧に出す日付。posted＝投稿した日時、updated＝サイトに反映した日時（日本時間）は版ページの本文に出す。
 // check は「確認してほしいところ」。更新するときは先頭に1件足す。基準は news/rules.html。
 window.TRI_NEWS = [
+ {id:'v0.23', date:'2026-10-25', posted:'2026-10-25 14:20', updated:'2026-10-25 14:20', cat:'update', ver:'v0.23', title:'あなたがキャラになる。モールは SUNA、課金はゴールド',
+  lead:'ゲームの芯を決めました。あなたはキャラとして0歳で生まれ、お金0から始めて、働く・休む・学ぶ・遊ぶを選びながら町の経済を回します。管理者は開発版をOFFにして、一般の人と同じ表示で確かめられます。お知らせの一覧は日付だけにしました。モールは SUNA で買い物し、課金のお金「ゴールド」を足しました。',
+  changes:[['new','ゲームの芯：ユーザー＝キャラ、0歳から成長、お金0から、行動の予約、見えるのは RGB のステータスだけ'],['change','モールの基本のお金を SUNA に。はじめは 0 SUNA、「1時間はたらく」で稼ぐ'],['new','課金のお金「ゴールド」（準備中）：本物の金 1g 分、SUNA との交換は自由な為替'],['new','管理者の「開発版 ON/OFF」ボタン（上のバー）'],['change','トップの紹介文を新しいゲームの形に合わせた'],['change','お知らせ：一覧は日付だけ。投稿日時とアップデート日時は版ページの本文に書く']],
+  check:['開発版をOFFにして、一般の表示になるか','成長と自由の段階（案）の年齢でよいか'],
+  links:[['change','トップ','',''],['change','モール','mall/','SUNAで買い物'],['doc','記録：ゲームの芯','records/game_core_v0_23.md',''],['doc','記録：SUNAとゴールド','records/currency_gold_v0_23.md',''],['change','お知らせ','news/','']]},
  {id:'v0.22.1', date:'2026-10-25', posted:'2026-10-25 14:05', updated:'2026-10-25 14:05', cat:'info', ver:'v0.22.1', title:'生産とマーケットのルール（案）',
   lead:'AIが勝手にアイテムを作らず、決まったルールで生産する形の案です。人とAIの得意分野に分けて、マーケットを3つに分けます。形はシンプルにしました。',
   changes:[['new','生産のルール：レシピ（材料・作業時間・スキル）どおりに作る。需要が多いときだけ増産'],['new','人とAIの得意分野：人はデザインとAIに解けない問題、AIは量産'],['new','マーケット：量産市場・一点物市場・依頼板']],
@@ -84,13 +89,13 @@ window.TRI_NEWS = [
   lead:'R・G・Bの9クラス、スキル表（日英）、素質＋努力のクラス制度、9人の初期の方向を記録しました。',
   links:[['change','RGB・9クラス','guide.html#class',''],['change','クラス習得・承継','guide.html#legacy',''],['change','スキル表','guide.html#skills','']]}
 ];
-// 投稿日時とアップデート日時を並べた HTML（一覧・版ページ・トップで共通）
-window.triNewsTimes = function (n) {
-  function f(v) { return String(v || n.date || '').replace(/-/g, '.'); }
-  return '<span class="times"><time>投稿 ' + f(n.posted) + '</time><time>アップデート ' + f(n.updated) + '</time></span>';
+// 一覧に出すのは日付だけ。アップデートの日時は版ページの本文に書く（triNewsWhen）
+window.triNewsTimes = function (n) { return '<time>' + String(n.date || '').replace(/-/g, '.') + '</time>'; };
+window.triNewsWhen = function (n) {
+  function f(v) { return String(v || '').replace(/-/g, '.'); }
+  return n.updated ? '<p class="when">投稿：' + f(n.posted || n.date) + '　アップデート：' + f(n.updated) + '</p>' : '';
 };
 // 公式HPでは今の世代だけを見せる。先の世代や「期」の番号が出てくるお知らせは、管理者にだけ出す
 (function () {
-  var admin = false; try { admin = !!localStorage.getItem('tri-admin'); } catch (e) {}
-  if (!admin) window.TRI_NEWS = window.TRI_NEWS.filter(function (n) { return !/[1-4１-４]期|期ごと|4世代|26人/.test(JSON.stringify(n)); });
+  if (!window.TRI_DEV) window.TRI_NEWS = window.TRI_NEWS.filter(function (n) { return !/[1-4１-４]期|期ごと|4世代|26人/.test(JSON.stringify(n)); });
 })();

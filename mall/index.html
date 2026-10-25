@@ -8,9 +8,10 @@
 <link rel="stylesheet" href="mall.css?v=0.19">
 </head>
 <body>
-<script src="../site-nav.js?v=0.22"></script>
-<header class="hero"><p class="kicker">TRIATHLON MALL · 二水市</p><h1>トライアスロンモール</h1><p>二つの川の町のお店。二水のお店なので、お金は「文（もん）」。世界共通の SUNA でいうと、1 SUNA（二水で1時間働いて得られる普通の賃金）＝1,200文です。いまは試しの値段で、実際のお金は使いません。買い方（ゲームのお金か課金か）や、AIキャラの買い物・需要に合わせた生産はこれから決めます。</p>
-<div class="wallet"><span>所持金</span><b id="money">0</b><small>文 <span id="suna"></span></small><button type="button" id="bonus">今日のおこづかい +1,200文</button></div></header>
+<script src="../site-nav.js?v=0.23"></script>
+<header class="hero"><p class="kicker">TRIATHLON MALL · 二水市</p><h1>トライアスロンモール</h1><p>モールの基本のお金は、世界でひとつの通貨「SUNA」。1 SUNA は、その町で1時間働いて得られる普通の賃金です。はじめは誰でも 0 SUNA から。働いて稼ぎ、買い物をします。いまは試しの値段で、実際のお金は使いません。</p>
+<div class="wallet"><span>所持金</span><b id="money">0</b><small>SUNA</small><button type="button" id="bonus">1時間はたらく +1 SUNA</button></div>
+<div class="wallet gold"><span>ゴールド</span><b id="gold">0</b><small>課金のお金（準備中）。1ゴールド＝本物の金 1g 分。SUNA との交換レートは自由に動く</small></div></header>
 <nav class="floors" id="floors" aria-label="売り場"></nav>
 <div class="tools"><input id="q" type="search" placeholder="さがす（例：灯石、制服）" aria-label="品物をさがす"><select id="sort" aria-label="並び順"><option value="">おすすめ順</option><option value="low">安い順</option><option value="high">高い順</option></select></div>
 <main><ul class="grid" id="grid"></ul></main>
@@ -23,46 +24,50 @@
 <button class="buy" id="buy" type="button">買う</button></div>
 </aside>
 <footer>この端末に保存されます。<a href="../">TRIATHLON トップ</a></footer>
-<script src="items.js?v=0.19"></script>
+<script src="items.js?v=0.23"></script>
 <script>
 (function () {
   'use strict';
-  var KEY = 'triathlon-mall-v3', M = window.MALL, $ = function (i) { return document.getElementById(i); };
-  var RATE = 1200;   // 二水では 1 SUNA＝1,200文（SUNA の記録に書き込まれた値）
-  var st = { money: 24000, cart: {}, owned: {}, bonus: '' };
+  var KEY = 'triathlon-mall-v4', M = window.MALL, $ = function (i) { return document.getElementById(i); };
+  // 基本のお金は SUNA。中では 1/100 SUNA の整数で数える。品物の値段（文）は 二水の 1 SUNA＝1,200文 で SUNA に直す
+  // ゴールドは課金で買うお金（準備中）。はじめはどちらも 0。1日に8時間まで働ける
+  var RATE = 1200, WORK = 8;
+  var st = { money: 0, gold: 0, cart: {}, owned: {}, day: '', worked: 0 };
   try { var sv = JSON.parse(localStorage.getItem(KEY)); if (sv) st = Object.assign(st, sv); } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
   var floor = 'all', BY = {};
   M.items.forEach(function (it) { BY[it[0]] = it; });
-  function yen(n) { return n.toLocaleString('ja-JP') + '文'; }
-  function suna(n) { return (n / RATE).toFixed(n < RATE * 10 ? 2 : 1) + ' SUNA'; }
+  function price(it) { return Math.max(1, Math.round(it[5] * 100 / RATE)); }
+  function amt(c) { return (c / 100).toLocaleString('ja-JP', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function yen(c) { return amt(c) + ' SUNA'; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function today() { return new Date().toISOString().slice(0, 10); }
   $('floors').innerHTML = [['all', 'すべて', '🏬']].concat(M.floors).concat([['own', '持ち物', '🎒']]).map(function (f) {
     return '<button type="button" data-f="' + f[0] + '"><span>' + f[2] + '</span>' + f[1] + '</button>';
   }).join('');
   function render() {
-    $('money').textContent = st.money.toLocaleString('ja-JP'); $('suna').textContent = '（≈' + suna(st.money) + '）';
-    var b = $('bonus'); b.disabled = st.bonus === today(); b.textContent = b.disabled ? 'おこづかいは明日また' : '今日のおこづかい +1,200文';
+    if (st.day !== today()) { st.day = today(); st.worked = 0; }
+    $('money').textContent = amt(st.money); $('gold').textContent = st.gold.toLocaleString('ja-JP');
+    var b = $('bonus'); b.disabled = st.worked >= WORK; b.textContent = b.disabled ? '今日はもう休もう（あした また働ける）' : '1時間はたらく +1 SUNA（今日 ' + st.worked + '/' + WORK + '時間）';
     document.querySelectorAll('#floors button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.f === floor)); });
     var q = $('q').value.trim(), list = M.items.filter(function (it) {
       if (floor === 'own') return st.owned[it[0]];
       return (floor === 'all' || it[1] === floor) && (!q || (it[3] + it[4]).indexOf(q) >= 0);
     });
-    if ($('sort').value === 'low') list.sort(function (a, b) { return a[5] - b[5]; });
-    if ($('sort').value === 'high') list.sort(function (a, b) { return b[5] - a[5]; });
+    if ($('sort').value === 'low') list.sort(function (a, b) { return price(a) - price(b); });
+    if ($('sort').value === 'high') list.sort(function (a, b) { return price(b) - price(a); });
     $('grid').innerHTML = list.map(function (it) {
       var own = st.owned[it[0]] || 0, inCart = st.cart[it[0]] || 0;
       return '<li class="item c-' + it[6] + '"><div class="pic" aria-hidden="true">' + it[2] + '</div><div class="body"><h3>' + esc(it[3]) + '</h3><p>' + esc(it[4]) + '</p>' +
-        '<div class="row"><b class="price">' + yen(it[5]) + '<small>≈' + suna(it[5]) + '</small></b>' + (own ? '<span class="own">持っている ×' + own + '</span>' : '') + '</div>' +
+        '<div class="row"><b class="price">' + yen(price(it)) + '<small>二水では ' + it[5].toLocaleString('ja-JP') + '文</small></b>' + (own ? '<span class="own">持っている ×' + own + '</span>' : '') + '</div>' +
         (floor === 'own' ? '' : '<button type="button" class="add" data-add="' + it[0] + '">' + (inCart ? 'カートに ' + inCart + ' 個' : 'カートに入れる') + '</button>') + '</div></li>';
     }).join('') || '<li class="empty">' + (floor === 'own' ? 'まだ何も持っていません。' : '見つかりませんでした。') + '</li>';
     var n = 0, total = 0;
-    Object.keys(st.cart).forEach(function (id) { n += st.cart[id]; total += BY[id][5] * st.cart[id]; });
+    Object.keys(st.cart).forEach(function (id) { n += st.cart[id]; total += price(BY[id]) * st.cart[id]; });
     $('count').textContent = n; $('total').textContent = yen(total);
     $('lines').innerHTML = Object.keys(st.cart).map(function (id) {
       var it = BY[id];
-      return '<li><span>' + it[2] + ' ' + esc(it[3]) + '</span><span class="qty"><button type="button" data-dec="' + id + '" aria-label="減らす">−</button>' + st.cart[id] + '<button type="button" data-add="' + id + '" aria-label="増やす">＋</button></span><b>' + yen(it[5] * st.cart[id]) + '</b></li>';
+      return '<li><span>' + it[2] + ' ' + esc(it[3]) + '</span><span class="qty"><button type="button" data-dec="' + id + '" aria-label="減らす">−</button>' + st.cart[id] + '<button type="button" data-add="' + id + '" aria-label="増やす">＋</button></span><b>' + yen(price(it) * st.cart[id]) + '</b></li>';
     }).join('') || '<li class="empty">カートは空です。</li>';
     $('buy').disabled = !n;
   }
@@ -72,13 +77,13 @@
     if (t.dataset.add) { st.cart[t.dataset.add] = (st.cart[t.dataset.add] || 0) + 1; $('msg').textContent = ''; save(); render(); return; }
     if (t.dataset.dec) { var id = t.dataset.dec; if (--st.cart[id] <= 0) delete st.cart[id]; save(); render(); return; }
   });
-  $('bonus').onclick = function () { if (st.bonus === today()) return; st.bonus = today(); st.money += RATE; save(); render(); };
+  $('bonus').onclick = function () { if (st.worked >= WORK) return; st.worked++; st.money += 100; save(); render(); };
   $('q').oninput = render; $('sort').onchange = render;
   $('cartbtn').onclick = function () { $('cart').hidden = false; $('close').focus(); };
   $('close').onclick = function () { $('cart').hidden = true; };
   $('cart').onclick = function (e) { if (e.target === this) this.hidden = true; };
   $('buy').onclick = function () {
-    var total = 0; Object.keys(st.cart).forEach(function (id) { total += BY[id][5] * st.cart[id]; });
+    var total = 0; Object.keys(st.cart).forEach(function (id) { total += price(BY[id]) * st.cart[id]; });
     if (total > st.money) { $('msg').textContent = 'あと ' + yen(total - st.money) + ' たりません'; $('msg').className = 'msg err'; return; }
     st.money -= total;
     Object.keys(st.cart).forEach(function (id) { st.owned[id] = (st.owned[id] || 0) + st.cart[id]; });
