@@ -10,14 +10,10 @@
   var FONT_LOGO = '"Montserrat",system-ui,sans-serif', FONT_HEAD = '"Noto Sans JP","Noto Sans SC","Noto Sans TC","Noto Sans KR","Noto Sans",system-ui,sans-serif';
   var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['saga/', '📖', '物語'], ['cast/', '👥', 'キャラ'], ['mall/', '🛍️', 'モール']];
   // 公開しているのは今の期だけ（「期」という言葉も出さない）。1〜4期と設定資料は管理者だけに見せる
-  // ログインした管理者は「開発版 ON/OFF」で、一般の人と同じ表示に切り替えられる（tri-view＝public で OFF）
-  var login = false, pub = false;
-  try { login = !!localStorage.getItem('tri-admin'); pub = localStorage.getItem('tri-view') === 'public'; } catch (e) {}
-  var admin = login && !pub;
-  window.TRI_DEV = admin;
+  var admin = false;
   if (admin) document.documentElement.classList.add('tri-admin');
-  var MORE = login && !admin ? [['dev/', '🛠️', '開発版'], ['news/rules.html', '📏', 'アップデートの基準']] : admin ? [['dev/', '🛠️', '開発版'], ['guide.html', '📘', '設定資料（世界ガイド）'], ['settings/', '📋', '設定リスト'], ['guide.html#simulation', '🏡', '暮らしの試作'], ['news/rules.html', '📏', 'アップデートの基準']]
-    : [['news/rules.html', '📏', 'アップデートの基準'], ['login/', '🔑', '管理者ログイン']];
+  var MORE = admin ? [['dev/', '🛠️', '開発版'], ['guide.html', '📘', '設定資料（世界ガイド）'], ['settings/', '📋', '設定リスト'], ['guide.html#simulation', '🏡', '暮らしの試作'], ['news/rules.html', '📏', 'アップデートの基準']]
+    : [['news/rules.html', '📏', 'アップデートの基準'], ['login/', '🔑', 'ログイン']];
   var path = location.pathname.replace(/index\.html$/, ''), rootPath = new URL(root).pathname;
   function cur(p) {
     if (p.indexOf('#') >= 0) return false;
@@ -30,7 +26,7 @@
     'h1,h2{font-family:var(--tri-head);letter-spacing:.03em}.kick{font-family:var(--tri-logo);font-weight:500;letter-spacing:.28em;text-transform:uppercase}' +
     '.tri-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;padding:8px 16px;background:#fff;border-bottom:1px solid #cbdedf;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;position:sticky;top:0;z-index:60}' +
     '.tri-brand{color:#163744;text-decoration:none;font-family:var(--tri-logo);font-weight:700;letter-spacing:.22em;font-size:19px;line-height:1;padding:8px 0}' +
-    '.tri-dev{margin-right:auto;font:inherit;background:#2b2f36;color:#ffd76a;font-size:12px;font-weight:800;letter-spacing:.1em;border:0;border-radius:6px;min-height:32px;padding:4px 10px;cursor:pointer;white-space:nowrap}.tri-dev.off{background:#e6eaee;color:#46616b}' +
+    '.tri-dev{margin-right:auto;background:#2b2f36;color:#ffd76a;font-size:12px;font-weight:800;letter-spacing:.1em;border-radius:6px;padding:4px 10px;text-decoration:none;white-space:nowrap}' +
     '.tri-top{display:none;gap:4px}.tri-top a{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border-radius:10px;color:#163744;text-decoration:none;font-size:15px;font-weight:700}' +
     '.tri-top a:hover{background:#edf5f4}.tri-top a[aria-current="page"]{color:#007f87;box-shadow:inset 0 -3px 0 #007f87;border-radius:0}' +
     '.tri-menu{position:relative;background:none!important;padding:0!important;border:0!important;border-radius:0!important;margin:0!important}.tri-nav,.tri-bottom{box-sizing:border-box}.tri-nav *,.tri-bottom *{box-sizing:border-box}.tri-menu summary{list-style:none;cursor:pointer;white-space:nowrap;display:flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid #cbdedf;border-radius:999px;font-size:14px;font-weight:700;color:#163744;background:#fff}' +
@@ -50,7 +46,7 @@
   document.head.appendChild(st);
   var bar = document.createElement('div');
   bar.className = 'tri-nav';
-  bar.innerHTML = '<a class="tri-brand" href="' + root + '" aria-label="TRIATHLON ホーム">TRIATHLON</a>' + (login ? '<button type="button" class="tri-dev' + (admin ? '' : ' off') + '" aria-pressed="' + admin + '" title="押すと切り替え">開発版 ' + (admin ? 'ON' : 'OFF') + '</button>' : '') +
+  bar.innerHTML = '<a class="tri-brand" href="' + root + '" aria-label="TRIATHLON ホーム">TRIATHLON</a><a class="tri-login" href="' + root + 'login/" style="font-size:13px;color:#007f87;padding:8px 4px;white-space:nowrap">ログイン</a>' + (admin ? '<a class="tri-dev" href="' + root + 'dev/">開発版</a>' : '') +
     '<div class="tri-top" role="navigation" aria-label="おもなページ">' + MAIN.map(function (it) { return link(it, ''); }).join('') + '</div>' +
     '<details class="tri-menu"><summary>☰ その他</summary><div class="tri-more" role="navigation" aria-label="そのほかのページ">' + MORE.map(function (it) { return link(it, ''); }).join('') + '</div></details>';
   var bottom = document.createElement('div');
@@ -60,11 +56,11 @@
   bottom.innerHTML = MAIN.map(function (it) { return link(it, ''); }).join('');
   document.body.insertBefore(bar, document.body.firstChild);
   document.body.appendChild(bottom);
+  var topStyle = document.createElement('link'); topStyle.rel = 'stylesheet'; topStyle.href = root + 'back-to-top.css'; document.head.appendChild(topStyle);
+  var topScript = document.createElement('script'); topScript.src = root + 'back-to-top.js'; document.body.appendChild(topScript);
   document.addEventListener('click', function (e) {
     var m = bar.querySelector('.tri-menu');
     if (m.open && (!m.contains(e.target) || e.target.closest('.tri-more a'))) m.open = false;
   });
-  var tg = bar.querySelector('.tri-dev');
-  if (tg) tg.addEventListener('click', function () { try { if (admin) localStorage.setItem('tri-view', 'public'); else localStorage.removeItem('tri-view'); } catch (e) {} location.reload(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') bar.querySelector('.tri-menu').open = false; });
 })();
