@@ -17,7 +17,7 @@
   var admin = false;
   if (admin) document.documentElement.classList.add('tri-admin');
   var MORE = admin ? [['dev/', '🛠️', '開発版'], ['guide.html', '📘', '設定資料（世界ガイド）'], ['settings/', '📋', '設定リスト'], ['guide.html#simulation', '🏡', '暮らしの試作'], ['news/rules.html', '📏', 'アップデートの基準']]
-    : [['life/', '🧭', '一生の地図'], ['notes/', '📒', 'からだと心のノート'], ['daily/', '🍚', 'ごはんとおやすみの話'], ['share/', '📣', 'SNS用カード'], ['sim/', '🌏', '今日の世界'], ['places/', '📷', '好きな場所'], ['saga/', '🗺️', '物語のあらすじ（4世代）'], ['news/rules.html', '📏', 'アップデートの基準']];
+    : [['life/', '🧭', '一生の地図'], ['notes/', '📒', 'からだと心のノート'], ['daily/', '🍚', 'ごはんとおやすみの話'], ['album/', '📷', '思い出のアルバム'], ['share/', '📣', 'SNS用カード'], ['sim/', '🌏', '今日の世界'], ['places/', '📷', '好きな場所'], ['saga/', '🗺️', '物語のあらすじ（4世代）'], ['news/rules.html', '📏', 'アップデートの基準']];
   var path = location.pathname.replace(/index\.html$/, ''), rootPath = new URL(root).pathname;
   function cur(p) {
     if (p.indexOf('#') >= 0) return false;
