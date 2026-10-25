@@ -11,8 +11,8 @@
   var FONT_LOGO = '"Montserrat",system-ui,sans-serif', FONT_HEAD = '"Noto Sans JP","Noto Sans SC","Noto Sans TC","Noto Sans KR","Noto Sans",system-ui,sans-serif';
   // 開発元（仮法人）。名前を変えるときはここだけ
   var STUDIO = 'Towa'; // 設立 2026-10-25、所在地はゲーム内の二水（Nisui）
-  var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['stories/', '📖', '物語'], ['cast/', '👥', 'キャラ'], ['map/', '🌐', '地図']];
-  var TABS = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['stories/', '📖', '物語'], ['map/', '🌐', '地図'], ['cast/', '👥', 'キャラ']];
+  var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['stories/', '📖', '物語'], ['cast/', '👥', 'キャラ'], ['map/', '🌐', 'マップ']];
+  var TABS = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['stories/', '📖', '物語'], ['map/', '🌐', 'マップ'], ['cast/', '👥', 'キャラ']];
   // 公開しているのは今の期だけ（「期」という言葉も出さない）。1〜4期と設定資料は管理者だけに見せる
   var admin = false;
   if (admin) document.documentElement.classList.add('tri-admin');
@@ -69,7 +69,7 @@
     var foot = document.createElement('footer');
     foot.className = 'tri-foot';
     function fl(t, a) { return '<div><b>' + t + '</b>' + a.map(function (it) { return '<a href="' + root + it[0] + '">' + it[1] + '</a>'; }).join('') + '</div>'; }
-    foot.innerHTML = '<div class="tri-fcols">' + fl('作品', [['stories/', '物語（連載）'], ['saga/', '物語のあらすじ'], ['cast/', 'キャラクター']]) + fl('世界', [['map/', '地図と都市計画'], ['places/', '好きな場所']]) +
+    foot.innerHTML = '<div class="tri-fcols">' + fl('作品', [['stories/', '物語（連載）'], ['saga/', '物語のあらすじ'], ['cast/', 'キャラクター']]) + fl('世界', [['map/', 'マップと二水の町'], ['places/', '好きな場所']]) +
       fl('サポート', [['news/', 'お知らせ'], ['news/rules.html', 'アップデートの基準'], ['login/', 'ログイン']]) + '</div>' +
       '<div class="tri-fbase"><span class="logo">TRIATHLON</span><span class="tri-studio">© 2026 ' + STUDIO + '<small>（仮）</small><em>Est. 2026.10.25 · Nisui</em></span><span>物語と世界を少しずつ公開しています。画像は検討中のイメージです。' + (ver ? ' · ' + ver.textContent : '') + '</span></div>';
     if (old) old.replaceWith(foot); else document.body.appendChild(foot);
