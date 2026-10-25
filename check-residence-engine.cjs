@@ -1,0 +1,34 @@
+const assert = require('node:assert/strict');
+const sim = require('./residence-engine.js');
+const original = sim.createState();
+assert.equal(original.day,0);
+assert.equal(original.people.length,6);
+const first = sim.advance(sim.createState(),30);
+assert.equal(first.day,30);
+assert(first.people.every(p=>['R','G','B'].includes(p.city)));
+assert(new Set(first.people.map(p=>p.city)).size>=2);
+assert(first.people.every(p=>p.history.length>0));
+assert.deepEqual(first,sim.advance(sim.createState(),30));
+assert.equal(original.day,0);
+const changed = sim.createState();
+for(const city of ['R','B']) for(const metric of sim.metrics) changed.conditions[city][metric.id]=0;
+for(const metric of sim.metrics) changed.conditions.G[metric.id]=100;
+sim.advance(changed,30);
+assert(changed.people.every(p=>p.city==='G'));
+assert.equal(first.conditions.G.comfort,90);
+sim.advance(first,400);
+assert(first.log.length<=240);
+for(const p of first.people) {
+  assert(p.history.length<=60);
+  assert(p.energy>=0&&p.energy<=100);
+  assert(p.satisfaction>=0&&p.satisfaction<=100);
+  assert(Object.values(p.needs).every(n=>n>=0&&n<=100));
+}
+assert.equal(sim.restore({day:1,people:[]}),null);
+const broken=JSON.parse(JSON.stringify(first));broken.people[0].city='<script>';
+assert.equal(sim.restore(broken),null);
+const bad=sim.createState();bad.conditions.R.challenge=Infinity;
+assert.throws(()=>sim.advance(bad,1));
+assert.throws(()=>sim.advance(sim.createState(),-1));
+const capped=JSON.parse(JSON.stringify(first));capped.day=3649;sim.advance(capped,30);assert.equal(capped.day,3650);
+console.log(JSON.stringify({day:30,people:sim.advance(sim.createState(),30).people.map(p=>({id:p.id,city:p.city,action:p.action,satisfaction:p.satisfaction})),test:'residence engine passed'},null,2));
