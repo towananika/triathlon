@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="TRIATHLON の世界・魔法・学校・社会・世代・絵に必要な設定41項目">
+<title>設定リスト | TRIATHLON</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* 必要な設定の一覧。状態（決定済み／おすすめで決定／あとで）を色の点で見せ、絞り込みできる */
+:root{
+  --bg:#eef1f6; --card:#ffffff; --fg:#1c2230; --mut:#667085; --line:#dde2ea; --chip:#f2f4f8; --pick:#1c2230; --pickfg:#fff;
+  --R:#e0525e; --G:#3aa36f; --B:#4a6fe0; --C:#1fb3c7; --M:#d1489b; --Y:#e2a614;
+  --sd:#3aa36f; --sr:#4a6fe0; --sl:#a0a7b4;
+  --display:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif; --body:"Zen Kaku Gothic New","Hiragino Sans",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141820;--card:#1d2330;--fg:#e9edf5;--mut:#9aa3b5;--line:#2c3444;--chip:#262e3d;--pick:#e9edf5;--pickfg:#141820;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141820;--card:#1d2330;--fg:#e9edf5;--mut:#9aa3b5;--line:#2c3444;--chip:#262e3d;--pick:#e9edf5;--pickfg:#141820;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.6}
+.wrap{max-width:720px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right,0px)) 60px max(16px,env(safe-area-inset-left,0px));display:grid;gap:16px}
+h1,h2{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance}h1{font-size:26px}h2{font-size:18px;display:flex;align-items:center;gap:8px}
+.lead{color:var(--mut);margin:0}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sum div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}
+.sum b{display:block;font-family:var(--display);font-size:28px;font-variant-numeric:tabular-nums}.sum span{font-size:12px;color:var(--mut)}
+.bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--line)}
+.bar i{display:block}
+.f{display:flex;gap:6px;flex-wrap:wrap;position:sticky;top:0;z-index:3;background:var(--bg);padding:6px 0}
+.f button{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:99px;padding:6px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;min-height:36px}
+.f button[aria-pressed="true"]{background:var(--pick);color:var(--pickfg);border-color:var(--pick)}
+.g{background:var(--card);border:1px solid var(--line);border-top:6px solid var(--gc);border-radius:16px;padding:12px;display:grid;gap:4px}
+.g h2 small{margin-left:auto;font-family:var(--body);font-weight:500;font-size:12px;color:var(--mut)}
+.it{display:grid;grid-template-columns:12px 1fr;gap:4px 10px;padding:8px 0;border-top:1px solid var(--line)}
+.it:first-of-type{border-top:0}
+.it i{width:12px;height:12px;border-radius:50%;margin-top:6px}
+.it b{font-size:14.5px}.it p{grid-column:2;margin:0;font-size:13.5px;color:var(--fg)}
+.it em{font-style:normal;font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:1px;color:#fff}
+.d i,.d em{background:var(--sd)}.r i,.r em{background:var(--sr)}.l i,.l em{background:var(--sl)}
+.l p{color:var(--mut)}
+.links{display:grid;gap:8px}.links a{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;color:var(--fg);text-decoration:none;font-weight:700}
+.links a small{display:block;font-weight:400;color:var(--mut);font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<p style="margin:0;font-size:14px"><a href="../" style="color:var(--B);font-weight:700;text-decoration:none">← TRIATHLON トップへ</a></p>
+<header style="display:grid;gap:6px"><h1>トライアスロン 設定リスト</h1><p class="lead">世界と物語に必要な設定の一覧です。空いていたところは Claude のおすすめで埋めました。v0.17（2026-10-25）で、空いていたところを Claude のおすすめで埋めて採用しました。</p></header>
+<div class="sum" id="sum"></div>
+<div class="bar" id="bar"></div>
+<div class="f" id="f"><button data-s="" aria-pressed="true">ぜんぶ</button><button data-s="r">🔵 おすすめで決定</button><button data-s="d">🟢 決定済み</button><button data-s="l">⚪ あとで</button></div>
+<div id="list" style="display:grid;gap:12px"></div>
+<div class="links"><a href="../cast/">キャラ図鑑<small>26人の名前・外見・人となり</small></a><a href="../saga/">トライアスロン物語<small>4世代・12の分かれ道・家系図</small></a></div>
+</div>
+<script>
+// 設定リスト。st: d=決定済み, r=Claudeのおすすめで決定, l=あとで（元の案の意図が必要）
+var GROUPS = [
+ {t:'世界の土台', e:'🌏', c:'var(--G)', items:[
+  ['d','地球と文明','地形は現実の地球のまま。文明の歴史だけが違う近未来。'],
+  ['d','「期」の意味','親から子への世代。第2期は第1期の子どもたち。'],
+  ['d','色の意味','光の三原色が混ざっていく。シアン＝G＋B、マゼンタ＝R＋B、イエロー＝R＋G。'],
+  ['d','年の数え方','新暦。第1期の9人は新暦312年に高1。'],
+  ['r','時代の並び','第1期 高1＝312年 → 第2期 高1＝334年 → 第3期 高1＝356年 → 第4期 高1＝378年（約22年ごと）。'],
+  ['d','「生き残った者たち」','何から生き残ったかは謎のまま。手がかりだけ出す。'],
+  ['r','謎の明かし方','期ごとに一段ずつ。第1期「層がある」→ 第2期「層は人が作った」→ 第3期「声と層はつながっている」→ 第4期「答えに触れるが、言い切らない」。'],
+  ['r','二水市の外','東の海の向こうに改神国、北の山に学園都市・霧ヶ丘、南の海辺に港町・白波（旧案の青波市を作り直し）。現実の国名・国境は使わない。']]},
+ {t:'魔法と光', e:'✨', c:'var(--B)', items:[
+  ['d','魔法の元','光。体に通すか、灯石に貯めて道具で使う。'],
+  ['r','魔法の代わりに払うもの','使うほど眠くなる「光疲れ」。限界を超えると数日起きられない。命や寿命は削らない。'],
+  ['r','円形魔法が「途中まで効く」単位','一節（4語ほど）ごと。一節も終わらないうちに切れたら何も起きない。'],
+  ['r','魔法の決まり','人に向けた攻撃魔法は、試合場・川守隊の任務・身を守るとき以外は禁止。破ると資格停止。'],
+  ['r','灯石の道具','灯り、暖房、路面電車、医療器、通信。灯石は工房街で光を詰め直す。'],
+  ['r','通信','「光信（こうしん）」。灯石の板で文字と声を送る。スマホに近いが、夜は少し遅い。']]},
+ {t:'学校とクラス', e:'🏫', c:'var(--R)', items:[
+  ['d','学校のしくみ','二水学園。中等部（12〜15）で R・G・B の基礎、高等部（15〜18）で専門クラスを選ぶ。'],
+  ['r','資格の段階','見習い → 3級 → 2級 → 1級 → 師範。高校卒業で3級が目安。2級＝一人で安定して使える、1級＝新しい技や魔法陣を作れる。'],
+  ['r','2つ目のクラス','18歳から持てる。自分の色に近いクラスほど早く伸び、遠い色も努力で届く。'],
+  ['r','学校の移り方','高等部の後に魔法学校・神学校・海洋学校へ進める。途中の転籍は年1回、試験あり。'],
+  ['r','「社会法政」','学校名ではなく、高等部の教養の授業（社会・法・政治）。全クラス共通。'],
+  ['r','実習の危険','高1は町の中だけ。高2から川守隊と組んで外へ。命の危険は、洪水などの本物の災害のときだけ。'],
+  ['r','アサシンの適性','足音と呼吸を消す、暗い所でも見える目、手先の器用さ。'],
+  ['l','RAN / ATS などの技名','元の案の意味を聞いてから決めます（いまは仮の表記のまま）。'],
+  ['l','「雄才」の意図','元の案の意図を聞いてから決めます。']]},
+ {t:'社会と暮らし', e:'🏘', c:'var(--Y)', items:[
+  ['d','暮らしのしくみ','食・住・医療・学びは無料。働くのは好きなことと夢のため。お金は「ルクス」。'],
+  ['r','物価の目安','1ルクス＝100円くらいの感覚。焼きそばパン2、路面電車1、灯石の詰め直し5、見習いの月の稼ぎ300ルクス。'],
+  ['r','町の決め方','大事なことは町の集会で話し、市議会が決める。市長は4年ごとの選挙。高校生も集会で話せる。'],
+  ['r','川守隊','町の守備と救助の隊。階級は見習い→隊員→班長→副隊長→隊長。装備は盾・ロープ・灯石の信号灯。仕事は戦争ではなく、災害と治安。'],
+  ['r','交通','北岸の路面電車、3か所の渡し舟、第2部からの大橋。遠くの町へは灯石で走る長距離列車「川筋線」。改神国へは週1便の客船で一晩。'],
+  ['r','信じるもの','改神国では「名前のない声」を神の声として信じる人が多い。二水市では信じても信じなくても自由。'],
+  ['d','改神国','海の向こうの、神学校の本場の国。'],
+  ['r','改神国の姿','白い石の港町。祈りの鐘が朝夕に鳴る。二水市とは仲がよいが、層を掘るかどうかで意見がぶつかる。']]},
+ {t:'人生と世代', e:'👪', c:'var(--M)', items:[
+  ['r','大人になる年','18歳で大人。結婚は18歳から（多くは20代）。'],
+  ['r','恋愛と性の描き方','高校生は告白・手をつなぐ・デートまで。性的な場面は18歳以上の大人の時期だけで、暗転して直接は描かない。断る自由と同意をいつも大事にする。'],
+  ['r','子が受け継ぐもの','光の色と技の素質だけ。性格や思い出は受け継がず、親の昔話として残る。'],
+  ['r','第2期の物語','「層の向こう」。親たちが選んだ町で、層を作った人々の痕跡を追う。拠点は灯台館。'],
+  ['r','第3期の物語','「白と黒の市場」。魔法より生き方の時代。商人・職人・狩人が町の新しい形を作る。'],
+  ['r','第4期の物語','「白紙の地図」。何色にも染まっていない世代が、町の外の何もない場所に最初の道を描く。']]},
+ {t:'絵と表現', e:'🎨', c:'var(--C)', items:[
+  ['d','画風','第1期と同じ2Dアニメ。画像生成は GPT で行う。'],
+  ['d','外見','26人の身長・体型・髪・目・肌をキャラ図鑑の通り。'],
+  ['r','制服','紺のブレザーに、クラスの色のネクタイかリボン（R赤・G緑・B青）。訓練着は白地に色のライン。'],
+  ['l','数値のバランス','ゲームに入れるときに決めます。']]}
+];
+
+var ST = {d:'決定済み', r:'おすすめ', l:'あとで'}, filt = '';
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+var cnt = {d:0, r:0, l:0}, all = 0;
+GROUPS.forEach(function(g){ g.items.forEach(function(it){ cnt[it[0]]++; all++; }); });
+document.getElementById('sum').innerHTML = ['r','d','l'].map(function(k){ return '<div><b style="color:var(--s' + k + ')">' + cnt[k] + '</b><span>' + ({r:'おすすめで決定',d:'決定済み',l:'あとで'})[k] + '</span></div>'; }).join('');
+document.getElementById('bar').innerHTML = ['d','r','l'].map(function(k){ return '<i style="width:' + (cnt[k] / all * 100) + '%;background:var(--s' + k + ')"></i>'; }).join('');
+function render(){
+  document.getElementById('list').innerHTML = GROUPS.map(function(g){
+    var its = g.items.filter(function(it){ return !filt || it[0] === filt; });
+    if (!its.length) return '';
+    return '<section class="g" style="--gc:' + g.c + '"><h2>' + g.e + ' ' + esc(g.t) + '<small>' + its.length + '項目</small></h2>' +
+      its.map(function(it){ return '<div class="it ' + it[0] + '"><i></i><b>' + esc(it[1]) + '<em>' + ST[it[0]] + '</em></b><p>' + esc(it[2]) + '</p></div>'; }).join('') + '</section>';
+  }).join('');
+  document.querySelectorAll('#f button').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.s === filt); });
+}
+document.getElementById('f').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; filt = b.dataset.s; render(); });
+render();
+</script>
+
+</body>
+</html>

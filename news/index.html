@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="TRIATHLON のお知らせとアップデート。版ごとの変更点と、変わったページへのリンク。">
+<title>お知らせ・アップデート | TRIATHLON</title>
+<link rel="stylesheet" href="news.css?v=0.17">
+</head>
+<body>
+<div class="top"><a class="brand" href="../">TRIATHLON<span>SAME EARTH. DIFFERENT FUTURE.</span></a><a class="home" href="../">トップへ</a></div>
+<main>
+<header class="head"><p class="kicker">NEWS & UPDATES</p><h1>お知らせ・アップデート</h1><p class="lead">版ごとに、何が変わったかと、そのページへのリンクをまとめています。</p></header>
+<section class="latest" id="latest" aria-label="最新の更新"></section>
+<div class="filter" role="group" aria-label="種類で絞り込み"><button type="button" data-f="" aria-pressed="true">すべて</button><button type="button" data-f="update" aria-pressed="false">アップデート</button><button type="button" data-f="info" aria-pressed="false">お知らせ</button></div>
+<ol class="list" id="list"></ol>
+</main>
+<footer><a href="../">TRIATHLON トップ</a> / <a href="../saga/">物語</a> / <a href="../cast/">キャラ図鑑</a> / <a href="../settings/">設定リスト</a></footer>
+<script src="news.js?v=0.17"></script>
+<script>
+(function () {
+  'use strict';
+  var CAT = {update:'アップデート', info:'お知らせ', fix:'修正'}, KIND = {new:'追加', change:'変更', doc:'記録'};
+  var list = window.TRI_NEWS || [], filter = '';
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function href(p){ return '../' + p; }
+  function links(n){
+    return '<ul class="links">' + n.links.map(function(l){
+      return '<li><a href="' + esc(href(l[2])) + '"' + (/\.md$/.test(l[2]) ? ' download' : '') + '><em class="k-' + l[0] + '">' + KIND[l[0]] + '</em><span>' + esc(l[1]) + (l[3] ? '<small>' + esc(l[3]) + '</small>' : '') + '</span><i aria-hidden="true">→</i></a></li>';
+    }).join('') + '</ul>';
+  }
+  function meta(n, isNew){
+    return '<p class="meta"><span class="cat c-' + n.cat + '">' + CAT[n.cat] + '</span>' + (n.ver ? '<span class="ver">' + esc(n.ver) + '</span>' : '') + (n.date ? '<time>' + n.date.replace(/-/g, '.') + '</time>' : '') + (isNew ? '<span class="new">NEW</span>' : '') + '</p>';
+  }
+  var newest = list[0];
+  document.getElementById('latest').innerHTML = newest ? meta(newest, true) + '<h2>' + esc(newest.title) + '</h2><p>' + esc(newest.lead) + '</p>' + links(newest) : '';
+  function aid(n){ return n.ver ? n.ver.replace(/[^\w.]/g, '_') : 'info-' + n.date; }
+  function render(){
+    var h = decodeURIComponent(location.hash.slice(1));
+    document.getElementById('list').innerHTML = list.slice(1).filter(function(n){ return !filter || n.cat === filter; }).map(function(n){
+      return '<li class="item" id="' + esc(aid(n)) + '"><details' + (aid(n) === h ? ' open' : '') + '><summary>' + meta(n, false) + '<h2>' + esc(n.title) + '</h2></summary><p>' + esc(n.lead) + '</p>' + links(n) + '</details></li>';
+    }).join('');
+    document.querySelectorAll('[data-f]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.f === filter)); });
+  }
+  document.querySelector('.filter').addEventListener('click', function(e){ var b = e.target.closest('[data-f]'); if (!b) return; filter = b.dataset.f; render(); });
+  render();
+  window.addEventListener('hashchange', render);
+  var t = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (t) t.scrollIntoView();
+})();
+</script>
+</body>
+</html>
