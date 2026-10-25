@@ -5,60 +5,78 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="TRIATHLON（トライアスロン）。同じ地球で、違う未来を。二つの川の町・二水に生きる人たちの物語。">
 <title>TRIATHLON — 同じ地球で、違う未来を。</title>
-<link rel="stylesheet" href="home.css?v=0.24">
+<link rel="stylesheet" href="home.css?v=0.42">
 <style>
-.ep{display:grid;gap:12px}.ep a{display:block;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;color:var(--ink);text-decoration:none}
-.ep a:hover{border-color:var(--teal)}.ep .no{color:#9a7630;font-weight:800;font-size:13px}.ep b{display:block;font-size:22px;font-family:var(--tri-head,sans-serif);margin:2px 0 4px}.ep small{color:var(--sub);font-size:14px}
-.ep .go{display:inline-block;margin-top:10px;font-weight:800;color:var(--teal)}
-.nine{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
-.nine a{display:grid;justify-items:center;gap:4px;background:linear-gradient(180deg,#fff 40%,color-mix(in srgb,var(--c) 14%,#fff));border:1px solid var(--line);border-bottom:4px solid var(--c);border-radius:14px;padding:6px 6px 10px;color:var(--ink);text-decoration:none;text-align:center}
+.ep a{display:block;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;color:var(--ink);text-decoration:none;position:relative;overflow:hidden}
+.ep a:hover{border-color:var(--teal)}.ep .no{color:var(--blue);font-weight:800;font-size:14px}.ep b{display:block;font-size:24px;font-family:var(--tri-head,sans-serif);margin:2px 0 4px}.ep small{color:var(--sub);font-size:16px}
+.ep .go{display:inline-block;margin-top:10px;font-weight:800;color:var(--blue)}
+.ep .band{display:flex;gap:4px;margin-top:12px}.ep .band i{height:6px;flex:1;border-radius:3px}
+.duo{display:grid;gap:12px}
+.box{display:block;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;color:var(--ink);text-decoration:none}
+.box:hover{border-color:var(--teal)}.box b{display:block;font-size:19px}.box p{margin:4px 0 0;color:var(--sub)}.box .go{display:inline-block;margin-top:8px;font-weight:800;color:var(--blue)}
+.box svg{display:block;width:100%;height:auto;margin:6px 0 2px}
+.box .par{margin-top:10px;background:var(--mist);border-radius:12px;padding:8px 12px;font-size:15px;color:var(--ink)}
+.agef{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}.agef input{width:6em;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.agef button{border:0;background:var(--teal);color:var(--card);font:inherit;font-weight:800;border-radius:999px;padding:8px 18px;cursor:pointer;min-height:44px}
+.nine{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
+.nine a{flex:0 0 128px;scroll-snap-align:start;display:grid;justify-items:center;gap:4px;background:linear-gradient(180deg,var(--card) 40%,color-mix(in srgb,var(--c) 14%,var(--card)));border:1px solid var(--line);border-bottom:4px solid var(--c);border-radius:14px;padding:6px 6px 10px;color:var(--ink);text-decoration:none;text-align:center}
 .nine a:hover{border-color:var(--teal)}.nine img,.nine .ini{width:100%;aspect-ratio:2/3;object-fit:contain;object-position:bottom}
-.nine b{font-size:15px}.nine small{font-size:11px;color:var(--sub);line-height:1.3}
-.nine .ini{display:grid;place-items:center;font-weight:800;font-size:40px;color:#fff;border-radius:10px}
-.R{--c:#d94b4b}.G{--c:#2e9b5f}.B{--c:#2f6fd6}
-.fav{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-.fav a{display:block;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--ink);text-decoration:none}
-.fav .who{font-size:12px;color:#9a7630;font-weight:800}.fav b{display:block;font-size:17px}.fav p{margin:6px 0 0;font-size:14px;color:var(--sub);font-family:"Hiragino Mincho ProN","Yu Mincho",serif}
-.mapbtn{display:flex;align-items:center;gap:14px;margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 18px;color:var(--ink);text-decoration:none}
-.mapbtn span{font-size:32px}.mapbtn b{display:block}.mapbtn small{color:var(--sub)}
+.nine b{font-size:16px}.nine small{font-size:12px;color:var(--sub);line-height:1.3}
+.nine .ini{display:grid;place-items:center;font-weight:800;font-size:40px;color:var(--card);border-radius:10px}
+.R{--c:#D9707A}.G{--c:#4FAE84}.B{--c:#5B8FD6}
+.wlinks{display:grid;gap:10px;margin-top:12px}
+.team{display:grid;gap:10px}.team div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center}
+.team span{grid-row:span 2;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:var(--card)}.team b{font-size:17px}.team p{margin:0;color:var(--sub);font-size:15px}
+@media(min-width:760px){.duo{grid-template-columns:1fr 1fr}.wlinks{grid-template-columns:repeat(3,1fr)}.team{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
-<script src="site-nav.js?v=0.41"></script>
+<script src="site-nav.js?v=0.42"></script>
+<script src="stories/stories.js?v=0.42"></script>
+<script src="cast/cast-data.js?v=0.19"></script>
+<script src="notes/notes.js?v=0.42"></script>
 <main>
 <section class="hero" aria-labelledby="hero-title">
 <div class="hero-in">
-<p class="badge">物語の連載中</p>
+<p class="badge">毎週連載中</p>
 <h1 id="hero-title" class="logo">TRIATHLON</h1>
-<p class="kick" aria-hidden="true">Same Earth, Different Future</p><p class="tagline">同じ地球で、違う未来を。</p>
-<p class="hero-lead">二つの川が出会う町・二水。灯りの消えた灯台館を直すことになった9人の、一年の物語です。</p>
-<div class="cta"><a class="btn primary" id="cta-read" href="stories/v.html?id=1">📖 第1話を読む</a><a class="btn" href="cast/">👥 9人に会う</a><a class="btn" href="map/">🌐 マップを見る</a></div>
+<p class="tagline">九つの光の、一生</p>
+<p class="hero-lead">二つの川が出会う町・二水。9人の一生を、子どものころから年をとるまで、まるごと見守る物語です。</p>
+<div class="cta"><a class="btn primary" id="cta-read" href="stories/v.html?id=1">📖 最新話を読む</a><a class="btn" href="life/">🧭 一生の地図</a></div>
 </div>
 </section>
 
 <section class="sec" aria-labelledby="ep-h">
-<div class="sec-head"><div><p class="kick" aria-hidden="true">Stories</p><h2 id="ep-h">最新の物語</h2></div><a class="more" href="stories/">すべての話 →</a></div>
+<div class="sec-head"><div><p class="kick" aria-hidden="true">This Week</p><h2 id="ep-h">今週の物語</h2></div><a class="more" href="stories/">すべての話 →</a></div>
 <div class="ep" id="ep"></div>
 </section>
 
+<section class="sec" aria-labelledby="life-h">
+<div class="duo">
+<div class="box"><p class="kick" aria-hidden="true">Life Map</p><b id="life-h">一生の地図</b><p>9人の0歳から80歳まで。あなたと同じ年のころ、9人は何をしていた？</p>
+<svg viewBox="0 0 300 70" aria-hidden="true"><g id="mini"></g></svg>
+<form class="agef" id="agef"><label for="myage">あなたは</label><input id="myage" type="number" min="0" max="80" inputmode="numeric" placeholder="40"><span>歳</span><button type="submit">地図を開く</button></form></div>
+<a class="box" href="notes/" id="note"><p class="kick" aria-hidden="true">Notes</p><b>からだと心のノート</b><p>物語のあとに読む1枚。</p></a>
+</div>
+</section>
+
 <section class="sec" aria-labelledby="nine-h">
-<div class="sec-head"><div><p class="kick" aria-hidden="true">Characters</p><h2 id="nine-h">二水学園の9人</h2></div><a class="more" href="cast/">キャラクター →</a></div>
+<div class="sec-head"><div><p class="kick" aria-hidden="true">Characters</p><h2 id="nine-h">9人</h2></div><a class="more" href="cast/">キャラクター →</a></div>
 <div class="nine" id="nine"></div>
 </section>
 
-<section class="sec" aria-labelledby="fav-h">
-<div class="sec-head"><div><p class="kick" aria-hidden="true">Favorite Places</p><h2 id="fav-h">わたしの好きな場所</h2></div><a class="more" href="places/">9人ぶん見る →</a></div>
-<div class="fav" id="fav"></div>
-</section>
-
 <section class="sec" aria-labelledby="world-h">
-<div class="sec-head"><div><p class="kick" aria-hidden="true">World</p><h2 id="world-h">3つの国と町</h2></div><a class="more dev-only" href="guide.html#world">世界ガイドへ →</a></div>
+<div class="sec-head"><div><p class="kick" aria-hidden="true">World</p><h2 id="world-h">世界</h2></div><a class="more dev-only" href="guide.html#world">世界ガイドへ →</a></div>
 <div class="cities">
 <article class="city c1"><p class="tag">水和国の首都</p><h3>二水<small>にすい · Nisui</small></h3><p>二つの川が出会う町。二水学園、灯台館、川守隊。物語はここから始まります。</p></article>
 <article class="city c2"><p class="tag">文光国の首都</p><h3>明山<small>めいざん · Mingshan（仮）</small></h3><p>北の山の学園都市。光と灯石を研究し、「眠りの層」の謎を追います。</p></article>
 <article class="city c3"><p class="tag">改神国の首都</p><h3>白港<small>はっこう · Baigang（仮）</small></h3><p>海のむこうの、白い石の港。祈りの鐘が朝夕に鳴り、名前のない声を神の声と信じる人が多い場所。</p></article>
 </div>
-<a class="mapbtn" href="map/"><span aria-hidden="true">🌐</span><div><b>マップと今日の世界</b><small>地球を回して3つの国と州を見る。今日の天気と出来事も</small></div></a>
+<div class="wlinks">
+<a class="box" href="map/"><b>🌐 マップ</b><p>本物の地形の上に、3つの国と開拓地。</p></a>
+<a class="box" href="sim/"><b>🌏 今日の世界</b><p>今日の天気と、9人がいまどこにいるか。</p></a>
+<a class="box" href="places/" id="fav"><b>📷 好きな場所</b><p>9人それぞれの、好きな場所。</p></a>
+</div>
 </section>
 
 <section class="sec" aria-labelledby="news-h">
@@ -66,21 +84,17 @@
 <ul class="news" id="news"><li><a href="news/">お知らせ一覧を見る</a></li></ul>
 </section>
 
-<section class="sec" aria-labelledby="deep-h">
-<p class="kick" aria-hidden="true">More</p><h2 id="deep-h">もっと詳しく</h2>
-<ul class="list">
-<li><a href="saga/"><span aria-hidden="true">🗺️</span>物語のあらすじ<small>この町で続いていく、4つの世代の物語</small></a></li>
-<li class="dev-only"><a href="guide.html"><span aria-hidden="true">📘</span>設定資料（世界ガイド）<small>世界・クラス・学校・魔法の細かい設定</small></a></li>
-<li class="dev-only"><a href="settings/"><span aria-hidden="true">📋</span>設定リスト<small>決まったこと・まだのこと</small></a></li>
-<li><a href="news/rules.html"><span aria-hidden="true">📏</span>アップデートの基準<small>いつ、どう更新するか</small></a></li>
-</ul>
+<section class="sec" aria-labelledby="team-h">
+<p class="kick" aria-hidden="true">Team</p><h2 id="team-h">つくっている人たち</h2>
+<div class="team">
+<div><span style="background:var(--blue)">人</span><b>ひびき</b><p>方向を決める人</p></div>
+<div><span style="background:var(--teal)">C</span><b>Claude</b><p>企画と文章</p></div>
+<div><span style="background:#C9A646">G</span><b>GPT</b><p>絵</p></div>
+</div>
 </section>
 </main>
-<footer class="foot"><p class="logo-s">TRIATHLON</p><p>SAME EARTH. DIFFERENT FUTURE. · <span id="ver">v0.41.1</span></p></footer>
-<script src="news/news.js?v=0.41.1"></script>
-<script src="stories/stories.js?v=0.30"></script>
-<script src="places/places.js?v=0.30"></script>
-<script src="cast/cast-data.js?v=0.19"></script>
+<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.42</span></p></footer>
+<script src="news/news.js?v=0.42"></script>
 <script>
 (function () {
   'use strict';
@@ -89,15 +103,25 @@
   if (n.length) box.innerHTML = n.slice(0, 3).map(function (e, i) {
     return '<li><a href="news/v.html?id=' + encodeURIComponent(e.id) + '">' + window.triNewsTimes(e) + (e.ver ? '<span class="v">' + esc(e.ver) + '</span>' : '<span class="v info">お知らせ</span>') + (i === 0 ? '<span class="new">NEW</span>' : '') + '<span class="t">' + esc(e.title) + '</span></a></li>';
   }).join('');
-  // 最新の物語（新しい順に2話まで）
-  var S = (window.TRI_STORIES || []).slice().reverse();
+  // 今週の物語（最新話と、心の光の色の帯）
+  var S = (window.TRI_STORIES || []).slice().reverse(), LC = { r: '#D9707A', g: '#4FAE84', b: '#5B8FD6' };
   if (S.length) {
-    document.getElementById('cta-read').href = 'stories/v.html?id=' + encodeURIComponent(S[0].id);
-    document.getElementById('cta-read').textContent = '📖 第' + S[0].no + '話を読む';
+    var s0 = S[0], cols = [];
+    s0.secs.forEach(function (c) { c.p.forEach(function (p) { if (/^◇/.test(p)) p.slice(1).split('|')[0].split(',').forEach(function (k) { cols.push(LC[k]); }); }); });
+    document.getElementById('cta-read').href = 'stories/v.html?id=' + encodeURIComponent(s0.id);
+    document.getElementById('cta-read').textContent = '📖 第' + s0.no + '話を読む';
+    document.getElementById('ep').innerHTML = '<a href="stories/v.html?id=' + encodeURIComponent(s0.id) + '"><span class="no">第' + s0.no + '話・' + esc(s0.who) + '</span><b>' + esc(s0.title) + '</b><small>' + esc(s0.lead) + '</small>' +
+      (cols.length ? '<span class="band" aria-label="この話の心の光">' + cols.map(function (c) { return '<i style="background:' + c + '"></i>'; }).join('') + '</span>' : '') + '<span class="go">読む →</span></a>';
   }
-  document.getElementById('ep').innerHTML = S.slice(0, 2).map(function (s) {
-    return '<a href="stories/v.html?id=' + encodeURIComponent(s.id) + '"><span class="no">第' + s.no + '話・' + esc(s.who) + '</span><b>' + esc(s.title) + '</b><small>' + esc(s.lead) + '</small><span class="go">読む →</span></a>';
-  }).join('');
+  // 一生の地図の小さな見本
+  var mini = '';
+  for (var i = 0; i < 9; i++) { var y = 8 + i * 6.4; mini += '<line x1="10" x2="290" y1="' + y + '" y2="' + y + '" stroke="var(--line)" stroke-width="2.4" stroke-linecap="round"/><line x1="10" x2="98" y1="' + y + '" y2="' + y + '" stroke="' + ['#D9707A', '#4FAE84', '#5B8FD6'][i % 3] + '" stroke-width="2.4" stroke-linecap="round"/>'; }
+  document.getElementById('mini').innerHTML = mini + '<line x1="150" x2="150" y1="2" y2="66" stroke="#C9A646" stroke-width="2"/>';
+  document.getElementById('agef').onsubmit = function (e) { e.preventDefault(); var a = Math.max(0, Math.min(80, parseInt(document.getElementById('myage').value, 10) || 40)); try { localStorage.setItem('tri-life-age', a); } catch (x) {} location.href = 'life/'; };
+  // ノート（最新の1枚と「親として」の1行）
+  var N = window.TRI_NOTES || [];
+  if (N.length) { var nt = N[N.length - 1]; document.getElementById('note').href = 'notes/?id=' + nt.id;
+    document.getElementById('note').innerHTML = '<p class="kick" aria-hidden="true">Notes</p><b>からだと心のノート</b><p>' + esc(nt.title) + '</p><p class="par">親として：' + esc(nt.parent.split('\n')[0]) + '</p><span class="go">読む →</span>'; }
   // 9人
   if (window.CHARS) {
     document.getElementById('nine').innerHTML = CHARS.filter(function (c) { return c.s === 1; }).map(function (c) {
@@ -105,12 +129,6 @@
       return '<a class="' + c.c + '" href="cast/c.html?id=' + encodeURIComponent(c.id) + '">' + f + '<b>' + esc(nm) + '</b><small>' + esc(c.cls) + '</small></a>';
     }).join('');
   }
-  // 好きな場所（毎日ちがう3人）
-  var P = window.TRI_PLACES || [], d = Math.floor(Date.now() / 864e5);
-  var pick = [0, 1, 2].map(function (i) { return P[(d * 3 + i) % P.length]; }).filter(Boolean);
-  document.getElementById('fav').innerHTML = pick.map(function (p) {
-    return '<a href="places/#' + esc(p.id) + '"><span class="who">' + esc(p.who) + 'の好きな場所</span><b>' + esc(p.place) + '</b><p>' + esc(p.say[0]) + '</p></a>';
-  }).join('');
 })();
 </script>
 </body>
