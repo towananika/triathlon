@@ -67,6 +67,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 <div id="fut"><p class="note">このまま世界が進んだら、どうなるかを計算して見せます。毎日の世界は、現実の時間どおりに進みます。</p></div>
 
 <h2>もっとくわしく</h2>
+<details open><summary>文明の発展と生活費</summary><div id="development"></div><div class="ctl" id="civil-target"><button type="button" data-target="1">1か国が現代基盤に達するまで</button><button type="button" data-target="3">3か国が現代基盤に達するまで</button></div><p class="note" id="civil-result" role="status" aria-live="polite"></p></details>
 <details><summary>🏛️ 国の政治と守り</summary><div class="nat" id="pol"></div></details>
 <details><summary>🤝 国どうしの関係</summary><div class="rel" id="rel"></div></details>
 <details><summary>💰 経済（仕事・物の値段・お金）</summary><div id="eco"></div></details>
@@ -75,6 +76,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 <p class="note">この世界は、毎日少しずつ動いています。現実の1日が、世界の1日です（世界は新暦312年にはじまり、2026年10月25日に10年進めて、この日が新暦322年4月1日）。数字は物語のための目安です。</p>
 </main>
 <script src="../cast/cast-data.js?v=0.19"></script>
+<script src="development.js?v=0.37"></script>
 <script src="checkpoint.js?v=0.37"></script>
 <script src="world-sim.js?v=0.37"></script>
 <script>
@@ -83,6 +85,11 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
   var S = window.TRI_SIM, $ = function (id) { return document.getElementById(id); };
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   var TODAY = S.today(), day = TODAY, pi = 0, slot = S.slotOf(), RUN = null;
+  $('civil-target').onclick = function(event) {
+    var button = event.target.closest('[data-target]'); if (!button) return;
+    var target = Number(button.dataset.target), result = S.untilModern(target, 36500);
+    $('civil-result').textContent = '仮の未来計算：' + (result.reached ? result.date.label + '、開始から約' + (result.day/365).toFixed(1) + '年で' + target + 'か国が到達。' : '100年以内には条件を満たしませんでした。') + '既存3か国の基盤整備を扱う仮モデルです。現代社会全体の再現や交通網の再計画ではなく、結果を現在のニュースには送りません。';
+  };
   var NCOL = ['#2f7d4a', '#4c56a8', '#a86412'], SLOT = { morning: '朝', day: '昼', after: '夕方', night: '夜' };
   $('where').innerHTML = S.PROV.map(function (p, i) { return '<option value="' + i + '">' + p[0] + '（' + p[1] + '）の空</option>'; }).join('');
 
@@ -172,10 +179,19 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
     }
     people();
     var st = RUN.state;
+    development(st);
     expo(st);
     $('dong').innerHTML = st.dong.slice().sort(function (a, b) { return b.busy - a.busy; }).map(function (g) { return '<div><b>' + esc(g.name) + '</b>' + esc(g.ku) + '・' + esc(g.use) + '<div class="bar"><i style="width:' + Math.min(100, g.busy) + '%"></i></div></div>'; }).join('');
     details(st);
     culture(st);
+  }
+  function development(st) {
+    var D = window.TRI_DEVELOPMENT;
+    if (!D) return;
+    var h = '<p class="note">仮のルール式モデル。既存3か国の生活基盤の再建を判定します。現実の予測や、地形に沿う交通網の完成を意味しません。</p>';
+    h += '<div class="nat">' + st.development.map(function(c){return '<div><h3>' + esc(c.name) + '</h3><p>' + esc(D.stage(c)) + '</p><p>研究 ' + Math.round(c.research*100) + '%・制度 ' + Math.round(c.institutions*100) + '%</p>' + Object.keys(D.labels).map(function(k){return '<p>' + esc(D.labels[k]) + ' ' + Math.round(c.services[k]*100) + '%</p>';}).join('') + (c.blocked?'<p>' + esc(c.blocked) + '</p>':'') + '</div>';}).join('') + '</div>';
+    h += '<div class="scroll"><table class="tbl"><caption>月の生活費目安（仮のモデル単位・実通貨ではない）</caption><thead><tr><th>人物</th><th>食費</th><th>光熱水費</th><th>医療・通信</th><th>収支</th></tr></thead><tbody>' + S.CH.map(function(c){var cost=S.livingCosts(st,c[0]);return '<tr><td>' + esc(c[0]) + '</td><td>' + cost.expenses.food.toFixed(1) + '</td><td>' + cost.expenses.utilities.toFixed(1) + '</td><td>' + (cost.expenses.health+cost.expenses.communications).toFixed(1) + '</td><td>未設定</td></tr>';}).join('') + '</tbody></table></div><p class="note">住居・交通経路・運賃・収入・家族支援が未設定のため、総生活費と収支は未判定です。借金や無料の住まいを自動付与しません。</p>';
+    $('development').innerHTML = h;
   }
   function people() {
     var sl = slot;
