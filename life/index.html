@@ -33,8 +33,17 @@ svg{display:block;width:100%;height:auto}svg text{font-family:inherit}
   var Y0=34,K=6,AGE=function(a){return Y0+a*K},COL={r:'var(--r)',g:'var(--g)',b:'var(--b)',w:'var(--tq)',x:'var(--ghost)'};
   // [年齢, 色, できごと, リンク]
   var JOB={'アカリ':'川守隊の隊員','シオン':'九条家の当主','ツバサ':'渡し舟の船頭','シズク':'北の森の森番','カイ':'灯台館の技師','ミナト':'開拓地への運び屋','リク':'学園の魔法の先生','ルイ':'学園図書館の司書','セイラ':'船着き場の茶屋の主人'};
-  var EV={'アカリ':[[15,'r','川守隊の試験で、一発いった（第1話）','../stories/v.html?id=1'],[15,'b','ツバサに「ごめん」と言えた（第1話）','../stories/v.html?id=1',1.8]],
-          'ツバサ':[[15,'b','砂の上の、青い光（第2話）','../stories/v.html?id=2'],[15,'r','舟の上で、知らない赤い光（第2話）','../stories/v.html?id=2',1.8]]};
+  // 年表の下書き（studio/text/life/chronology_v1.md）から、公開してよい点だけ。[年齢, 色, できごと, リンク, 点を下げる量]
+  var S1='../stories/v.html?id=1',S2='../stories/v.html?id=2',L='（これからの話）';
+  var EV={'アカリ':[[7,'g','渡し舟に初めて乗る'],[13,'b','からだの変化に戸惑う。だれにも言えない'],[15,'r','川守隊の試験で、一発いった（第1話）',S1],[15,'b','ツバサに「ごめん」と言えた（第1話）',S1,1.8],[17,'r','好きなのに、こわい'+L]],
+    'ツバサ':[[6,'g','アカリと出会う'],[12,'b','日記を書きはじめる'],[15,'b','砂の上の、青い光（第2話）',S2],[15,'r','舟の上で、知らない赤い光（第2話）',S2,1.8],[18,'g','自分の言葉で話す'+L]],
+    'セイラ':[[5,'g','弟や妹の世話をする'],[13,'b','自分のつらさを後回しにするくせがつく'],[15,'g','みんなのお母さん役に'+L],[17,'b','はじめて「助けて」と言う'+L]],
+    'シオン':[[8,'b','家の名を背負う稽古'],[14,'g','庶民の祭りをこっそり見る'],[15,'b','ルイと比べられる'+L],[17,'r','家ではなく、自分の名で勝つ'+L]],
+    'ルイ':[[6,'g','星座をすべて覚える'],[12,'b','全国1位。特別あつかいに疲れる'],[16,'b','眠らずに研究して倒れる'+L],[18,'g','学びの場を作ると決める'+L]],
+    'リク':[[7,'r','はじめて「二番」になる'],[13,'b','首席になるため、無理を重ねる'],[15,'r','ルイに挑みつづける'+L],[18,'g','負けを笑わずに認める'+L]],
+    'シズク':[[6,'g','森で迷い、ひとりで帰る'],[13,'b','言わなすぎて誤解される'],[15,'g','カイと、言葉なしで通じる'+L],[17,'g','言葉にして伝える'+L]],
+    'カイ':[[8,'g','屋上で黒い猫と出会う'],[13,'b','目立たないように生きると決める'],[15,'g','ミナトと同じ部屋に'+L],[17,'g','だれにも気づかれず、だれかを助ける'+L]],
+    'ミナト':[[5,'b','迷子になって泣く'],[12,'b','方向音痴を隠しはじめる'],[15,'g','カイを親友と決める'+L],[17,'g','道に迷うことを、笑って言える'+L]]};
   var CAST=Object.keys(JOB),svg=document.getElementById('map'),pop=document.getElementById('pop'),NS='http://www.w3.org/2000/svg';
   function el(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -44,8 +53,7 @@ svg{display:block;width:100%;height:auto}svg text{font-family:inherit}
     var x=46+i*36;
     el('text',{x:x,y:16,'font-size':11,'text-anchor':'middle',fill:'var(--fg)','font-weight':700}).textContent=n;
     STG.forEach(function(s){var lit=s[0]<=25;el('line',{x1:x,x2:x,y1:AGE(s[0]),y2:AGE(s[1]),stroke:lit?(s[0]>=15&&s[0]<30?'var(--r)':'var(--tq)'):'var(--line)','stroke-opacity':lit?.4:1,'stroke-width':s[2],'stroke-linecap':'round'})});
-    var ev=[[15,'g','二水学園に入り、9人で灯台館の修理へ','../stories/']].concat(EV[n]||[]).concat([[25,'w','いま：'+JOB[n],'../sim/'],[35,'x','まだ書かれていない（2期で親に）',''],[60,'x','まだ書かれていない（4期で祖父母に）','']]);
-    if(EV[n])ev.shift();
+    var ev=EV[n].concat([[22,'x','まだ書かれていない（2期の子が生まれる）',''],[25,'w','いま：'+JOB[n],'../sim/'],[45,'x','まだ書かれていない',''],[65,'x','まだ書かれていない','']]);
     ev.forEach(function(e){
       var g=el('g',{'class':'dot',tabindex:0,role:'button','aria-label':n+' '+Math.floor(e[0])+'歳 '+e[2]});
       el('circle',{cx:x,cy:AGE(e[0]+(e[4]||0)),r:e[1]==='x'?4.5:6.5,fill:COL[e[1]],stroke:'var(--card)','stroke-width':2},g);
