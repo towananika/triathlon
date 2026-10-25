@@ -57,6 +57,16 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 <script src="../site-nav.js?v=0.24"></script>
 <main>
 <div><h1>ゲームをはじめる（試作）</h1><p class="lead">預かった生命を、毎月のAPと暮らしの予定で育てます。生きるにはお金がかかります。働いて、遊んで、休んで、学んで、暮らしを回しましょう。子どもは3人まで同時に育てられます。</p><p class="note"><a id="devlink" href="?dev">開発版で開く（20秒で1か月）</a></p></div>
+<section class="card" id="devinfo" hidden style="border:2px dashed #c27600">
+<h2>開発版で変わること</h2>
+<ul class="lead" style="margin:6px 0 0;padding-left:1.2em">
+<li>時間：開いている間は20秒で1か月（ふつうは5分で1か月）。お腹の中も20秒で1か月。</li>
+<li>「すぐ生まれる」ボタン：お腹の中のあいだだけ出ます。</li>
+<li>時計の横に「開発版」と出ます。</li>
+<li>閉じている間の進み方、APやルールは、ふつうと同じです。</li>
+<li>保存データはふつうと共通です。開発版で進めた子は、ふつうの画面でもそのまま続きます。</li>
+</ul>
+</section>
 
 <section class="card" id="start" hidden>
 <h2>生命を預かる</h2>
@@ -319,7 +329,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   // 開いている間：お腹の中は20秒で1か月（9か月で3分）、生まれてからは5分で1か月（1年＝1時間）
   // 開発版（play/?dev）：20秒で1か月。「すぐ生まれる」も出す。秘密の中身はなく、確認しやすくするだけ
   var DEV = /[?&]dev\b/.test(location.search);
-  if (DEV) { $('devlink').href = './'; $('devlink').textContent = 'ふつうの速さに戻る'; }
+  if (DEV) { $('devlink').href = './'; $('devlink').textContent = 'ふつうの速さに戻る'; $('devinfo').hidden = false; }
   function openMs() { return s.womb || DEV ? 20 * 1000 : 5 * 60 * 1000; }
   function monthMs() { var a = age(); return a < LAW.school ? DAY / 72 : a < TEEN ? 2 * DAY / 48 : a < LAW.work ? 7 * DAY / 60 : DAY / 2; }
   function isOpen() { return document.visibilityState === 'visible'; }
