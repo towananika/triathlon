@@ -58,17 +58,40 @@
   }
   var defs = svg.append('defs');
   defs.append('clipPath').attr('id', 'landclip').append('path').attr('id', 'landclipP');
-  var gOcean = svg.append('path').attr('class', 'ocean'), gGrat = svg.append('path').attr('class', 'grat'), gLand = svg.append('path').attr('class', 'land');
-  var gProv = svg.append('g').attr('clip-path', 'url(#landclip)');
+  // 地形のある範囲では、本物の海岸線（地形データ）を使い、粗い世界地図の陸はかくす
+  var mk = defs.append('mask').attr('id', 'nobox'); mk.append('rect').attr('x', -1e4).attr('y', -1e4).attr('width', 3e4).attr('height', 3e4).attr('fill', '#fff'); mk.append('path').attr('id', 'boxP').attr('fill', '#000');
+  var gOcean = svg.append('path').attr('class', 'ocean'), gGrat = svg.append('path').attr('class', 'grat'), gSea = svg.append('g').attr('class', 'ctl-sea'), gLand = svg.append('path').attr('class', 'land');
+  var gRel = svg.append('g').attr('class', 'relief'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gNet = svg.append('g').attr('class', 'net');
   var gCiv = svg.append('g'), gRim = svg.append('path').attr('class', 'rim'), gCol = svg.append('g'), gLab = svg.append('g'), gWx = svg.append('g').attr('class', 'wxl'), gPin = svg.append('g'), gScale = svg.append('g').attr('class', 'scale');
 
+  // ---- 本物の地形（assets/data/relief.js）----
+  var RCOL = { 1: '#dfe6c8', 200: '#e6dfbd', 500: '#d8c99f', 1000: '#c4ad83', 1500: '#ae9572', 2000: '#98806a', 3000: '#857065' };
+  function dec(mp) { return mp.map(function (poly) { return poly.map(function (r) { var o = [], x = 0, y = 0; for (var i = 0; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; o.push([x / 100, y / 100]); } return o; }); }); }
+  var REL = window.TRI_RELIEF ? [].concat(
+    TRI_RELIEF.b.map(function (b) { return { cl: 'rb', col: RCOL[b[0]], g: { type: 'MultiPolygon', coordinates: dec(b[1]) } }; }),
+    TRI_RELIEF.d.map(function (b) { return { cl: 'rd', op: b[0] < .4 ? .1 : .2, g: { type: 'MultiPolygon', coordinates: dec(b[1]) } }; }),
+    TRI_RELIEF.l.map(function (b) { return { cl: 'rl', g: { type: 'MultiPolygon', coordinates: dec(b[1]) } }; })) : [];
+  var BOX = poly(110.02, 22.02, 144.98, 49.98);
+  gRel.selectAll('path').data(REL).enter().append('path').attr('class', function (d) { return d.cl; }).style('fill', function (d) { return d.col || null; }).style('fill-opacity', function (d) { return d.op || null; });
+
+  // ---- 交通網：州の中心の町をむすぶ道・鉄道・航路・港 ----
+  function town(i) { var nm = PROV[i][6], pl = PLACES.filter(function (x) { return x.name === nm; })[0]; return pl ? pl.ll : PROV[i].c; }
+  var RAIL = [[0, 4], [0, 3]], PORTMAIN = [3, 5, 7]; // 開拓団が出る港（国ごと）
+  function netData() {
+    var L = (SIM && SIM.LINK) || [], out = [];
+    L.forEach(function (l) { out.push({ cl: l[2] ? 'sea' : 'road', a: town(l[0]), b: town(l[1]) }); });
+    RAIL.forEach(function (l) { out.push({ cl: 'rail', a: town(l[0]), b: town(l[1]) }); });
+    var S = simData(); if (S) S.col.forEach(function (c) { var X = SIM.SITES[c.site]; out.push({ cl: 'colr n' + (c.nat + 1), a: town(PORTMAIN[c.nat]), b: [X[3], X[2]] }); });
+    return out;
+  }
   // 1km が何px か
   function pxkm() { return proj.scale() / 6371; }
-  var LY = { prov: true, wx: false, mood: false }, selP = null, SIMD = null;
+  var LY = { prov: true, wx: false, mood: false, relief: true, net: true, use: false, ctl: false }, selP = null, SIMD = null;
   function simData() {
     if (SIMD || !SIM) return SIMD;
     var d = SIM.today(), x = SIM.run(d, 1);
     SIMD = { d: d, wx: PROV.map(function (p, i) { return SIM.climate(i, d); }), mood: x.state.prov.map(function (p) { return p.mood; }), ferry: x.state.ferry, date: x.date.label, col: x.state.col, civ: x.state.civ };
+    STATE = x.state;
     return SIMD;
   }
   function visible(ll) { return d3.geoDistance(ll, [-rot[0], -rot[1]]) < Math.PI / 2 - .02; }
@@ -78,15 +101,21 @@
     var pk = pxkm();
     gOcean.attr('d', path({ type: 'Sphere' })); gRim.attr('d', path({ type: 'Sphere' }));
     gGrat.attr('d', pk < 30 ? path(d3.geoGraticule10()) : null);
-    gLand.attr('d', path(land)); d3.select('#landclipP').attr('d', path(land));
+    gLand.attr('d', path(land)).attr('mask', LY.relief && REL.length ? 'url(#nobox)' : null);
+    d3.select('#boxP').attr('d', LY.relief && REL.length ? path(BOX) : null);
+    d3.select('#landclipP').attr('d', LY.relief && REL.length ? path(REL[0].g) : path(land));
+    gRel.style('display', LY.relief ? null : 'none');
+    if (LY.relief) gRel.selectAll('path').each(function (d) { var sh = d.cl !== 'rb'; this.style.display = FAST && sh ? 'none' : ''; if (!(FAST && sh)) this.setAttribute('d', path(d.g) || ''); }); // 動かしている間は陰影を休む
+    drawCtl();
     // 州
-    var S = (LY.mood || LY.wx) && simData();
+    var S = (LY.mood || LY.wx) && simData(), SU = LY.use && simData();
     var pv = gProv.selectAll('path').data(PROV);
     pv.enter().append('path').attr('class', function (d) { return 'prov ' + d[1]; }).on('click', function (e, d) { openProv(d); })
       .merge(pv).attr('d', function (d) { return path(d.f); }).classed('sel', function (d) { return d === selP; })
       .style('stroke-width', LY.prov && k >= 3.5 ? null : '0')
-      .style('fill', function (d) { if (!LY.mood || !S) return null; var m = S.mood[PROV.indexOf(d)]; return d3.interpolateRdYlGn(Math.max(0, Math.min(1, (m - 35) / 45))); })
-      .style('fill-opacity', LY.mood ? .7 : (pk > 40 ? .12 : null));
+      .style('fill', function (d) { if (LY.use && SU) return useOf(PROV.indexOf(d))[2]; if (!LY.mood || !S) return null; var m = S.mood[PROV.indexOf(d)]; return d3.interpolateRdYlGn(Math.max(0, Math.min(1, (m - 35) / 45))); })
+      .style('fill-opacity', LY.mood || LY.use ? .7 : LY.ctl ? .55 : LY.relief ? .16 : (pk > 40 ? .12 : null));
+    drawNet(pk);
     // 国・州の名前（町が見えるほど近いと消す）
     var labs = [];
     if (k >= 2 && k < 3.5) NATIONS.forEach(function (n) { labs.push({ t: n.name, c: n.c, cl: 'nlab', col: n.col }); });
@@ -105,6 +134,29 @@
     en.merge(pin).each(function (d) { var q = proj(d.ll), g = d3.select(this), hide = false; g.style('display', q && visible(d.ll) && !hide ? null : 'none'); if (q) g.attr('transform', 'translate(' + q[0] + ',' + q[1] + ')'); });
     drawWorld(pk);
     drawScale(pk);
+  }
+
+  // 土地の使い道：その州でいちばん多い仕事（役所・学校などはのぞく）
+  var USEC = { a: ['農業', '#8bc34a'], f: ['漁業', '#29b6f6'], fo: ['林業', '#2e7d32'], mi: ['採掘', '#8d6e63'], ma: ['工業', '#5c6bc0'], co: ['商業', '#ff8a65'], tr: ['運輸', '#ffca28'] };
+  var STATE = null;
+  function useOf(i) { var sh = STATE ? STATE.prov[i].share : SIM.PROV[i][6], b = 0; for (var j = 1; j < 7; j++) if (sh[j] > sh[b]) b = j; var key = SIM.SECT[b][0]; return [key, USEC[key][0], USEC[key][1], Math.round(sh[b] * 100)]; }
+  function drawNet(pk) {
+    gNet.style('display', LY.net ? null : 'none'); if (!LY.net) return;
+    var nd = netData(), ln = gNet.selectAll('path.l').data(nd); ln.exit().remove();
+    ln.enter().append('path').merge(ln).attr('class', function (d) { return 'l ' + d.cl; }).attr('d', function (d) { return path({ type: 'LineString', coordinates: [d.a, d.b] }); });
+    var ports = PROV.map(function (p, i) { return i; }).filter(function (i) { return SIM && SIM.PROV[i][4] >= .8; });
+    var pt = gNet.selectAll('text.port').data(ports); pt.exit().remove();
+    pt.enter().append('text').attr('class', 'port').text('⚓').merge(pt).each(function (i) { var ll = town(i), q = proj(ll); d3.select(this).style('display', q && visible(ll) && k >= 3 ? null : 'none').attr('x', q ? q[0] - 22 : 0).attr('y', q ? q[1] + 5 : 0); });
+  }
+  // 実効支配：州と開拓地（陸）、そのまわりの海
+  function drawCtl() {
+    var S = LY.ctl && simData(), sea = [], lnd = [];
+    if (S) {
+      PROV.forEach(function (p, i) { var n = SIM.PROV[i][4]; if (n >= .4) sea.push({ n: +p[1].slice(1) - 1, g: d3.geoCircle().center(town(i)).radius(.5 + n * .8)() }); });
+      S.col.forEach(function (c) { var X = SIM.SITES[c.site], ll = [X[3], X[2]], r = .25 + Math.sqrt(c.pop) / 500; lnd.push({ n: c.nat, g: d3.geoCircle().center(ll).radius(r)() }); sea.push({ n: c.nat, g: d3.geoCircle().center(ll).radius(r + .35)() }); });
+    }
+    var a = gSea.selectAll('path').data(sea); a.exit().remove(); a.enter().append('path').merge(a).attr('class', function (d) { return 'n' + (d.n + 1); }).attr('d', function (d) { return path(d.g); });
+    var b = gCtl.selectAll('path').data(lnd); b.exit().remove(); b.enter().append('path').merge(b).attr('class', function (d) { return 'n' + (d.n + 1); }).attr('d', function (d) { return path(d.g); });
   }
 
   // ---- 開拓地と、出会った文明（世界シミュレーションから） ----
@@ -146,12 +198,15 @@
     var nk = Math.max(KMIN, Math.min(kmax(), k * f)); if (nk === k) return;
     var g = proj.invert([px, py]); k = nk; proj.scale(base * k);
     if (g) { var q = proj(g); if (q) { var dp = degpx(); rot[0] -= (q[0] - px) * dp; rot[1] += (q[1] - py) * dp; clampRot(); } }
-    draw();
+    FAST = true; draw(); settle();
   }
-  var drag0 = null;
+  var drag0 = null, FAST = false, rq = null, slow = null;
+  function soon() { if (!rq) rq = requestAnimationFrame(function () { rq = null; draw(); }); }
+  function settle() { clearTimeout(slow); slow = setTimeout(function () { FAST = false; draw(); }, 160); }
   svg.call(d3.drag().clickDistance(4)
     .on('start', function (e) { if (anim) anim.stop(); drag0 = { x: e.x, y: e.y, r: rot.slice() }; })
-    .on('drag', function (e) { if (pinch) return; var dp = degpx(); rot = [drag0.r[0] + (e.x - drag0.x) * dp, drag0.r[1] - (e.y - drag0.y) * dp, 0]; clampRot(); draw(); }));
+    .on('end', function () { settle(); })
+    .on('drag', function (e) { if (pinch) return; var dp = degpx(); rot = [drag0.r[0] + (e.x - drag0.x) * dp, drag0.r[1] - (e.y - drag0.y) * dp, 0]; clampRot(); FAST = true; soon(); }));
   svg.on('wheel', function (e) { e.preventDefault(); var r = stage.getBoundingClientRect(); zoomAt(Math.pow(1.0018, -e.deltaY), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
   svg.on('dblclick.zoom', null);
   svg.on('dblclick', function (e) { var r = stage.getBoundingClientRect(); zoomAt(2, e.clientX - r.left, e.clientY - r.top); });
@@ -167,7 +222,7 @@
   function flyTo(ll, tk, done) {
     if (anim) anim.stop();
     var r0 = rot.slice(), r1 = [-ll[0], -ll[1], 0], k0 = Math.log(k), k1 = Math.log(tk || k);
-    anim = d3.timer(function (t) { var s = Math.min(1, t / 1100), e = d3.easeCubicInOut(s); rot = d3.interpolate(r0, r1)(e); k = Math.exp(k0 + (k1 - k0) * e); draw(); if (s >= 1) { anim.stop(); anim = null; if (done) done(); } });
+    anim = d3.timer(function (t) { var s = Math.min(1, t / 1100), e = d3.easeCubicInOut(s); rot = d3.interpolate(r0, r1)(e); k = Math.exp(k0 + (k1 - k0) * e); FAST = s < 1; draw(); if (s >= 1) { anim.stop(); anim = null; if (done) done(); } });
   }
   function kFor(kmWide) { return Math.min(kmax(), Math.min(W, H) / kmWide * 6371 / base); } // 画面の幅に kmWide km が入る拡大
 
@@ -197,6 +252,7 @@
   }
   function openProv(p) {
     selP = p; var i = PROV.indexOf(p), S = simData(), st = ['中心の町：' + p[6], '人口：' + p[7] + '（仮）'];
+    st.push('おもな仕事：' + useOf(i)[1] + '（' + useOf(i)[3] + '%）');
     if (S) { var w = S.wx[i]; st.push('今日：' + SIM.WX[w.k][1] + ' ' + SIM.WX[w.k][0] + ' ' + Math.round(w.t) + '℃'); }
     showCard({ id: 'p-' + i, title: p[0], sub: NAT[p[1]] + 'の州', stats: st, text: p[8], zoom: p[0] === '二水州' ? function () { flyTo(C0, kFor(7)); } : null });
     draw();
@@ -247,6 +303,8 @@
   lm.addEventListener('change', function (e) {
     var x = e.target;
     if (x.id === 'ly-prov') { LY.prov = x.checked; draw(); }
+    if (/^ly-(relief|net|use|ctl)$/.test(x.id)) { LY[x.id.slice(3)] = x.checked; if (x.id === 'ly-use' && x.checked) { $('ly-mood').checked = LY.mood = false; } if (x.id === 'ly-mood' && x.checked) { $('ly-use').checked = LY.use = false; } draw(); }
+    if (x.id === 'ly-mood' && x.checked) { $('ly-use').checked = LY.use = false; }
     if (x.id === 'ly-wx' || x.id === 'ly-mood') { LY[x.id === 'ly-wx' ? 'wx' : 'mood'] = x.checked; var S = simData(); if (x.checked && S) toast('世界シミュレーション：' + S.date); draw(); }
   });
 
