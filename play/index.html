@@ -90,7 +90,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 (function () {
   'use strict';
   var KEY = 'triathlon-play-v1', C3 = ['R', 'G', 'B'], NAMES = { R: '体', G: '技', B: '心' };
-  var ACT = { play: '遊ぶ', rest: '休む', learn: '啓発（学ぶ）', work: '稼ぐ' };
+  var ACT = { learn: '啓発（学ぶ）', work: '稼ぐ', rest: '休む', play: '遊ぶ' };
   var LIVING = 100;          // 18歳からの1か月の生活費（SUNA）。食べ物45・住まい40・ほか15
   var ENV = [['川辺の家', 'R'], ['工房の家', 'G'], ['学園の近くの家', 'B'], ['灯台館の近くの家', 'W']];
   var $ = function (i) { return document.getElementById(i); };
@@ -142,12 +142,16 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     var f = (10 + fert()) / 110 * (10 + intel()) / 110, R = s.ap.R, G = s.ap.G, B = s.ap.B, r = function (x) { return Math.round(x * f); };
     return { HP: r(R * 10), ATK: r(R), DEF: r(R * 0.8), RAN: r(G * 0.5), ATS: r(G), SPD: r(G * 0.8), MP: r(B * 10), MAG: r(B), RES: r(B * 0.8) };
   }
+  // 地域の法律（二水）：6〜14歳は義務教育、15歳から働ける（18歳までは月2週まで）。それまでは育児と教育を受ける時期で、行動は選べない
+  var LAW = { school: 6, work: 15, adult: 18, minorWork: 2 };
   function allowed() {
-    var a = age(), list = [];
-    if (a >= 3) list.push('play', 'rest');
-    if (a >= 6) list.push('learn');
-    if (a >= 13) list.push('work');
-    return list;
+    var a = age();
+    if (a < LAW.work) return [];
+    return ['learn', 'work', 'rest', 'play'];
+  }
+  function autoPlan(a) {
+    if (a < LAW.school) return ['care', 'care', 'care', 'care'];      // 育児：家で育てられる
+    return ['school', 'school', 'school', 'care'];                     // 教育：学校で学び、家で休む
   }
   function say(t) { s.log.unshift('〔' + age() + '歳' + (s.month % 12) + 'か月〕' + t); s.log = s.log.slice(0, 60); }
 
@@ -165,8 +169,11 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     var ok = allowed(), earned = 0, d = detail();
     var calm = 1 - Math.min(0.2, d.RES / 200);   // RES：MP の減り方を少しだけ軽くする
     var skill = 1 + Math.min(0.3, d.ATK / 100) / 2 + Math.min(0.3, d.ATS / 100) / 2;   // 力仕事は ATK、手作業は ATS
-    (a < 3 ? ['rest', 'play', 'rest', 'play'] : s.plan).forEach(function (w) {
-      if (ok.length && ok.indexOf(w) < 0) w = 'rest';
+    var workWeeks = 0;
+    (ok.length ? s.plan : autoPlan(a)).forEach(function (w) {
+      if (w === 'work' && a < LAW.adult && ++workWeeks > LAW.minorWork) w = 'rest';   // 18歳未満は法律で月2週まで
+      if (w === 'care') { s.hp += 20; s.mp += 10; }
+      if (w === 'school') { s.learn = Math.min(40, s.learn + 0.2); s.mp -= 8 * calm; s.hp += 5; }
       if (w === 'work') { var e = 40 * (a < 18 ? 0.5 : 1) * skill * (s.hp < 20 ? 0.5 : 1) * (s.mp < 20 ? 0.5 : 1); earned += e; s.hp -= 25; s.mp -= 10 * calm; }
       if (w === 'rest') { s.hp += 30; s.mp += 10; }
       if (w === 'learn') { s.learn = Math.min(40, s.learn + 0.25); s.mp -= 15 * calm; }
@@ -185,9 +192,9 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     if (earned) msg += '　稼ぎ +' + earned.toFixed(1);
     if (cost) msg += '　生活費 −' + cost;
     say(msg);
-    if (age() === 3 && s.month % 12 === 0) say('自我が芽生えた。「遊ぶ」「休む」を選べるようになった。');
-    if (age() === 6 && s.month % 12 === 0) say('学校に入った。「啓発（学ぶ）」を選べるようになった。');
-    if (age() === 13 && s.month % 12 === 0) say('手伝いで稼げるようになった（半分の稼ぎ）。');
+    if (age() === 3 && s.month % 12 === 0) say('自我が芽生えた。APが少しずつ思いどおりになっていく。');
+    if (age() === LAW.school && s.month % 12 === 0) say('二水の法律で、義務教育が始まった。学校に通う。');
+    if (age() === LAW.work && s.month % 12 === 0) say('義務教育を終えた。二水の法律で働けるようになった（18歳までは月2週まで）。行動を自分で選べる。');
     if (age() === 18 && s.month % 12 === 0) say('ひとり立ち。ここから毎月 ' + LIVING + ' SUNA の生活費がかかる。');
   }
 
@@ -209,8 +216,8 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
       return '<div style="--c:var(--' + k + ')"><b>' + k + '・' + NAMES[k] + '</b><span class="n">' + s.pick[k] + '</span><div class="row" style="justify-content:center"><button type="button" data-k="' + k + '" data-d="-1" aria-label="' + NAMES[k] + 'を減らす">−</button><button type="button" data-k="' + k + '" data-d="1" aria-label="' + NAMES[k] + 'を増やす">＋</button></div></div>';
     }).join('');
     var ok = allowed();
-    $('plan-lead').textContent = a < 3 ? 'まだ予定は選べません。寝て、遊んで育ちます。' : '1か月を4週に分けて、週ごとに行動を予約します。' + (a < 18 ? '18歳までは家が生活費を出してくれます。' : '毎月 ' + LIVING + ' SUNA の生活費がかかります。');
-    $('weeks').innerHTML = a < 3 ? '' : [0, 1, 2, 3].map(function (i) {
+    $('plan-lead').textContent = a < LAW.school ? 'いまは育児される時期です。家の人が育ててくれます。行動は選べません。' : a < LAW.work ? 'いまは義務教育の時期です（二水の法律）。学校で学び、家で休みます。行動は選べません。' : '1か月を4週に分けて、週ごとに行動を予約します。' + (a < LAW.adult ? '18歳までは家が生活費を出してくれます。働けるのは法律で月2週までです。' : '毎月 ' + LIVING + ' SUNA の生活費がかかります。');
+    $('weeks').innerHTML = !ok.length ? '' : [0, 1, 2, 3].map(function (i) {
       return '<label>' + (i + 1) + '週目<select data-w="' + i + '">' + ok.map(function (k) { return '<option value="' + k + '"' + (s.plan[i] === k ? ' selected' : '') + '>' + ACT[k] + '</option>'; }).join('') + '</select></label>';
     }).join('');
     $('log').innerHTML = s.log.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('');
