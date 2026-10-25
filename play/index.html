@@ -56,6 +56,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 <div id="game" hidden style="display:grid;gap:14px">
 <section class="card">
 <div class="who"><b id="nm"></b><span id="age"></span></div>
+<p class="note" id="clock"></p>
 <p class="lead" id="env"></p>
 <div class="row" id="nickrow" hidden style="margin-top:8px"><input type="text" id="nick" maxlength="12" placeholder="ニックネーム（18歳から）" aria-label="ニックネーム" style="flex:1;min-width:0"><button class="btn sub" id="nickset" type="button">変える</button></div>
 <div class="row" style="justify-content:space-between;margin-top:8px"><span>所持金 <span class="money" id="money"></span> SUNA</span><span>HP（体力）<b id="hp"></b>%　MP（精神力）<b id="mp"></b>%</span></div>
@@ -79,7 +80,8 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 <div class="weeks" id="weeks" style="margin-top:10px"></div>
 </section>
 
-<div class="row"><button class="btn" id="m1" type="button">1か月すすめる</button><button class="btn sub" id="y1" type="button">1年すすめる</button><button class="btn sub" id="reset" type="button">最初から</button></div>
+<p class="note">ゲームの時間は自動で流れます（現実の1日＝ゲームの60日）。ページを閉じていても進み、次に開いたときにまとめて反映します。下のボタンは試作用の早送りです。</p>
+<div class="row"><button class="btn sub" id="m1" type="button">早送り：1か月</button><button class="btn sub" id="y1" type="button">早送り：1年</button><button class="btn sub" id="reset" type="button">最初から</button></div>
 
 <section class="card"><h2>できごと</h2><ul class="log" id="log"></ul></section>
 </div>
@@ -118,7 +120,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     ['R', 'G', 'B', 'W'].forEach(function (k) { aff[k] = Math.round(good.indexOf(k) >= 0 ? rnd(5, 30) : rnd(-30, 5)); });
     var home = ENV.filter(function (e) { return good.indexOf(e[1]) >= 0; }).map(function (e) { return e[0]; })[0] || '二水の家';
     s = { name: name, sex: Math.random() < .5 ? 'f' : 'm', month: 0, ap: ap, W: all.W, nick: '', aff: aff, good: good, home: home,
-      learn: 0, hp: 100, mp: 100, money: 0, plan: ['play', 'rest', 'play', 'rest'], pick: { R: 2, G: 2, B: 1 }, log: [] };
+      learn: 0, hp: 100, mp: 100, money: 0, plan: ['play', 'rest', 'play', 'rest'], pick: { R: 2, G: 2, B: 1 }, log: [], t0: Date.now() };
     say('二水市の' + home + 'に、' + name + 'が生まれた。');
     save(); show();
   }
@@ -222,12 +224,23 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     save(); show();
   });
   document.addEventListener('change', function (e) { if (e.target.dataset.w != null) { s.plan[+e.target.dataset.w] = e.target.value; save(); } });
-  $('born').onclick = function () { born(); };
+  $('born').onclick = function () { born(); tick(); };
   $('nickset').onclick = function () { if (age() < 18) return; s.nick = $('nick').value.trim().slice(0, 12); say(s.nick ? 'ニックネームを「' + s.nick + '」にした。' : 'ニックネームを外した。'); save(); show(); };
-  $('m1').onclick = function () { month(); save(); show(); };
-  $('y1').onclick = function () { for (var i = 0; i < 12; i++) month(); save(); show(); };
+  $('m1').onclick = function () { month(); s.t0 = Date.now(); save(); show(); };
+  $('y1').onclick = function () { for (var i = 0; i < 12; i++) month(); s.t0 = Date.now(); save(); show(); };
+  // ゲームの時間：現実の1日＝ゲームの60日（60倍）。1か月（30日）は現実の12時間。閉じていた間の分も、開いたときに進める（1回に最大10年）
+  var MONTH_MS = 12 * 3600 * 1000;
+  function tick() {
+    if (!s) return;
+    if (!s.t0) s.t0 = Date.now();
+    var due = Math.min(120, Math.floor((Date.now() - s.t0) / MONTH_MS));
+    if (due > 0) { for (var i = 0; i < due; i++) month(); s.t0 += due * MONTH_MS; save(); show(); }
+    var left = MONTH_MS - (Date.now() - s.t0), h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000);
+    $('clock').textContent = '次の月まで あと' + h + '時間' + m + '分（ゲームの1日＝現実の24分）';
+  }
+  setInterval(tick, 30000);
   $('reset').onclick = function () { if (confirm('最初からやり直しますか？')) { s = null; try { localStorage.removeItem(KEY); } catch (e) {} show(); } };
-  show();
+  show(); tick();
 })();
 </script>
 </body>
