@@ -6,6 +6,7 @@
 // 3つの国は開拓団を出して新しい土地をひらき（SITES）、その先で知らなかった文明（CIVS）に出会う。
 (function (root) {
   'use strict';
+  var DEV = root.TRI_DEVELOPMENT || (typeof module === 'object' && module.exports ? require('./development.js') : null);
   var EPOCH = Date.UTC(2026, 9, 24, 15); // 日本時間 2026-10-25 0:00
   var DAY = 864e5, TAU = Math.PI * 2;
   var MON = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3], MLEN = [30, 31, 30, 31, 31, 30, 31, 30, 31, 31, 28, 31];
@@ -121,6 +122,7 @@
       s.prov.push(o);
     });
     s.dong = DONG.map(function (g) { return { name: g[0], ku: g[1], use: g[2], pop: g[3], busy: 50, shops: Math.round(g[3] / 300), river: g[4] }; });
+    s.development = DEV ? NATS.map(function (n) { return DEV.create(n.name); }) : [];
     return s;
   }
 
@@ -321,6 +323,9 @@
     });
     if (w.wd === 6 && !/storm|typhoon/.test(nw.k)) ev.push({ k: 'town', t: '米市の市場で週末の大売り出し（食べ物の値段 ' + Math.round(s.prov[0].price.food * 100) + '）', where: '米市洞' });
     if (r() < .07) ev.push({ k: 'town', t: pick(r, ['工房街で新しい灯石ランプができた', '中路の電車通りで迷子の猫が保護された', '森下洞で鹿の親子が見られた', '川尾の倉庫に、川上から荷がたくさん届いた', '大橋の工事が少し進んだ', '灯台館の近くで、夜に小さな光が見えたといううわさ']), where: '' });
+    if (DEV) s.development.forEach(function (c, i) {
+      ev = ev.concat(DEV.step(c, NATS[i].prov.map(function (index) { return s.prov[index]; }), s.nat[i], d));
+    });
     return ev;
   }
 
@@ -359,6 +364,23 @@
     return { day: d, date: wdate(d), state: s, hist: hist, log: log };
   }
 
-  root.TRI_SIM = { LINK: LINK, SITES: SITES, CIVS: CIVS, NATS: NATS, CHAIRS: CHAIRS, EPOCH: EPOCH, today: today, wdate: wdate, climate: climate, WX: WX, run: run, people: people, slotOf: slotOf, PROV: PROV, SECT: SECT, DONG: DONG, CH: CH };
+  function untilModern(target, maxDays) {
+    if (!DEV) throw new Error('Development module unavailable');
+    if (!Number.isInteger(target) || target < 1 || target > NATS.length) throw new RangeError('Invalid target');
+    if (!Number.isInteger(maxDays) || maxDays < 0 || maxDays > 36500) throw new RangeError('Invalid horizon');
+    var s = init(), milestones = [], d;
+    for (d = 0; d <= maxDays; d++) {
+      step(s, d).forEach(function (event) { if (event.k === 'development') milestones.push({ day: d, date: wdate(d).label, text: event.t }); });
+      if (s.development.filter(function (c) { return c.modernDay !== null; }).length >= target) break;
+    }
+    var reached = d <= maxDays, end = Math.min(d, maxDays);
+    return { day: end, date: wdate(end), state: s, reached: reached, target: target, milestones: milestones };
+  }
+  function livingCosts(s, name, profile) {
+    var character = CH.filter(function (c) { return c[0] === name; })[0];
+    if (!character || !DEV) throw new RangeError('Unknown character or development module unavailable');
+    return Object.assign({ name: name, place: character[1], basis: '二水州の地域物価。職業・支援・住居・交通は別設定が必要' }, DEV.costOfLiving(s.prov[0], profile));
+  }
+  root.TRI_SIM = { LINK: LINK, SITES: SITES, CIVS: CIVS, NATS: NATS, CHAIRS: CHAIRS, EPOCH: EPOCH, today: today, wdate: wdate, climate: climate, WX: WX, run: run, people: people, slotOf: slotOf, PROV: PROV, SECT: SECT, DONG: DONG, CH: CH, untilModern: untilModern, livingCosts: livingCosts };
   if (typeof module === 'object' && module.exports) module.exports = root.TRI_SIM;
 })(typeof window !== 'undefined' ? window : globalThis);

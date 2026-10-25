@@ -26,7 +26,7 @@
     }
     run.log.forEach(function (log) {
       log.ev.forEach(function (event, index) {
-        if (!/^(exp|civ|prov|town|weather)$/.test(event.k)) return;
+        if (!/^(exp|civ|prov|town|weather|development)$/.test(event.k)) return;
         entries.push(article('event-' + log.d + '-' + index, log.d, 'change', event.t, '', {
           place: event.where || '世界', source: '世界シミュレーション・日次記録', record: 'ルール式の計算結果'
         }));

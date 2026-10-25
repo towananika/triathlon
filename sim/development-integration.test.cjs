@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict');
+const S=require('./world-sim.js');
+const first=S.untilModern(1,36500),all=S.untilModern(3,36500);
+assert(first.reached && all.reached);
+assert(first.day<=all.day);
+assert.equal(first.state.development.filter(c=>c.modernDay!==null).length,1);
+assert.equal(all.state.development.filter(c=>c.modernDay!==null).length,3);
+assert(!S.untilModern(3,30).reached);
+assert.equal(S.untilModern(1,36500).day,first.day);
+assert.throws(()=>S.untilModern(4,100),RangeError);
+const current=S.run(0,1);
+assert(current.state.development.every(c=>c.modernDay===null));
+assert.equal(S.livingCosts(current.state,'アカリ').balance,null);
+assert.throws(()=>S.livingCosts(current.state,'unknown'),RangeError);
+console.log(JSON.stringify({first:first.date.label,three:all.date.label,firstDay:first.day,threeDay:all.day}));
