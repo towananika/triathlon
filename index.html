@@ -29,7 +29,7 @@ nav button:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline
 <script src="news/news.js?v=0.17" defer></script>
 </head>
 <body>
-<div class="masthead"><a class="brand" href="#overview">TRIATHLON<span>SAME EARTH. DIFFERENT FUTURE.</span></a><span class="development">IN DEVELOPMENT</span></div>
+<div class="masthead"><a class="brand" href="#overview">TRIATHLON<span>SAME EARTH. DIFFERENT FUTURE.</span></a><div class="mast-right"><span class="development">IN DEVELOPMENT</span><details class="site-menu"><summary aria-label="メニュー"><span aria-hidden="true">☰</span> メニュー</summary><nav class="site-menu-list" aria-label="サイトのページ"><a href="news/">📰 お知らせ・アップデート</a><a href="saga/">📖 トライアスロン物語</a><a href="cast/">👥 キャラ図鑑</a><a href="settings/">📋 設定リスト</a><a href="#simulation">🏠 暮らしの試作</a><a href="#downloads">📁 資料・記録</a></nav></details></div></div>
 <section class="keyvisual" aria-label="海辺の都市のビジュアル検討案。地球上の位置は未設定">
 <div class="hero-copy"><p class="eyebrow">SAME EARTH. DIFFERENT FUTURE.</p><h1>TRIATHLON</h1><p class="hero-jp">同じ地球で、<br>違う未来を。</p><p class="hero-lead">誰かと親しく。自分らしく。<br>暮らしと文明を、ともにつくる。</p><a class="explore" href="#world">世界を知る <span aria-hidden="true">↓</span></a></div>
 <div class="hero-caption">CITY CONCEPT <span>旧青波市案の都市イメージ / 現実の地形・ゲーム画面ではありません</span></div>
@@ -222,6 +222,10 @@ nav button:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline
 })();
 </script>
 <script>
+document.addEventListener('click', function(e){
+  var m = document.querySelector('.site-menu');
+  if (m && m.open && (!m.contains(e.target) || e.target.closest('.site-menu-list a'))) m.open = false;
+});
 document.addEventListener('DOMContentLoaded', function(){
   var box = document.getElementById('news-latest'), n = window.TRI_NEWS;
   if (!box || !n || !n.length) return;

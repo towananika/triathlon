@@ -19,3 +19,14 @@
 #news-strip .nv{font-size:12px;font-weight:700;color:var(--teal,#007f87)}
 #news-strip .nt{flex:1 1 100%;font-weight:600}
 #news-strip .news-all{display:inline-block;font-weight:700;color:var(--blue,#205bc4)}
+
+/* メニュー（トップ右上） */
+.mast-right{display:flex;align-items:center;gap:14px}
+.site-menu{position:relative;background:transparent;padding:0;border-radius:0}
+.site-menu summary{list-style:none;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid var(--line,#cbdedf);border-radius:999px;font-size:13px;font-weight:700;color:var(--ink,#163744);background:#fff}
+.site-menu summary::-webkit-details-marker{display:none}
+.site-menu[open] summary{border-color:var(--teal,#007f87);color:var(--teal,#007f87)}
+.site-menu-list{position:absolute;right:0;top:calc(100% + 8px);z-index:50;display:flex;flex-direction:column;min-width:220px;margin:0;padding:6px;gap:0;background:#fff;border:1px solid var(--line,#cbdedf);border-radius:12px;box-shadow:0 10px 30px rgba(22,55,68,.16)}
+.site-menu-list a{display:block;margin:0;border:0;box-shadow:none;background:transparent;white-space:nowrap;padding:12px 12px;border-radius:8px;color:var(--ink,#163744);text-decoration:none;font-size:14px;font-weight:600}
+.site-menu-list a:hover{background:#edf5f4;color:var(--teal,#007f87)}
+@media(max-width:700px){.mast-right{gap:8px}.mast-right .development{display:none}.site-menu summary{padding:7px 10px;font-size:12px}}
