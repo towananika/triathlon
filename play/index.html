@@ -49,14 +49,15 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 
 <section class="card" id="start" hidden>
 <h2>うまれる</h2>
-<p class="lead">名前を決めると、キャラが生まれます。最初のAP・得意・性別は、生まれた環境で決まります。</p>
-<div class="row" style="margin-top:10px"><input type="text" id="name" maxlength="12" placeholder="名前（例：ハル）" aria-label="名前"><button class="btn" id="born" type="button">うまれる</button></div>
+<p class="lead">ボタンを押すと、キャラが生まれます。名前・性別・最初のAPは、生まれたときに決まります。名前は18歳からニックネームに変えられます。</p>
+<div class="row" style="margin-top:10px"><button class="btn" id="born" type="button">うまれる</button></div>
 </section>
 
 <div id="game" hidden style="display:grid;gap:14px">
 <section class="card">
 <div class="who"><b id="nm"></b><span id="age"></span></div>
 <p class="lead" id="env"></p>
+<div class="row" id="nickrow" hidden style="margin-top:8px"><input type="text" id="nick" maxlength="12" placeholder="ニックネーム（18歳から）" aria-label="ニックネーム" style="flex:1;min-width:0"><button class="btn sub" id="nickset" type="button">変える</button></div>
 <div class="row" style="justify-content:space-between;margin-top:8px"><span>所持金 <span class="money" id="money"></span> SUNA</span><span>HP（体力）<b id="hp"></b>%　MP（精神力）<b id="mp"></b>%</span></div>
 </section>
 
@@ -102,16 +103,21 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   function save() { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
 
   // RGB の 45AP を 9〜27 で分ける。W（かくれ）は別に 9〜27
+  // 生まれたときの 45AP を R・G・B・W（かくれ）の4つにランダムに分ける。どれも最小9（4つで45なので、最大は18になる）
   function split45() {
-    for (;;) { var r = ri(9, 27), g = ri(9, 27), b = 45 - r - g; if (b >= 9 && b <= 27) return { R: r, G: g, B: b }; }
+    var ap = { R: 9, G: 9, B: 9, W: 9 }, k = ['R', 'G', 'B', 'W'];
+    for (var i = 0; i < 9; i++) ap[k[ri(0, 3)]]++;
+    return ap;
   }
-  function born(name) {
-    var ap = split45(), good = [], aff = {};
+  // 名前は生まれたときにランダムで決まる（漢字圏の5か国で呼びやすい短い名前）。18歳からニックネームを付けられる
+  var FIRST = ['ハル', 'ソラ', 'リン', 'ミン', 'ジン', 'ユナ', 'ハナ', 'レン', 'セナ', 'リオ', 'ミオ', 'アン', 'ナリ', 'ユン', 'ラン', 'カイ', 'ナム', 'メイ'];
+  function born() {
+    var all = split45(), ap = { R: all.R, G: all.G, B: all.B }, good = [], aff = {}, name = FIRST[ri(0, FIRST.length - 1)];
     var n = ri(1, 4), pool = ['R', 'G', 'B', 'W'].sort(function () { return Math.random() - .5; });
     good = pool.slice(0, n);
     ['R', 'G', 'B', 'W'].forEach(function (k) { aff[k] = Math.round(good.indexOf(k) >= 0 ? rnd(5, 30) : rnd(-30, 5)); });
     var home = ENV.filter(function (e) { return good.indexOf(e[1]) >= 0; }).map(function (e) { return e[0]; })[0] || '二水の家';
-    s = { name: name, sex: Math.random() < .5 ? 'f' : 'm', month: 0, ap: ap, W: ri(9, 27), aff: aff, good: good, home: home,
+    s = { name: name, sex: Math.random() < .5 ? 'f' : 'm', month: 0, ap: ap, W: all.W, nick: '', aff: aff, good: good, home: home,
       learn: 0, hp: 100, mp: 100, money: 0, plan: ['play', 'rest', 'play', 'rest'], pick: { R: 2, G: 2, B: 1 }, log: [] };
     say('二水市の' + home + 'に、' + name + 'が生まれた。');
     save(); show();
@@ -187,9 +193,10 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     $('start').hidden = !!s; $('game').hidden = !s;
     if (!s) return;
     var a = age(), d = detail(), max = Math.max(40, s.ap.R, s.ap.G, s.ap.B);
-    $('nm').textContent = s.name + (s.sex === 'f' ? '（女の子）' : '（男の子）');
+    $('nm').textContent = (s.nick ? s.nick + '（' + s.name + '）' : s.name) + (s.sex === 'f' ? '・女の子' : '・男の子');
+    $('nickrow').hidden = a < 18;
     $('age').textContent = a + '歳' + (s.month % 12) + 'か月';
-    $('env').innerHTML = esc(s.home) + 'で生まれた。得意：' + s.good.filter(function (k) { return k !== 'W'; }).map(function (k) { return '<span class="tag" style="color:var(--' + k + ')">' + NAMES[k] + '</span>'; }).join('') + (s.good.length === 1 && s.good[0] === 'W' ? 'まだ見えない' : '');
+    $('env').textContent = s.home + 'で生まれた。';   // 得意はかくれステータスなので見せない
     $('money').textContent = s.money.toFixed(2); $('money').className = 'money' + (s.money < 0 ? ' neg' : '');
     $('hp').textContent = s.hp; $('mp').textContent = s.mp;
     $('bars').innerHTML = C3.map(function (k) {
@@ -215,7 +222,8 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     save(); show();
   });
   document.addEventListener('change', function (e) { if (e.target.dataset.w != null) { s.plan[+e.target.dataset.w] = e.target.value; save(); } });
-  $('born').onclick = function () { born($('name').value.trim() || 'ハル'); };
+  $('born').onclick = function () { born(); };
+  $('nickset').onclick = function () { if (age() < 18) return; s.nick = $('nick').value.trim().slice(0, 12); say(s.nick ? 'ニックネームを「' + s.nick + '」にした。' : 'ニックネームを外した。'); save(); show(); };
   $('m1').onclick = function () { month(); save(); show(); };
   $('y1').onclick = function () { for (var i = 0; i < 12; i++) month(); save(); show(); };
   $('reset').onclick = function () { if (confirm('最初からやり直しますか？')) { s = null; try { localStorage.removeItem(KEY); } catch (e) {} show(); } };
