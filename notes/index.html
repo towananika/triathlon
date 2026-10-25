@@ -1,0 +1,54 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>からだと心のノート | TRIATHLON</title><meta name="description" content="物語のあとに読む、からだと心の正しい知識。親として読む欄つき。">
+<style>
+:root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mute:#5f6f78;--line:#d9e3e2;--tq:#22AAA6;--blue:#2F6FB8;--deep:#173A63;--mist:#DCF1EF;--gold:#C9A646;--r:#D9707A;--g:#4FAE84;--b:#5B8FD6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mute:#9fb0b4;--line:#2b3a42;--blue:#7fb0e8;--deep:#cfe0f2;--mist:#1f3a3c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mute:#9fb0b4;--line:#2b3a42;--blue:#7fb0e8;--deep:#cfe0f2;--mist:#1f3a3c;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.85 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{max-width:640px;margin:0 auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 56px max(16px,env(safe-area-inset-left,0px))}
+h1{font-size:24px;margin:0 0 4px;color:var(--blue);line-height:1.4}.kick{font-size:12px;letter-spacing:.1em;color:var(--mute);margin:0}
+.lead{color:var(--mute);margin:0 0 18px}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:12px}.list a{display:block;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;color:var(--fg);text-decoration:none}.list b{display:block;font-size:18px}.list small{color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card p{margin:0 0 .9em}.card ul{margin:0 0 .6em;padding-left:1.3em}.card h3{font-size:15px;color:var(--deep);margin:14px 0 6px}
+.parent{background:var(--mist);border-radius:18px;padding:16px 18px;margin-top:14px}.parent h2{font-size:16px;margin:0 0 6px;color:var(--deep)}.parent p{margin:0 0 .6em}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 16px}.meta span{font-size:12px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:1px 10px;color:var(--mute)}
+.me{margin:20px 0 0;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.me button{border:0;background:var(--tq);color:#FBFCFC;font:inherit;font-weight:700;border-radius:999px;padding:12px 26px;cursor:pointer}.me button[aria-pressed="true"]{background:var(--card);color:var(--tq);box-shadow:inset 0 0 0 2px var(--tq)}
+.me button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}.me small{color:var(--mute);font-size:13px}
+.src{font-size:12px;color:var(--mute);margin-top:14px}.go a{color:var(--blue);font-weight:700}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:26px}.nav a{flex:1;text-align:center;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:10px;color:var(--fg);text-decoration:none;font-weight:700}.nav a.off{visibility:hidden}
+</style></head><body>
+<script src="../site-nav.js?v=0.40"></script>
+<main id="m"><p>読みこみ中…</p></main>
+<script src="notes.js?v=0.40"></script>
+<script>
+(function(){
+  var N=window.TRI_NOTES||[],m=document.getElementById('m'),id=new URLSearchParams(location.search).get('id');
+  // 物語とのつながり（サイトにある話だけリンクする）
+  var STORY={'02':['第2話「言えないことは、光る」','../stories/v.html?id=2']};
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  // 空行で段落を分け、行の折り返しは1つの段落にまとめる
+  function md(t){var h='',ul=false,pa='';function fp(){if(pa){h+='<p>'+esc(pa)+'</p>';pa=''}}
+    t.split('\n').forEach(function(l){
+    if(/^- /.test(l)){fp();if(!ul){h+='<ul>';ul=true}h+='<li>'+esc(l.slice(2))+'</li>';return}
+    if(ul){h+='</ul>';ul=false}
+    var b=l.match(/^\*\*(.+)\*\*$/);if(b){fp();h+='<h3>'+esc(b[1])+'</h3>';return}
+    if(l.trim())pa+=l.trim();else fp()});fp();return h+(ul?'</ul>':'')}
+  var i=N.findIndex(function(n){return n.id===id});
+  if(i<0){
+    m.innerHTML='<p class="kick">NOTES</p><h1>からだと心のノート</h1><p class="lead">物語のあとに読む1枚。からだと心の正しい知識と、親として読む欄があります。</p><ol class="list">'+N.map(function(n){return '<li><a href="?id='+n.id+'"><small>ノート '+n.id+'・'+esc(n.age)+'</small><b>'+esc(n.title)+'</b></a></li>'}).join('')+'</ol>';return}
+  var n=N[i],key='tri-me-'+n.id,on=false;try{on=localStorage.getItem(key)==='1'}catch(e){}
+  document.title=n.title+' | からだと心のノート';
+  var st=STORY[n.id];
+  m.innerHTML='<p class="kick">からだと心のノート '+n.id+'</p><h1>'+esc(n.title)+'</h1><div class="meta"><span>'+esc(n.age)+'</span><span>心の光：'+esc(n.light)+'</span></div>'+
+    '<div class="card">'+md(n.body)+'</div>'+
+    '<div class="parent"><h2>親として</h2>'+md(n.parent)+'</div>'+
+    '<div class="me"><button type="button" id="me" aria-pressed="'+on+'">'+(on?'わたしもそうだった ✓':'わたしもそうだった')+'</button><small id="me-t">'+(on?'押しました。この記録はこの端末にだけ残ります。':'名前は出ません。押したことは、この端末にだけ残ります。')+'</small></div>'+
+    '<p class="go">'+(st?'つながる話：<a href="'+st[1]+'">'+esc(st[0])+' →</a>':'つながる話：これから書かれます')+'</p>'+
+    '<p class="src">もとにした考え方：'+esc(n.src)+'</p>'+
+    '<div class="nav">'+(i>0?'<a href="?id='+N[i-1].id+'">← 前</a>':'<a class="off">←</a>')+'<a href="./">一覧</a>'+(i<N.length-1?'<a href="?id='+N[i+1].id+'">次 →</a>':'<a class="off">→</a>')+'</div>';
+  document.getElementById('me').onclick=function(){on=!on;try{on?localStorage.setItem(key,'1'):localStorage.removeItem(key)}catch(e){}
+    this.setAttribute('aria-pressed',on);this.textContent=on?'わたしもそうだった ✓':'わたしもそうだった';
+    document.getElementById('me-t').textContent=on?'押しました。この記録はこの端末にだけ残ります。':'名前は出ません。押したことは、この端末にだけ残ります。'};
+})();
+</script></body></html>
