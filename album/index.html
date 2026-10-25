@@ -1,0 +1,46 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>思い出のアルバム | TRIATHLON</title><meta name="description" content="9人の、いつもの活動の思い出。運動、ごはん、休む時間。">
+<script>(function(){var h=new Date().getHours();if(h>=20||h<5)document.documentElement.classList.add('night')})()</script>
+<style>
+:root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mute:#5f6f78;--line:#d9e3e2;--tq:#22AAA6;--blue:#2F6FB8;--mist:#DCF1EF;--r:#D9707A;--g:#4FAE84;--b:#5B8FD6}
+html.night{--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mute:#9fb0b4;--line:#2b3a42;--blue:#7fb0e8;--mist:#1f3a3c;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.8 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{max-width:900px;margin:0 auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 56px max(16px,env(safe-area-inset-left,0px))}
+h1{font-size:24px;margin:0;color:var(--blue)}h2{font-size:18px;margin:26px 0 8px}.lead{color:var(--mute);margin:4px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.chips button{border:1px solid var(--line);background:var(--card);color:var(--fg);font:inherit;font-size:15px;border-radius:999px;padding:6px 14px;cursor:pointer;min-height:40px}
+.chips button[aria-pressed="true"]{background:var(--tq);border-color:var(--tq);color:var(--card);font-weight:700}
+.chips button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.mem{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;min-width:0}
+.ph{aspect-ratio:4/3;display:grid;place-items:center;background:radial-gradient(circle at 50% 55%,var(--c) 0,transparent 62%),linear-gradient(160deg,#173A63,#131B20);color:#E3EBEA;font-size:14px}
+.ph img{width:100%;height:100%;object-fit:cover}
+.mem .t{padding:10px 12px}.mem .who{font-weight:800}.mem small{display:block;color:var(--mute);font-size:13px}.mem p{margin:4px 0 0;font-size:15px}
+.empty{color:var(--mute)}
+</style></head><body>
+<script src="../site-nav.js?v=0.44"></script>
+<main>
+<h1>思い出のアルバム</h1>
+<p class="lead">9人のいつもの活動。1人2つずつ、写真とひとことでたまっていきます。</p>
+<h2>今日の3枚</h2><div class="grid" id="top"></div>
+<h2>ぜんぶ見る</h2>
+<div class="chips" id="who" role="group" aria-label="人でしぼる"></div>
+<div class="chips" id="kind" role="group" aria-label="種類でしぼる"></div>
+<div class="grid" id="all"></div>
+</main>
+<script src="album.js?v=0.44"></script>
+<script>
+(function(){
+  var A=window.TRI_ALBUM,K={},C={r:'#D9707A',g:'#4FAE84',b:'#5B8FD6'};A.kinds.forEach(function(k){K[k[0]]=k[1]});
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function card(m){return '<article class="mem"><div class="ph" style="--c:'+C[m[5]]+'">'+(m[6]?'<img alt="'+esc(m[0]+'・'+m[2])+'" src="'+esc(m[6])+'" loading="lazy">':'<span>写真は準備中</span>')+'</div><div class="t"><span class="who">'+esc(m[0])+'</span><small>'+esc(K[m[1]]+'・'+m[2]+'・'+m[3])+'</small><p>'+esc(m[4])+'</p></div></article>'}
+  var day=Math.floor((Date.now()+9*36e5)/864e5),n=A.items.length;
+  document.getElementById('top').innerHTML=[0,1,2].map(function(i){return card(A.items[(day*7+i*5)%n])}).join('');
+  var names=[];A.items.forEach(function(m){if(names.indexOf(m[0])<0)names.push(m[0])});
+  var q=new URLSearchParams(location.search),who=q.get('who')||'',kind=q.get('kind')||'';
+  function chips(id,list,cur,set){var el=document.getElementById(id);el.innerHTML=[['','すべて']].concat(list).map(function(x){return '<button type="button" data-v="'+esc(x[0])+'" aria-pressed="'+(x[0]===cur)+'">'+esc(x[1])+'</button>'}).join('');
+    el.onclick=function(e){var b=e.target.closest('button');if(!b)return;set(b.dataset.v);draw()}}
+  function draw(){chips('who',names.map(function(x){return[x,x]}),who,function(v){who=v});chips('kind',A.kinds,kind,function(v){kind=v});
+    var L=A.items.filter(function(m){return(!who||m[0]===who)&&(!kind||m[1]===kind)});
+    document.getElementById('all').innerHTML=L.length?L.map(card).join(''):'<p class="empty">この組み合わせの思い出は、まだありません。</p>'}
+  draw();
+})();
+</script></body></html>
