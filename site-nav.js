@@ -17,7 +17,7 @@
   var admin = false;
   if (admin) document.documentElement.classList.add('tri-admin');
   var MORE = admin ? [['dev/', '🛠️', '開発版'], ['guide.html', '📘', '設定資料（世界ガイド）'], ['settings/', '📋', '設定リスト'], ['guide.html#simulation', '🏡', '暮らしの試作'], ['news/rules.html', '📏', 'アップデートの基準']]
-    : [['life/', '🧭', '一生の地図'], ['notes/', '📒', 'からだと心のノート'], ['daily/', '🍚', 'ごはんとおやすみの話'], ['album/', '📷', '思い出のアルバム'], ['share/', '📣', 'SNS用カード'], ['sim/', '🌏', '今日の世界'], ['places/', '📷', '好きな場所'], ['saga/', '🗺️', '物語のあらすじ（4世代）'], ['news/rules.html', '📏', 'アップデートの基準']];
+    : [['life/', '🧭', '一生の地図'], ['daily/', '🍚', 'ごはんとおやすみの話'], ['album/', '📷', '思い出のアルバム'], ['share/', '📣', 'SNS用カード'], ['sim/', '🌏', '今日の世界'], ['places/', '📷', '好きな場所'], ['saga/', '🗺️', '物語のあらすじ（4世代）'], ['news/rules.html', '📏', 'アップデートの基準']];
   var path = location.pathname.replace(/index\.html$/, ''), rootPath = new URL(root).pathname;
   function cur(p) {
     if (p.indexOf('#') >= 0) return false;
@@ -69,7 +69,7 @@
     var foot = document.createElement('footer');
     foot.className = 'tri-foot';
     function fl(t, a) { return '<div><b>' + t + '</b>' + a.map(function (it) { return '<a href="' + root + it[0] + '">' + it[1] + '</a>'; }).join('') + '</div>'; }
-    foot.innerHTML = '<div class="tri-fcols">' + fl('作品', [['stories/', '物語（連載）'], ['life/', '一生の地図'], ['notes/', 'からだと心のノート'], ['saga/', '物語のあらすじ'], ['cast/', 'キャラクター']]) + fl('世界', [['map/', 'マップ'], ['sim/', '今日の世界'], ['places/', '好きな場所']]) +
+    foot.innerHTML = '<div class="tri-fcols">' + fl('作品', [['stories/', '物語（連載）'], ['life/', '一生の地図'], ['saga/', '物語のあらすじ'], ['cast/', 'キャラクター']]) + fl('世界', [['map/', 'マップ'], ['sim/', '今日の世界'], ['places/', '好きな場所'], ['notes/?door=1', 'まなびやの扉']]) +
       fl('サポート', [['news/', 'お知らせ'], ['news/rules.html', 'アップデートの基準'], ['login/', 'ログイン']]) + '</div>' +
       '<div class="tri-fbase"><span class="logo">TRIATHLON</span><span class="tri-studio">© 2026 ' + STUDIO + '<small>（仮）</small><em>Est. 2026.10.25 · Nisui</em></span><span>物語と世界を少しずつ公開しています。画像は検討中のイメージです。' + (ver ? ' · ' + ver.textContent : '') + '</span></div>';
     if (old) old.replaceWith(foot); else document.body.appendChild(foot);
