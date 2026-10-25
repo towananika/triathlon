@@ -1,0 +1,11 @@
+/* v0.17：物語・キャラ図鑑・設定リストへの入口（サイトの明るい配色に合わせる） */
+.v017-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.v017-links a{display:block;padding:14px 16px;border-radius:14px;background:#fff;border:1px solid var(--line,#cbdedf);border-left:5px solid var(--teal,#007f87);color:var(--ink,#163744);text-decoration:none;font-weight:700;font-size:16px}
+.v017-links a:hover,.v017-links a:focus-visible{border-color:var(--teal,#007f87)}
+.v017-links small{display:block;font-weight:400;font-size:13px;color:#4f6b75;margin-top:2px}
+.v017-cast{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin:10px 0;padding:0;list-style:none}
+.v017-cast li{padding:6px 10px;border-radius:10px;background:#f2f8f8;border-left:4px solid var(--x,#007f87);font-size:14px;color:var(--ink,#163744)}
+.v017-cast b{margin-right:6px}
+.v017-seasons{display:grid;gap:8px;margin:10px 0;padding:0;list-style:none}
+.v017-seasons li{padding:10px 12px;border-radius:12px;background:#f2f8f8;color:var(--ink,#163744)}
+.v017-seasons b{display:block;font-size:16px}
