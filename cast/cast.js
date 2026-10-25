@@ -27,7 +27,7 @@ document.addEventListener('click', function(e){
   var b = e.target.closest('button');
   if (e.target.id === 'sheet' || (b && b.hasAttribute('data-close'))) { $('sheet').hidden = true; return; }
   if (!b) return;
-  if (b.dataset.id) { open(b.dataset.id); return; }
+  if (b.dataset.id) { location.href = 'c.html?id=' + encodeURIComponent(b.dataset.id); return; }
   if (b.dataset.t != null && admin) { tab = +b.dataset.t; render(); }
 });
 document.addEventListener('keydown', function(e){ if (e.key === 'Escape') $('sheet').hidden = true; });
