@@ -7,10 +7,10 @@
   var me = document.currentScript;
   if (!me) return;
   var root = me.src.replace(/site-nav\.js(\?.*)?$/, '');
-  var FONT_CSS = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Noto+Sans+JP:wght@700;800&display=swap';
+  var FONT_CSS = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Montserrat:wght@500;700&family=Noto+Sans+JP:wght@700;800&display=swap';
   var FONT_LOGO = '"Montserrat",system-ui,sans-serif', FONT_HEAD = '"Noto Sans JP","Noto Sans SC","Noto Sans TC","Noto Sans KR","Noto Sans",system-ui,sans-serif';
   // 開発元（仮法人）。名前を変えるときはここだけ
-  var STUDIO = 'Towananika Studio';
+  var STUDIO = 'Towa'; // 設立 2026-10-25、所在地はゲーム内の二水（Nisui）
   var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['saga/', '📖', '物語'], ['cast/', '👥', 'キャラ'], ['mall/', '🛍️', 'モール']];
   var TABS = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['play/', '▶', 'プレイ'], ['saga/', '📖', '物語'], ['cast/', '👥', 'キャラ']];
   // 公開しているのは今の期だけ（「期」という言葉も出さない）。1〜4期と設定資料は管理者だけに見せる
@@ -35,7 +35,7 @@
     '.tri-top a:hover{background:#edf5f4}.tri-top a[aria-current="page"]{color:#007f87;box-shadow:inset 0 -3px 0 #007f87;border-radius:0}' +
     '.tri-menu{position:relative;background:none!important;padding:0!important;border:0!important;border-radius:0!important;margin:0!important}.tri-nav,.tri-bottom{box-sizing:border-box}.tri-nav *,.tri-bottom *{box-sizing:border-box}.tri-menu summary{list-style:none;cursor:pointer;display:grid;place-items:center;width:44px;height:44px;border:1px solid #cbdedf;border-radius:10px;font-size:20px;color:#163744;background:#fff}' +
     '.tri-act{display:flex;align-items:center;gap:8px;margin-left:auto}.tri-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:999px;font-size:14px;font-weight:800;text-decoration:none;white-space:nowrap;border:1px solid #007f87;color:#007f87;background:#fff}.tri-btn.in{gap:6px;padding:0 12px 0 4px;max-width:150px}.tri-btn.in img{width:30px;height:30px;border-radius:50%}.tri-btn.in span{overflow:hidden;text-overflow:ellipsis}.tri-btn.play{background:#ffd76a;border-color:#ffd76a;color:#163744}.tri-btn:hover{filter:brightness(.97)}' +
-    '.tri-foot{text-align:left;margin:0;max-width:none;background:#123640;color:#cfe2e4;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;font-size:14px;padding:36px 5% 28px}.tri-foot a{color:#fff;text-decoration:none}.tri-foot a:hover{text-decoration:underline}.tri-fcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;max-width:1000px;margin:0 auto}.tri-fcols b{display:block;color:#fff;font-size:13px;letter-spacing:.08em;margin-bottom:8px}.tri-fcols a{display:block;padding:5px 0}.tri-fbase{max-width:1000px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,.18);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:12px}.tri-fbase .logo{font-family:var(--tri-logo);font-weight:700;letter-spacing:.22em;color:#fff;font-size:15px}' +
+    '.tri-foot{text-align:left;margin:0;max-width:none;background:#123640;color:#cfe2e4;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;font-size:14px;padding:36px 5% 28px}.tri-foot a{color:#fff;text-decoration:none}.tri-foot a:hover{text-decoration:underline}.tri-fcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;max-width:1000px;margin:0 auto}.tri-fcols b{display:block;color:#fff;font-size:13px;letter-spacing:.08em;margin-bottom:8px}.tri-fcols a{display:block;padding:5px 0}.tri-fbase{max-width:1000px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,.18);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:12px}.tri-studio{font-family:"Cormorant Garamond",Georgia,serif;font-size:17px;letter-spacing:.18em;color:#fff}.tri-studio em{display:block;font-style:italic;font-size:13px;letter-spacing:.12em;opacity:.75}.tri-studio small{font-family:system-ui,sans-serif;font-size:11px;letter-spacing:0;opacity:.7}.tri-fbase .logo{font-family:var(--tri-logo);font-weight:700;letter-spacing:.22em;color:#fff;font-size:15px}' +
     '.tri-menu summary::-webkit-details-marker{display:none}.tri-menu[open] summary{border-color:#007f87;color:#007f87}' +
     '.tri-more{position:absolute;right:0;top:calc(100% + 8px);display:flex;flex-direction:column;min-width:240px;padding:6px;background:#fff;border:1px solid #cbdedf;border-radius:14px;box-shadow:0 10px 30px rgba(22,55,68,.16)}' +
     '.tri-more a{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 14px;border-radius:10px;color:#163744;text-decoration:none;font-size:15px;font-weight:600;white-space:nowrap}' +
@@ -71,7 +71,7 @@
     function fl(t, a) { return '<div><b>' + t + '</b>' + a.map(function (it) { return '<a href="' + root + it[0] + '">' + it[1] + '</a>'; }).join('') + '</div>'; }
     foot.innerHTML = '<div class="tri-fcols">' + fl('ゲーム', [['play/', 'ゲームをはじめる'], ['mall/', 'トライアスロンモール']]) + fl('作品', [['saga/', 'トライアスロン物語'], ['cast/', 'キャラクター']]) +
       fl('サポート', [['news/', 'お知らせ'], ['news/rules.html', 'アップデートの基準'], ['login/', 'ログイン']]) + '</div>' +
-      '<div class="tri-fbase"><span class="logo">TRIATHLON</span><span>© 2026 ' + STUDIO + '（仮）</span><span>開発中のサイトです。画像は検討中のイメージで、ゲーム画面ではありません。' + (ver ? ' · ' + ver.textContent : '') + '</span></div>';
+      '<div class="tri-fbase"><span class="logo">TRIATHLON</span><span class="tri-studio">© 2026 ' + STUDIO + '<small>（仮）</small><em>Est. 2026.10.25 · Nisui</em></span><span>開発中のサイトです。画像は検討中のイメージで、ゲーム画面ではありません。' + (ver ? ' · ' + ver.textContent : '') + '</span></div>';
     if (old) old.replaceWith(foot); else document.body.insertBefore(foot, bottom.parentNode ? bottom : null);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addFoot); else addFoot();
