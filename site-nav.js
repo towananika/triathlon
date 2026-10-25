@@ -9,6 +9,8 @@
   var root = me.src.replace(/site-nav\.js(\?.*)?$/, '');
   var FONT_CSS = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Noto+Sans+JP:wght@700;800&display=swap';
   var FONT_LOGO = '"Montserrat",system-ui,sans-serif', FONT_HEAD = '"Noto Sans JP","Noto Sans SC","Noto Sans TC","Noto Sans KR","Noto Sans",system-ui,sans-serif';
+  // 開発元（仮法人）。名前を変えるときはここだけ
+  var STUDIO = 'Towananika Studio';
   var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['saga/', '📖', '物語'], ['cast/', '👥', 'キャラ'], ['mall/', '🛍️', 'モール']];
   var TABS = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['play/', '▶', 'プレイ'], ['saga/', '📖', '物語'], ['cast/', '👥', 'キャラ']];
   // 公開しているのは今の期だけ（「期」という言葉も出さない）。1〜4期と設定資料は管理者だけに見せる
@@ -69,7 +71,7 @@
     function fl(t, a) { return '<div><b>' + t + '</b>' + a.map(function (it) { return '<a href="' + root + it[0] + '">' + it[1] + '</a>'; }).join('') + '</div>'; }
     foot.innerHTML = '<div class="tri-fcols">' + fl('ゲーム', [['play/', 'ゲームをはじめる'], ['mall/', 'トライアスロンモール']]) + fl('作品', [['saga/', 'トライアスロン物語'], ['cast/', 'キャラクター']]) +
       fl('サポート', [['news/', 'お知らせ'], ['news/rules.html', 'アップデートの基準'], ['login/', 'ログイン']]) + '</div>' +
-      '<div class="tri-fbase"><span class="logo">TRIATHLON</span><span>開発中のサイトです。画像は検討中のイメージで、ゲーム画面ではありません。' + (ver ? ' · ' + ver.textContent : '') + '</span></div>';
+      '<div class="tri-fbase"><span class="logo">TRIATHLON</span><span>© 2026 ' + STUDIO + '（仮）</span><span>開発中のサイトです。画像は検討中のイメージで、ゲーム画面ではありません。' + (ver ? ' · ' + ver.textContent : '') + '</span></div>';
     if (old) old.replaceWith(foot); else document.body.insertBefore(foot, bottom.parentNode ? bottom : null);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addFoot); else addFoot();
