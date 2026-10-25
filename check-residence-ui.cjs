@@ -24,7 +24,7 @@ const path=require('node:path');
     const paused=await page.locator('#sim-day').innerText();
     await page.waitForTimeout(1500);assert.equal(await page.locator('#sim-day').innerText(),paused);
     await page.goto(url+'#simulation');
-    await page.locator('#simulation>details').first().locator('summary').click();
+    await page.locator('#simulation>details').filter({has:page.locator('#sim-conditions')}).locator('summary').click();
     await page.locator('input[data-city="R"][data-metric="challenge"]').fill('0');
     await page.locator('input[data-city="R"][data-metric="challenge"]').dispatchEvent('change');
     assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('triathlon-residence-sim-v1')).conditions.R.challenge),0);
