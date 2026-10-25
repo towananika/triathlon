@@ -1,0 +1,42 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>SNS用カード | TRIATHLON</title><meta name="description" content="SNSに投稿するためのカード画像。長押しか右クリックで保存できます。">
+<style>
+:root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mute:#5f6f78;--line:#d9e3e2;--tq:#22AAA6;--blue:#2F6FB8;--mist:#DCF1EF}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mute:#9fb0b4;--line:#2b3a42;--blue:#7fb0e8;--mist:#1f3a3c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mute:#9fb0b4;--line:#2b3a42;--blue:#7fb0e8;--mist:#1f3a3c;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.8 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{max-width:900px;margin:0 auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 56px max(16px,env(safe-area-inset-left,0px))}
+h1{font-size:24px;margin:0;color:var(--blue)}h2{font-size:18px;margin:28px 0 4px}.lead{color:var(--mute);margin:4px 0 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:10px}
+figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px}figure img{display:block;width:100%;border-radius:8px}
+figcaption{font-size:13px;color:var(--mute);margin-top:6px;white-space:pre-line}
+.tag{display:inline-block;background:var(--mist);border-radius:999px;padding:2px 12px;font-weight:700;margin-top:8px}
+</style></head><body>
+<script src="../site-nav.js?v=0.41"></script>
+<main>
+<h1>SNS用カード</h1>
+<p class="lead">画像を長押し（パソコンは右クリック）で保存して、そのまま投稿できます。絵が届いたら、絵入りに差しかえます。</p>
+<p class="tag">#トライアスロン九つの光</p>
+<h2>第1話「一発いこ」4枚</h2><p class="lead">SNSには最初の4枚だけ。続きはサイトで。</p><div class="grid" id="ep"></div>
+<h2>9人の紹介（1日1人）</h2><div class="grid" id="cast"></div>
+</main>
+<script>
+(function(){
+  var SUB='九つの光の、一生';
+  var EP=[['二水の朝。川には、ふたつの流れがある。','朝もやの渡し舟'],['「入る。一番強い人が入るとこでしょ」','拳のテーピング'],['「強いだけじゃ、川は渡れんぞ」','マツじいさんの背中'],['消えた灯りの理由は――\n続きはサイトで。','灯りの消えた灯台館']];
+  var CAST=[['アカリ','考えるより先に、一発いこ！','川の町・二水のファイター。好物は焼きそばパン。','#D9707A'],['ツバサ','……うん、やってみる。','アカリの幼なじみ。日記と雨の音が好き。','#5B8FD6'],['セイラ','大丈夫、ゆっくりでいいよ。','みんなの帰る場所になりたい、癒やしの人。','#4FAE84'],['シオン','礼を欠いた勝ちに、意味はありません。','名家の騎士。本当は庶民の遊びに憧れている。','#2F6FB8'],['ルイ','僕も、まだ知らないことばかりだよ。','全国1位の天才。星座と図書館が好き。','#22AAA6'],['リク','首席の俺に任せとけって。','ルイに一度でいいから勝ちたい。','#C9A646'],['シズク','……見てて。','森の朝が好きな、口数の少ない探索者。','#4FAE84'],['カイ','……別に。気にしてない。','写真ぎらい。夜の屋上で猫といる。','#173A63'],['ミナト','ねえねえ、こっちに道あったよ！','知らない路地が大好き。じつは方向音痴。','#D9707A']];
+  var F='"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif';
+  function wrap(x,t,max){var out=[];t.split('\n').forEach(function(p){var l='';for(var i=0;i<p.length;i++){if(x.measureText(l+p[i]).width>max&&l){out.push(l);l=''}l+=p[i]}out.push(l)});return out}
+  function card(draw){var c=document.createElement('canvas');c.width=1080;c.height=1350;var x=c.getContext('2d');
+    var g=x.createLinearGradient(0,0,0,1350);g.addColorStop(0,'#173A63');g.addColorStop(1,'#131B20');x.fillStyle=g;x.fillRect(0,0,1080,1350);
+    draw(x);x.fillStyle='#DCF1EF';x.globalAlpha=.85;x.font='600 34px '+F;x.textAlign='left';x.fillText('TRIATHLON　'+SUB,72,1270);x.globalAlpha=1;return c.toDataURL('image/png')}
+  function orb(x,cx,cy,r,col){var g=x.createRadialGradient(cx,cy,0,cx,cy,r);g.addColorStop(0,col);g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.beginPath();x.arc(cx,cy,r,0,7);x.fill()}
+  function add(id,src,cap,alt){var f=document.createElement('figure');f.innerHTML='<img alt=""><figcaption></figcaption>';f.querySelector('img').src=src;f.querySelector('img').alt=alt;f.querySelector('figcaption').textContent=cap;document.getElementById(id).appendChild(f)}
+  EP.forEach(function(e,i){add('ep',card(function(x){orb(x,820,330,300,'rgba(34,170,166,.55)');orb(x,300,520,220,'rgba(91,143,214,.45)');
+    x.fillStyle='#E3EBEA';x.font='700 30px '+F;x.fillText('第1話「一発いこ」　'+(i+1)+'/4',72,120);
+    x.font='700 70px '+F;var L=wrap(x,e[0],936);L.forEach(function(l,j){x.fillText(l,72,760+j*100-(L.length-1)*50)});
+    x.font='28px '+F;x.fillStyle='#9fb0b4';x.fillText('絵：'+e[1]+'（準備中）',72,1150)}),(i+1)+'枚目：'+e[0],e[0])});
+  CAST.forEach(function(c,i){add('cast',card(function(x){orb(x,540,460,330,c[3]);x.fillStyle='#E3EBEA';x.font='700 30px '+F;x.fillText((i+1)+'日目',72,120);
+    x.textAlign='center';x.font='900 120px '+F;x.fillText(c[0],540,500);x.font='700 58px '+F;wrap(x,'「'+c[1]+'」',900).forEach(function(l,j){x.fillText(l,540,800+j*80)});
+    x.font='38px '+F;x.fillStyle='#cfe0f2';wrap(x,c[2],900).forEach(function(l,j){x.fillText(l,540,1020+j*56)})}),c[0]+'「'+c[1]+'」\n'+c[2]+'\n#トライアスロン九つの光',c[0])});
+})();
+</script></body></html>
