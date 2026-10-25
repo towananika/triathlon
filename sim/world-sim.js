@@ -195,7 +195,7 @@
       p.mood = clamp(p.mood * .95 + target * .05, 0, 100); avgMood += p.mood / s.prov.length;
       p.pop *= 1 + (.010 - .009 - p.short * .02) / 365;
     });
-    if (w.d === 1) s.prov.forEach(function (p) { p.pop *= 1 + (p.mood - avgMood) * .00015; });
+    if (w.d === 1) s.prov.forEach(function (p) { p.pop *= 1 + (p.mood - avgMood) * .00015 + .0005 + (p.mood - 55) * .00003 - (p.price.food > 1.5 ? .001 : 0); }); // 月ごと：生まれる・亡くなる（満足と食べ物で年0〜1%ほど）、引っこす
 
     // 6. 政治・軍事・外交
     s.nat.forEach(function (n, i) {
@@ -205,7 +205,8 @@
       n.pop = pop; n.mood = mood; n.gdp = inc;
       n.budget = inc * pol[2]; // 1日の税収
       // 国の借金：ひらく会は工事のために借りる。利子は2%
-      var spend = n.budget * (i === 0 && n.party === 0 ? 1.12 : 1.0) + n.debt * .02 / 365;
+      var big = n.debt > n.gdpY * .3; n.austere = big; // 借金が1年の生産の3割をこえたら、出費をおさえる
+      var spend = n.budget * (i === 0 && n.party === 0 && !big ? 1.12 : big ? .96 : 1.0) + n.debt * .02 / 365;
       n.debt = Math.max(0, n.debt + spend - n.budget);
       n.gdpY = n.gdpY * (364 / 365) + inc;
       // 物価（食べ物6割・製品4割）
@@ -216,23 +217,26 @@
       // 為替：貿易で稼ぐ国の通貨は強く、物価が上がる国の通貨は弱く
       n.tradeY = n.tradeY * .995 + n.trade; n.trade = 0;
       n.fx = clamp(n.fx * (1 + clamp(n.tradeY / Math.max(1, inc * 300), -.0005, .0005) - clamp((n.infl || 0) / 365 / 100, -.0003, .0003)) + (N.fx - n.fx) * .002, N.fx * .5, N.fx * 2);
-      n.approval = clamp(n.approval * .98 + (mood - 5) * .02 + (r() - .5), 5, 95);
+      n.approval = clamp(n.approval * .98 + (mood - 5 - (n.austere ? 6 : 0)) * .02 + (r() - .5), 5, 95);
       n.unrest = clamp(n.unrest * .97 + (n.approval < 35 ? 2 : 0), 0, 100);
       var threat = s.nat.reduce(function (a, o, j) { return j === i ? a : a + Math.max(0, -s.rel[i][j]) / 100 * o.soldiers; }, 0);
-      var want = pop * (.025 + pol[3][2] * .05) * (1 + threat * .15) / 10;
+      var want = pop * (.04 + pol[3][2] * .05) * (1 + threat * .15) / 10;
       n.soldiers = +(n.soldiers + (want - n.soldiers) * .002).toFixed(3);
-      n.equip = clamp(n.equip + (n.budget * pol[3][2] / (pop * .6) - .5) * .2, 0, 100);
+      n.equip = clamp(n.equip + (35 + pol[3][2] * 100 + threat * 20 - (n.austere ? 10 : 0) - n.equip) * .003, 0, 100); // 予算の軍の分と、まわりの脅威で装備がそろう
       n.power = Math.round(n.soldiers * 10 * (.5 + n.equip / 100));
       if (n.unrest > 40 && r() < .05) ev.push({ k: 'pol', t: N.name + 'で、暮らしへの不満を訴える集まりがあった', where: N.name });
     });
     // 選挙（水和国：4年ごと、10月1日）と議長交代（文光国：4月1日）
     if (w.m === 10 && w.d === 1 && (w.school - 313) % 4 === 0) {
-      var n0 = s.nat[0], keep = n0.approval + (r() - .5) * 20 > 48, old = NATS[0].parties[n0.party][0];
-      if (!keep) n0.party = 1 - n0.party;
+      var n0 = s.nat[0]; n0.terms = (n0.terms || 0) + 1;
+      var keep = n0.approval + (r() - .5) * 24 - n0.terms * 5 > 45, old = NATS[0].parties[n0.party][0];
+      if (!keep) { n0.party = 1 - n0.party; n0.terms = 0; }
       n0.approval = keep ? n0.approval : 60;
       ev.push({ k: 'pol', t: '水和国の選挙：' + NATS[0].parties[n0.party][0] + (keep ? 'が勝ち、今の方針が続く' : 'が勝ち、' + old + 'から政権が交代した'), where: '水和国' });
     }
     if (w.m === 4 && w.d === 1 && d > 0) { s.nat[1].chair = (s.nat[1].chair + 1) % CHAIRS.length; ev.push({ k: 'pol', t: '文光国の評議会で、新しい議長に' + CHAIRS[s.nat[1].chair] + 'が選ばれた', where: '文光国' }); }
+    // 改神国：祭司長は任期なし。年をとると代わる（およそ12年に1度）
+    if (w.m === 1 && w.d === 7 && r() < .08) { var n2 = s.nat[2]; n2.chair = (n2.chair || 0) + 1; n2.approval = clamp(n2.approval + 8, 5, 95); ev.push({ k: 'pol', t: '改神国で祭司長が代わり、' + n2.chair + '代目の祭司長が鐘を鳴らした', where: '改神国' }); }
     // 外交：取引が多いと仲よく、相手の軍が増えると警戒。小さな事件や話し合いも
     [[0, 1, '国境の山道'], [0, 2, '南の海の漁場'], [1, 2, '北の海']].forEach(function (pr) {
       var a = pr[0], b = pr[1], A = s.nat[a], B = s.nat[b], rel = s.rel[a][b];
@@ -240,7 +244,7 @@
       if (r() < .006) { var hit = 4 + Math.round(r() * 10); drift -= hit; ev.push({ k: 'dip', t: pr[2] + 'で、' + A.name + 'と' + B.name + 'のもめごと（関係 −' + hit + '）', where: A.name }); }
       if (rel < 20 && r() < .012) { drift += 8; ev.push({ k: 'dip', t: A.name + 'と' + B.name + 'が話し合いの場をもった（関係 +8）', where: A.name }); }
       var key = a + '-' + b;
-      if (rel > 45 && !s.treaty[key] && r() < .01) { s.treaty[key] = d; ev.push({ k: 'dip', t: A.name + 'と' + B.name + 'が通商条約を結んだ。行き来がふえる', where: A.name }); }
+      if (rel > 30 && !s.treaty[key] && r() < .01) { s.treaty[key] = d; ev.push({ k: 'dip', t: A.name + 'と' + B.name + 'が通商条約を結んだ。行き来がふえる', where: A.name }); }
       if (rel < 0 && s.treaty[key]) { delete s.treaty[key]; ev.push({ k: 'dip', t: A.name + 'と' + B.name + 'の通商条約が止まった', where: A.name }); }
       if (rel < -40 && r() < .02) ev.push({ k: 'mil', t: pr[2] + 'で両国の兵が向かい合い、緊張が続いている', where: A.name });
       s.rel[a][b] = s.rel[b][a] = clamp(rel + drift, -100, 100);
