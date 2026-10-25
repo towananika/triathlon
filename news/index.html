@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="TRIATHLONのお知らせと、キャラたちが共有する世界のニュース。">
 <title>お知らせ・ニュース | TRIATHLON</title>
-<link rel="stylesheet" href="news.css?v=world-1">
+<link rel="stylesheet" href="news.css?v=world-2">
 </head>
 <body>
 <script src="../site-nav.js?v=0.36"></script>
@@ -17,6 +17,7 @@
 <section class="latest" id="latest" aria-label="最新の更新"></section>
 <div class="filter" role="group" aria-label="種類で絞り込み"><button type="button" data-f="" aria-pressed="true">すべて</button><button type="button" data-f="update" aria-pressed="false">アップデート</button><button type="button" data-f="info" aria-pressed="false">お知らせ</button><button type="button" data-f="fix" aria-pressed="false">修正</button></div>
 <ol class="list" id="list"></ol>
+<nav class="notice-pages" aria-label="お知らせのページ"><button type="button" id="notice-prev" aria-label="前のページ">←</button><span id="notice-page" role="status" aria-live="polite"></span><button type="button" id="notice-next" aria-label="次のページ">→</button></nav>
 </section>
 <section id="panel-world" role="tabpanel" aria-labelledby="tab-world" hidden>
 <header class="world-head"><h2>世界のニュース</h2><p id="world-date"></p><p class="lead">キャラたちと共有する、世界の出来事。</p></header>
@@ -35,21 +36,33 @@
 (function () {
   'use strict';
   var CAT = {update:'アップデート', info:'お知らせ', fix:'修正'};
-  var list = window.TRI_NEWS || [], filter = '';
+  var list = window.TRI_NEWS || [], filter = '', page = 1, pageSize = 10;
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function url(n){ return 'v.html?id=' + encodeURIComponent(n.id); }
   function meta(n, isNew){
     return '<p class="meta"><span class="cat c-' + n.cat + '">' + CAT[n.cat] + '</span>' + (n.ver ? '<span class="ver">' + esc(n.ver) + '</span>' : '') + window.triNewsTimes(n) + (isNew ? '<span class="new">NEW</span>' : '') + '</p>';
   }
-  var newest = list[0];
-  if (newest) document.getElementById('latest').innerHTML = meta(newest, true) + '<h2>' + esc(newest.title) + '</h2><p>' + esc(newest.lead) + '</p><a class="go" href="' + url(newest) + '">この版のページを開く →</a>';
   function render(){
-    document.getElementById('list').innerHTML = list.slice(1).filter(function(n){ return !filter || n.cat === filter; }).map(function(n){
-      return '<li><a class="card-link" href="' + url(n) + '">' + meta(n, false) + '<h2>' + esc(n.title) + '</h2><p>' + esc(n.lead) + '</p><span class="go">この版のページへ →</span></a></li>';
-    }).join('') || '<li><p class="lead">この種類のお知らせはまだありません。</p></li>';
+    var filtered = list.filter(function(n){ return !filter || n.cat === filter; });
+    var total = Math.max(1, Math.ceil(filtered.length / pageSize));
+    page = Math.min(page, total);
+    var items = filtered.slice((page - 1) * pageSize, page * pageSize);
+    var latest = document.getElementById('latest');
+    var newest = page === 1 && items[0] === list[0] ? items.shift() : null;
+    latest.hidden = !newest;
+    latest.innerHTML = newest ? '<a class="latest-link" href="' + url(newest) + '">' + meta(newest, true) + '<h2>' + esc(newest.title) + '</h2><p>' + esc(newest.lead) + '</p></a>' : '';
+    document.getElementById('list').innerHTML = items.map(function(n){
+      return '<li><a class="card-link" href="' + url(n) + '">' + meta(n, false) + '<h2>' + esc(n.title) + '</h2><p>' + esc(n.lead) + '</p></a></li>';
+    }).join('') || (newest ? '' : '<li><p class="lead">この種類のお知らせはまだありません。</p></li>');
+    document.getElementById('notice-page').textContent = page + ' / ' + total + 'ページ（' + filtered.length + '件）';
+    document.getElementById('notice-prev').disabled = page === 1;
+    document.getElementById('notice-next').disabled = page === total;
     document.querySelectorAll('[data-f]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.f === filter)); });
   }
-  document.querySelector('.filter').addEventListener('click', function(e){ var b = e.target.closest('[data-f]'); if (!b) return; filter = b.dataset.f; render(); });
+  document.querySelector('.filter').addEventListener('click', function(e){ var b = e.target.closest('[data-f]'); if (!b) return; filter = b.dataset.f; page = 1; render(); });
+  function move(delta) { page += delta; render(); document.querySelector('[aria-label="種類で絞り込み"]').scrollIntoView({block:'start'}); }
+  document.getElementById('notice-prev').onclick = function(){ move(-1); };
+  document.getElementById('notice-next').onclick = function(){ move(1); };
   render();
 })();
 </script>
