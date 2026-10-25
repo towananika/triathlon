@@ -8,7 +8,7 @@ a{color:var(--blue)}
 .hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(8,30,38,.05) 0%,rgba(8,30,38,.35) 45%,rgba(8,30,38,.85) 100%)}
 .hero-in{max-width:1100px;width:100%;margin:0 auto;padding:40px 20px 36px;color:#fff;display:grid;gap:10px}
 .badge{margin:0;justify-self:start;font-size:12px;font-weight:700;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);border-radius:99px;padding:3px 12px}
-.logo{margin:0;font-family:var(--tri-logo,sans-serif);font-weight:800;font-size:clamp(44px,12vw,92px);line-height:1;letter-spacing:.06em;text-shadow:0 4px 24px rgba(0,0,0,.35)}
+.logo{margin:0;font-family:var(--tri-logo,sans-serif);font-weight:700;font-size:clamp(36px,10.5vw,88px);line-height:1;letter-spacing:.16em;text-shadow:0 4px 24px rgba(0,0,0,.35)}
 .tagline{margin:0;font-family:var(--tri-head,sans-serif);font-weight:800;font-size:clamp(20px,5vw,30px)}
 .hero-lead{margin:0;max-width:34em;font-size:15px;opacity:.95}
 .cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
@@ -48,7 +48,10 @@ main{display:block}
 .list a span{grid-row:span 2;font-size:24px}.list small{font-weight:400;color:var(--sub);font-size:13px}
 .list a:hover{background:var(--soft)}
 .foot{margin-top:40px;background:#123640;color:#dcebec;text-align:center;padding:28px 20px 36px;font-size:14px}
-.foot p{margin:4px 0}.foot a{color:#fff}.logo-s{font-family:var(--tri-logo,sans-serif);font-size:24px;letter-spacing:.06em;color:#fff}
+.foot p{margin:4px 0}.foot a{color:#fff}.logo-s{font-family:var(--tri-logo,sans-serif);font-weight:700;font-size:22px;letter-spacing:.24em;color:#fff}
 a:focus-visible,button:focus-visible{outline:3px solid #c27600;outline-offset:3px}
 @media(min-width:760px){.about{grid-template-columns:repeat(3,1fr)}.about div{grid-template-columns:1fr;row-gap:6px}.about span{grid-row:auto}.cities{grid-template-columns:repeat(3,1fr)}.cards{grid-template-columns:repeat(4,1fr)}.hero-in{padding:56px 5% 48px}.sec{padding-left:5%;padding-right:5%}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card:hover{transform:none}}
+.kick{margin:0 0 2px;font-size:12px;color:var(--teal)}
+.sec-head .kick{display:block}
+.hero .kick{color:#fff;opacity:.85;font-size:12px;margin:0}

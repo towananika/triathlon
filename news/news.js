@@ -2,6 +2,11 @@
 // id は版ページのURL。links のパスはサイトのトップから。changes は [種類, 内容]（new 追加 / change 変更 / fix 修正）。
 // check は「確認してほしいところ」。更新するときは先頭に1件足す。基準は news/rules.html。
 window.TRI_NEWS = [
+ {id:'v0.21', date:'2026-10-25', ver:'v0.21', cat:'update', title:'世界共通の通貨「時（SUNA）」と、おしゃれな字',
+  lead:'世界でひとつの通貨「時（SUNA）」を決めました。Bitcoinと同じ仕組みで、各地域は自分の通貨を使い、1時間の普通の賃金を 1 SUNA の価値として記録します。ロゴと英字の見出しもおしゃれにしました。',
+  changes:[['new','時（SUNA）：世界でひとつ。Bitcoinと同じ仕組み。1 SUNA＝その地域で1時間働いて得られる普通の賃金'],['new','地域の通貨（仮）：二水・明山は「文」、改神国は「両」。「〇〇SUNA」とは呼ばない'],['change','モールは二水の「文」で買い物。値段の横に SUNA でいくらかも表示（1 SUNA＝1,200文）'],['change','ロゴと英字の見出しを Montserrat に。字間を広げた（日本語は Noto Sans のまま）']],
+  check:['モールの値段の感覚','地域の通貨名「文」「両」でよいか','ロゴの雰囲気'],
+  links:[['change','世界ガイド：お金','guide.html#world-v017','SUNAと地域の通貨'],['change','トライアスロンモール','mall/','文で買い物'],['doc','記録：お金','records/currency_suna_v0_21.md','']]},
  {id:'v0.20.2', date:'2026-10-25', ver:'v0.20.2', cat:'fix', title:'サイトの字を Noto Sans ＋ Nunito に決定',
   lead:'見出しは Noto Sans、ロゴは Nunito にしました。日本・韓国・中国・台湾・ベトナムの5か国で、同じデザインの字がそろいます。',
   changes:[['change','全ページの見出しを Noto Sans に、ロゴを Nunito に切り替えた']],

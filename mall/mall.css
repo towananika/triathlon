@@ -22,7 +22,7 @@ main{max-width:1100px;margin:0 auto;padding:0 16px}
 .body{padding:10px 12px 12px;display:grid;gap:6px;align-content:start}
 .body h3{margin:0;font-size:15px;line-height:1.35}.body p{margin:0;font-size:12px;color:var(--muted)}
 .row{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
-.price{font-size:17px}.price small{font-size:11px;margin-left:2px;font-weight:600}
+.price{font-size:17px}.price small{display:block;font-size:11px;font-weight:600;color:var(--muted)}
 .own{font-size:11px;font-weight:800;color:var(--teal);background:#e3f1f1;border-radius:6px;padding:1px 6px}
 .add{font:inherit;font-size:13px;font-weight:800;border:0;border-radius:10px;padding:9px;background:var(--teal);color:#fff;cursor:pointer}
 .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:30px 0;list-style:none}
