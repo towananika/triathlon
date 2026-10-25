@@ -6,8 +6,8 @@
   var me = document.currentScript;
   if (!me) return;
   var root = me.src.replace(/site-nav\.js(\?.*)?$/, '');
-  var FONT_CSS = 'https://fonts.googleapis.com/css2?family=Fredoka:wght@600&family=M+PLUS+Rounded+1c:wght@700;800&display=swap';
-  var FONT_LOGO = '"Fredoka","M PLUS Rounded 1c",system-ui,sans-serif', FONT_HEAD = '"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",system-ui,sans-serif';
+  var FONT_CSS = 'https://fonts.googleapis.com/css2?family=Nunito:wght@800&family=Noto+Sans+JP:wght@700;800&display=swap';
+  var FONT_LOGO = '"Nunito",system-ui,sans-serif', FONT_HEAD = '"Noto Sans JP","Noto Sans SC","Noto Sans TC","Noto Sans KR","Noto Sans",system-ui,sans-serif';
   var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['saga/', '📖', '物語'], ['cast/', '👥', 'キャラ'], ['mall/', '🛍️', 'モール']];
   var MORE = [['settings/', '📋', '設定リスト'], ['guide.html', '📘', '設定資料（世界ガイド）'], ['guide.html#simulation', '🏡', '暮らしの試作'], ['news/rules.html', '📏', 'アップデートの基準']];
   var admin = false; try { admin = !!localStorage.getItem('tri-admin'); } catch (e) {}
@@ -23,7 +23,7 @@
   var css = ':root{--tri-logo:' + FONT_LOGO + ';--tri-head:' + FONT_HEAD + '}' +
     'h1,h2{font-family:var(--tri-head)}' +
     '.tri-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;padding:8px 16px;background:#fff;border-bottom:1px solid #cbdedf;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;position:sticky;top:0;z-index:60}' +
-    '.tri-brand{color:#163744;text-decoration:none;font-family:var(--tri-logo);font-weight:600;letter-spacing:.06em;font-size:22px;line-height:1;padding:8px 0}' +
+    '.tri-brand{color:#163744;text-decoration:none;font-family:var(--tri-logo);font-weight:800;letter-spacing:.06em;font-size:22px;line-height:1;padding:8px 0}' +
     '.tri-top{display:none;gap:4px}.tri-top a{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border-radius:10px;color:#163744;text-decoration:none;font-size:15px;font-weight:700}' +
     '.tri-top a:hover{background:#edf5f4}.tri-top a[aria-current="page"]{color:#007f87;box-shadow:inset 0 -3px 0 #007f87;border-radius:0}' +
     '.tri-menu{position:relative;background:none!important;padding:0!important;border:0!important;border-radius:0!important;margin:0!important}.tri-nav,.tri-bottom{box-sizing:border-box}.tri-nav *,.tri-bottom *{box-sizing:border-box}.tri-menu summary{list-style:none;cursor:pointer;white-space:nowrap;display:flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid #cbdedf;border-radius:999px;font-size:14px;font-weight:700;color:#163744;background:#fff}' +
