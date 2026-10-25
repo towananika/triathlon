@@ -2,24 +2,115 @@
 <html lang="ja" data-admin-only>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>開発版 | TRIATHLON</title>
-<script src="../tri-admin.js?v=0.19"></script>
-<link rel="stylesheet" href="dev.css?v=0.19">
+<script src="../tri-admin.js?v=0.22"></script>
+<link rel="stylesheet" href="../home.css?v=0.22">
+<style>
+/* 開発版のホーム：公式HPと同じ形で、企画・未決定・開発の道具まで見せる */
+.devtag{display:inline-block;background:#2b2f36;color:#ffd76a;font-weight:800;font-size:12px;letter-spacing:.12em;border-radius:6px;padding:2px 10px}
+.hero.dev{min-height:min(60vh,480px)}
+.hero.dev::after{content:"開発版 · DEV";position:absolute;top:14px;right:14px;background:#2b2f36;color:#ffd76a;font-weight:800;font-size:13px;letter-spacing:.12em;border-radius:8px;padding:4px 12px}
+.seasons{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.season{background:#fff;border:1px solid var(--line);border-top:6px solid var(--c);border-radius:16px;padding:14px 16px;color:var(--ink);text-decoration:none;display:grid;gap:4px}
+.season:hover{border-color:var(--teal)}
+.season i{font-style:normal;font-size:13px;font-weight:800;color:var(--sub)}.season b{font-size:18px}.season small{color:var(--sub)}
+.pub{font-size:12px;font-weight:800;border-radius:99px;padding:0 8px;justify-self:start}.pub.on{background:#e3f4ea;color:#1d6b3f}.pub.off{background:#eef0f3;color:#58616d}
+.kv{display:grid;gap:8px}
+.kv div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.kv b{display:block}
+.kv p{margin:2px 0 0;color:var(--sub);font-size:15px}
+.todo{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.todo li{background:#fff;border:1px solid var(--line);border-left:5px solid var(--warm);border-radius:12px;padding:10px 14px}
+.todo small{display:block;color:var(--sub)}
+</style>
 </head>
 <body>
-<script src="../site-nav.js?v=0.21"></script>
-<div class="devbar">DEV · 開発版（管理者だけ）</div>
+<script src="../site-nav.js?v=0.22"></script>
 <main>
-<h1>開発版</h1>
-<p class="lead">公開前の設定を直したり、見比べたりする場所です。</p>
-<div class="tiles">
-<a href="cast.html"><b>✏️ キャラ編集</b><small>名前・口ぐせ・外見などを直す。絵の指示文のコピーもここ</small></a>
-<a href="fonts.html"><b>🔤 フォント見比べ</b><small>サイトに合うフォント3案</small></a>
-<a href="../news/rules.html"><b>📏 アップデートの基準</b><small>版の上げ方と公開前の確認</small></a>
-<a href="../login/"><b>🔑 ログイン状態</b><small>ログアウトはここから</small></a>
+<section class="hero dev" aria-labelledby="hero-title">
+<div class="hero-in">
+<p class="badge">開発版 · 管理者だけ</p>
+<h1 id="hero-title" class="logo">TRIATHLON</h1>
+<p class="kick" aria-hidden="true">Development Site</p><p class="tagline">企画と設定の、すべて。</p>
+<p class="hero-lead">公式HPでは今の物語だけを見せています。ここでは1〜4期の全体、決まったこと、まだ決めていないこと、開発の道具をまとめて見られます。</p>
+<div class="cta"><a class="btn primary" href="../guide.html">📘 設定資料</a><a class="btn" href="../settings/">📋 設定リスト</a><a class="btn" href="../">🏠 公式HPを見る</a></div>
 </div>
+</section>
+
+<section class="sec" aria-labelledby="news-h">
+<div class="sec-head"><div><p class="kick" aria-hidden="true">Updates</p><h2 id="news-h">開発の記録</h2></div><a class="more" href="../news/">すべて見る →</a></div>
+<ul class="news" id="news"><li><a href="../news/">お知らせ一覧を見る</a></li></ul>
+</section>
+
+<section class="sec" aria-labelledby="concept-h">
+<p class="kick" aria-hidden="true">Concept</p><h2 id="concept-h">企画の芯</h2>
+<div class="kv">
+<div><b>🎮 どんなゲーム</b><p>世代をこえて受け継ぐライフシミュレーション。遊ぶ人は名前のない「声」で、ささやくだけ。決めるのはキャラたち。</p></div>
+<div><b>🧬 受け継ぐもの</b><p>親から子へ受け継ぐのはスキルだけ。物は古くなり、なくなる。</p></div>
+<div><b>🌏 世界</b><p>山や川は今の地球と同じ。歩んだ歴史がちがう、光と魔法の近未来。</p></div>
+<div><b>🎨 絵と見た目</b><p>2Dアニメの画風。絵は GPT で作り、ここには設定（スペック）だけを残す。</p></div>
+<div><b>🗣 対象</b><p>韓国・日本・中国・台湾・ベトナム。名前は漢字圏で通じる形にする。</p></div>
+</div>
+</section>
+
+<section class="sec" aria-labelledby="season-h">
+<div class="sec-head"><div><p class="kick" aria-hidden="true">Seasons</p><h2 id="season-h">4つの期</h2></div><a class="more" href="../saga/">物語（全期）へ →</a></div>
+<div class="seasons">
+<a class="season" href="../saga/" style="--c:#e0525e"><i>第1期 · 新暦312〜315年</i><b>ふたつの川、九つの光</b><small>R・G・B · 9人 · 灯台館と大橋と、川底の層</small><span class="pub on">公開中（期の表示なし）</span></a>
+<a class="season" href="../saga/" style="--c:#1fb3c7"><i>第2期 · 新暦334〜337年</i><b>層の向こう</b><small>シアン・マゼンタ・イエロー · 9人 · 層は人が作った</small><span class="pub off">開発版だけ</span></a>
+<a class="season" href="../saga/" style="--c:#8a929e"><i>第3期 · 新暦356〜359年</i><b>白と黒の市場</b><small>白・黒・灰 · 6人 · 魔法より生き方</small><span class="pub off">開発版だけ</span></a>
+<a class="season" href="../saga/" style="--c:#a58bd6"><i>第4期 · 新暦378〜381年</i><b>白紙の地図</b><small>エンプティ · 2人 · 地図の外へ、最初の道</small><span class="pub off">開発版だけ</span></a>
+</div>
+</section>
+
+<section class="sec" aria-labelledby="world-h">
+<p class="kick" aria-hidden="true">World</p><h2 id="world-h">都市とお金</h2>
+<div class="kv">
+<div><b>🏙 3つの都市（仮）</b><p>二水（はじまりの町）・明山（北の学園都市）・白港（改神国の都）。小さな港の白波。</p></div>
+<div><b>⏳ 時（SUNA）</b><p>世界でひとつの通貨。Bitcoinと同じ仕組み。1 SUNA＝その地域で1時間働いて得られる普通の賃金。</p></div>
+<div><b>💴 地域の通貨（仮）</b><p>二水・明山は「文」、改神国は「両」。「〇〇SUNA」とは呼ばない。二水では 1 SUNA＝1,200文。</p></div>
+<div><b>🛍 モール</b><p>いろいろなデザインのアイテムを紹介・販売。人もAIキャラも買える。需要が多いものは販売者が作って増やせる。</p></div>
+</div>
+</section>
+
+<section class="sec" aria-labelledby="todo-h">
+<p class="kick" aria-hidden="true">Open</p><h2 id="todo-h">まだ決めていないこと</h2>
+<ul class="todo">
+<li>モールの作り方<small>買い方（ゲームのお金か課金か）、AIキャラのお金の出どころ、需要と生産の仕組み</small></li>
+<li>地域の通貨名「文」「両」<small>仮の名前</small></li>
+<li>3つの都市の名前<small>仮の名前</small></li>
+<li>海外で探しやすい題名・副題<small>「TRIATHLON」は一般的な言葉</small></li>
+<li>管理者の合言葉の「印」<small>ログイン画面の印を送ってもらえば、端末ごとの仮ログインが終わる</small></li>
+<li>そのほか<small>設定リストの「あとで」を参照</small></li>
+</ul>
+</section>
+
+<section class="sec" aria-labelledby="tools-h">
+<p class="kick" aria-hidden="true">Tools</p><h2 id="tools-h">開発の道具</h2>
+<ul class="list">
+<li><a href="cast.html"><span aria-hidden="true">✏️</span>キャラ編集<small>名前・口ぐせ・外見を直し、Claude に渡す</small></a></li>
+<li><a href="../cast/"><span aria-hidden="true">👥</span>キャラ（1〜4期・26人）<small>開発版では全員が見える</small></a></li>
+<li><a href="fonts.html"><span aria-hidden="true">🔤</span>フォント見比べ<small>5か国の字で比べる</small></a></li>
+<li><a href="../guide.html#simulation"><span aria-hidden="true">🏡</span>暮らしの試作<small>30日の暮らしを選ぶ</small></a></li>
+<li><a href="../news/rules.html"><span aria-hidden="true">📏</span>アップデートの基準<small>版の上げ方と公開前の確認</small></a></li>
+<li><a href="https://github.com/towananika/triathlon/tree/main/records"><span aria-hidden="true">🗂</span>記録ファイル<small>決めたことの記録（GitHub）</small></a></li>
+<li><a href="../login/"><span aria-hidden="true">🔑</span>ログイン状態<small>ログアウトはここから</small></a></li>
+</ul>
+</section>
 </main>
+<footer class="foot"><p class="logo-s">TRIATHLON <span class="devtag">開発版</span></p><p><span id="ver">v0.22</span> · 管理者だけが見られるページです</p></footer>
+<script src="../news/news.js?v=0.22"></script>
+<script>
+(function () {
+  'use strict';
+  var n = window.TRI_NEWS || [], box = document.getElementById('news');
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  if (n.length) box.innerHTML = n.slice(0, 5).map(function (e) {
+    return '<li><a href="../news/v.html?id=' + encodeURIComponent(e.id) + '">' + window.triNewsTimes(e) + (e.ver ? '<span class="v">' + esc(e.ver) + '</span>' : '') + '<span class="t">' + esc(e.title) + '</span></a></li>';
+  }).join('');
+})();
+</script>
 </body>
 </html>

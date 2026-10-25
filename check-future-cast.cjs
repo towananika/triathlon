@@ -1,3 +1,4 @@
+// 設定資料は管理者だけのページなので、テストでは管理者として開く
 const {chromium}=require('playwright');
 const assert=require('node:assert/strict');
 const {pathToFileURL}=require('node:url');
@@ -5,7 +6,7 @@ const path=require('node:path');
 (async()=>{
   const browser=await chromium.launch({headless:true,channel:'chrome'});
   try{
-    const page=await browser.newPage({reducedMotion:'reduce'}),errors=[];
+    const page=await browser.newPage({reducedMotion:'reduce'}); await page.addInitScript(()=>{try{localStorage.setItem('tri-admin','x')}catch(e){}});let errors=[];
     page.on('pageerror',e=>errors.push(e.message));
     const url=process.env.PAGE_URL||pathToFileURL(path.join(__dirname,'guide.html')).href;
     await page.goto(url+'#season3');await page.locator('#season3').waitFor({state:'visible'});
