@@ -1,0 +1,32 @@
+:root{color-scheme:light;--ink:#163744;--teal:#007f87;--blue:#205bc4;--line:#cbdedf;--muted:#4f6b75;--soft:#f2f8f8;--warm:#c96a12;
+--R:#e0525e;--G:#3aa36f;--B:#4a6fe0;--C:#1fb3c7;--M:#d1489b;--Y:#e2a614;--W:#b9c2cf;--K:#3a3f4a;--G2:#8a929e;--E:#a58bd6}
+*{box-sizing:border-box}
+body{margin:0;background:#f4f6f8;color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+.devbar{background:#2b2f36;color:#ffd76a;font-size:12px;font-weight:800;letter-spacing:.1em;padding:6px 16px}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px;display:grid;gap:14px}
+h1{margin:0;font-size:26px}.lead{margin:0;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.tiles a{display:grid;gap:4px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;color:var(--ink);text-decoration:none}
+.tiles a:hover{border-color:var(--teal)}.tiles b{font-size:17px}.tiles small{color:var(--muted)}
+.btn{font:inherit;font-size:14px;font-weight:800;border:0;border-radius:99px;padding:10px 16px;background:var(--teal);color:#fff;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.sub{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.warn{background:#fff;color:#b3261e;border:1px solid #e8b4b0}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tabs{display:flex;gap:6px;overflow-x:auto}
+.tabs button{flex:0 0 auto;font:inherit;font-size:13px;font-weight:700;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:99px;padding:6px 14px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.who{display:flex;gap:6px;flex-wrap:wrap}
+.who button{font:inherit;font-size:13px;font-weight:700;border:1px solid var(--line);border-left:4px solid var(--c);background:#fff;color:var(--ink);border-radius:10px;padding:6px 10px;cursor:pointer}
+.who button[aria-pressed="true"]{background:#e3f1f1;border-color:var(--teal)}.who button i{font-style:normal;color:var(--warm)}
+.form{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:10px}
+.form h2{margin:0;font-size:20px}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.fields label{display:grid;gap:4px;font-size:12px;font-weight:800;color:var(--muted)}
+.fields input,.fields textarea{font:inherit;font-size:16px;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 10px;width:100%;background:#fff}
+.fields textarea{min-height:64px;resize:vertical}
+.fields .ch input,.fields .ch textarea{border-color:var(--warm);background:#fff8ef}
+.fields .ch span::after{content:" ・変更";color:var(--warm)}
+.out{font:12px/1.5 ui-monospace,monospace;white-space:pre-wrap;word-break:break-all;background:#1f2329;color:#e6edf3;border-radius:12px;padding:12px;max-height:220px;overflow:auto;margin:0}
+.msg{margin:0;font-size:13px;color:var(--teal);min-height:1.3em}
+.fontcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:8px}
+.fontcard .tag{font-size:12px;font-weight:800;color:var(--teal)}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
