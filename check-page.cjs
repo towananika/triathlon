@@ -8,7 +8,7 @@ const path = require('node:path');
     const page = await browser.newPage();
     const errors = [];
     page.on('pageerror',error=>errors.push(error.message));
-    const url = process.env.PAGE_URL || pathToFileURL(path.join(__dirname,'index.html')).href;
+    const url = process.env.PAGE_URL || pathToFileURL(path.join(__dirname,'guide.html')).href;
     await page.goto(url);
     const ids = await page.locator('[id]').evaluateAll(items=>items.map(x=>x.id));
     assert.equal(new Set(ids).size,ids.length);

@@ -7,7 +7,7 @@ const path=require('node:path');
   try{
     const page=await browser.newPage({reducedMotion:'reduce'}),errors=[];
     page.on('pageerror',e=>errors.push(e.message));
-    const url=process.env.PAGE_URL||pathToFileURL(path.join(__dirname,'index.html')).href;
+    const url=process.env.PAGE_URL||pathToFileURL(path.join(__dirname,'guide.html')).href;
     await page.goto(url+'#simulation');
     await page.locator('[data-days="3650"]').click();
     assert.equal(await page.locator('#sim-day').innerText(),'3650');

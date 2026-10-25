@@ -1,7 +1,7 @@
 :root{color-scheme:light;--ink:#163744;--teal:#007f87;--line:#cbdedf;--muted:#4f6b75;
 --R:#e0525e;--G:#3aa36f;--B:#4a6fe0;--C:#1fb3c7;--M:#d1489b;--Y:#e2a614;--W:#b9c2cf;--K:#3a3f4a;--G2:#8a929e;--E:#a58bd6}
 *{box-sizing:border-box}
-body{margin:0;background:#f6fafa;color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+body{margin:0;background:#f6fafa;color:var(--ink);font:16px/1.7 system-ui,-apple-system,"Noto Sans JP",sans-serif}
 .hero{padding:28px 16px 8px;max-width:1000px;margin:0 auto}
 .hero .kicker{margin:0;color:var(--teal);font-size:12px;font-weight:800;letter-spacing:.14em}
 .hero h1{margin:2px 0 0;font-size:30px;line-height:1.25}.hero p{margin:4px 0 0;color:var(--muted)}

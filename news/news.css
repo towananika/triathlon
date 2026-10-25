@@ -1,7 +1,7 @@
 /* お知らせ・アップデート：トップと同じ明るい配色（ink / teal / line） */
 :root{color-scheme:light;--ink:#163744;--teal:#007f87;--blue:#205bc4;--line:#cbdedf;--soft:#f2f8f8;--muted:#4f6b75;--warm:#c96a12}
 *{box-sizing:border-box}
-body{margin:0;background:#f6fafa;color:var(--ink);font:15px/1.7 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+body{margin:0;background:#f6fafa;color:var(--ink);font:16px/1.75 system-ui,-apple-system,"Noto Sans JP",sans-serif}
 a{color:var(--blue)}
 .top-unused{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 5%;background:#fff;border-bottom:1px solid var(--line)}
 .brand{color:var(--ink);text-decoration:none;font-weight:800;letter-spacing:.08em;font-size:18px;display:grid;line-height:1.2}
