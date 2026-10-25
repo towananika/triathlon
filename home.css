@@ -2,13 +2,13 @@
 :root{color-scheme:light;--ink:#163744;--sub:#46616b;--teal:#007f87;--blue:#205bc4;--line:#d5e4e5;--bg:#f6fafa;--soft:#eef6f6;--warm:#c96a12}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 system-ui,-apple-system,"Hiragino Sans","Noto Sans JP","Noto Sans SC","Noto Sans TC","Noto Sans KR",sans-serif}
 a{color:var(--blue)}
 .hero{position:relative;min-height:min(78vh,620px);display:grid;align-items:end;background:#0d3a45 url('assets/aonami-keyvisual.png') center 58%/cover no-repeat;isolation:isolate}
 .hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(8,30,38,.05) 0%,rgba(8,30,38,.35) 45%,rgba(8,30,38,.85) 100%)}
 .hero-in{max-width:1100px;width:100%;margin:0 auto;padding:40px 20px 36px;color:#fff;display:grid;gap:10px}
 .badge{margin:0;justify-self:start;font-size:12px;font-weight:700;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);border-radius:99px;padding:3px 12px}
-.logo{margin:0;font-family:var(--tri-logo,sans-serif);font-weight:600;font-size:clamp(44px,12vw,92px);line-height:1;letter-spacing:.06em;text-shadow:0 4px 24px rgba(0,0,0,.35)}
+.logo{margin:0;font-family:var(--tri-logo,sans-serif);font-weight:800;font-size:clamp(44px,12vw,92px);line-height:1;letter-spacing:.06em;text-shadow:0 4px 24px rgba(0,0,0,.35)}
 .tagline{margin:0;font-family:var(--tri-head,sans-serif);font-weight:800;font-size:clamp(20px,5vw,30px)}
 .hero-lead{margin:0;max-width:34em;font-size:15px;opacity:.95}
 .cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}

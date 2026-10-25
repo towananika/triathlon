@@ -2,6 +2,11 @@
 // id は版ページのURL。links のパスはサイトのトップから。changes は [種類, 内容]（new 追加 / change 変更 / fix 修正）。
 // check は「確認してほしいところ」。更新するときは先頭に1件足す。基準は news/rules.html。
 window.TRI_NEWS = [
+ {id:'v0.20.2', date:'2026-10-25', ver:'v0.20.2', cat:'fix', title:'サイトの字を Noto Sans ＋ Nunito に決定',
+  lead:'見出しは Noto Sans、ロゴは Nunito にしました。日本・韓国・中国・台湾・ベトナムの5か国で、同じデザインの字がそろいます。',
+  changes:[['change','全ページの見出しを Noto Sans に、ロゴを Nunito に切り替えた']],
+  check:['トップのロゴと見出しの印象'],
+  links:[['change','トップ','',''],['change','フォント見比べ','dev/fonts.html','A案に決定']]},
  {id:'v0.20.1', date:'2026-10-25', ver:'v0.20.1', cat:'fix', title:'フォント見比べを5か国向けに作り直し',
   lead:'対象を日本・韓国・中国・台湾・ベトナムにしたので、各国の字で同じ文を並べて比べられるようにしました。このページはログインなしで見られます。',
   changes:[['change','フォント3案を、5か国で字がそろうかどうかで選び直した'],['change','見比べページをログインなしで見られるようにした']],
