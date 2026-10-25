@@ -57,7 +57,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 <section class="card">
 <div class="who"><b id="nm"></b><span id="age"></span></div>
 <p class="lead" id="env"></p>
-<div class="row" style="justify-content:space-between;margin-top:8px"><span>所持金 <span class="money" id="money"></span> SUNA</span><span>調子 <b id="cond"></b>/100</span></div>
+<div class="row" style="justify-content:space-between;margin-top:8px"><span>所持金 <span class="money" id="money"></span> SUNA</span><span>HP（体力）<b id="hp"></b>%　MP（精神力）<b id="mp"></b>%</span></div>
 </section>
 
 <section class="card">
@@ -98,6 +98,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 
   var s = null;
   try { s = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+  if (s && s.hp == null) { s.hp = s.mp = s.cond || 80; delete s.cond; }   // v0.24 の保存（調子）から引きつぐ
   function save() { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
 
   // RGB の 45AP を 9〜27 で分ける。W（かくれ）は別に 9〜27
@@ -111,7 +112,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     ['R', 'G', 'B', 'W'].forEach(function (k) { aff[k] = Math.round(good.indexOf(k) >= 0 ? rnd(5, 30) : rnd(-30, 5)); });
     var home = ENV.filter(function (e) { return good.indexOf(e[1]) >= 0; }).map(function (e) { return e[0]; })[0] || '二水の家';
     s = { name: name, sex: Math.random() < .5 ? 'f' : 'm', month: 0, ap: ap, W: ri(9, 27), aff: aff, good: good, home: home,
-      learn: 0, cond: 80, money: 0, plan: ['play', 'rest', 'play', 'rest'], pick: { R: 2, G: 2, B: 1 }, log: [] };
+      learn: 0, hp: 100, mp: 100, money: 0, plan: ['play', 'rest', 'play', 'rest'], pick: { R: 2, G: 2, B: 1 }, log: [] };
     say('二水市の' + home + 'に、' + name + 'が生まれた。');
     save(); show();
   }
@@ -119,7 +120,8 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   // 知能：心（B）と学び、年齢で育つ（0〜100）
   function intel() { return clamp(Math.round(s.ap.B * Math.min(1, (age() + 1) / 20) * 2 + s.learn), 0, 100); }
   // 自我：2歳までは 0。16歳でほぼそろい、知能が高いほど思いどおり
-  function control() { return clamp((age() - 2) / 14, 0, 1) * (0.6 + 0.4 * intel() / 100); }
+  // かくれの INT と W（White）は、選んだステータスに AP を入れやすくする。効果は小さめ（すぐ気づかれないように）
+  function control() { return clamp((age() - 2) / 14, 0, 1) * clamp(0.75 + 0.1 * intel() / 100 + 0.15 * (s.W - 9) / 18, 0, 1); }
   // 生殖能力（0〜100）。男女で育ち方と下がり方がちがう
   function fert() {
     var a = s.month / 12;
@@ -128,8 +130,9 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   }
   // 詳細ステータス＝もとの値 ×（10＋生殖能力）/110 ×（10＋知能）/110
   function detail() {
-    var f = (10 + fert()) / 110 * (10 + intel()) / 110, R = s.ap.R, G = s.ap.G, B = s.ap.B;
-    return { HP: Math.round(R * 10 * f), ATK: Math.round((R + G / 2) * f), DEF: Math.round(R * 0.8 * f), SPD: Math.round(G * f), MP: Math.round(B * 10 * f), MAT: Math.round((B + G / 2) * f) };
+    // R：HP 体力・ATK 筋力・DEF 物理防御／G：RAN 攻撃範囲・ATS 攻撃速度（手作業）・SPD 移動速度／B：MP 精神力・MAG 魔力・RES 魔法抵抗
+    var f = (10 + fert()) / 110 * (10 + intel()) / 110, R = s.ap.R, G = s.ap.G, B = s.ap.B, r = function (x) { return Math.round(x * f); };
+    return { HP: r(R * 10), ATK: r(R), DEF: r(R * 0.8), RAN: r(G * 0.5), ATS: r(G), SPD: r(G * 0.8), MP: r(B * 10), MAG: r(B), RES: r(B * 0.8) };
   }
   function allowed() {
     var a = age(), list = [];
@@ -147,23 +150,27 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     want.forEach(function (k) {
       var to = Math.random() < c ? k : C3[ri(0, 2)];
       if (to === k) hit++;
-      var gain = 1 * (1 + s.aff[to] / 100) * (1 + s.W / 100) * (0.5 + s.cond / 200);
+      var gain = 1 * (1 + s.aff[to] / 100) * (0.5 + (s.hp + s.mp) / 400);
       s.ap[to] = Math.round((s.ap[to] + gain) * 100) / 100; got[to] += gain;
     });
     // 予定（4週）。3歳までは寝て遊ぶだけ
-    var ok = allowed(), earned = 0;
+    var ok = allowed(), earned = 0, d = detail();
+    var calm = 1 - Math.min(0.2, d.RES / 200);   // RES：MP の減り方を少しだけ軽くする
+    var skill = 1 + Math.min(0.3, d.ATK / 100) / 2 + Math.min(0.3, d.ATS / 100) / 2;   // 力仕事は ATK、手作業は ATS
     (a < 3 ? ['rest', 'play', 'rest', 'play'] : s.plan).forEach(function (w) {
       if (ok.length && ok.indexOf(w) < 0) w = 'rest';
-      if (w === 'work') { var e = 40 * (a < 18 ? 0.5 : 1) * (1 + s.ap.G / 100) * s.cond / 100; earned += e; s.cond -= 10; }
-      if (w === 'rest') s.cond += 15;
-      if (w === 'learn') { s.learn = Math.min(40, s.learn + 0.25); s.cond -= 5; }
-      if (w === 'play') s.cond += 10;
+      if (w === 'work') { var e = 40 * (a < 18 ? 0.5 : 1) * skill * (s.hp < 20 ? 0.5 : 1) * (s.mp < 20 ? 0.5 : 1); earned += e; s.hp -= 25; s.mp -= 10 * calm; }
+      if (w === 'rest') { s.hp += 30; s.mp += 10; }
+      if (w === 'learn') { s.learn = Math.min(40, s.learn + 0.25); s.mp -= 15 * calm; }
+      if (w === 'play') { s.mp += 15; s.hp -= 5; }
+      s.hp = clamp(s.hp, 0, 100); s.mp = clamp(s.mp, 0, 100);
     });
     s.money += earned;
     var cost = a >= 18 ? LIVING : 0;
     s.money -= cost;
-    if (s.money < 0) s.cond -= 15;
-    s.cond = clamp(Math.round(s.cond - 5), 0, 100);
+    if (s.money < 0) s.mp -= 15 * calm;
+    s.hp = clamp(Math.round(s.hp), 0, 100); s.mp = clamp(Math.round(s.mp - 5 * calm), 0, 100);
+    if (s.mp < 20) say('精神力（MP）が少ない。休んだり遊んだりしよう。');
     s.money = Math.round(s.money * 100) / 100;
     s.month++;
     var msg = 'AP：' + C3.map(function (k) { return NAMES[k] + '+' + got[k].toFixed(1); }).join(' ') + (a >= 2 ? '（思いどおり ' + hit + '/5）' : '（まだ自我がない）');
@@ -184,7 +191,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     $('age').textContent = a + '歳' + (s.month % 12) + 'か月';
     $('env').innerHTML = esc(s.home) + 'で生まれた。得意：' + s.good.filter(function (k) { return k !== 'W'; }).map(function (k) { return '<span class="tag" style="color:var(--' + k + ')">' + NAMES[k] + '</span>'; }).join('') + (s.good.length === 1 && s.good[0] === 'W' ? 'まだ見えない' : '');
     $('money').textContent = s.money.toFixed(2); $('money').className = 'money' + (s.money < 0 ? ' neg' : '');
-    $('cond').textContent = s.cond;
+    $('hp').textContent = s.hp; $('mp').textContent = s.mp;
     $('bars').innerHTML = C3.map(function (k) {
       return '<div class="bar" style="--c:var(--' + k + ')"><i>' + k + '</i><div class="t"><span style="width:' + (s.ap[k] / max * 100) + '%"></span></div><small>' + NAMES[k] + ' ' + s.ap[k].toFixed(1) + '</small></div>';
     }).join('');
