@@ -7,9 +7,10 @@
     if (origin.protocol !== 'https:') return;
     const target = document.body.dataset.developmentTarget || '/dev/';
     if (!target.startsWith('/') || target.startsWith('//')) return;
-    document.getElementById('login-status').textContent = 'ChatGPTアカウントでログインします。開発版は閲覧を許可されたユーザーだけが利用できます。';
-    const link = document.createElement('a'); link.className = 'login'; link.target = '_top';
-    link.href = new URL(target,origin.origin).href; link.textContent = 'ChatGPTでログインして開発版へ';
+    // Googleと同じ形のボタン。だれが入れるかは開発Site側（閲覧許可リスト）で決める
+    const link = document.createElement('a'); link.className = 'gbtn gpt'; link.target = '_top';
+    link.href = new URL(target,origin.origin).href;
+    link.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12a4 4 0 0 1 8 0a4 4 0 0 1-8 0" fill="none" stroke="currentColor" stroke-width="2"/></svg>ChatGPTでログイン';
     document.getElementById('login-entry').append(link);
   }).catch(() => {});
 })();
