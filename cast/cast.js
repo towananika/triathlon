@@ -31,7 +31,7 @@ document.addEventListener('click', function(e){
   if (b.dataset.t != null && admin) { tab = +b.dataset.t; render(); }
 });
 document.addEventListener('keydown', function(e){ if (e.key === 'Escape') $('sheet').hidden = true; });
-var admin = false; try { admin = !!localStorage.getItem('tri-admin'); } catch (e) {}
+var admin = !!window.TRI_DEV;
 // 公開は今の期だけ。期の名前も出さない
 if (!admin) tab = 1;
 if (admin && castApply(castEdits())) $('preview').hidden = false;
