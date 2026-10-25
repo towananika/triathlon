@@ -48,6 +48,10 @@ const path = require('node:path');
     assert.match(await page.locator('#person-facts').innerText(),/眼鏡なし/);
     assert.match(await page.locator('#person-facts').innerText(),/背を高め/);
     assert.match(await page.locator('.person-portrait').evaluate(el=>getComputedStyle(el).backgroundImage),/mage-portrait-v14/);
+    for(const src of ['assets/mage-portrait-v14.png','assets/fighter-wardrobe-v14.png']) {
+      assert.equal(await page.evaluate(src=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img.naturalWidth>0);img.onerror=()=>resolve(false);img.src=src;}),src),true);
+    }
+    await page.locator('.person-portrait').screenshot({path:path.join(__dirname,'mage-current.png')});
     await page.locator('#person-note').fill('謙虚さを会話でも表したい');
     await page.locator('#person-note').dispatchEvent('change');
     await page.reload();
