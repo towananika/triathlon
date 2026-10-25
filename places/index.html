@@ -1,0 +1,26 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>好きな場所 | TRIATHLON</title><meta name="description" content="二水に暮らす9人が、自分の好きな場所を写真に撮って紹介します。"><style>body{margin:0;background:#fbf8f2;color:#2a2622;font:16px/1.8 system-ui,-apple-system,"Noto Sans JP",sans-serif}main{max-width:980px;margin:0 auto;padding:32px 16px 56px}.kick{color:#9a7630;font-size:12px;margin:0}h1{font-size:28px;margin:4px 0 6px;line-height:1.4}.meta{color:#7a6f63;font-size:14px;margin:0 0 24px}
+.grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px}
+.card{background:#fff;border:1px solid #eadfcd;border-radius:6px;padding:12px 12px 16px;box-shadow:0 6px 18px rgba(80,60,30,.08)}
+.card:nth-child(odd){transform:rotate(-.6deg)}.card:nth-child(even){transform:rotate(.5deg)}
+.ph{aspect-ratio:4/3;border-radius:3px;overflow:hidden;position:relative;display:flex;align-items:flex-end;background:var(--g)}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph .wait{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;text-align:center;padding:16px;text-shadow:0 1px 3px rgba(0,0,0,.25)}
+.ph .wait b{font-size:30px}.ph .wait span{font-size:13px;line-height:1.6}.ph .wait small{font-size:11px;opacity:.85;margin-top:4px}
+.R{--g:linear-gradient(160deg,#f3b7a3,#d9735f)}.G{--g:linear-gradient(160deg,#a9d3b5,#4f9a72)}.B{--g:linear-gradient(160deg,#a9bde8,#5b6fb8)}
+.cap{margin:12px 2px 0}.cap .who{font-size:12px;color:#9a7630;font-weight:700}.cap h2{font-size:19px;margin:2px 0 0}.cap .at{font-size:12px;color:#7a6f63}
+.say p{margin:10px 2px 0;font-family:"Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;font-size:15.5px;line-height:1.95}
+.note{margin:12px 2px 0;font-size:13px;color:#7a6f63;border-top:1px dashed #eadfcd;padding-top:8px}
+@media (prefers-reduced-motion:reduce){.card{transform:none!important}}
+</style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&display=swap"></head><body>
+<script src="../site-nav.js?v=0.29"></script>
+<main><p class="kick">FAVORITE PLACES</p><h1>好きな場所</h1><p class="meta">二水に暮らす9人が、自分のお気に入りの場所を撮って、自分の言葉で紹介します。</p>
+<ul class="grid" id="grid"></ul></main>
+<script src="places.js?v=0.29"></script>
+<script>
+(function(){function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+document.getElementById('grid').innerHTML=(window.TRI_PLACES||[]).map(function(p){
+ var ph=p.img?'<img src="'+esc(p.img)+'" alt="'+esc(p.who+'が撮った'+p.place)+'" loading="lazy">'
+  :'<div class="wait"><b>📷</b><span>'+esc(p.shot)+'</span><small>写真は準備中</small></div>';
+ return '<li class="card" id="'+esc(p.id)+'"><div class="ph '+esc(p.c)+'">'+ph+'</div><div class="cap"><div class="who">'+esc(p.who)+'・'+esc(p.cls)+'</div><h2>'+esc(p.place)+'</h2><div class="at">'+esc(p.area)+' ・ '+esc(p.time)+'</div></div><div class="say">'+p.say.map(function(t){return '<p>'+esc(t)+'</p>'}).join('')+'</div>'+(p.note?'<p class="note">'+esc(p.note)+'</p>':'')+'</li>';
+}).join('');})();
+</script></body></html>
