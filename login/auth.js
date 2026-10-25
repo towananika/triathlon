@@ -2,7 +2,7 @@
 // ログイン中の人は window.TRI_USER に入り、変わるたびに 'tri-user' イベントを出す。
 // ここは「だれか」を知るためだけに使う。ページの中身を隠す鍵には使わない（AGENTS.md）。
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, OAuthProvider, signInWithPopup, signInWithRedirect, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 
 // 公開してよい値（Firebaseのウェブ用設定）
 const app = initializeApp({
@@ -21,9 +21,11 @@ onAuthStateChanged(auth, (u) => {
   document.dispatchEvent(new CustomEvent('tri-user', { detail: window.TRI_USER }));
 });
 
-window.triLogin = async () => {
-  const p = new GoogleAuthProvider();
-  p.setCustomParameters({ prompt: 'select_account' });
+// kind: 'google'（ふつう）か 'apple'
+window.triLogin = async (kind) => {
+  let p;
+  if (kind === 'apple') { p = new OAuthProvider('apple.com'); p.addScope('name'); p.setCustomParameters({ locale: 'ja' }); }
+  else { p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: 'select_account' }); }
   try { await signInWithPopup(auth, p); }
   catch (e) {
     if (e && (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment')) return signInWithRedirect(auth, p);
