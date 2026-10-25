@@ -74,13 +74,19 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 <div class="ap" id="ap" style="margin-top:10px"></div>
 </section>
 
+<section class="card" id="voicebox">
+<h2>声かけ</h2>
+<p class="lead">子どもはまだ行動を選べません。でも、あなたの声は届きます。選んだ遊びのほうへ、散らばるAPが少し寄りやすくなります。</p>
+<div class="row" id="voice" style="margin-top:10px"></div>
+</section>
+
 <section class="card">
 <h2>今月の予定</h2>
 <p class="lead" id="plan-lead"></p>
 <div class="weeks" id="weeks" style="margin-top:10px"></div>
 </section>
 
-<p class="note">ゲームの時間は自動で流れます（現実の1日＝ゲームの60日）。ページを閉じていても進み、次に開いたときにまとめて反映します。下のボタンは試作用の早送りです。</p>
+<p class="note">ゲームの時間は自動で流れます。子ども時代は速く、0〜5歳は現実の約1日、6〜14歳は約1週間で過ぎます。15歳からは現実の1日＝ゲームの60日です。ページを閉じていても進み、次に開いたときにまとめて反映します。下のボタンは試作用の早送りです。</p>
 <div class="row"><button class="btn sub" id="m1" type="button">早送り：1か月</button><button class="btn sub" id="y1" type="button">早送り：1年</button><button class="btn sub" id="reset" type="button">最初から</button></div>
 
 <section class="card"><h2>できごと</h2><ul class="log" id="log"></ul></section>
@@ -90,6 +96,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 (function () {
   'use strict';
   var KEY = 'triathlon-play-v1', C3 = ['R', 'G', 'B'], NAMES = { R: '体', G: '技', B: '心' };
+  var VOICE = [['R', '外で遊ぼう'], ['G', '何か作ろう'], ['B', '絵本を読もう']];
   var ACT = { learn: '啓発（学ぶ）', work: '稼ぐ', rest: '休む', play: '遊ぶ' };
   var LIVING = 100;          // 18歳からの1か月の生活費（SUNA）。食べ物45・住まい40・ほか15
   var ENV = [['川辺の家', 'R'], ['工房の家', 'G'], ['学園の近くの家', 'B'], ['灯台館の近くの家', 'W']];
@@ -160,7 +167,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     C3.forEach(function (k) { for (var i = 0; i < s.pick[k]; i++) want.push(k); });
     // 5AP：思いどおりに入るか、自我のままに散らばるか
     want.forEach(function (k) {
-      var to = Math.random() < c ? k : C3[ri(0, 2)];
+      var to = Math.random() < c ? k : (a < LAW.work && s.voice && Math.random() < 0.5 ? s.voice : C3[ri(0, 2)]);   // 声かけ：散らばるAPが寄りやすい
       if (to === k) hit++;
       var gain = 1 * (1 + s.aff[to] / 100) * (0.5 + (s.hp + s.mp) / 400);
       s.ap[to] = Math.round((s.ap[to] + gain) * 100) / 100; got[to] += gain;
@@ -174,7 +181,7 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
       if (w === 'work' && a < LAW.adult && ++workWeeks > LAW.minorWork) w = 'rest';   // 18歳未満は法律で月2週まで
       if (w === 'care') { s.hp += 20; s.mp += 10; }
       if (w === 'school') { s.learn = Math.min(40, s.learn + 0.2); s.mp -= 8 * calm; s.hp += 5; }
-      if (w === 'work') { var e = 40 * (a < 18 ? 0.5 : 1) * skill * (s.hp < 20 ? 0.5 : 1) * (s.mp < 20 ? 0.5 : 1); earned += e; s.hp -= 25; s.mp -= 10 * calm; }
+      if (w === 'work') { var e = 40 * (a < LAW.adult ? 0.5 : 1) * skill * (s.hp < 20 ? 0.5 : 1) * (s.mp < 20 ? 0.5 : 1); earned += e; s.hp -= 25; s.mp -= 10 * calm; }
       if (w === 'rest') { s.hp += 30; s.mp += 10; }
       if (w === 'learn') { s.learn = Math.min(40, s.learn + 0.25); s.mp -= 15 * calm; }
       if (w === 'play') { s.mp += 15; s.hp -= 5; }
@@ -216,6 +223,8 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
       return '<div style="--c:var(--' + k + ')"><b>' + k + '・' + NAMES[k] + '</b><span class="n">' + s.pick[k] + '</span><div class="row" style="justify-content:center"><button type="button" data-k="' + k + '" data-d="-1" aria-label="' + NAMES[k] + 'を減らす">−</button><button type="button" data-k="' + k + '" data-d="1" aria-label="' + NAMES[k] + 'を増やす">＋</button></div></div>';
     }).join('');
     var ok = allowed();
+    $('voicebox').hidden = a >= LAW.work;
+    $('voice').innerHTML = VOICE.map(function (v) { return '<button type="button" class="btn' + (s.voice === v[0] ? '' : ' sub') + '" data-v="' + v[0] + '" aria-pressed="' + (s.voice === v[0]) + '">' + v[1] + '</button>'; }).join('');
     $('plan-lead').textContent = a < LAW.school ? 'いまは育児される時期です。家の人が育ててくれます。行動は選べません。' : a < LAW.work ? 'いまは義務教育の時期です（二水の法律）。学校で学び、家で休みます。行動は選べません。' : '1か月を4週に分けて、週ごとに行動を予約します。' + (a < LAW.adult ? '18歳までは家が生活費を出してくれます。働けるのは法律で月2週までです。' : '毎月 ' + LIVING + ' SUNA の生活費がかかります。');
     $('weeks').innerHTML = !ok.length ? '' : [0, 1, 2, 3].map(function (i) {
       return '<label>' + (i + 1) + '週目<select data-w="' + i + '">' + ok.map(function (k) { return '<option value="' + k + '"' + (s.plan[i] === k ? ' selected' : '') + '>' + ACT[k] + '</option>'; }).join('') + '</select></label>';
@@ -224,6 +233,8 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   }
 
   document.addEventListener('click', function (e) {
+    var v = e.target.closest('button[data-v]');
+    if (v && s) { s.voice = v.dataset.v; save(); show(); return; }
     var b = e.target.closest('button[data-k]'); if (!b || !s) return;
     var k = b.dataset.k, d = +b.dataset.d, sum = s.pick.R + s.pick.G + s.pick.B;
     if (d > 0) { if (sum >= 5) { var o = C3.filter(function (x) { return x !== k && s.pick[x] > 0; })[0]; if (!o) return; s.pick[o]--; } s.pick[k]++; }
@@ -235,15 +246,17 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   $('nickset').onclick = function () { if (age() < 18) return; s.nick = $('nick').value.trim().slice(0, 12); say(s.nick ? 'ニックネームを「' + s.nick + '」にした。' : 'ニックネームを外した。'); save(); show(); };
   $('m1').onclick = function () { month(); s.t0 = Date.now(); save(); show(); };
   $('y1').onclick = function () { for (var i = 0; i < 12; i++) month(); s.t0 = Date.now(); save(); show(); };
-  // ゲームの時間：現実の1日＝ゲームの60日（60倍）。1か月（30日）は現実の12時間。閉じていた間の分も、開いたときに進める（1回に最大10年）
-  var MONTH_MS = 12 * 3600 * 1000;
+  // ゲームの時間：0〜5歳（72か月）は現実の1日、6〜14歳（108か月）は現実の1週間、15歳からは60倍（1か月＝現実の12時間）。閉じていた間の分も、開いたときに進める（1回に最大120か月）
+  var DAY = 24 * 3600 * 1000;
+  function monthMs() { var a = age(); return a < LAW.school ? DAY / 72 : a < LAW.work ? 7 * DAY / 108 : DAY / 2; }
   function tick() {
     if (!s) return;
     if (!s.t0) s.t0 = Date.now();
-    var due = Math.min(120, Math.floor((Date.now() - s.t0) / MONTH_MS));
-    if (due > 0) { for (var i = 0; i < due; i++) month(); s.t0 += due * MONTH_MS; save(); show(); }
-    var left = MONTH_MS - (Date.now() - s.t0), h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000);
-    $('clock').textContent = '次の月まで あと' + h + '時間' + m + '分（ゲームの1日＝現実の24分）';
+    var n = 0;
+    while (n < 120 && Date.now() - s.t0 >= monthMs()) { s.t0 += monthMs(); month(); n++; }
+    if (n) { save(); show(); }
+    var left = monthMs() - (Date.now() - s.t0), h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000);
+    $('clock').textContent = '次の月まで あと' + (h ? h + '時間' : '') + m + '分';
   }
   setInterval(tick, 30000);
   $('reset').onclick = function () { if (confirm('最初からやり直しますか？')) { s = null; try { localStorage.removeItem(KEY); } catch (e) {} show(); } };
