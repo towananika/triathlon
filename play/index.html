@@ -19,12 +19,19 @@ h1{margin:0;font-size:24px}h2{margin:0 0 8px;font-size:18px}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .who{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .who b{font-size:22px}.who span{color:var(--sub);font-size:14px}
-.money{font-size:20px;font-weight:800}.money.neg{color:#b3261e}
+.money{font-size:16px;font-weight:800}
 .bars{display:grid;gap:10px}
+.hud{position:sticky;top:8px;z-index:5;display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center;padding:8px 10px;border-radius:999px;background:#163744;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.hud .coin{display:flex;align-items:center;gap:6px;font-weight:800;white-space:nowrap}.hud .coin i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:linear-gradient(#ffe27a,#e0a81a);color:#7a4b00;font-style:normal;font-size:13px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}.hud .coin small{font-size:11px;opacity:.75}.hud .money.neg{color:#ff9b9b}
+.gauge{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:5px;align-items:center;font-size:12px}.gauge b{font-size:11px;opacity:.85}.gauge em{font-style:normal;font-weight:700;min-width:22px;text-align:right}
+.gauge .g{height:10px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}.gauge .g span{display:block;height:100%;border-radius:99px;transition:width .4s}
+.hpg .g span{background:linear-gradient(90deg,#46c26a,#9be15d)}.mpg .g span{background:linear-gradient(90deg,#3b82f6,#7cc4ff)}
+@media (max-width:360px){.hud{grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-radius:16px}.hud .coin{grid-column:1/-1}}
 .kids{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;margin-bottom:14px}.kids .add{grid-column:1/-1}
 .kid{display:grid;gap:4px;text-align:left;padding:10px;border:2px solid #dbe6e8;border-radius:12px;background:#fff;cursor:pointer;font:inherit;color:inherit;min-width:0}.kid.on{border-color:var(--B,#2b6cb0);box-shadow:0 2px 8px rgba(0,0,0,.08)}.kid b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.kid small{color:var(--sub);font-size:12px}
 .mini{display:block;height:6px;background:#edf2f3;border-radius:99px;overflow:hidden}.mini span{display:block;height:100%;background:var(--c)}
-.bar{display:grid;grid-template-columns:28px 1fr 64px;gap:8px;align-items:center}
+.bar{display:grid;grid-template-columns:28px minmax(0,1fr) 64px 72px;gap:8px;align-items:center}
+.bar .plus{display:flex;align-items:center;gap:6px;justify-content:flex-end}.bar .plus button{width:36px;height:36px;border-radius:50%;border:2px solid var(--c);background:#fff;color:var(--c);font-size:20px;font-weight:800;line-height:1;cursor:pointer}.bar .plus button:disabled{opacity:.35;cursor:default}.bar .plus em{font-style:normal;font-weight:800;color:var(--c);min-width:14px;text-align:right}
 .bar i{font-style:normal;font-weight:800;color:var(--c)}
 .bar .t{height:14px;background:#edf2f3;border-radius:99px;overflow:hidden}.bar .t span{display:block;height:100%;background:var(--c);border-radius:99px}
 .bar small{text-align:right;color:var(--sub);font-size:13px}
@@ -58,25 +65,25 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
 
 <div class="row" id="kids" hidden style="margin-bottom:14px"></div>
 <div id="game" hidden style="display:grid;gap:14px">
+<div class="hud" role="group" aria-label="所持金と体力・精神力">
+<span class="coin" title="所持金"><i aria-hidden="true">S</i><span class="money" id="money"></span><small>SUNA</small></span>
+<span class="gauge hpg" title="HP（体力）"><b>HP</b><span class="g"><span id="hpbar"></span></span><em id="hp"></em></span>
+<span class="gauge mpg" title="MP（精神力）"><b>MP</b><span class="g"><span id="mpbar"></span></span><em id="mp"></em></span>
+</div>
 <section class="card">
 <div class="who"><b id="nm"></b><span id="age"></span></div>
 <p class="note" id="clock"></p>
 <p class="lead" id="env"></p>
 <div class="row" id="nickrow" hidden style="margin-top:8px"><input type="text" id="nick" maxlength="12" placeholder="ニックネーム（18歳から）" aria-label="ニックネーム" style="flex:1;min-width:0"><button class="btn sub" id="nickset" type="button">変える</button></div>
-<div class="row" style="justify-content:space-between;margin-top:8px"><span>所持金 <span class="money" id="money"></span> SUNA</span><span>HP（体力）<b id="hp"></b>%　MP（精神力）<b id="mp"></b>%</span></div>
 </section>
 
 <section class="card">
 <h2>ステータス</h2>
 <div class="bars" id="bars"></div>
+<div class="row apleft" style="justify-content:space-between;margin-top:10px"><span>毎月付与できるAP　あと <b id="apleft"></b> / 5</span><button class="btn sub" id="apclear" type="button">やり直す</button></div>
+<p class="note">＋で、毎月伸ばしたいものにAPを付与します。付与は毎月続きます。残ったAPはランダムに散らばります。思いどおりに伸びるかは、自我と知能しだいです。</p>
 <p class="note" id="grow"></p>
 <p class="note" id="ctl"></p>
-</section>
-
-<section class="card">
-<h2>今月の AP（5ポイント）</h2>
-<p class="lead">どれに伸ばしたいかを選びます。でも、思いどおりに伸びるとは限りません。自我と知能が育つほど、思いどおりになります。</p>
-<div class="ap" id="ap" style="margin-top:10px"></div>
 </section>
 
 <section class="card" id="voicebox">
@@ -174,9 +181,10 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
   function month() {
     var a = age(), c = control(), got = { R: 0, G: 0, B: 0 }, hit = 0, want = [];
     C3.forEach(function (k) { for (var i = 0; i < s.pick[k]; i++) want.push(k); });
+    while (want.length < 5) want.push(null);   // 付与しなかったAPはランダムに散らばる
     // 5AP：思いどおりに入るか、自我のままに散らばるか
     want.forEach(function (k) {
-      var to = Math.random() < c ? k : (a < LAW.work && s.voice && Math.random() < 0.5 ? s.voice : C3[ri(0, 2)]);   // 声かけ：散らばるAPが寄りやすい
+      var to = k && Math.random() < c ? k : (a < LAW.work && s.voice && Math.random() < 0.5 ? s.voice : C3[ri(0, 2)]);   // 声かけ：散らばるAPが寄りやすい
       if (to === k) hit++;
       var gain = 1 * (1 + s.aff[to] / 100) * (0.5 + (s.hp + s.mp) / 400);
       s.ap[to] = Math.round((s.ap[to] + gain) * 100) / 100; got[to] += gain;
@@ -235,15 +243,15 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     $('env').textContent = s.home + 'で生まれた。';   // 得意はかくれステータスなので見せない
     $('money').textContent = s.money.toFixed(2); $('money').className = 'money' + (s.money < 0 ? ' neg' : '');
     $('hp').textContent = s.hp; $('mp').textContent = s.mp;
+    $('hpbar').style.width = s.hp + '%'; $('mpbar').style.width = s.mp + '%';
+    var left = 5 - s.pick.R - s.pick.G - s.pick.B;
     $('bars').innerHTML = C3.map(function (k) {
-      return '<div class="bar" style="--c:var(--' + k + ')"><i>' + k + '</i><div class="t"><span style="width:' + (s.ap[k] / max * 100) + '%"></span></div><small>' + NAMES[k] + ' ' + s.ap[k].toFixed(1) + '</small></div>';
+      return '<div class="bar" style="--c:var(--' + k + ')"><i>' + k + '</i><div class="t"><span style="width:' + (s.ap[k] / max * 100) + '%"></span></div><small>' + NAMES[k] + ' ' + s.ap[k].toFixed(1) + '</small><span class="plus"><em>' + (s.pick[k] || '') + '</em><button type="button" data-k="' + k + '" aria-label="' + NAMES[k] + 'にAPを付与"' + (left ? '' : ' disabled') + '>＋</button></span></div>';
     }).join('');
+    $('apleft').textContent = left;
     var L = s.last, top = L && C3.reduce(function (x, k) { return L[k] > L[x] ? k : x; }, 'R');
     $('grow').textContent = a < TEEN || !L ? '' : 'この1年の伸び：' + C3.map(function (k) { return NAMES[k] + '+' + L[k].toFixed(1); }).join(' ') + '　いちばん伸びたのは「' + NAMES[top] + '」';
     $('ctl').textContent = a < 2 ? 'まだ自我がありません。APは自由に散らばります。' : '思いどおりに伸びる見込み：' + Math.round(control() * 100) + '%';
-    $('ap').innerHTML = C3.map(function (k) {
-      return '<div style="--c:var(--' + k + ')"><b>' + k + '・' + NAMES[k] + '</b><span class="n">' + s.pick[k] + '</span><div class="row" style="justify-content:center"><button type="button" data-k="' + k + '" data-d="-1" aria-label="' + NAMES[k] + 'を減らす">−</button><button type="button" data-k="' + k + '" data-d="1" aria-label="' + NAMES[k] + 'を増やす">＋</button></div></div>';
-    }).join('');
     var ok = allowed();
     $('voicebox').hidden = a >= LAW.work;
     $('voice').innerHTML = VOICE.map(function (v) { return '<button type="button" class="btn' + (s.voice === v[0] ? '' : ' sub') + '" data-v="' + v[0] + '" aria-pressed="' + (s.voice === v[0]) + '">' + v[1] + '</button>'; }).join('');
@@ -258,11 +266,11 @@ input[type=text]{font:inherit;font-size:16px;min-height:44px;border:1px solid va
     var v = e.target.closest('button[data-v]');
     if (v && s) { s.voice = v.dataset.v; save(); show(); return; }
     var b = e.target.closest('button[data-k]'); if (!b || !s) return;
-    var k = b.dataset.k, d = +b.dataset.d, sum = s.pick.R + s.pick.G + s.pick.B;
-    if (d > 0) { if (sum >= 5) { var o = C3.filter(function (x) { return x !== k && s.pick[x] > 0; })[0]; if (!o) return; s.pick[o]--; } s.pick[k]++; }
-    else { if (!s.pick[k]) return; s.pick[k]--; var o2 = C3.filter(function (x) { return x !== k; })[0]; s.pick[o2]++; }
+    if (s.pick.R + s.pick.G + s.pick.B >= 5) return;
+    s.pick[b.dataset.k]++;
     save(); show();
   });
+  $('apclear').onclick = function () { if (!s) return; s.pick = { R: 0, G: 0, B: 0 }; save(); show(); };
   document.addEventListener('change', function (e) { if (e.target.dataset.w != null) { s.plan[+e.target.dataset.w] = e.target.value; save(); } });
   $('born').onclick = function () { born(); tick(); };
   $('nickset').onclick = function () { if (age() < 18) return; s.nick = $('nick').value.trim().slice(0, 12); say(s.nick ? 'ニックネームを「' + s.nick + '」にした。' : 'ニックネームを外した。'); save(); show(); };
