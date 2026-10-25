@@ -5,7 +5,9 @@
   if (!me) return;
   var root = me.src.replace(/site-nav\.js(\?.*)?$/, '');
   var ITEMS = [['news/', '📰', 'お知らせ・アップデート'], ['saga/', '📖', 'トライアスロン物語'], ['cast/', '👥', 'キャラ図鑑'], ['settings/', '📋', '設定リスト'],
-    ['#simulation', '🏡', '暮らしの試作'], ['#downloads', '📁', '資料・記録'], ['', '🏠', 'トップ']];
+    ['mall/', '🛍️', 'トライアスロンモール'], ['#simulation', '🏡', '暮らしの試作'], ['#downloads', '📁', '資料・記録'], ['', '🏠', 'トップ']];
+  var admin = false; try { admin = !!localStorage.getItem('tri-admin'); } catch (e) {}
+  ITEMS.push(admin ? ['dev/', '🛠️', '開発版'] : ['login/', '🔑', '管理者']);
   var path = location.pathname;
   var css = '.tri-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:#fff;border-bottom:1px solid #cbdedf;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;position:relative;z-index:60}' +
     '.tri-nav .tri-brand{color:#163744;text-decoration:none;font-weight:800;letter-spacing:.08em;font-size:18px;line-height:1.2;display:grid}' +
