@@ -2,14 +2,14 @@
   'use strict';
   var key = 'triathlon-world-draft-v1';
   var people = [
-    {id:'fighter',name:'Fighter',jp:'ファイター',group:'R',portrait:0,facts:'中学生女子のテスト設定。グローブを使う近接クラス。性格の細部は未確定。',role:'身体の使い方と距離感。武器中心のWarriorとは異なる近接判断。',want:'仲間と新しいことに挑戦できる場所を作りたい。',fear:'勢いで相手の気持ちを置き去りにしてしまうこと。',bond:'一緒に体験し、失敗も笑い合う。',life:'スポーツ指導・道具の手入れ',scene:'初めての共同作業で先走った後、相手のペースを聞き直す。'},
+    {id:'fighter',name:'Fighter',jp:'ファイター',group:'R',portrait:0,facts:'中学生女子のテスト設定。グローブを使う近接クラス。明るく率直な人物原案を検討中。',role:'身体の使い方と距離感。武器中心のWarriorとは異なる近接判断。',want:'一緒に楽しいことをしたい。でも、いつも人を楽しませる役ではなくていい。',fear:'疲れた日や負けた日は、余裕がなく言い訳や強い言葉が先に出ることもある。',bond:'一緒に体験する。何もしない時間も、少しずつ共有できるようになる。',life:'使った道具の手入れ。難しい話も実例を見ると理解しやすい。',scene:'「今日、帰んないの？」「うん」「そっか。じゃ、私もちょっと休む」と隣に座る。'},
     {id:'knight',name:'Knight',jp:'ナイト',group:'R',portrait:1,facts:'中学生女子。裕福な家庭で育った、上品で育ちのよい雰囲気。',role:'防護と位置取り。仲間の安全を支え、前へ出る判断と退く判断を担う。',want:'家の期待だけではなく、自分で選んだことを大切にしたい。',fear:'助けてもらうことで、期待を裏切ってしまうこと。',bond:'丁寧な気遣いから始まり、少しずつ本音を預ける。',life:'行事の準備・衣服や道具の管理',scene:'準備を一人で抱え込まず、「ここは手伝ってもらえる？」と言ってみる。'},
     {id:'warrior',name:'Warrior',jp:'ウォーリア',group:'R',portrait:2,facts:'中学生女子のテスト設定。練習剣を使う近接クラス。',role:'武器操作と力の調整。Fighterの身体技術、Knightの防護と分ける。',want:'速さや順位ではなく、自分の積み重ねを形にしたい。',fear:'他人との比較ばかりで、自分の好きなことを見失うこと。',bond:'同じ作業を続ける時間から、言葉にしない信頼が育つ。',life:'木工・修繕の補助',scene:'壊れた椅子を直し、戦い以外でも自分の技が役立つと知る。'},
     {id:'ranger',name:'Ranger',jp:'レンジャー',group:'G',portrait:3,facts:'女子。静かで、芯がある。落ち着いた表情と確かな意思を感じさせる方向。',role:'射撃と精密行動。Scoutの広域の情報収集とは異なり、観察と確かな一手を重視。',want:'大切なものを、周囲の声に流されず選びたい。',fear:'自分の確信だけで、誰かの事情を見落としてしまうこと。',bond:'多くを話すより、小さな約束を守り続ける。',life:'生き物の観察・記録',scene:'多数決で決まりかけた計画に、静かに一つだけ問いを返す。'},
     {id:'assassin',name:'Assassin',jp:'アサシン',group:'G',portrait:4,facts:'男子・背が高い。性格と過去の詳細は未確定。',role:'隠密と局所的な接近。クラス名から性格や道徳観、殺人の経歴を決めない。',want:'一人でいられる自由を持ちながら、信頼できる関係も欲しい。',fear:'親しくなるほど、境界線を尊重されなくなること。',bond:'無理に聞き出さず、距離を尊重されると安心する。',life:'静かな調査・建物の点検',scene:'話したくない過去を問われ、相手が「今は話さなくていい」と応じる。'},
     {id:'scout',name:'Scout',jp:'スカウト',group:'G',portrait:5,facts:'男子・可愛い系。性格の詳細は未確定。',role:'地形把握・偵察・情報共有。Rangerの射撃と区別する。',want:'見つけたものを誰かと共有し、知らない世界を広げたい。',fear:'役に立たない日は、仲間でいられなくなると思うこと。',bond:'寄り道や発見を分け合う。何もしない時間も一緒に過ごせるようになる。',life:'案内・街の記録づくり',scene:'何も発見できなかった帰り道に、「一緒に歩けてよかった」と言われる。'},
     {id:'elemental',name:'Elemental Mage',jp:'エレメンタルメージ / BEM',group:'B',portrait:7,facts:'男子。新入生首席で、生意気な感じ。外見は茶髪・眼鏡なしのテスト。学校と評価制度は未設定。',role:'元素を扱う学び。回路を扱うMageとは、魔法への取り組み方を分ける。',want:'評価だけではなく、自分が面白いと思う問いを追いかけたい。',fear:'自信を見せるほど、わからないことを言い出しにくくなること。',bond:'少し強気な言葉で張り合いながら、互いの得意を認めていく。',life:'料理の実験・植物の世話',scene:'「それくらいできる」と言ってつまずき、謙虚なMageの助けを受け入れる。'},
-    {id:'mage',name:'Mage',jp:'メージ / BM',group:'B',portrait:6,facts:'全国1位の天才でありながら、謙虚。性別は未指定。青黒髪・眼鏡の外見テスト。順位の分野は未設定。',role:'回路魔法の学び。全国1位という実績を、万能さや実戦最強と同一視しない。',want:'自分の得意で誰かの暮らしを助け、相手の得意も学びたい。',fear:'何でもできると思われ、わからないと言いにくくなること。',bond:'相手の話を聞き、知らないことには素直に教えを請う。',life:'生活道具の改良・共同研究',scene:'初めての料理で失敗し、仲間に教わりながら楽しむ。'},
+    {id:'mage',name:'Mage',jp:'メージ / BM',group:'B',portrait:6,facts:'全国1位の天才でありながら、謙虚。背を高めにし、眼鏡なし。青黒髪の外見案。性別と順位の対象分野は未指定。',role:'回路魔法の学び。全国1位という実績を、万能さや実戦最強と同一視しない。',want:'自分の得意で誰かの暮らしを助け、相手の得意も学びたい。',fear:'何でもできると思われ、わからないと言いにくくなること。',bond:'相手の話を聞き、知らないことには素直に教えを請う。',life:'生活道具の改良・共同研究',scene:'初めての料理で失敗し、仲間に教わりながら楽しむ。'},
     {id:'cleric',name:'Cleric',jp:'クレリック',group:'B',portrait:8,facts:'王道のクレリックらしい外見と性格、癒し系。性別は未指定。白系の聖職服・穏やかな表情は具体化の案。現在の三つ編み・女子の画像は旧外見テスト。',role:'支援と生活への応用。学科には医療以外の多様な学びも含む。所属する宗教・勢力は未設定。',want:'誰かを支えながら、自分の好きな時間も守りたい。',fear:'断ることで、優しくないと思われること。',bond:'助ける側だけでなく、頼る側にもなれる関係。',life:'医療の学び・音楽や料理',scene:'頼まれごとを断った日に、それでも変わらず接してくれる友人に会う。'}
   ];
   var regions = [
@@ -73,6 +73,10 @@
     var portrait=document.querySelector('.person-portrait');
     var portraitIndex=p.id==='elemental'?6:p.id==='mage'?7:p.portrait;
     portrait.style.backgroundPosition=(portraitIndex%3)*50+'% '+Math.floor(portraitIndex/3)*50+'%';
+    portrait.style.backgroundImage=p.id==='mage'?"url('assets/mage-portrait-v14.png')":'';
+    portrait.style.backgroundSize=p.id==='mage'?'contain':'';
+    if(p.id==='mage')portrait.style.backgroundPosition='center';
+    document.querySelector('.person-figure figcaption').textContent=p.id==='mage'?'v0.14 作画更新案。背を高め、眼鏡なし。衣装・細部・男子という描写はテストです。':'v0.12 作画更新案。服装・表情・装飾は未確定。Clericの女子という描写も外見テストです。';
     portrait.setAttribute('aria-label',p.jp+'の外見テスト。未確定の衣装・表情を含みます。');
     document.querySelector('.person-content').dataset.group=p.group;
   }
@@ -120,7 +124,6 @@
     document.querySelector('#city-name').value='';document.querySelector('#city-priority').value='community';renderCity();renderPerson();save();
   });
   renderCity();renderPerson();
-  document.querySelector('.person-figure figcaption').textContent='v0.12 作画更新案。服装・表情・装飾は未確定。BMとClericの男子・女子という描写も外見テストです。';
   document.querySelector('#art h2').insertAdjacentHTML('afterend','<img class="character-art" src="assets/character-study-v12.png" width="1024" height="1536" loading="lazy" alt="v0.12の9人の作画更新案。上品なナイト、静かなレンジャー、茶髪のBEM、眼鏡のBM、白い聖職服のクレリック。"><p class="art-note">v0.12の更新案。外見の細部と未指定の性別はテストであり、人物設定の最終確定ではありません。以下に旧比較も残しています。</p>');
   document.querySelectorAll('.class-profile').forEach(function(profile,index){
     var button=document.createElement('button');button.type='button';button.className='profile-link';button.textContent='人物を見る';button.addEventListener('click',function(){state.person=people[index].id;renderPerson();save();location.hash='dossier';});profile.append(button);
@@ -140,4 +143,14 @@
   document.querySelector('#panel-characters').insertAdjacentHTML('afterbegin','<div class="season-jumps" aria-label="期ごとの人物紹介"><a href="#dossier">第1期 / RGB</a><a href="#season2">第2期 / CMY</a></div>');
   document.querySelector('#downloads h2').insertAdjacentHTML('afterend','<h3>第2期キャラクター v0.13</h3><p><a href="records/season_two_v0_13.md" download>第2期・CMYの9人をダウンロード</a></p>');
   document.querySelector('#history h2').insertAdjacentHTML('afterend','<p><strong>v0.13 · 2026-10-24</strong> 第2期CMYの9人を追加。第1期と区分し、同名クラス・年齢・所属・未指定の人物像を混同しない形で記録。</p>');
+  document.querySelector('#dossier').insertAdjacentHTML('afterend', `
+    <section class="card" id="fighter-profile"><p class="kicker">FIGHTER / PERSONALITY STUDY</p><h2>一緒に楽しいことをしたい。<br>でも、いつも元気ではなくていい。</h2><span class="proposal">性格の詳細原案 / 検討中</span><p>快活で率直。人と一緒に何かをするのが好き。ただし、誰にでも同じ明るさで接するわけではなく、相手や気分によるムラがある。</p><div class="fighter-notes"><section><h3>普段の姿</h3><p>仲のよい友達にはよく話し、少しふざけすぎる。知らない集団では最初に様子を見る。自分が疲れていれば、誘いを断る日もある。</p><p>使ったグローブの手入れは丁寧。難しい説明も実例を見せてもらうと理解しやすい。「考えない子」にはしない。</p></section><section><h3>魅力と不器用さ</h3><p>困った人にすぐ動ける一方、手伝ってほしいか聞き忘れる。負けた直後は「今日、調子悪かった」と言い訳し、後から練習することも。</p><p>謝れる日も、「そんなつもりじゃなかった」が先に出る日もある。明るさの裏に必ず「嫌われる不安」を設定する必要はない。</p></section><section><h3>親しくなると</h3><p>一緒に体験する時間が増え、失敗した話もするようになる。好意を持った相手には、いつもなら簡単な「一緒に帰ろう」が少し言いにくい。</p><p>人を励ますだけではなく、待つこと、自分から頼ることも少しずつ覚える。いつでも気遣える理想の元気担当にはしない。</p></section><section><h3>自然な成長の見せ方</h3><p>落ち込む仲間に、うまい言葉は出てこない。それでも、いつものように無理に誘う代わりに隣へ座る。</p><blockquote>「……今日、帰んないの？」<br>「うん」<br>「そっか。じゃ、私もちょっと休む」</blockquote><p>成長を本人が説明できなくても、行動が少し変わる。気分や場面によって以前の反応に戻る日もあっていい。</p></section></div></section>
+    <section class="card" id="wardrobe"><p class="kicker">FIGHTER / WARDROBE STUDY</p><h2>日常にも、いろんな顔がある。</h2><span class="proposal">6種類の服装案 / 採用衣装は未決定</span><a class="wardrobe-image" href="assets/fighter-wardrobe-v14.png" target="_blank" rel="noopener" title="服装比較を大きく表示"><img src="assets/fighter-wardrobe-v14.png" width="1536" height="1024" loading="lazy" alt="同じファイターの6種類の服装。1訓練着、2シャツとデニム、3ブレザー制服、4夏の休日服、5アウトドア服、6ワンピース。"></a><ol class="wardrobe-legend"><li><b>訓練着</b>赤白のジャケット、トラックパンツ、グローブ。</li><li><b>普段着</b>シャツとデニム。気軽な外出の案。</li><li><b>制服</b>ブレザーとリボン。学校の正式制服ではない。</li><li><b>夏の休日</b>黄色のシャツ、ショートパンツ、小さな鞄。</li><li><b>アウトドア</b>ウインドブレーカー、カーゴパンツ、リュック。</li><li><b>少しおしゃれ</b>ワンピースとカーディガン。休日の別の一面。</li></ol><p><small>顔と髪型を共通にした衣装比較。体格・丈・配色・小物の細部は作画案。</small></p></section>`);
+  document.querySelector('#art').insertAdjacentHTML('beforebegin','<section class="card" id="visual-direction"><p class="kicker">VISUAL DIRECTION / ADOPTED BASE</p><h2>基本作画は①。2Dアニメ・漫画で。</h2><p>表現方式の比較では、①の現在の2Dアニメ・漫画スタイルを基本に採用。実写・3D・ドット絵などへの置き換えは行わない。</p><p>現実感は写実化よりも、服装・姿勢・表情・日常の仕草から出す。ファイターから方向を固め、ほかの人物も共通の作画にそろえる。</p><p><small>v0.12の9人比較は基本方向の参考。BMの眼鏡は旧案で、最新の図鑑では背を高め・眼鏡なしに更新。</small></p></section>');
+  document.querySelector('.season-jumps').insertAdjacentHTML('beforeend','<a href="#fighter-profile">ファイターの性格</a><a href="#wardrobe">服装案</a><a href="#visual-direction">基本作画</a>');
+  document.querySelector('#downloads h2').insertAdjacentHTML('afterend','<h3>人物・作画更新 v0.14</h3><p><a href="records/character_direction_v0_14.md" download>最新の作画方針・ファイター・BMをダウンロード</a></p>');
+  document.querySelector('#history h2').insertAdjacentHTML('afterend','<p><strong>v0.14 · 2026-10-25</strong> 基本作画①を採用。ファイターの自然な性格原案と6種類の衣装比較、背を高め・眼鏡なしのBM作画案を追加。衣装・人物像の細部は原案として区別。</p>');
+  document.querySelector('#education').insertAdjacentHTML('afterend', `
+    <section class="card" id="casting-and-aptitudes"><p class="kicker">MAGIC & APTITUDE / LATEST NOTES</p><h2>唱え方と、得意の違い。</h2><div class="fighter-notes"><section><h3>線形魔法</h3><p>言葉のように一列に詠唱し、詠唱が終わったら発動する。</p></section><section><h3>円形魔法</h3><p>線形魔法を区切って円形にしたもの。詠唱が途中で切れても、途中までの魔法陣の効果が発動する。</p><p>円形にするための魔法が別途必要で、長い詠唱はさらに長くなる。詠唱者の位置を基準に方向などを相対計算するため、計算しやすい。</p></section><section><h3>レンジャーの適性</h3><p>遠くまで見える視力。射撃・カメラなどに関わり、上半身を鍛える。忍耐力と集中力がある。</p></section><section><h3>スカウトの適性</h3><p>行動と反応が速い。一方、視力は平均以下ほどで弱め。速い反応と遠距離視力は別の適性として扱う。</p><p>眼鏡・視力補助器具は未指定。アサシンの追加適性は後で決める。</p></section></div><details><summary>学校の追記と未確定事項</summary><p>Bの神学校は宗教を学ぶ学校。魔法学校の存在を確認。「学校は社会法政」という原文は、社会・法律・政治の教育に関する記録として保持するが、学校名や制度上の位置づけは未確認。</p><p>円形魔法の途中発動が完成した小円単位か、未完成の大円の部分効果かは未確定。国家・属性・水との依存関係、既存学校との厳密な対応、詠唱中断時の安全性も未設定。</p></details></section>`);
+  document.querySelector('#downloads h2').insertAdjacentHTML('afterend','<h3>詠唱方式・G適性の最新記録</h3><p><a href="records/magic_and_g_traits_v0_14.md" download>B魔法体系・G能力・学校の追記をダウンロード</a></p>');
 })();

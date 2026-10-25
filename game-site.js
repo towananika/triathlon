@@ -36,7 +36,7 @@
     ['G','Assassin','アサシン','気配と隙間を読み取る。','男子 / 長身'],
     ['G','Scout','スカウト','まだ知らない道を見つける。','男子 / 可愛い系'],
     ['B','Elemental Mage','エレメンタルメージ / BEM','新入生首席。少し生意気。','男子 / 茶髪・眼鏡なしのテスト'],
-    ['B','Mage','メージ / BM','全国1位の天才。それでも、謙虚。','対象分野は未設定 / 青黒髪・眼鏡のテスト'],
+    ['B','Mage','メージ / BM','全国1位の天才。それでも、謙虚。','背を高め・眼鏡なし / 青黒髪の外見案'],
     ['B','Cleric','クレリック','王道のクレリックらしい、癒し系。','白系聖職服の案 / 性別は未確定']
   ];
   document.querySelector('#characters h2').insertAdjacentHTML('beforebegin', '<p class="kicker">NINE PATHS, MANY LIVES</p>');
