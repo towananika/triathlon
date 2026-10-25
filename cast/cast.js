@@ -20,7 +20,7 @@ function open(id){
   function row(k, v){ return v ? '<div><dt>' + k + '</dt><dd>' + esc(v) + '</dd></div>' : ''; }
   $('sheet-in').innerHTML = '<button class="x" type="button" data-close aria-label="閉じる">✕</button><div class="hd" style="--c:var(--' + c.c + ')"><span class="face">' + face(c, true) + '</span><div><p class="meta">' + (admin ? SNAME[c.s] + ' · ' : '') + CNAME[c.c] + '</p><h2>' + esc(nm(c)) + '</h2><p class="cls">' + esc(c.cls) + '・' + esc(c.sex) + '</p></div></div>' +
     '<p class="say">「' + esc(T.say) + '」</p>' +
-    '<dl>' + row('外見', L.h + 'cm・' + L.b + '。髪は' + L.hair + '、目は' + L.eye) + row('服', L.wear) + row('好き', T.like) + row('苦手', T.dislike) + row('願い', T.wish) + row('関係', T.rel) + '</dl>';
+    '<dl>' + row('外見', L.h + 'cm・' + L.b + '。髪は' + L.hair + '、目は' + L.eye) + row('服', L.wear) + row('好き', T.like) + row('苦手', T.dislike) + row('願い', T.wish) + row('関係', T.rel) + '</dl>' + '<p style="text-align:center;margin:14px 0 4px"><a href="c.html?id=' + encodeURIComponent(id) + '" style="font-weight:800">' + esc(nm(c)) + 'のページへ →</a></p>';
   $('sheet').hidden = false; $('sheet-in').querySelector('.x').focus();
 }
 document.addEventListener('click', function(e){

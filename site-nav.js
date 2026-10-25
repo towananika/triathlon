@@ -1,6 +1,6 @@
 // 全ページ共通の上部バー・下のメニュー・サイトの字。<script src="(相対パス)/site-nav.js"></script> を body の先頭に置く。
 // よくあるゲーム公式サイトの形：左にロゴ、まん中にメニュー、右に「ログイン」と「プレイ」。スマホは右上の ☰ と、指の届く下のタブ。
-// 下のタブはホーム・お知らせ・プレイ（まん中）・物語・キャラ。そのほかは ☰ にまとめる。ページの下には共通のフッターを出す。
+// 下のタブはホーム・お知らせ・物語（まん中）・地図・キャラ。ゲームは開発終了（v0.30）。そのほかは ☰ にまとめる。ページの下には共通のフッターを出す。
 // サイトの字（見出しとロゴ）は FONT_* を変えるだけで全ページが変わる。
 (function () {
   'use strict';
@@ -11,13 +11,13 @@
   var FONT_LOGO = '"Montserrat",system-ui,sans-serif', FONT_HEAD = '"Noto Sans JP","Noto Sans SC","Noto Sans TC","Noto Sans KR","Noto Sans",system-ui,sans-serif';
   // 開発元（仮法人）。名前を変えるときはここだけ
   var STUDIO = 'Towa'; // 設立 2026-10-25、所在地はゲーム内の二水（Nisui）
-  var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['stories/', '📖', '物語'], ['cast/', '👥', 'キャラ'], ['mall/', '🛍️', 'モール']];
-  var TABS = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['play/', '▶', 'プレイ'], ['stories/', '📖', '物語'], ['cast/', '👥', 'キャラ']];
+  var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['stories/', '📖', '物語'], ['cast/', '👥', 'キャラ'], ['map/', '🌐', '地図']];
+  var TABS = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['stories/', '📖', '物語'], ['map/', '🌐', '地図'], ['cast/', '👥', 'キャラ']];
   // 公開しているのは今の期だけ（「期」という言葉も出さない）。1〜4期と設定資料は管理者だけに見せる
   var admin = false;
   if (admin) document.documentElement.classList.add('tri-admin');
   var MORE = admin ? [['dev/', '🛠️', '開発版'], ['guide.html', '📘', '設定資料（世界ガイド）'], ['settings/', '📋', '設定リスト'], ['guide.html#simulation', '🏡', '暮らしの試作'], ['news/rules.html', '📏', 'アップデートの基準']]
-    : [['places/', '📷', '好きな場所'], ['map/', '🌐', '地図'], ['saga/', '🗺️', '物語のあらすじ（4世代）'], ['play/', '▶', 'ゲームをはじめる'], ['mall/', '🛍️', 'トライアスロンモール'], ['news/rules.html', '📏', 'アップデートの基準']];
+    : [['places/', '📷', '好きな場所'], ['saga/', '🗺️', '物語のあらすじ（4世代）'], ['news/rules.html', '📏', 'アップデートの基準']];
   var path = location.pathname.replace(/index\.html$/, ''), rootPath = new URL(root).pathname;
   function cur(p) {
     if (p.indexOf('#') >= 0) return false;
@@ -54,13 +54,13 @@
   bar.className = 'tri-nav';
   bar.innerHTML = '<a class="tri-brand" href="' + root + '" aria-label="TRIATHLON ホーム">TRIATHLON</a>' + (admin ? '<a class="tri-dev" href="' + root + 'dev/">開発版</a>' : '') +
     '<div class="tri-top" role="navigation" aria-label="おもなページ">' + MAIN.map(function (it) { return link(it, ''); }).join('') + '</div>' +
-    '<div class="tri-act"><a class="tri-btn play" href="' + root + 'play/">▶ プレイ</a>' +
+    '<div class="tri-act"><a class="tri-btn play" href="' + root + 'stories/">📖 物語を読む</a>' +
     '<details class="tri-menu"><summary aria-label="メニュー">☰</summary><div class="tri-more" role="navigation" aria-label="そのほかのページ">' + MORE.map(function (it) { return link(it, ''); }).join('') + '</div></details></div>';
   var bottom = document.createElement('div');
   bottom.className = 'tri-bottom';
   bottom.setAttribute('role', 'navigation');
   bottom.setAttribute('aria-label', 'おもなページ（下）');
-  bottom.innerHTML = TABS.map(function (it) { return link(it, it[0] === 'play/' ? 'tab-play' : ''); }).join('');
+  bottom.innerHTML = TABS.map(function (it) { return link(it, it[0] === 'stories/' ? 'tab-play' : ''); }).join('');
   document.body.insertBefore(bar, document.body.firstChild);
   // 共通のフッター（ゲーム画面には出さない）
   function addFoot() {
@@ -69,9 +69,9 @@
     var foot = document.createElement('footer');
     foot.className = 'tri-foot';
     function fl(t, a) { return '<div><b>' + t + '</b>' + a.map(function (it) { return '<a href="' + root + it[0] + '">' + it[1] + '</a>'; }).join('') + '</div>'; }
-    foot.innerHTML = '<div class="tri-fcols">' + fl('ゲーム', [['play/', 'ゲームをはじめる'], ['mall/', 'トライアスロンモール']]) + fl('作品', [['stories/', '物語（連載）'], ['places/', '好きな場所'], ['map/', '地図'], ['saga/', '物語のあらすじ'], ['cast/', 'キャラクター']]) +
+    foot.innerHTML = '<div class="tri-fcols">' + fl('作品', [['stories/', '物語（連載）'], ['saga/', '物語のあらすじ'], ['cast/', 'キャラクター']]) + fl('世界', [['map/', '地図と都市計画'], ['places/', '好きな場所']]) +
       fl('サポート', [['news/', 'お知らせ'], ['news/rules.html', 'アップデートの基準'], ['login/', 'ログイン']]) + '</div>' +
-      '<div class="tri-fbase"><span class="logo">TRIATHLON</span><span class="tri-studio">© 2026 ' + STUDIO + '<small>（仮）</small><em>Est. 2026.10.25 · Nisui</em></span><span>開発中のサイトです。画像は検討中のイメージで、ゲーム画面ではありません。' + (ver ? ' · ' + ver.textContent : '') + '</span></div>';
+      '<div class="tri-fbase"><span class="logo">TRIATHLON</span><span class="tri-studio">© 2026 ' + STUDIO + '<small>（仮）</small><em>Est. 2026.10.25 · Nisui</em></span><span>物語と世界を少しずつ公開しています。画像は検討中のイメージです。' + (ver ? ' · ' + ver.textContent : '') + '</span></div>';
     if (old) old.replaceWith(foot); else document.body.appendChild(foot);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addFoot); else addFoot();
