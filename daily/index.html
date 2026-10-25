@@ -1,0 +1,36 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>今日のごはん・おやすみの話 | TRIATHLON</title><meta name="description" content="9人が食べるごはんと作り方、夜に読む3分の話。">
+<script>(function(){var h=new Date().getHours();if(h>=20||h<5)document.documentElement.classList.add('night')})()</script>
+<style>
+:root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mute:#5f6f78;--line:#d9e3e2;--tq:#22AAA6;--blue:#2F6FB8;--deep:#173A63;--mist:#DCF1EF}
+html.night{--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mute:#9fb0b4;--line:#2b3a42;--blue:#7fb0e8;--deep:#cfe0f2;--mist:#1f3a3c;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.9 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{max-width:640px;margin:0 auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 56px max(16px,env(safe-area-inset-left,0px))}
+h1{font-size:24px;margin:0 0 4px;color:var(--blue);line-height:1.4}h2{font-size:18px;margin:26px 0 8px;color:var(--deep)}.kick{font-size:12px;letter-spacing:.1em;color:var(--mute);margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 16px}.meta span{font-size:13px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:1px 10px;color:var(--mute)}
+.scene{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif}.scene p{margin:0 0 .6em}
+.recipe{background:var(--mist);border-radius:18px;padding:14px 18px}.recipe ul,.recipe ol{margin:0 0 .4em;padding-left:1.3em}
+.memo{color:var(--mute);font-size:14px}
+.sleep{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-size:18px;line-height:2.2}.sleep p{margin:0 0 1.2em}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:10px}.list a{display:block;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 16px;color:var(--fg);text-decoration:none}.list small{color:var(--mute)}.list b{display:block}
+a{color:var(--blue)}
+</style></head><body>
+<script src="../site-nav.js?v=0.43"></script>
+<main id="m"><p>読みこみ中…</p></main>
+<script src="daily.js?v=0.43"></script>
+<script>
+(function(){
+  var D=window.TRI_DAILY||{food:[],sleep:[]},m=document.getElementById('m'),id=new URLSearchParams(location.search).get('id');
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function paras(t){return t.split(/\n\s*\n|\n/).filter(function(l){return l.trim()}).map(function(l){return '<p>'+esc(l)+'</p>'}).join('')}
+  function rec(t){var h='',mode='';t.split('\n').forEach(function(l){var u=/^- /.test(l),o=/^\d+\. /.test(l),k=u?'ul':o?'ol':'';
+    if(k!==mode){if(mode)h+='</'+mode+'>';if(k)h+='<'+k+'>';mode=k}
+    if(k)h+='<li>'+esc(l.replace(/^(- |\d+\. )/,''))+'</li>';else if(l.trim())h+='<p>'+esc(l)+'</p>'});return h+(mode?'</'+mode+'>':'')}
+  var f=D.food.filter(function(x){return x.id===id})[0],s=D.sleep.filter(function(x){return x.id===id})[0];
+  if(f){document.title=f.title+' | 今日のごはん';
+    m.innerHTML='<p class="kick">今日のごはん</p><h1>'+esc(f.title)+'</h1><div class="meta"><span>'+esc(f.who)+'</span><span>'+esc(f.place)+'</span></div><div class="scene">'+paras(f.scene)+'</div><h2>作り方</h2><div class="recipe">'+rec(f.recipe)+'</div>'+(f.memo?'<p class="memo">'+esc(f.memo)+'</p>':'')+'<p><a href="./">ほかのごはんと、おやすみの話 →</a></p>';return}
+  if(s){document.title=s.title+' | おやすみの話';
+    m.innerHTML='<p class="kick">おやすみの話・約3分</p><h1>'+esc(s.title)+'</h1><div class="sleep">'+s.body.split(/\n\s*\n/).map(function(b){return '<p>'+b.split('\n').map(esc).join('<br>')+'</p>'}).join('')+'</div><p><a href="./">ほかの話 →</a></p>';return}
+  function li(x,k){return '<li><a href="?id='+x.id+'"><small>'+k+'</small><b>'+esc(x.title)+'</b></a></li>'}
+  m.innerHTML='<h1>今日のごはん・おやすみの話</h1><p class="kick">ホームでは、昼はごはん、夜（20時から朝5時）はおやすみの話が出ます。</p><h2>今日のごはん</h2><ul class="list">'+D.food.map(function(x){return li(x,esc(x.who))}).join('')+'</ul><h2>おやすみの話</h2><ul class="list">'+D.sleep.map(function(x){return li(x,'約3分')}).join('')+'</ul>';
+})();
+</script></body></html>
