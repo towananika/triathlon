@@ -11,13 +11,13 @@
   var FONT_LOGO = '"Montserrat",system-ui,sans-serif', FONT_HEAD = '"Noto Sans JP","Noto Sans SC","Noto Sans TC","Noto Sans KR","Noto Sans",system-ui,sans-serif';
   // 開発元（仮法人）。名前を変えるときはここだけ
   var STUDIO = 'Towa'; // 設立 2026-10-25、所在地はゲーム内の二水（Nisui）
-  var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['saga/', '📖', '物語'], ['cast/', '👥', 'キャラ'], ['mall/', '🛍️', 'モール']];
-  var TABS = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['play/', '▶', 'プレイ'], ['saga/', '📖', '物語'], ['cast/', '👥', 'キャラ']];
+  var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['stories/', '📖', '物語'], ['cast/', '👥', 'キャラ'], ['mall/', '🛍️', 'モール']];
+  var TABS = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['play/', '▶', 'プレイ'], ['stories/', '📖', '物語'], ['cast/', '👥', 'キャラ']];
   // 公開しているのは今の期だけ（「期」という言葉も出さない）。1〜4期と設定資料は管理者だけに見せる
   var admin = false;
   if (admin) document.documentElement.classList.add('tri-admin');
   var MORE = admin ? [['dev/', '🛠️', '開発版'], ['guide.html', '📘', '設定資料（世界ガイド）'], ['settings/', '📋', '設定リスト'], ['guide.html#simulation', '🏡', '暮らしの試作'], ['news/rules.html', '📏', 'アップデートの基準']]
-    : [['play/', '▶', 'ゲームをはじめる'], ['mall/', '🛍️', 'トライアスロンモール'], ['news/rules.html', '📏', 'アップデートの基準']];
+    : [['saga/', '🗺️', '物語のあらすじ（4世代）'], ['play/', '▶', 'ゲームをはじめる'], ['mall/', '🛍️', 'トライアスロンモール'], ['news/rules.html', '📏', 'アップデートの基準']];
   var path = location.pathname.replace(/index\.html$/, ''), rootPath = new URL(root).pathname;
   function cur(p) {
     if (p.indexOf('#') >= 0) return false;
@@ -69,7 +69,7 @@
     var foot = document.createElement('footer');
     foot.className = 'tri-foot';
     function fl(t, a) { return '<div><b>' + t + '</b>' + a.map(function (it) { return '<a href="' + root + it[0] + '">' + it[1] + '</a>'; }).join('') + '</div>'; }
-    foot.innerHTML = '<div class="tri-fcols">' + fl('ゲーム', [['play/', 'ゲームをはじめる'], ['mall/', 'トライアスロンモール']]) + fl('作品', [['saga/', 'トライアスロン物語'], ['cast/', 'キャラクター']]) +
+    foot.innerHTML = '<div class="tri-fcols">' + fl('ゲーム', [['play/', 'ゲームをはじめる'], ['mall/', 'トライアスロンモール']]) + fl('作品', [['stories/', '物語（連載）'], ['saga/', '物語のあらすじ'], ['cast/', 'キャラクター']]) +
       fl('サポート', [['news/', 'お知らせ'], ['news/rules.html', 'アップデートの基準'], ['login/', 'ログイン']]) + '</div>' +
       '<div class="tri-fbase"><span class="logo">TRIATHLON</span><span class="tri-studio">© 2026 ' + STUDIO + '<small>（仮）</small><em>Est. 2026.10.25 · Nisui</em></span><span>開発中のサイトです。画像は検討中のイメージで、ゲーム画面ではありません。' + (ver ? ' · ' + ver.textContent : '') + '</span></div>';
     if (old) old.replaceWith(foot); else document.body.appendChild(foot);
