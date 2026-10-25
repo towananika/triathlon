@@ -7,7 +7,7 @@ const path=require('node:path');
   try{
     const page=await browser.newPage({reducedMotion:'reduce'}),errors=[];
     page.on('pageerror',e=>errors.push(e.message));
-    const url=process.env.PAGE_URL||pathToFileURL(path.join(__dirname,'index.html')).href;
+    const url=process.env.PAGE_URL||pathToFileURL(path.join(__dirname,'guide.html')).href;
     await page.goto(url+'#season3');await page.locator('#season3').waitFor({state:'visible'});
     assert.equal(await page.locator('#season3 .future-character').count(),6);
     assert.equal(await page.locator('#season4 .future-character').count(),2);

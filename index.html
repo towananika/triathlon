@@ -2,239 +2,77 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TRIATHLON | 同じ地球、違う未来</title>
-<meta name="description" content="地球の地理、独自の文明史、改善された近未来。人は誰かと、どう親しくなり、どう自分として生きるか。TRIATHLONの世界と物語。">
-<style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#101722;color:#eaf0f6;font:15px/1.75 system-ui,-apple-system,"Noto Sans JP",sans-serif}header{padding:64px 22px 42px;background:linear-gradient(135deg,#142b43,#17212f 60%,#20334a)}main,header>div{max-width:940px;margin:auto}main{padding:22px 18px 80px}h1{font-size:56px;margin:0}h2{font-size:23px;margin:0 0 14px}h3{margin:22px 0 8px}p{margin:8px 0 14px}.sub,.muted{color:#a9b7c9}.tag{display:inline-block;border:1px solid #456077;border-radius:20px;padding:2px 11px;margin:3px;font-size:12px}.card{background:#192331;border:1px solid #304256;border-radius:15px;padding:24px;margin:18px 0}nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}nav a{color:#cfe7ff;text-decoration:none;border:1px solid #52667c;border-radius:20px;padding:5px 12px}table{border-collapse:collapse;width:100%;min-width:600px}th,td{text-align:left;padding:10px;border-bottom:1px solid #354454;vertical-align:top}th{color:#9db9d2} .scroll{overflow-x:auto}.r{color:#ff9393}.g{color:#92e2a7}.b{color:#96bfff}ul{padding-left:22px}small{color:#a9b7c9}footer{color:#a9b7c9;text-align:center;padding:25px}a{color:#9dc9ff}details{margin:16px 0}summary{cursor:pointer;color:#cfe7ff;font-weight:600}code{overflow-wrap:anywhere}section{scroll-margin-top:20px}a:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline-offset:4px}
-header{padding:28px 22px 20px;background:#142334}
-h1{font-size:36px}
-nav{gap:4px;margin-top:20px;border-bottom:1px solid #456077;padding-bottom:6px}
-nav button{font:inherit;font-size:14px;color:#a9b7c9;background:transparent;border:0;border-bottom:2px solid transparent;padding:10px 12px;cursor:pointer}
-nav button[aria-selected="true"]{color:#eaf0f6;border-bottom-color:#92e2a7}
-nav button:focus-visible,summary:focus-visible{outline:2px solid #9dc9ff;outline-offset:3px}
-[hidden]{display:none!important}
-[role="tabpanel"]{min-width:0}
-.skill-details{margin:0}
-.skill-details>summary{font-size:20px;padding:4px 0}
-.skill-body{padding-top:16px}
-.card{overflow-wrap:anywhere}
-@media(max-width:540px){header{padding:24px 18px 16px}.card{padding:18px}nav button{padding:10px 8px}}
-</style>
-<link rel="stylesheet" href="game-site.css?v=0.12">
-<link rel="stylesheet" href="atlas-dossiers.css?v=0.14">
-<link rel="stylesheet" href="residence.css?v=0.16">
-<link rel="stylesheet" href="future-cast.css?v=0.16">
-<link rel="stylesheet" href="v017.css?v=0.18">
-<script src="news/news.js?v=0.19" defer></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="TRIATHLON（トライアスロン）。同じ地球で、違う未来を。4世代で受け継ぐ、光と魔法の青春ライフシミュレーション（開発中）。">
+<title>TRIATHLON — 同じ地球で、違う未来を。</title>
+<link rel="stylesheet" href="home.css?v=0.20">
 </head>
 <body>
-<div class="masthead"><a class="brand" href="#overview">TRIATHLON<span>SAME EARTH. DIFFERENT FUTURE.</span></a><div class="mast-right"><span class="development">IN DEVELOPMENT</span><details class="site-menu"><summary aria-label="メニュー"><span aria-hidden="true">☰</span> メニュー</summary><nav class="site-menu-list" aria-label="サイトのページ"><a href="news/">📰 お知らせ・アップデート</a><a href="news/rules.html">📏 アップデートの基準</a><a href="saga/">📖 トライアスロン物語</a><a href="cast/">👥 キャラ図鑑</a><a href="settings/">📋 設定リスト</a><a href="mall/">🛍️ トライアスロンモール</a><a href="#simulation">🏠 暮らしの試作</a><a href="#downloads">📁 資料・記録</a><a href="login/" id="menu-admin">🔑 管理者</a></nav></details></div></div>
-<section class="keyvisual" aria-label="海辺の都市のビジュアル検討案。地球上の位置は未設定">
-<div class="hero-copy"><p class="eyebrow">SAME EARTH. DIFFERENT FUTURE.</p><h1>TRIATHLON</h1><p class="hero-jp">同じ地球で、<br>違う未来を。</p><p class="hero-lead">誰かと親しく。自分らしく。<br>暮らしと文明を、ともにつくる。</p><a class="explore" href="#world">世界を知る <span aria-hidden="true">↓</span></a></div>
-<div class="hero-caption">CITY CONCEPT <span>旧青波市案の都市イメージ / 現実の地形・ゲーム画面ではありません</span></div>
+<script src="site-nav.js?v=0.20"></script>
+<main>
+<section class="hero" aria-labelledby="hero-title">
+<div class="hero-in">
+<p class="badge">開発中 · ライフシミュレーション</p>
+<h1 id="hero-title" class="logo">TRIATHLON</h1>
+<p class="tagline">同じ地球で、違う未来を。</p>
+<p class="hero-lead">二つの川の町で、4つの世代が恋をして、友だちをつくり、自分の生き方を選ぶ。あなたは名前のない「声」として、そっと寄り添います。</p>
+<div class="cta"><a class="btn primary" href="saga/">📖 物語を読む</a><a class="btn" href="cast/">👥 キャラクターを見る</a></div>
+</div>
 </section>
-<header><div>
-<span class="tag">ライフシミュレーション</span><span class="tag">企画・開発中</span>
-<p class="section-brand">WORLD GUIDE <span>地球から、もう一つの文明へ</span></p>
-<p class="sub">TRIATHLON — 人は誰かと、どう親しくなり、どう自分として生きるか。</p>
-<nav role="tablist" aria-label="ゲームの区分"><button type="button" role="tab" id="tab-overview" aria-controls="panel-overview" aria-selected="true" tabindex="0" data-view="overview">ゲーム概要</button>
-<button type="button" role="tab" id="tab-world" aria-controls="panel-world" aria-selected="false" tabindex="-1" data-view="world">世界観</button>
-<button type="button" role="tab" id="tab-characters" aria-controls="panel-characters" aria-selected="false" tabindex="-1" data-view="characters">キャラクター</button>
-<button type="button" role="tab" id="tab-systems" aria-controls="panel-systems" aria-selected="false" tabindex="-1" data-view="systems">育成・学校</button>
-<button type="button" role="tab" id="tab-story" aria-controls="panel-story" aria-selected="false" tabindex="-1" data-view="story">物語</button>
-<button type="button" role="tab" id="tab-archive" aria-controls="panel-archive" aria-selected="false" tabindex="-1" data-view="archive">資料・履歴</button></nav>
-</div></header>
-<main><div role="tabpanel" id="panel-overview" aria-labelledby="tab-overview">
-<section class="card" id="news-strip"><p class="kicker">NEWS · お知らせ</p><div id="news-latest"><a href="news/">お知らせ・アップデート一覧を見る</a></div><a class="news-all" href="news/">📰 お知らせ・アップデート一覧へ</a></section>
-<section class="card" id="theme"><p class="kicker">THE HEART OF TRIATHLON</p><h2>人は誰かと、どう親しくなり、<br>どう自分として生きるか。</h2><p>恋愛と性を重要な柱にしながら、友情・家族・仕事・一人の時間も描く。誰かと結ばれることだけを成功にせず、自分で選んだ関係と生き方に価値を持たせる。</p><p>地形が同じでも、文明の歩みは変わる。同じ社会で暮らしていても、一人ひとりの人生の答えは違う。</p><a href="#world">世界の土台へ</a> / <a href="#relationships">関係と物語へ</a></section>
-<section class="card" id="v017"><p class="kicker">NEW · v0.17 · 2026-10-25</p><h2>物語・キャラ図鑑・設定リスト</h2><p>4世代の物語、26人の名前と外見、世界に必要な41の設定をまとめました。空いていたところは、本人の「おすすめで」の指示により Claude の提案を採用しています。</p><div class="v017-links"><a href="saga/">📖 トライアスロン物語<small>4世代・70年・12の分かれ道・家系図</small></a><a href="cast/">👥 キャラ図鑑<small>26人の外見と人となり、絵の指示文</small></a><a href="settings/">📋 設定リスト<small>41項目（決定11・おすすめで決定27・あとで3）</small></a></div></section>
-<section class="card" id="game"><h2>ゲーム構想</h2><p>無料で遊べるブラウザ向け、スマートフォンにも対応する軽量な2.5Dアイソメトリック・ライフシミュレーター。</p><h3>BUILD MODE</h3><p>道路、家、部屋、壁、家具、学校、病院、公園、カフェ、職場、訓練施設などをモジュール式で配置・拡張・改装。</p><h3>LIFE MODE</h3><p>NPCの自律生活、日課、訓練、仕事、技能習得、交友、恋愛、結婚、家族、子ども、加齢、世代交代、師弟関係。</p><h3>制作方針</h3><p>最初は少人数NPCと家・訓練場・広場から始める。セーブはローカル保存を想定。マルチプレイや高度なAIは将来拡張。実装済みを意味するものではない。</p><p>キャラクターのデータは共通に保ち、ゲーム内2.5D、カラーアニメ、白黒漫画、Live2D、3D映像は別の表現として制作する。</p></section>
-</div>
-<div role="tabpanel" id="panel-world" aria-labelledby="tab-world">
-<section class="card" id="world"><p class="kicker">WORLD FOUNDATION</p><h2>地球は同じ。選んだ歴史が違う。</h2><p><strong>現実の地球 × 独自の文明史 × 改善された近未来社会。</strong>現実の地理を土台に、別の文明が発展する世界。現実の都市をそのまま再現することを目的にはしない。</p><div class="scroll"><table><tr><th>要素</th><th>現在の設定</th></tr><tr><td>地理</td><td>地球の大陸・島・海・山・川を土台にする。</td></tr><tr><td>都市と社会</td><td>現実の都市・建造物・国家・国境・歴史は初期の前提にせず、独自に形成される。</td></tr><tr><td>文明水準</td><td>現代と同等以上。現在社会から改善された、近い未来の感覚。</td></tr><tr><td>人々</td><td>「生き残った者たち」。何を生き残ったかは物語の大きな謎で、第1期から少しずつ明かされる（<a href="saga/">物語</a>）。</td></tr></table></div><h3>例えば、ソウルに当たる場所なら</h3><p>山や川という条件は同じでも、都市計画・技術・文化・文明のスタートによって街の形は変わる。偶然、現実のソウルに似た都市になることも、まったく違う都市になることもある。「ソウル」という名前を引き継ぐ必要もない。</p><p><strong>解釈の訂正：</strong>「文明を削除」は現実の人工物や文明史を白紙にする設定であり、現代人の都市が突然消滅した事件や、原始時代からの再出発を確定したものではない。</p><details><summary>旧世界案と未確定事項</summary><p>架空の日本風海辺都市「青波市」、2006年ごろという舞台は旧案。v0.18時点で、物語の始まりの町は二水市（ソウルに当たる場所）に決まっている。青波市は旧案として残す。現在の街の画像は旧案のイメージで、実在する地形を表すものではない。</p><p>主要人物9人・中学生という設定は外見テストとして保持。シーズンの色テーマ案はRGB、CMYK、白・黒・灰、無色・透明・未知。最終的な年代・初期都市・文明史との接続は今後決める。</p></details></section>
-<section class="card" id="world-v017"><p class="kicker">WORLD SETTINGS · v0.17</p><h2>二つの川が出会う町と、光の魔法</h2><span class="proposal">Claude の提案を採用（2026-10-25）</span><div class="scroll"><table><tr><th>項目</th><th>v0.17の設定</th></tr><tr><td>最初の町</td><td>二水市（ふたみし）。地球でソウルに当たる場所の、二つの川が合流する町。現実のソウルとは名前も形も違う。</td></tr><tr><td>年</td><td>新暦。第1期の9人は新暦312年に高等部1年。</td></tr><tr><td>期</td><td>親から子への世代。約22年ごとに次の期が始まる。</td></tr><tr><td>色</td><td>光の三原色が混ざっていく。第2期 シアン＝G＋B、マゼンタ＝R＋B、イエロー＝R＋G。第3期 白・黒・灰、第4期 エンプティ。</td></tr><tr><td>魔法の元</td><td>光。体に通すと「光疲れ」で眠くなる。灯石（ともしいし）に貯めた光は道具で誰でも使える。</td></tr><tr><td>生き残った者たち</td><td>何から生き残ったかは謎のまま。期ごとに一段ずつ手がかりが出る。</td></tr><tr><td>名前のない声</td><td>ときどき人が聞く、正体不明の声。</td></tr><tr><td>暮らし</td><td>食・住・医療・学びは無料。お金の単位はルクス。</td></tr><tr><td>改神国</td><td>海の向こうの、神学校の本場の国。</td></tr></table></div><p><a href="settings/">設定リスト（41項目）を見る</a></p></section>
-<section class="card" id="society"><p class="kicker">LIFE & CIVILIZATION</p><h2>便利さの先に、どんな暮らしを。</h2><span class="proposal">社会制度・運用の細部は検討中</span><h3>生活の安心と、人生の選択</h3><p>食事・住居・医療・基礎教育の安心を支え、生きるためだけの労働を減らす方向を検討する。それでも、孤独・嫉妬・すれ違いまで自動的になくなる世界にはしない。</p><h3>都市に表れる価値観</h3><p>効率、自然、交流、静けさ。同じ川沿いでも、橋・住宅・広場の置き方で暮らしが変わる。唯一の正解都市を目指すのではなく、人々の願いと選択が街に残る。</p><h3>技術・魔法・クラス</h3><p>魔法のある日常とRGBの学びを引き継ぐ。魔法の資源・設備・習熟・安全管理のルールは設計対象。クラスは学んだ能力であり、職業・身分・人の価値を固定するものにはしない。</p><p><strong>物語の対立案：</strong>便利な橋を造りたい人と、静かな川辺を守りたい人。よい願い同士がぶつかり、話し合いと選択の後も暮らしが続く。</p></section>
-<section class="card" id="daily-magic"><h2>魔法のある日常</h2>
-<p><strong>採用した方向：</strong>魔法は普通にあり、得意なことや学び方は人それぞれ。</p>
-<p>学校で魔法の基礎を学び、料理・修理・医療・音楽など、戦闘以外の暮らしにも使う。元素を扱う人も、道具や回路を通して扱う人もいる。普段着を基本に、道具や小さな装飾で学び方の違いを見せる。</p>
-<p>独自の文明が育った都市で、学校・仕事・訓練の合間に友達と過ごす。小さな成長や失敗、誰かとの時間が街の記憶になる。強さだけで人物の価値を決めない。海辺の街は地域例の一つで、世界全体を限定しない。</p>
-<h3>近接3人の街での役割（具体例案）</h3>
-<div class="scroll"><table><tr><th>クラス</th><th>学ぶこと</th><th>日常の活躍例</th></tr>
-<tr><td>Fighter</td><td>身体の使い方・距離感・とっさの判断</td><td>スポーツ、救助の補助、身軽さを生かす仕事</td></tr>
-<tr><td>Knight</td><td>防護・位置取り・周囲との連携</td><td>行事の安全係、人を誘導する訓練</td></tr>
-<tr><td>Warrior</td><td>武器や道具の扱い・力の調整</td><td>訓練試合、障害物を取り除く共同作業</td></tr>
-</table></div><p>同じ学校で異なる訓練を選ぶ。共通の制服・訓練着にグローブ・盾・練習剣などで違いを出す。クラスは性格を固定しない。実習や学校制度の細部は未確定。</p></section>
-</div>
-<div role="tabpanel" id="panel-characters" aria-labelledby="tab-characters">
-<section class="card" id="cast-v017"><p class="kicker">CAST · v0.17</p><h2>名前が決まりました — 4世代26人</h2><span class="proposal">Claude の提案を採用（2026-10-25）。年齢は高校生に変更</span><ul class="v017-cast"><li style="--x:#e0525e"><b>アカリ</b>ファイター</li><li style="--x:#e0525e"><b>シオン</b>ナイト</li><li style="--x:#e0525e"><b>ツバサ</b>ウォーリア</li><li style="--x:#3aa36f"><b>シズク</b>レンジャー</li><li style="--x:#3aa36f"><b>カイ</b>アサシン</li><li style="--x:#3aa36f"><b>ミナト</b>スカウト</li><li style="--x:#4a6fe0"><b>リク</b>エレメンタルメージ</li><li style="--x:#4a6fe0"><b>ルイ</b>メージ（男子）</li><li style="--x:#4a6fe0"><b>セイラ</b>クレリック（女子）</li></ul><p>第2〜4期の17人も含め、身長・体型・髪・目・肌・口ぐせ・好き嫌い・関係はキャラ図鑑にあります。</p><div class="v017-links"><a href="cast/">👥 キャラ図鑑を開く<small>26人・背の高さくらべ・絵の指示文</small></a></div></section>
-<section class="card" id="characters">
-<h2>第1期・主要人物9人 — 最新テスト設定</h2>
-<p><strong>全員を中学生にそろえるテスト。</strong>近接3人とレンジャーは女子、アサシン・スカウト・EMは男子。メージとクレリックの性別は未指定で、画像では仮に男子・女子を使用。</p><p><small>この段落は旧テストの記録です。v0.17で、第1期は高校生9人に決まり、名前・性別・人物設定も決まりました（<a href="cast/">キャラ図鑑</a>）。</small></p>
-<div class="scroll"><table><tr><th>クラス</th><th>指定・方向</th><th>外見テスト案</th></tr>
-<tr><td>Fighter</td><td>中学生女子</td><td>短い黒髪、赤い髪留め。活発な表情、共通訓練着とグローブ。細部は仮。</td></tr>
-<tr><td>Knight</td><td>中学生女子。裕福な家庭で育った、上品で育ちのよい雰囲気。</td><td>外見案：黒髪の低いポニーテール、整った姿勢、丁寧な所作。仕立てのよい制服と手入れされた練習盾。細部は仮。</td></tr>
-<tr><td>Warrior</td><td>中学生女子</td><td>茶髪のポニーテール。素直で繊細な表情、訓練着と練習剣。細部は仮。</td></tr>
-<tr><td>Ranger</td><td>女子。もっと落ち着いた、静かで芯のある人物。</td><td>外見案：落ち着いた目元、控えめな表情、揺らがない立ち姿。口数より行動に意思を感じさせる。敬礼ポーズをやめる。髪型・緑系の実習服は仮。</td></tr>
-<tr><td>Assassin</td><td>男子・背が高い</td><td>長身で細身、黒髪、静かな雰囲気。緑のカーディガン・制服パンツは仮。</td></tr>
-<tr><td>Scout</td><td>男子・可愛い系</td><td>柔らかな茶髪と親しみやすい顔。淡い緑の上着・地図・小さな鞄は仮。</td></tr>
-<tr><td>Elemental Mage（EM / BEM）</td><td>男子・新入生首席。生意気な感じ。</td><td>以前のメージの外見に交換：茶髪・眼鏡なし。自信のある表情は新しい外見案。</td></tr>
-<tr><td>Mage（BM）</td><td>天才・全国1位でありながら、謙虚な人物。性別は未指定。</td><td>背を高め、眼鏡なし。青黒髪、穏やかな表情、気負わない所作の案。男子という描写は外見テスト。</td></tr>
-<tr><td>Cleric</td><td>王道のクレリックらしい外見と性格。癒し系。性別は未指定。</td><td>新しい衣装案：白系の聖職服、穏やかな表情。画像の茶髪の三つ編み・女子・医療部風衣装は旧テスト案。</td></tr>
-</table></div>
-<p>EMとメージは外見案を交換し、メージが天才という設定は維持。髪型・衣装・性格・名前まで確定したわけではない。クラスは性格を固定しない。</p>
-<p><strong>最新の実績設定：</strong>BEM＝新入生首席、BM＝全国1位。学校・国・評価制度、および全国1位の対象分野・大会や試験・時期は未指定。以前の「雄才」の表記は履歴であり、「秀才・努力型」という性格や経歴を確定するものではない。</p>
-<details><summary>以前の人物配置（履歴・最新テストには未適用）</summary><p>ハル→Knight、レン→Fighter、ソウタ→Warrior、ユナ→Ranger、アオイ→Assassin、ミナ→Scout、新規A→Elemental Mage、ルイ→Mage、新規B→Cleric。ハル17歳男性・レン17歳男性・ソウタ18歳男性という旧仮案は、最新の中学生キャラ設定とは分ける。</p><p>旧案の長所・課題：ハル＝観察・責任感／自己決定、レン＝身体能力・競争心／冷静な判断、ソウタ＝粘り強さ／自信、ユナ＝行動力・環境適応／計画性、アオイ＝集中・感受性／信頼、ミナ＝情報収集・交流／判断、新規A＝自然への関心／制御、ルイ＝学習・分析／柔軟性、新規B＝共感・支援／自己ケア。新キャラへの対応は未確定。</p></details>
+
+<section class="sec" aria-labelledby="news-h">
+<div class="sec-head"><h2 id="news-h">お知らせ</h2><a class="more" href="news/">すべて見る →</a></div>
+<ul class="news" id="news"><li><a href="news/">お知らせ一覧を見る</a></li></ul>
 </section>
-<section class="card" id="art"><h2>作画・衣装の検討履歴</h2>
-<p>自然な顔立ち、髪や布の質感、きれいで読みやすい漫画の描き込みを求める。人物の同一性をカラーアニメ・白黒漫画・ゲーム内表現で保つ。クラス色は髪色や善悪を強制しない。</p>
-<ul><li><strong>最初の比較：</strong>01青春アニメ・02漫画セル画・03ちびキャラを好み、メインは02と決定。</li><li><strong>幅広い12方向の比較：</strong>01少女漫画・03日常アニメ・06水彩・07色鉛筆・10ちびキャラを好む。これらを混ぜた案も制作。</li><li><strong>その後の希望：</strong>もっと現実感と、洗練されたAI画像のような美しさ、漫画としての仕上がりが必要。</li><li><strong>新しい6方向の比較：</strong>01繊細な半写実漫画・02アニメゲーム立ち絵・04Webtoon・05ファッション漫画調を候補に選択。</li><li><strong>衣装：</strong>以前の服が垢抜けないという感想。色数・丈・シルエット・靴まで整えた制服、ブレザー、訓練着、探索向け街着を比較。最終衣装は未決定。</li><li><strong>最新テスト：</strong>同じ学校の中学生9人の方向を評価。レンジャーの落ち着きと、EM／メージの外見交換を次の修正点に指定。</li></ul>
-<p>比較番号は画像シリーズごとのもの。同じ番号でも別シリーズでは意味が異なる。02を基準として選んだ後も探索を続けており、頭身・色指定・全衣装が最終確定したわけではない。</p><p>今後の検討候補：9人の顔アップ、通常・笑顔・困った顔の表情、普段着と訓練着、ゲーム内の縮小表示での識別性。</p></section>
+
+<section class="sec" aria-labelledby="about-h">
+<h2 id="about-h">どんなゲーム？</h2>
+<div class="about">
+<div><span aria-hidden="true">🌏</span><b>同じ地球、別の文明</b><p>山や川は今の地球と同じ。でも歩んだ歴史がちがう、もう一つの世界です。</p></div>
+<div><span aria-hidden="true">👨‍👩‍👧</span><b>4世代・70年の物語</b><p>親から子へ、受け継がれるのはスキルだけ。それぞれの期に、新しい主人公たちがいます。</p></div>
+<div><span aria-hidden="true">💡</span><b>決めるのはキャラたち</b><p>あなたは名前のない「声」。迷ったときにささやき、選ぶのは本人です。</p></div>
 </div>
-<div role="tabpanel" id="panel-systems" aria-labelledby="tab-systems">
-<section class="card" id="class"><h2>RGB・9クラス</h2><div class="scroll"><table><tr><th>系統</th><th>クラス</th><th>方向性（解釈）</th></tr><tr><td class="r">R / RED</td><td>ナイト / Knight<br>ファイター / Fighter<br>ウォーリア / Warrior</td><td>防護・戦闘・武器技術</td></tr><tr><td class="g">G / GREEN</td><td>レンジャー / Ranger<br>アサシン / Assassin<br>スカウト / Scout</td><td>探索・機動・精密行動</td></tr><tr><td class="b">B / BLUE</td><td>エレメンタルメージ / Elemental Mage<br>メージ / Mage<br>クレリック / Cleric</td><td>元素・魔法・支援</td></tr></table></div><p><small>9つのクラス名はユーザー提示の設定。各クラスの方向性の説明は設計上の解釈。</small></p></section>
-<section class="card" id="legacy"><h2>クラス習得・転職・複数クラス・承継</h2><p><strong>採用方針：C. 素質＋努力の複合型。</strong>生得的な適性は成長速度に影響するが、クラスや人生の上限を固定しない。</p><ul><li>General・Optionの基礎を学び、専門スキルの条件を満たしてクラスに進む。</li><li>転職しても習得済みスキルは原則保持する。</li><li>複数クラスを習得できる。同時装備できる専門スキル枠は検討中。</li><li>親からは素質・財産・文化を、親や師匠からは教育を通じて知識や技術を承継できる。</li><li>子どもは親のコピーにならず、別クラスも自由に目指せる。</li></ul><p>専門クラス解放の細部、スキル枠、数値式、能力上限は未確定。以前の成長計算例はバランス検討用で正式仕様ではない。</p></section>
-<section class="card" id="skills"><details class="skill-details"><summary>スキルシステム（日英）</summary><div class="skill-body"><p>General → Option → 専門スキル。習得条件は「Req.」で管理する。</p><div class="scroll"><table><tr><th>分類</th><th>英語</th><th>日本語</th><th>能力</th><th>Req.</th></tr>
-<tr><td>General</td><td>Physical Training (PT)</td><td>基礎体力訓練</td><td>HP</td><td>—</td></tr>
-<tr><td>General</td><td>Upper Body Training (UBT)</td><td>上半身強化訓練</td><td>ATK</td><td>PT</td></tr>
-<tr><td>General</td><td>Lower Body Training (LBT)</td><td>下半身強化訓練</td><td>DEF</td><td>PT</td></tr>
-<tr><td>Option</td><td>Offensive Strategy (OS)</td><td>攻撃戦術</td><td>ATK</td><td>UBT</td></tr>
-<tr><td>Option</td><td>Defensive Strategy (DS)</td><td>防御戦術</td><td>DEF</td><td>LBT</td></tr>
-<tr><td>Option</td><td>Intelligence Education (IE)</td><td>知識教育</td><td>MAG</td><td>—</td></tr>
-<tr><td>Option</td><td>Mind Control Training (MCT)</td><td>精神統制訓練</td><td>RES</td><td>—</td></tr>
-<tr><td>Fighter</td><td>Battle Understanding (BU)</td><td>戦闘理解</td><td>ATK</td><td>OS</td></tr>
-<tr><td>Fighter</td><td>Dodge Understanding (DU)</td><td>回避理解</td><td>SPD</td><td>DS</td></tr>
-<tr><td>Warrior</td><td>Sword Theory (ST)</td><td>剣術理論</td><td>RAN</td><td>MCT</td></tr>
-<tr><td>Warrior</td><td>Sword Practice (SP)</td><td>剣術実習</td><td>ATS</td><td>MCT + ST</td></tr>
-<tr><td>Knight</td><td>Movement Strategy (MS)</td><td>移動戦術</td><td>SPD</td><td>MCT</td></tr>
-<tr><td>Knight</td><td>Weapon Handling (WH)</td><td>武器操作術</td><td>ATS</td><td>MCT + MS</td></tr></table></div><p>剣術実習の技候補：straight（直線斬り／突き、要確認）、slice（斬撃）。RANとATSの正確な意味は未確定。</p><details><summary>以前のG・B簡略スキル案（未承認・現行原案ではない）</summary><div class="scroll"><table><tr><th>クラス</th><th>スキル案</th><th>能力</th><th>Req.</th></tr>
-<tr><td>Ranger</td><td>射撃理論 / Ranged Combat Theory</td><td>RAN</td><td>IE</td></tr><tr><td>Ranger</td><td>精密射撃 / Precision Shooting</td><td>ATS</td><td>射撃理論</td></tr>
-<tr><td>Assassin</td><td>隠密行動 / Stealth Movement</td><td>SPD</td><td>MCT</td></tr><tr><td>Assassin</td><td>急所分析 / Weak Point Analysis</td><td>ATK</td><td>隠密行動</td></tr>
-<tr><td>Scout</td><td>地形観察 / Terrain Observation</td><td>RAN</td><td>IE</td></tr><tr><td>Scout</td><td>索敵行動 / Reconnaissance</td><td>SPD</td><td>地形観察</td></tr>
-<tr><td>Elemental Mage</td><td>元素理解 / Elemental Understanding</td><td>MAG</td><td>IE</td></tr><tr><td>Elemental Mage</td><td>元素制御 / Elemental Control</td><td>ATS</td><td>元素理解 + MCT</td></tr>
-<tr><td>Mage</td><td>魔法理論 / Magic Theory</td><td>MAG</td><td>IE</td></tr><tr><td>Mage</td><td>魔力操作 / Mana Control</td><td>ATS</td><td>魔法理論 + MCT</td></tr>
-<tr><td>Cleric</td><td>治癒理論 / Healing Theory</td><td>MAG</td><td>IE</td></tr><tr><td>Cleric</td><td>回復術 / Restoration</td><td>RES</td><td>治癒理論 + MCT</td></tr></table></div></details></div></details></section>
-<section class="card" id="g-skills"><details class="skill-details"><summary>G系統 — ユーザー提示の原案</summary><div class="skill-body">
-<p>General：Physical Training（PT / HP）。Throwing / Shooting（RAN）— Req. PT。</p>
-<p>Options：Upper Body Training（UBT / ATK）— Req. PT。Lower Body Training（LBT / DEF）— Req. PT。Intelligence Training（IT / MAG）、Mind Control Training（MCT / RES）。後者2つの前提は未指定。</p>
-<div class="scroll"><table><tr><th>クラス</th><th>スキル</th><th>能力</th><th>Req.（原案の表記）</th></tr>
-<tr><td>Ranger</td><td>Rifle 1</td><td>未指定</td><td>Shooting＋UBT</td></tr>
-<tr><td>Ranger</td><td>Rifle 2〜4</td><td>未指定</td><td>IT 1〜3＋MCT 1〜3</td></tr>
-<tr><td>Ranger</td><td>Heavy Rifle 1</td><td>未指定</td><td>Rifle 2</td></tr>
-<tr><td>Ranger</td><td>Heavy Rifle 2〜4</td><td>未指定</td><td>IT 1〜3＋MCT 1〜3＋WH 1〜3</td></tr>
-<tr><td>Assassin</td><td>Assassination 1</td><td>ATS</td><td>Throwing＋UBT</td></tr>
-<tr><td>Assassin</td><td>Assassination 2〜4</td><td>未指定</td><td>IT 1〜3＋MCT 1〜3＋BU 1〜3（Fighter）</td></tr>
-<tr><td>Scout</td><td>Movement Strategy 1</td><td>SPD</td><td>PT</td></tr>
-<tr><td>Scout</td><td>Movement Strategy 2〜4</td><td>未指定</td><td>PT 2〜4</td></tr>
-</table></div><p>2・3・4と前提1・2・3の個別対応、前の段階の技能が必要かどうかは未確認。Throwing／Shootingの分岐、RのIEとGのITの関係も未確定。</p></div></details></section>
-<section class="card" id="magic-v014"><p class="kicker">NEW SETTINGS · 2026-10-25</p><h2>B文明の魔法・学校とG系統の能力（v0.14）</h2><p class="muted">ユーザー指定の内容を優先し、未確定事項は区別しています。</p><h3>学校・教育</h3><ul><li>「社会法政」：学校名か教育区分かは確認待ち。</li><li>Bの<strong>神学校</strong>は宗教を学ぶ。</li><li><strong>魔法学校</strong>の存在を確認（詳細未確定）。</li><li><strong>改神国</strong>の追加詳細は未指定。</li></ul><h3>線形魔法と円形魔法</h3><div class="scroll"><table><tr><th>項目</th><th>線形魔法</th><th>円形魔法</th></tr><tr><td>詠唱</td><td>言葉のように一列に詠唱する</td><td>線形魔法を区切って円形にする</td></tr><tr><td>発動</td><td>詠唱が終わると発動</td><td>詠唱が途中で切れても、途中までの魔法陣の効果が発動</td></tr><tr><td>所要時間</td><td>基本の詠唱</td><td>円形化の魔法が必要で、長い詠唱はさらに長くなる</td></tr><tr><td>計算</td><td>未指定</td><td>詠唱者の位置から方向などを相対計算するため計算しやすい</td></tr></table></div><p><small>要確認：途中までの魔法陣の効果の具体的な成立単位。</small></p><h3>G系統の適性</h3><div class="scroll"><table><tr><th>クラス</th><th>身体能力・特性</th></tr><tr><td>レンジャー</td><td>遠くまで見える視力。射撃・カメラなど上半身を鍛える。忍耐力と集中力がある。</td></tr><tr><td>アサシン</td><td>後で設定する（今回未指定）。</td></tr><tr><td>スカウト</td><td>行動・反応が速い。視力は平均以下ほど。</td></tr></table></div><p><a href="./records/magic_and_g_traits_v0_14.md">v0.14 設定記録を読む</a></p></section>
-<section class="card" id="b-schools"><details class="skill-details"><summary>B系統 — 以前の4学校原案（新制度との対応未定）</summary><div class="skill-body"><p>最新の神学校・魔法学校・海洋学校との接続は未設定。以下は技能と学校の既存原案を保持した資料です。</p>
-<p><strong>ユーザー提示の原案。</strong>学校ごとに学び方・操作・成長の仕方が異なる。</p>
-<p>General：Physics（HP）、Academics（MAG）、Psycologics（RES・原文表記）。Optionは未記載。用語の正式な綴り・定義は未確定。</p>
-<h3>Elementary Academy — 線形魔法</h3>
-<div class="scroll"><table><tr><th>級</th><th>技能・条件</th></tr>
-<tr><td>Class 10</td><td>EM: Water（HP）— Req. Psycologics<br>EM: Earth（DEF）— Req. EM: Water</td></tr>
-<tr><td>Class 9</td><td>Mana Inspiration（MI / MP）<br>Elemental Mix Magic（EMM）：Water &amp; Earth</td></tr>
-<tr><td>Class 8</td><td>Advanced Mana Inspiration（AMI / MP）<br>EM: Wind（SPD）— Req. MI<br>EMM: Wind &amp; Water＝高圧・押す・水分<br>EMM: Wind &amp; Earth＝counter（定義未確定）</td></tr>
-<tr><td>Class 7</td><td>EM: Fire（MAG）— Req. AMI<br>EMM: Fire &amp; Water＝counter（定義未確定）<br>EMM: Fire &amp; Earth＝dry（乾燥）<br>EMM: Fire &amp; Wind＝低圧・引く</td></tr>
-<tr><td>Class 6 — Elemental Sublet</td><td>EMM: F&amp;E＋Wi&amp;Wa＝shot<br>EMM: F&amp;E＋F&amp;Wi＝shot(pull)<br>Sublet・shotの正式な名称と働きは未確定</td></tr>
-<tr><td>Class 5 — Elemental Mage</td><td>上位属性魔法（AEM）7種：Water（Ice）、Earth（Heal）、Earth（Poison）、Wind、Fire（Flame）、Fire（Thunder）、Fire（Light）。<br>Poison — Req. AEM: Earth。Light — Req. AEM: Thunder。Windの効果は未記載。</td></tr>
-<tr><td>Class 4</td><td>7種のAEMから2種</td></tr>
-<tr><td>3rd Class</td><td>7種のAEMから4種</td></tr>
-<tr><td>2nd Class</td><td>全7種のAEM</td></tr>
-<tr><td>1st Class</td><td>全7種のAEM。2級との差は未記載。</td></tr>
-</table></div>
-<p>略記：F＝Fire、E＝Earth、Wi＝Wind、Wa＝Water。EMはこの技能表ではElemental Magic、人物・クラスの会話ではElemental Mageを指す。原文のliniear-magicの正式名称は未確定。</p>
-<h3>Mage Academy — 回路魔法</h3><div class="scroll"><table><tr><th>区分</th><th>原案の条件</th></tr>
-<tr><td>Elemental Scholar Class</td><td>unqualified（意味未確定）</td></tr>
-<tr><td>Elemental Mage Class</td><td>Req. Elemental Mage（Class 5〜1st Class）。マナ5,000以上＋消費マナ1,000以上のスキルを持つ。</td></tr>
-<tr><td>Mage Class</td><td>A〜E Class。マナ10,000以上＋消費マナ2,000以上のスキルを持つ。</td></tr>
-<tr><td>Arch Mage Class</td><td>F〜I Class。マナ15,000以上＋消費マナ3,000以上のスキルを持つ。</td></tr>
-</table></div>
-<h3>Cleris Missionary School</h3><p>1〜13段階（Grade）。シンプルなプレイ、成長しやすいが潜在力は低め、ワンタップで詠唱する設計。</p>
-<ul><li>Engineering（工学）</li><li>Education（教育）</li><li>Humanities（人文）— Literature Club</li><li>Medicine（医療）— Medic Club</li><li>Liberal Arts — Art Club、Music Club、Atheletic Club（原文表記）</li><li>Social Sciences（社会科学）— Volunteer Club</li><li>Natural Sciences（自然科学）— Culinary Club</li></ul>
-<h3>Nacsha Missionary School — Full Open</h3><ul><li>すべてのスキルを解放可能。</li><li>ランダムなskill-techが生成される。</li><li>1ボタンで詠唱。タップ・長押しで変化する。</li><li>10,000回の詠唱で技能を習熟し、100%の性能を持てる原案。</li><li>魔法回路1〜4：<code>100p^1〜4</code>（数式・単位の意味は未確定）。</li></ul>
-<p>学校間の転籍、入学条件、段階の呼称や数値は今後の設計対象。現実の物理現象や学校制度を説明するものではなく、ゲーム内設定。</p></div></details></section>
+</section>
+
+<section class="sec" aria-labelledby="world-h">
+<div class="sec-head"><h2 id="world-h">3つの都市</h2><a class="more" href="guide.html#world">世界ガイドへ →</a></div>
+<div class="cities">
+<article class="city c1"><p class="tag">はじまりの町</p><h3>二水<small>にすい · Nisui</small></h3><p>二つの川が出会う町。二水学園、灯台館、川守隊。すべての世代がここから始まります。</p></article>
+<article class="city c2"><p class="tag">学びと魔法</p><h3>明山<small>めいざん · Mingshan（仮）</small></h3><p>北の山の学園都市。光と灯石を研究し、「眠りの層」の謎を追います。</p></article>
+<article class="city c3"><p class="tag">海のむこう・改神国</p><h3>白港<small>はっこう · Baigang（仮）</small></h3><p>白い石の港の都。祈りの鐘が朝夕に鳴り、名前のない声を神の声と信じる人が多い場所。</p></article>
 </div>
-<div role="tabpanel" id="panel-story" aria-labelledby="tab-story">
-<section class="card" id="relationships"><p class="kicker">RELATIONSHIPS & IDENTITY</p><h2>誰と生きるか。どう自分でいるか。</h2><p>恋愛と性を重要な柱にしつつ、友情・家族・仕事・一人の時間も残す。恋愛しない人生、友情を選ぶことにも同じだけ価値を持たせる。</p><h3>憧れを、自分の姿にする</h3><p>「男子としてかっこよくありたい」「女子としてきれいでありたい」という気持ちを、装い・振る舞い・相手への接し方の物語にする。性別ごとに唯一の理想像を強制せず、かっこいい女子やきれいな男子も含め、一人ひとりが選ぶ魅力を描く。</p><h3>親密さと境界線</h3><p>同意、断る自由、距離を置く自由、相手との違いを尊重する。関係は一方的に攻略して獲得する報酬ではなく、互いに選び、変化していくものとして設計する。</p><p><strong>年代ごとの扱い：</strong>現在の中学生キャラクターは外見テスト。未成年期は年齢相応の恋心、身体の変化への戸惑い、距離感を描く。成人の性的関係を扱う場合は成人期として明確に分ける。具体的な表現範囲・対象年齢は未確定。</p></section>
-<section class="card" id="saga-v017"><p class="kicker">STORY · v0.17</p><h2>トライアスロン物語 — 4世代・70年</h2><span class="proposal">Claude の提案を採用（2026-10-25）</span><ul class="v017-seasons"><li><b>第1期「ふたつの川、九つの光」新暦312〜315年</b>川辺の灯台館を直す実習で出会った9人。大橋の計画、洪水、川底で見つかる古い灯石の層。</li><li><b>第2期「層の向こう」新暦334〜337年</b>9人の子どもたち。灯台館の床下の扉の先で、層が人の手で作られたことを知る。</li><li><b>第3期「白と黒の市場」新暦356〜359年</b>光を持たない「黒」の子が増えた時代。市場で生き方を選び、声と層のつながりに気づく。</li><li><b>第4期「白紙の地図」新暦378〜381年</b>色を持たない二人が、地図の外へ最初の道を描きに行く。</li></ul><div class="v017-links"><a href="saga/">📖 物語を読む<small>全体の年表・謎の段階・家系図・各期の3部と分かれ道</small></a></div></section>
-<section class="card" id="story"><h2>物語の方向</h2><p>地球のどこに、どんな社会を作るか。その中で、誰と、どんな自分として生きるか。文明の選択と、一人ひとりの関係の選択をつなげる。</p><p>v0.17で、始まりの町（二水市）・年代（新暦312年から）・4世代の筋書きが決まった（<a href="saga/">物語</a>）。プレイヤーは名前のない声として人物たちに寄り添い、決めるのは人物たち自身。生存者の過去と文明の始まり方は、物語の謎として少しずつ明かす。文明崩壊や都市再建の事件を既定の事実にはしない。</p><details id="story-legacy"><summary>旧青波市・学校実習ストーリー（履歴・新世界への採用未定）</summary>
-<p><strong>提案段階・採用確認前。</strong>タイトル『あの夏、君と走った。』も仮。</p>
-<p>2006年、海辺の青波市。違う訓練コースを選んだ中学生9人が学校の共同実習に集まる。課題は、海辺の古い交流施設を夏祭りまでにもう一度使える場所にすること。</p>
-<p>誰のための場所にするか、予算を何に使うか、昔から使っていた住民の希望をどう受け止めるか。得意な技能があっても答えはすぐには出ない。</p>
-<ul><li>近接3人：作業と安全を支えるが、力だけでは解決できない対立に出会う。</li><li>Ranger・Assassin・Scout：街を調べ、人の話を集め、情報を伝える難しさを知る。</li><li>EM・Mage・Cleric：設備や魔法に取り組み、努力と才能、助けることと無理をすることの違いに向き合う。</li></ul>
-<p>中盤、施設に残る古い魔法回路が動き始める。以前ここを作った子どもたちの、完成しなかった計画が見つかる。9人は、そのまま完成させるか、自分たちの場所へ作り変えるかを選ぶ。</p>
-<p>夏祭りの後も暮らしは続く。施設はゲーム内の拠点となり、次の学年、仕事、次の世代へ受け継がれる。帰り道の寄り道、訓練後の会話、初めて名前で呼び合う瞬間などを見せ場にする案。</p></details></section>
+</section>
+
+<section class="sec" aria-labelledby="play-h">
+<h2 id="play-h">見る・遊ぶ</h2>
+<div class="cards">
+<a class="card k-story" href="saga/"><span aria-hidden="true">📖</span><b>トライアスロン物語</b><small>4世代・12の分かれ道</small></a>
+<a class="card k-cast" href="cast/"><span aria-hidden="true">👥</span><b>キャラクター</b><small>4世代26人</small></a>
+<a class="card k-mall" href="mall/"><span aria-hidden="true">🛍️</span><b>トライアスロンモール</b><small>灯貨でお買い物</small></a>
+<a class="card k-life" href="guide.html#simulation"><span aria-hidden="true">🏡</span><b>暮らしの試作</b><small>30日の暮らしを選ぶ</small></a>
 </div>
-<div role="tabpanel" id="panel-archive" aria-labelledby="tab-archive">
-<section class="card" id="downloads"><h2>設定記録ファイル</h2><h3>追加設定 v0.14</h3><p>Bの学校・線形／円形魔法とG系統の適性を記録。</p><p><a href="./records/magic_and_g_traits_v0_14.md" download>v0.14をダウンロード</a></p><h3>最新の世界設定 v0.11</h3><p>中心テーマ、地球の地理と独自文明、近未来社会、人間関係の方針、旧案との違いを記録。世界設定はこの最新版を優先します。</p><p><a href="./records/world_foundation_v0_11.md" download>最新世界設定 v0.11をダウンロード</a> / <a href="https://github.com/towananika/triathlon/blob/main/records/world_foundation_v0_11.md">GitHubで読む</a></p><h3>過去の統合開発記録 v0.9</h3><p>RGBクラス・技能原案・学校・人物・作画の詳細を含む保存版。旧青波市・2006年の世界観も含む過去資料で、現在の世界設定とは区別してください。</p><p><a href="./records/aonami_complete_record_v0_9.md" download>旧統合記録 v0.9をダウンロード</a> / <a href="https://github.com/towananika/triathlon/blob/main/records/aonami_complete_record_v0_9.md">GitHubで読む</a></p><h3>物語・キャラ・設定 v0.17</h3><p><a href="./records/saga_cast_settings_v0_17.md" download>v0.17をダウンロード</a> / <a href="https://github.com/towananika/triathlon/blob/main/records/saga_cast_settings_v0_17.md">GitHubで読む</a></p></section>
-<section class="card" id="history"><h2>更新履歴・検討事項</h2><p><small>版ごとの詳しい内容は <a href="news/">お知らせ・アップデート</a> にあります。</small></p><p><strong>v0.19 · 2026-10-25</strong> トライアスロンモール、シンプルなキャラ図鑑、管理者ログインと開発版（キャラ編集・フォント見比べ）を追加。</p><p><strong>v0.18 · 2026-10-25</strong> お知らせを版ごとの1ページに分け、アップデートの基準を決定。全ページ共通のメニューを追加し、古くなっていた説明を直した。</p><p><strong>v0.17 · 2026-10-25</strong> 4世代の物語（saga）、26人のキャラ図鑑（cast）、41項目の設定リスト（settings）を追加。空いていた設定は本人の「おすすめで」の指示により Claude の提案を採用。</p><p><strong>v0.14 · 2026-10-25</strong> 魔法の詠唱方式・学校・G系統の能力を追加。</p><p><strong>v0.9 · 2026-10-24</strong> 全記録のMarkdownファイルを追加し、資料・履歴からダウンロードできるようにした。</p><p><strong>v0.8 · 2026-10-24</strong> ゲーム概要・世界観・キャラクター・育成と学校・物語・資料の6区分へ整理。スキル表を系統ごとに開閉する構成に変更。設定内容は維持。</p><p><strong>v0.7 · 2026-10-24</strong> G原案、Bの4学校、魔法のある日常、全員中学生のテスト、レンジャーの雰囲気変更、EM／メージの外見交換、作画・衣装の履歴と未承認ストーリー案を追記。</p><p><strong>v0.1</strong> RのGeneral・Option・Fighter・Warrior・Knightスキルを記録。</p><p><strong>v0.2</strong> G/Bの専門スキル案を追加（日英）。</p><p><strong>v0.3</strong> 素質＋努力のクラス制度、転職、複数クラス、属性承継の方針。</p><p><strong>v0.4</strong> 9人の初期クラス方向、生活と訓練の連動。</p><p><strong>v0.5</strong> ハル・レン・ソウタの外見原型案。</p><p><strong>v0.6</strong> triathlonリポジトリに統合記録ページを新設。</p><h3>未確定事項</h3><p><small>v0.17で、名前・性別・人物設定・魔法の制約・実習の危険度・資格制度・学校間の移動・4世代の物語は Claude の提案で仮決定しました（<a href="settings/">設定リスト</a>）。まだ決まっていないのは次の項目です（v0.18時点）。</small></p><ul><li>RAN / ATSの正式定義</li><li>Gの前提レベル対応とIE／ITの関係、BのOption・用語・未記載効果・2級と1級の違い</li><li>「雄才」の意図</li><li>最終の作画・衣装（絵はGPTで作る予定）</li><li>ゲーム内実装と数値バランス</li></ul><p><small>このページは会話で確認できる記録をまとめたものです。過去の未確認情報は断定せず、随時追記します。</small></p></section>
-</div></main>
-<footer><strong>TRIATHLON</strong><br>SAME EARTH. DIFFERENT FUTURE. · v0.19 · 2026-10-25<br><small>企画・開発中。ゲーム本編とは別に、ルール式の暮らし試作を公開しています。</small><br><a href="news/">お知らせ</a> / <a href="saga/">物語</a> / <a href="cast/">キャラ図鑑</a> / <a href="settings/">設定リスト</a> / <a href="records/future_cast_and_family_v0_16.md">第3〜4期・人生設計</a> / <a href="records/community_improvement_v0_16.md">共同改善と10年比較</a> / <a href="vendor/NOTICE.md">地図・ライブラリの出典</a></footer>
-<script src="game-site.js?v=0.14"></script>
-<script src="vendor/d3-7.9.0.min.js"></script>
-<script src="vendor/topojson-client-3.1.0.min.js"></script>
-<script src="assets/data/land-110m.js"></script>
-<script src="atlas-dossiers.js?v=0.14"></script>
-<script src="residence-engine.js?v=0.15"></script>
-<script src="community-engine.js?v=0.16"></script>
-<script src="assets/data/community-comparison-v16.js"></script>
-<script src="residence-ui.js?v=0.16"></script>
-<script src="future-cast.js?v=0.16"></script>
+</section>
+
+<section class="sec" aria-labelledby="deep-h">
+<h2 id="deep-h">もっと詳しく</h2>
+<ul class="list">
+<li><a href="guide.html"><span aria-hidden="true">📘</span>設定資料（世界ガイド）<small>世界・クラス・学校・魔法の細かい設定</small></a></li>
+<li><a href="settings/"><span aria-hidden="true">📋</span>設定リスト<small>決まったこと・まだのこと（41項目）</small></a></li>
+<li><a href="news/rules.html"><span aria-hidden="true">📏</span>アップデートの基準<small>いつ、どう更新するか</small></a></li>
+</ul>
+</section>
+</main>
+<footer class="foot"><p class="logo-s">TRIATHLON</p><p>SAME EARTH. DIFFERENT FUTURE. · <span id="ver">v0.20</span></p><p><small>開発中のサイトです。画像は検討中のイメージで、ゲーム画面ではありません。</small></p><p><a href="login/">管理者</a></p></footer>
+<script src="news/news.js?v=0.20"></script>
 <script>
 (function () {
-  var groups = [{"id":"overview","sections":["news-strip","theme","game","v017"]},{"id":"world","sections":["world","simulation","atlas","civilizations","society","daily-magic","map","monsters","world-v017"]},{"id":"characters","sections":["dossier","fighter-profile","wardrobe","visual-direction","season2","season3","season4","characters","art","cast-v017"]},{"id":"systems","sections":["education","casting-and-aptitudes","class","legacy","skills","g-skills","magic-v014","b-schools"]},{"id":"story","sections":["relationships","family-life","story","saga-v017"]},{"id":"archive","sections":["downloads","history"]}];
-  var buttons = Array.from(document.querySelectorAll('[role="tab"]'));
-  function resolve(hash) {
-    var value;
-    try { value = decodeURIComponent(hash.slice(1)); } catch(e) { return groups[0]; }
-    return groups.find(function(g){return g.id === value || g.sections.indexOf(value) >= 0;}) || groups[0];
-  }
-  function render() {
-    var group = resolve(location.hash);
-    document.body.dataset.view = group.id;
-    groups.forEach(function(g) {
-      var selected = g.id === group.id, button = document.getElementById("tab-" + g.id);
-      document.getElementById("panel-" + g.id).hidden = !selected;
-      button.setAttribute("aria-selected",String(selected)); button.tabIndex = selected ? 0 : -1;
-    });
-    var target;
-    try { target = document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch(e) {}
-    if(target && group.sections.indexOf(target.id) >= 0 && target.id !== group.id) {
-      var detail = target.querySelector(".skill-details"); if(detail) detail.open = true;
-      target.scrollIntoView({block:"start"});
-    }
-  }
-  buttons.forEach(function(button,index) {
-    button.onclick = function() { location.hash = button.dataset.view; render(); };
-    button.onkeydown = function(event) {
-      var next;
-      if(event.key === "ArrowRight") next=(index+1)%buttons.length;
-      if(event.key === "ArrowLeft") next=(index+buttons.length-1)%buttons.length;
-      if(event.key === "Home") next=0;
-      if(event.key === "End") next=buttons.length-1;
-      if(next === undefined) return;
-      event.preventDefault();buttons[next].focus();buttons[next].click();
-    };
-  });
-  window.addEventListener("hashchange",render); render();
+  'use strict';
+  var n = window.TRI_NEWS || [], box = document.getElementById('news');
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  if (n.length) box.innerHTML = n.slice(0, 3).map(function (e, i) {
+    return '<li><a href="news/v.html?id=' + encodeURIComponent(e.id) + '"><time>' + esc(e.date.replace(/-/g, '.')) + '</time>' + (e.ver ? '<span class="v">' + esc(e.ver) + '</span>' : '<span class="v info">お知らせ</span>') + (i === 0 ? '<span class="new">NEW</span>' : '') + '<span class="t">' + esc(e.title) + '</span></a></li>';
+  }).join('');
 })();
-</script>
-<script>
-document.addEventListener('click', function(e){
-  var m = document.querySelector('.site-menu');
-  if (m && m.open && (!m.contains(e.target) || e.target.closest('.site-menu-list a'))) m.open = false;
-});
-document.addEventListener('DOMContentLoaded', function(){
-  try { if (localStorage.getItem('tri-admin')) { var ma = document.getElementById('menu-admin'); ma.href = 'dev/'; ma.textContent = '🛠️ 開発版'; } } catch (e) {}
-  var box = document.getElementById('news-latest'), n = window.TRI_NEWS;
-  if (!box || !n || !n.length) return;
-  var esc = function(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
-  box.innerHTML = '<ul class="news-mini">' + n.slice(0, 3).map(function(e, i){
-    return '<li><a href="news/v.html?id=' + encodeURIComponent(e.id) + '">' + (i === 0 ? '<b class="nnew">NEW</b>' : '') + '<span class="nd">' + esc(e.date.replace(/-/g, '.')) + '</span>' + (e.ver ? '<span class="nv">' + esc(e.ver) + '</span>' : '') + '<span class="nt">' + esc(e.title) + '</span></a></li>';
-  }).join('') + '</ul>';
-});
 </script>
 </body>
 </html>

@@ -9,7 +9,7 @@ const path = require('node:path');
     const page = await context.newPage();
     const errors=[];
     page.on('pageerror',e=>errors.push(e.message));
-    const url=process.env.PAGE_URL||pathToFileURL(path.join(__dirname,'index.html')).href;
+    const url=process.env.PAGE_URL||pathToFileURL(path.join(__dirname,'guide.html')).href;
     await page.goto(url+'#fighter-profile');
     await page.locator('#fighter-profile').waitFor({state:'visible'});
     assert.match(await page.locator('#fighter-profile').innerText(),/ムラ/);
