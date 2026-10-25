@@ -1,5 +1,5 @@
 // 二水の世界シミュレーション。現実の1日＝世界の1日。
-// 2026-10-25（日本時間）が新暦312年4月1日。乱数は日付から決めるので、同じ日ならだれが開いても同じ世界になる。
+// 世界は新暦312年4月1日（9人の入学式）にはじまった。2026-10-25（日本時間）に10年進め、この日が新暦322年4月1日。乱数は日付から決めるので、同じ日ならだれが開いても同じ世界になる。
 // 中身：州ごとの気候（気温・雨・雪・台風）→ 8つの産業の生産 → 食べ物・材料・製品の在庫と値段 → 州どうしの取引
 // → 仕事の移り変わり・失業 → 暮らしの満足 → 人口（生まれる・亡くなる・引っこす）。二水の洞のにぎわいと、9人の一日もここから。
 // ユーザーの町は、あとで towns として足せるようにしてある（いまは空）。
@@ -22,7 +22,8 @@
     var real = new Date(EPOCH + d * DAY + 9 * 36e5), y2 = MON[i] <= 3 ? y + 1 : y;
     return { y: y2, school: y, m: MON[i], d: n + 1, doy: (((d % 365) + 365) % 365 + 90) % 365, wd: real.getUTCDay(), label: '新暦' + y2 + '年' + MON[i] + '月' + (n + 1) + '日（' + WK[real.getUTCDay()] + '）' };
   }
-  function today(now) { return Math.floor(((now || Date.now()) - EPOCH) / DAY); }
+  var SHIFT = 3650; // 2026-10-25 に、世界を10年先へ進めた
+  function today(now) { return Math.floor(((now || Date.now()) - EPOCH) / DAY) + SHIFT; }
 
   // 産業：[キー, 名前, 作るもの, 1人1日あたり, 色]
   var SECT = [['a', '農業', 'food', 11.5, '#7cb342'], ['f', '漁業', 'food', 9.5, '#26a6c9'], ['fo', '林業', 'mat', 7, '#2e7d32'], ['mi', '採掘（灯石・石）', 'mat', 9, '#8d6e63'],
@@ -327,6 +328,7 @@
   function people(d, s, slot) {
     var w = wdate(d), wx = climate(0, d), r = rng(d * 31337 + 3), sch = schoolDay(w), cal = CAL.filter(function (c) { return c[0] === w.m && c[1] === w.d; })[0];
     var p1 = w.school === 312 && w.m >= 5 && w.m <= 8, bad = /storm|typhoon/.test(wx.k);
+    if (w.school >= 315) return adults(d, s, slot, w, wx, r, cal, bad);
     return CH.map(function (c) {
       var at, what;
       if (cal && cal[2] === '灯籠祭り' && slot !== 'morning') { at = '岬口洞'; what = '灯籠祭りで、灯籠を川に流す'; }
@@ -341,6 +343,33 @@
       return { name: c[0], at: at, what: what };
     });
   }
+  // 卒業したあとの9人（新暦315年4月〜）。[名前, 家の洞, 仕事, 仕事場の洞, 仕事中のようす, 休みの日]
+  var ADULT = [
+    ['アカリ', '渡口洞', '川守隊の隊員', '川守洞', ['川べりの見回り', '新人の訓練を見る', '舟で川の流れを調べる'], '演習場で走りこみ'],
+    ['シオン', '松原洞', '九条家の当主', '松原洞', ['屋敷で町の人の相談を聞く', '書庫で古い記録を読む', '役所で会議'], '書庫の窓辺で本を読む'],
+    ['ツバサ', '渡口洞', '渡し舟の船頭（マツじいさんのあとつぎ）', '渡口洞', ['渡し舟で人を運ぶ', '舟の手入れ', '茶屋で次の客を待つ'], 'アカリと川べりを歩く'],
+    ['シズク', '森下洞', '北の森の森番', '森下洞', ['森の見回り', '鳥の数を数える', '倒れた木を片づける'], '森で鳥を見る'],
+    ['カイ', '岬口洞', '灯台館の技師', '岬口洞', ['灯台の灯りの手入れ', '灯石ランプを直す', '窓ガラスを入れかえる'], '灯台の上で海を見る'],
+    ['ミナト', '米市洞', '開拓地への運び屋', '川尾洞', ['風島への荷を積む', '倉庫で荷を数える', '市場で品を仕入れる'], '近道をさがして町を歩く'],
+    ['リク', '文山洞', '二水学園の魔法の先生', '文山洞', ['授業中', '生徒の練習を見る', '職員室でテストの丸つけ'], '演習場でひとりで練習'],
+    ['ルイ', '文山洞', '学園図書館の司書', '文山洞', ['本の貸し出し', '古い本の修理', '天窓の下で調べもの'], '図書館で調べもの'],
+    ['セイラ', '川尾洞', '船着き場の茶屋の主人', '川尾洞', ['茶屋でお茶をいれる', '新しい茶葉をためす', '常連さんの話を聞く'], '茶屋の裏で花の手入れ']
+  ];
+  function adults(d, s, slot, w, wx, r, cal, bad) {
+    var off = w.wd === 0 || w.wd === 6;
+    return ADULT.map(function (a) {
+      var at = a[1], what;
+      if (cal && cal[2] === '灯籠祭り' && slot !== 'morning') { at = '岬口洞'; what = '灯籠祭りで、9人そろって灯籠を流す'; }
+      else if (slot === 'night') what = pick(r, ['家で夕ごはん', 'ねる前に少し本を読む', '明日の準備', 'もう寝ている', '昔の仲間と手紙のやりとり']);
+      else if (a[0] === 'ツバサ' && !s.ferry && slot !== 'night') { at = '渡口洞'; what = '川の水が多いので、渡し舟はお休み'; }
+      else if (a[0] === 'アカリ' && s.flood > 50) { at = '川守洞'; what = '大雨で川の見張り台に立っている'; }
+      else if (bad && a[0] !== 'カイ') what = WX[wx.k][0] + 'なので家にいる';
+      else if (off) { at = slot === 'morning' ? a[1] : a[3]; what = slot === 'morning' ? '休みの日の朝。ゆっくり起きる' : a[5]; }
+      else if (slot === 'morning') what = a[2] + 'の仕事へ向かう';
+      else { at = a[3]; what = pick(r, a[4]); }
+      return { name: a[0], at: at, what: what, job: a[2] };
+    });
+  }
   function slotOf(now) { var h = new Date((now || Date.now()) + 9 * 36e5).getUTCHours(); return h < 6 || h >= 20 ? 'night' : h < 9 ? 'morning' : h < 15 ? 'day' : 'after'; }
 
   function snap(s) {
@@ -351,8 +380,10 @@
   // d 日目まで計算して、その日の様子と、さかのぼった記録（keep 日分）を返す
   function run(d, keep) {
     keep = keep || 30;
-    var s = init(), hist = [], log = [];
-    for (var i = 0; i <= Math.max(0, d); i++) {
+    var s = init(), hist = [], log = [], i0 = 0, CP = root.TRI_SIM_CP;
+    // 途中から計算する：checkpoint.js に、ある日の世界をそのまま保存してある（毎回0日目から計算すると重いため）
+    if (CP && CP.d < d - keep + 1) { s = JSON.parse(JSON.stringify(CP.s)); i0 = CP.d + 1; }
+    for (var i = i0; i <= Math.max(0, d); i++) {
       var ev = step(s, i);
       if (i > d - keep) { hist.push(Object.assign({ d: i }, snap(s))); log.push({ d: i, date: wdate(i).label, ev: ev }); }
     }

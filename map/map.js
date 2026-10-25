@@ -61,7 +61,7 @@
   // 地形のある範囲では、本物の海岸線（地形データ）を使い、粗い世界地図の陸はかくす
   var mk = defs.append('mask').attr('id', 'nobox'); mk.append('rect').attr('x', -1e4).attr('y', -1e4).attr('width', 3e4).attr('height', 3e4).attr('fill', '#fff'); mk.append('path').attr('id', 'boxP').attr('fill', '#000');
   var gOcean = svg.append('path').attr('class', 'ocean'), gGrat = svg.append('path').attr('class', 'grat'), gSea = svg.append('g').attr('class', 'ctl-sea'), gLand = svg.append('path').attr('class', 'land');
-  var gRel = svg.append('g').attr('class', 'relief'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gNet = svg.append('g').attr('class', 'net');
+  var gRel = svg.append('g').attr('class', 'relief'), gTile = svg.append('g').attr('class', 'tiles'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gNet = svg.append('g').attr('class', 'net');
   var gCiv = svg.append('g'), gRim = svg.append('path').attr('class', 'rim'), gCol = svg.append('g'), gLab = svg.append('g'), gWx = svg.append('g').attr('class', 'wxl'), gPin = svg.append('g'), gScale = svg.append('g').attr('class', 'scale');
 
   // ---- 本物の地形（assets/data/relief.js）----
@@ -73,6 +73,34 @@
     TRI_RELIEF.l.map(function (b) { return { cl: 'rl', g: { type: 'MultiPolygon', coordinates: dec(b[1]) } }; })) : [];
   var BOX = poly(110.02, 22.02, 144.98, 49.98);
   gRel.selectAll('path').data(REL).enter().append('path').attr('class', function (d) { return d.cl; }).style('fill', function (d) { return d.col || null; }).style('fill-opacity', function (d) { return d.op || null; });
+
+  // ---- くわしい地形の画像（assets/terrain/z/x/y.jpg）：東アジアの3つの国のあたり、約0.5km単位 ----
+  var TERR = { 6: [53, 55, 23, 26], 7: [107, 111, 47, 52], 8: [214, 223, 94, 104] };
+  function tlon(x, z) { return x / Math.pow(2, z) * 360 - 180; }
+  function tlat(y, z) { return Math.atan(Math.sinh(Math.PI * (1 - 2 * y / Math.pow(2, z)))) * 180 / Math.PI; }
+  var TB = [tlon(TERR[8][0], 8), tlat(TERR[8][3] + 1, 8), tlon(TERR[8][1] + 1, 8), tlat(TERR[8][2], 8)]; // 画像のある範囲 [西,南,東,北]
+  function inTB(ll) { return ll && ll[0] > TB[0] && ll[0] < TB[2] && ll[1] > TB[1] && ll[1] < TB[3]; }
+  function drawTiles(pk) {
+    var lat = -rot[1], zr = Math.log(40075 * Math.cos(lat * Math.PI / 180) * pk / 256) / Math.LN2, list = [];
+    var on = LY.relief && zr > 5.2;
+    if (on) {
+      var z = Math.max(6, Math.min(8, Math.ceil(zr - .2))), R = TERR[z];
+      for (var x = R[0]; x <= R[1]; x++) for (var y = R[2]; y <= R[3]; y++) {
+        var nw = [tlon(x, z), tlat(y, z)], ne = [tlon(x + 1, z), tlat(y, z)], sw = [tlon(x, z), tlat(y + 1, z)], se = [tlon(x + 1, z), tlat(y + 1, z)];
+        if (![nw, ne, sw, se].every(visible)) continue;
+        var a = proj(nw), b = proj(ne), c = proj(sw), d = proj(se), xs = [a[0], b[0], c[0], d[0]], ys = [a[1], b[1], c[1], d[1]];
+        if (Math.max.apply(0, xs) < 0 || Math.min.apply(0, xs) > W || Math.max.apply(0, ys) < 0 || Math.min.apply(0, ys) > H) continue;
+        list.push({ id: z + '/' + x + '/' + y, m: [(b[0] - a[0]) / 256, (b[1] - a[1]) / 256, (c[0] - a[0]) / 256, (c[1] - a[1]) / 256, a[0], a[1]] });
+      }
+    }
+    var im = gTile.selectAll('image').data(list, function (d) { return d.id; });
+    im.exit().remove();
+    im.enter().append('image').attr('width', 257).attr('height', 257).attr('preserveAspectRatio', 'none').attr('href', function (d) { return '../assets/terrain/' + d.id + '.jpg'; })
+      .merge(im).attr('transform', function (d) { return 'matrix(' + d.m.map(function (v) { return v.toFixed(4); }).join(',') + ')'; });
+    // 画面がぜんぶ画像でおおわれたら、粗い地形は描かない（軽くする）
+    var cover = list.length && [[0, 0], [W, 0], [0, H], [W, H]].every(function (q) { return inTB(proj.invert(q)); });
+    return cover;
+  }
 
   // ---- 交通網：州の中心の町をむすぶ道・鉄道・航路・港 ----
   function town(i) { var nm = PROV[i][6], pl = PLACES.filter(function (x) { return x.name === nm; })[0]; return pl ? pl.ll : PROV[i].c; }
@@ -104,8 +132,9 @@
     gLand.attr('d', path(land)).attr('mask', LY.relief && REL.length ? 'url(#nobox)' : null);
     d3.select('#boxP').attr('d', LY.relief && REL.length ? path(BOX) : null);
     d3.select('#landclipP').attr('d', LY.relief && REL.length ? path(REL[0].g) : path(land));
-    gRel.style('display', LY.relief ? null : 'none');
-    if (LY.relief) gRel.selectAll('path').each(function (d) { var sh = d.cl !== 'rb'; this.style.display = FAST && sh ? 'none' : ''; if (!(FAST && sh)) this.setAttribute('d', path(d.g) || ''); }); // 動かしている間は陰影を休む
+    var covered = drawTiles(pk);
+    gRel.style('display', LY.relief && !covered ? null : 'none');
+    if (LY.relief && !covered) gRel.selectAll('path').each(function (d) { var sh = d.cl !== 'rb'; this.style.display = FAST && sh ? 'none' : ''; if (!(FAST && sh)) this.setAttribute('d', path(d.g) || ''); }); // 動かしている間は陰影を休む
     drawCtl();
     // 州
     var S = (LY.mood || LY.wx) && simData(), SU = LY.use && simData();
@@ -114,7 +143,7 @@
       .merge(pv).attr('d', function (d) { return path(d.f); }).classed('sel', function (d) { return d === selP; })
       .style('stroke-width', LY.prov && k >= 3.5 ? null : '0')
       .style('fill', function (d) { if (LY.use && SU) return useOf(PROV.indexOf(d))[2]; if (!LY.mood || !S) return null; var m = S.mood[PROV.indexOf(d)]; return d3.interpolateRdYlGn(Math.max(0, Math.min(1, (m - 35) / 45))); })
-      .style('fill-opacity', LY.mood || LY.use ? .7 : LY.ctl ? .55 : LY.relief ? .16 : (pk > 40 ? .12 : null));
+      .style('fill-opacity', LY.mood || LY.use ? .7 : LY.ctl ? .55 : LY.relief ? (pk > 1.5 ? .08 : .16) : (pk > 40 ? .12 : null));
     drawNet(pk);
     // 国・州の名前（町が見えるほど近いと消す）
     var labs = [];
