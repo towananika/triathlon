@@ -33,8 +33,8 @@ svg{display:block;width:100%;height:auto}svg text{font-family:inherit}
   var Y0=34,K=6,AGE=function(a){return Y0+a*K},COL={r:'var(--r)',g:'var(--g)',b:'var(--b)',w:'var(--tq)',x:'var(--ghost)'};
   // [年齢, 色, できごと, リンク]
   var JOB={'アカリ':'川守隊の隊員','シオン':'九条家の当主','ツバサ':'渡し舟の船頭','シズク':'北の森の森番','カイ':'灯台館の技師','ミナト':'開拓地への運び屋','リク':'学園の魔法の先生','ルイ':'学園図書館の司書','セイラ':'船着き場の茶屋の主人'};
-  var EV={'アカリ':[[15,'r','川守隊の試験で、一発いった（第1話）','../stories/v.html?id=1'],[16.8,'b','ツバサに「ごめん」と言えた（第1話）','../stories/v.html?id=1']],
-          'ツバサ':[[15,'b','砂の上の、青い光（第2話）','../stories/v.html?id=2'],[16.8,'r','舟の上で、知らない赤い光（第2話）','../stories/v.html?id=2']]};
+  var EV={'アカリ':[[15,'r','川守隊の試験で、一発いった（第1話）','../stories/v.html?id=1'],[15,'b','ツバサに「ごめん」と言えた（第1話）','../stories/v.html?id=1',1.8]],
+          'ツバサ':[[15,'b','砂の上の、青い光（第2話）','../stories/v.html?id=2'],[15,'r','舟の上で、知らない赤い光（第2話）','../stories/v.html?id=2',1.8]]};
   var CAST=Object.keys(JOB),svg=document.getElementById('map'),pop=document.getElementById('pop'),NS='http://www.w3.org/2000/svg';
   function el(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -48,7 +48,7 @@ svg{display:block;width:100%;height:auto}svg text{font-family:inherit}
     if(EV[n])ev.shift();
     ev.forEach(function(e){
       var g=el('g',{'class':'dot',tabindex:0,role:'button','aria-label':n+' '+Math.floor(e[0])+'歳 '+e[2]});
-      el('circle',{cx:x,cy:AGE(e[0]),r:e[1]==='x'?4.5:6.5,fill:COL[e[1]],stroke:'var(--card)','stroke-width':2},g);
+      el('circle',{cx:x,cy:AGE(e[0]+(e[4]||0)),r:e[1]==='x'?4.5:6.5,fill:COL[e[1]],stroke:'var(--card)','stroke-width':2},g);
       function show(){pop.innerHTML='<b>'+esc(n)+'　'+Math.floor(e[0])+'歳</b>'+esc(e[2])+(e[3]?'　<a href="'+e[3]+'">読む・見る →</a>':'')}
       g.addEventListener('click',show);g.addEventListener('keydown',function(k){if(k.key==='Enter'||k.key===' '){k.preventDefault();show()}});
     });
