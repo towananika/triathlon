@@ -42,7 +42,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 .rain line{animation:fall .55s linear infinite}.snowf circle{animation:snow 6s linear infinite}.cl{animation:drift 90s linear infinite}.fl{animation:flash 7s infinite}.star{animation:tw 3s ease-in-out infinite}.pet{animation:snow 9s linear infinite}
 @media (prefers-reduced-motion:reduce){.rain line,.snowf circle,.cl,.fl,.star,.pet{animation:none}}
 </style></head><body>
-<script src="../site-nav.js?v=0.35"></script>
+<script src="../site-nav.js?v=0.36"></script>
 <main>
 <p class="kick">TODAY IN THE WORLD</p>
 <div class="sky" id="sky"><svg id="scene" viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice" role="img" aria-label="今日の空"></svg><div class="ov"><div class="d" id="o-d"></div><div class="t" id="o-t"></div><div class="w" id="o-w"></div><div class="s" id="o-s"></div></div></div>
@@ -70,11 +70,12 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 <details><summary>🏛️ 国の政治と守り</summary><div class="nat" id="pol"></div></details>
 <details><summary>🤝 国どうしの関係</summary><div class="rel" id="rel"></div></details>
 <details><summary>💰 経済（仕事・物の値段・お金）</summary><div id="eco"></div></details>
+<details><summary>🎎 文化（食べ物・祭り・ことば・信仰・芸術）</summary><div class="nat" id="cul"></div></details>
 <details><summary>🌡️ 各地の気候</summary><div class="scroll" id="cli"></div></details>
 <p class="note">この世界は、毎日少しずつ動いています。現実の1日が、世界の1日です（2026年10月25日＝新暦312年4月1日）。数字は物語のための目安です。</p>
 </main>
 <script src="../cast/cast-data.js?v=0.19"></script>
-<script src="world-sim.js?v=0.35"></script>
+<script src="world-sim.js?v=0.36"></script>
 <script>
 (function () {
   'use strict';
@@ -173,6 +174,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
     expo(st);
     $('dong').innerHTML = st.dong.slice().sort(function (a, b) { return b.busy - a.busy; }).map(function (g) { return '<div><b>' + esc(g.name) + '</b>' + esc(g.ku) + '・' + esc(g.use) + '<div class="bar"><i style="width:' + Math.min(100, g.busy) + '%"></i></div></div>'; }).join('');
     details(st);
+    culture(st);
   }
   function people() {
     var sl = slot;
@@ -197,6 +199,25 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
     $('exp').innerHTML = h.join('') + '<p class="note" style="grid-column:1/-1">まだだれも知らない土地には、それぞれに暮らす人びとがいるかもしれません。</p>';
   }
   function f1(x) { return (+x).toFixed(1); }
+  // 文化：[食べ物, 祭り, ことば, 信仰, 芸術・遊び, 服]
+  var CUL = [
+    ['川魚の塩焼き、米、焼きそばパン', '灯籠祭り（8月）、新年の灯流し', '二水ことば。川にまつわる言い回しが多い', '川の神と、灯台の灯り。強い信仰より、くらしの習わし', '灯籠づくり、渡し舟の舟歌、三種リレー', '動きやすい短い上着。雨の日は油紙の笠'],
+    ['山菜と麦の粥、干し肉、甘い灯石茶', '星見の夜（冬至）、議長がわりの式（4月）', '文光ことば。学者の言葉が多く、ていねい', '光と学びを尊ぶ。神より「理（ことわり）」を信じる', '天体の図、書道、灯石の細工', '長い外套と、学位を示す色の帯'],
+    ['魚介の煮込み、柑橘、白い米の菓子', '鐘の祭り（朝夕の鐘が百回鳴る日）、巡礼の月', '改神ことば。祈りの言葉がそのまま挨拶になる', '名前のない声を神の声と信じる人が多い', '鐘の音楽、白い石の彫刻、聖歌', '白い衣と、港の人は青い腰帯']
+  ];
+  var CULV = [
+    ['粟と大豆の料理、麺', '収穫の大祭', '古い文字と暦をもつ', '祖先をまつる', '焼き物、詩', '絹の重ね着'],
+    ['乳と肉、木の実', '馬くらべの祭り', '文字はなく、歌で伝える', '森と空の精霊', '弓の技、刺繍', '毛皮と革'],
+    ['米と味噌、海藻', '火の祭り（鉄をきたえる日）', '山ごとに少しずつちがう', '山と火の神', '刀鍛冶、木の舞台', '藍染めの衣'],
+    ['芋と魚、ココナツ', '星渡りの祭り', '海の民のことば。星の名前が豊か', '海と星', '舟づくり、太鼓', '軽い布と貝の飾り']
+  ];
+  var CK = ['🍚 食べ物', '🎆 祭り', '🗣️ ことば', '🙏 信仰', '🎨 芸術・遊び', '👘 服'];
+  function culture(st) {
+    var c = st.nat.map(function (n, i) { return '<div style="--c:' + NCOL[i] + '"><h3>' + n.name + '</h3><dl class="kv">' + CUL[i].map(function (x, j) { return '<dt>' + CK[j] + '</dt><dd>' + x + '</dd>'; }).join('') + '</dl></div>'; });
+    st.civ.forEach(function (v, i) { if (!v.known) return; var C = S.CIVS[i]; c.push('<div style="--c:' + C[6] + '"><h3>' + C[0] + '</h3><p>' + S.wdate(v.day).y + '年に出会った</p><dl class="kv">' + CULV[i].map(function (x, j) { return '<dt>' + CK[j] + '</dt><dd>' + x + '</dd>'; }).join('') + '</dl>' + (v.trade ? '<p>行き来がはじまり、市場に「' + CULV[i][0].split('、')[0] + '」がならびはじめた</p>' : '') + '</div>'); });
+    if (!st.civ.some(function (v) { return v.known; })) c.push('<div style="--c:#bbb"><h3>？</h3><p>まだ出会っていない人びとの文化は、出会ってから少しずつわかります。</p></div>');
+    $('cul').innerHTML = c.join('');
+  }
   function future(Y) {
     var D = TODAY + Y * 365, x = S.run(D, D - TODAY + 1), st = x.state, h0 = x.hist[0], h1 = x.hist[x.hist.length - 1];
     var pop0 = h0.prov.reduce(function (a, p) { return a + p.pop; }, 0), pop1 = h1.prov.reduce(function (a, p) { return a + p.pop; }, 0), cp = st.col.reduce(function (a, c) { return a + c.pop; }, 0);

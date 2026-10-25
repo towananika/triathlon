@@ -359,6 +359,6 @@
     return { day: d, date: wdate(d), state: s, hist: hist, log: log };
   }
 
-  root.TRI_SIM = { SITES: SITES, CIVS: CIVS, NATS: NATS, CHAIRS: CHAIRS, EPOCH: EPOCH, today: today, wdate: wdate, climate: climate, WX: WX, run: run, people: people, slotOf: slotOf, PROV: PROV, SECT: SECT, DONG: DONG, CH: CH };
+  root.TRI_SIM = { LINK: LINK, SITES: SITES, CIVS: CIVS, NATS: NATS, CHAIRS: CHAIRS, EPOCH: EPOCH, today: today, wdate: wdate, climate: climate, WX: WX, run: run, people: people, slotOf: slotOf, PROV: PROV, SECT: SECT, DONG: DONG, CH: CH };
   if (typeof module === 'object' && module.exports) module.exports = root.TRI_SIM;
 })(typeof window !== 'undefined' ? window : globalThis);
