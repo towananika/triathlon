@@ -1,0 +1,205 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>今日の世界 | TRIATHLON</title><meta name="description" content="TRIATHLON の世界は、毎日動いています。今日の空、出来事、9人がいまどこで何をしているか。"><style>
+body{margin:0;background:#fbf8f2;color:#2a2622;font:15px/1.7 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{max-width:980px;margin:0 auto;padding:14px 14px 56px}
+.kick{color:#9a7630;font-size:12px;margin:0;letter-spacing:.08em}h2{font-size:19px;margin:28px 0 8px}
+.sky{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:16/8;min-height:260px;box-shadow:0 8px 24px rgba(40,50,70,.18);background:#9fd3f0}
+.sky svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.sky .ov{position:absolute;left:18px;top:14px;right:18px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.35);pointer-events:none}
+.sky .ov .d{font-size:14px;opacity:.95}.sky .ov .w{font-size:20px;font-weight:700;margin-top:2px}.sky .ov .t{font-size:56px;font-weight:300;line-height:1.05}
+.sky .ov .s{font-size:13px;opacity:.95}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 0}
+.ctl button,.ctl select{border:1px solid #d7cbb4;background:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-size:14px;color:#2a2622;cursor:pointer}
+.ctl button[disabled]{opacity:.35;cursor:default}
+.fc{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}
+.fc div{background:#fff;border:1px solid #eadfcd;border-radius:12px;text-align:center;padding:6px 2px;font-size:12px;color:#7a6f63}.fc b{display:block;font-size:22px;line-height:1.3}.fc span{color:#2a2622;font-weight:700;font-size:13px}
+.fc div.on{border-color:#00677a;box-shadow:inset 0 0 0 1px #00677a}
+.ev{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ev li{background:#fff;border:1px solid #eadfcd;border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:flex-start}
+.ev i{font-style:normal;font-size:20px}.ev small{display:block;color:#7a6f63;font-size:12px}
+.slots{display:flex;gap:6px;margin:0 0 10px}.slots button{border:1px solid #d7cbb4;background:#fff;border-radius:999px;padding:5px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:#2a2622}.slots button[aria-pressed=true]{background:#2a2622;color:#fff;border-color:#2a2622}
+.nine{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.nine div{background:#fff;border:1px solid #eadfcd;border-left:5px solid var(--c,#9a7630);border-radius:12px;padding:8px 12px}.nine b{font-size:16px}.nine small{color:#7a6f63;font-size:12px;margin-left:6px}.nine p{margin:2px 0 0;font-size:14px}
+.R{--c:#d94b4b}.G{--c:#2e9b5f}.B{--c:#2f6fd6}
+.dong{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.dong div{background:#fff;border:1px solid #eadfcd;border-radius:10px;padding:6px 10px;font-size:13px}.dong b{display:block;font-size:14px}.bar{height:6px;border-radius:3px;background:#efe7d8;margin-top:4px;overflow:hidden}.bar i{display:block;height:100%;background:#00677a}
+details{background:#fff;border:1px solid #eadfcd;border-radius:14px;padding:4px 14px;margin-top:10px}
+summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
+.nat{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:4px 0 12px}
+.nat div{border:1px solid #eadfcd;border-top:4px solid var(--c);border-radius:10px;padding:8px 12px;font-size:13px}.nat h3{margin:0;font-size:16px;color:var(--c)}.nat p{margin:2px 0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:0 10px}.kv dt{color:#7a6f63}.kv dd{margin:0;font-weight:700}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0 12px}.tbl th,.tbl td{padding:5px 6px;border-bottom:1px solid #f0e8da;text-align:right;white-space:nowrap}.tbl th:first-child,.tbl td:first-child{text-align:left}.tbl th{color:#7a6f63;font-weight:400}
+.scroll{overflow-x:auto}
+.rel{display:grid;gap:8px;margin:4px 0 12px}.rel div{font-size:14px}.rel .bar{height:8px;position:relative;background:linear-gradient(90deg,#f6d1cc,#efe7d8 50%,#cfe8da)}.rel .bar i{position:absolute;top:-3px;width:4px;height:14px;background:#2a2622;border-radius:2px}
+.sect{display:flex;height:16px;border-radius:8px;overflow:hidden;margin:6px 0}.sect i{display:block;height:100%}
+.leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px}.leg span{display:inline-flex;gap:4px;align-items:center}.leg i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.note{font-size:12px;color:#7a6f63}
+@media (max-width:600px){.sky{aspect-ratio:auto;height:300px}.sky .ov .t{font-size:46px}.fc{grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}.fc b{font-size:18px}.fc div{font-size:11px}}
+@keyframes fall{to{transform:translateY(420px)}}@keyframes snow{to{transform:translate(30px,420px)}}@keyframes drift{to{transform:translateX(900px)}}@keyframes flash{0%,92%,100%{opacity:0}94%{opacity:.85}96%{opacity:.2}97%{opacity:.7}}@keyframes tw{50%{opacity:.25}}@keyframes spin{to{transform:rotate(360deg)}}
+.rain line{animation:fall .55s linear infinite}.snowf circle{animation:snow 6s linear infinite}.cl{animation:drift 90s linear infinite}.fl{animation:flash 7s infinite}.star{animation:tw 3s ease-in-out infinite}.pet{animation:snow 9s linear infinite}
+@media (prefers-reduced-motion:reduce){.rain line,.snowf circle,.cl,.fl,.star,.pet{animation:none}}
+</style></head><body>
+<script src="../site-nav.js?v=0.33"></script>
+<main>
+<p class="kick">TODAY IN THE WORLD</p>
+<div class="sky" id="sky"><svg id="scene" viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice" role="img" aria-label="今日の空"></svg><div class="ov"><div class="d" id="o-d"></div><div class="t" id="o-t"></div><div class="w" id="o-w"></div><div class="s" id="o-s"></div></div></div>
+<div class="ctl"><button type="button" id="prev" aria-label="前の日">◀</button><button type="button" id="today">今日</button><button type="button" id="next" aria-label="次の日">▶</button><select id="where" aria-label="どこの空"></select></div>
+<div class="fc" id="fc" aria-label="7日間の天気"></div>
+
+<h2>きょうの出来事</h2>
+<ul class="ev" id="ev"></ul>
+
+<h2>9人は、いま</h2>
+<div class="slots" id="slots"><button type="button" data-s="morning">朝</button><button type="button" data-s="day">昼</button><button type="button" data-s="after">放課後</button><button type="button" data-s="night">夜</button></div>
+<div class="nine" id="nine"></div>
+
+<h2>二水の町のにぎわい</h2>
+<div class="dong" id="dong"></div>
+
+<h2>もっとくわしく</h2>
+<details><summary>🏛️ 国の政治と守り</summary><div class="nat" id="pol"></div></details>
+<details><summary>🤝 国どうしの関係</summary><div class="rel" id="rel"></div></details>
+<details><summary>💰 経済（仕事・物の値段・お金）</summary><div id="eco"></div></details>
+<details><summary>🌡️ 各地の気候</summary><div class="scroll" id="cli"></div></details>
+<p class="note">この世界は、毎日少しずつ動いています。現実の1日が、世界の1日です（2026年10月25日＝新暦312年4月1日）。数字は物語のための目安です。</p>
+</main>
+<script src="../cast/cast-data.js?v=0.19"></script>
+<script src="world-sim.js?v=0.33"></script>
+<script>
+(function () {
+  'use strict';
+  var S = window.TRI_SIM, $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var TODAY = S.today(), day = TODAY, pi = 0, slot = S.slotOf(), RUN = null;
+  var NCOL = ['#2f7d4a', '#4c56a8', '#a86412'], SLOT = { morning: '朝', day: '昼', after: '放課後', night: '夜' };
+  $('where').innerHTML = S.PROV.map(function (p, i) { return '<option value="' + i + '">' + p[0] + '（' + p[1] + '）の空</option>'; }).join('');
+
+  // ---- 空の絵 ----
+  function rnd(seed) { var x = seed >>> 0; return function () { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; }
+  function mix(a, b, t) { var p = function (h, i) { return parseInt(h.slice(1 + i * 2, 3 + i * 2), 16); }; return '#' + [0, 1, 2].map(function (i) { return ('0' + Math.round(p(a, i) + (p(b, i) - p(a, i)) * t).toString(16)).slice(-2); }).join(''); }
+  var SKY = { morning: ['#7fb6e6', '#ffd9a8'], day: ['#3d8fd8', '#bfe3fb'], after: ['#5b7fc0', '#f7b27a'], night: ['#0b1533', '#2c3d72'] };
+  var GREY = { cloud: .45, rain: .62, storm: .78, snow: .4, typhoon: .85, sun: 0 };
+  function scene(wx, sl, m, seed) {
+    var r = rnd(seed), k = wx.k, night = sl === 'night', g = GREY[k], gc = night ? '#1c2230' : k === 'snow' ? '#d5dde6' : '#7e8a96';
+    var top = mix(SKY[sl][0], gc, g), bot = mix(SKY[sl][1], gc, g * .9), h = '';
+    h += '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + top + '"/><stop offset="1" stop-color="' + bot + '"/></linearGradient>' +
+      '<radialGradient id="sg"><stop offset="0" stop-color="#fff8d8"/><stop offset=".35" stop-color="#ffe9a0" stop-opacity=".9"/><stop offset="1" stop-color="#ffe9a0" stop-opacity="0"/></radialGradient>' +
+      '<linearGradient id="rv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + mix(bot, '#2b6f86', .45) + '"/><stop offset="1" stop-color="' + mix(top, '#1d4e63', .6) + '"/></linearGradient></defs>';
+    h += '<rect width="800" height="400" fill="url(#g)"/>';
+    // 星・月・太陽
+    if (night && g < .5) { for (var i = 0; i < 60; i++) h += '<circle class="star" style="animation-delay:' + (r() * 3).toFixed(2) + 's" cx="' + (r() * 800).toFixed(0) + '" cy="' + (r() * 200).toFixed(0) + '" r="' + (r() * 1.3 + .4).toFixed(1) + '" fill="#fff"/>'; }
+    if (g < .5) {
+      var sx = { morning: 150, day: 560, after: 660, night: 620 }[sl], sy = { morning: 190, day: 80, after: 170, night: 90 }[sl];
+      if (night) h += '<circle cx="' + sx + '" cy="' + sy + '" r="60" fill="#fff" opacity=".08"/><circle cx="' + sx + '" cy="' + sy + '" r="24" fill="#f4f1de"/><circle cx="' + (sx + 10) + '" cy="' + (sy - 6) + '" r="21" fill="' + top + '"/>';
+      else h += '<circle cx="' + sx + '" cy="' + sy + '" r="110" fill="url(#sg)"/><circle cx="' + sx + '" cy="' + sy + '" r="30" fill="' + (sl === 'day' ? '#fff6cf' : '#ffd88a') + '"/>';
+    }
+    // 雲
+    var nc = { sun: 3, cloud: 9, rain: 12, storm: 14, snow: 10, typhoon: 16 }[k], cf = night ? mix('#3a4560', top, .2) : k === 'sun' ? '#ffffff' : mix('#eef1f4', gc, g * .8);
+    for (var j = 0; j < nc; j++) {
+      var cx = r() * 900 - 100, cy = 20 + r() * (k === 'sun' ? 120 : 160), s = .7 + r() * (k === 'sun' ? .6 : 1.4), op = k === 'sun' ? .85 : .9;
+      h += '<g class="cl" style="animation-duration:' + (60 + r() * 80).toFixed(0) + 's;animation-delay:-' + (r() * 90).toFixed(0) + 's"><g transform="translate(' + (cx - 900).toFixed(0) + ',' + cy.toFixed(0) + ') scale(' + s.toFixed(2) + ')" fill="' + cf + '" opacity="' + op + '"><ellipse cx="60" cy="30" rx="60" ry="22"/><ellipse cx="35" cy="20" rx="30" ry="22"/><ellipse cx="75" cy="12" rx="34" ry="26"/></g></g>';
+    }
+    if (g >= .6) h += '<rect width="800" height="400" fill="' + gc + '" opacity="' + ((g - .5) * .5).toFixed(2) + '"/>';
+    // 遠くの山（北の森）
+    var mc = mix(night ? '#1d2840' : '#6f8fa0', bot, .35);
+    h += '<path d="M0 255L60 215L120 240L190 190L260 235L330 200L420 245L500 205L580 240L660 195L740 230L800 210V300H0Z" fill="' + mc + '" opacity=".75"/>';
+    // 川
+    h += '<path d="M0 300Q200 285 400 300T800 298V400H0Z" fill="url(#rv)"/>';
+    for (var w = 0; w < 18; w++) h += '<path d="M' + (r() * 800).toFixed(0) + ' ' + (310 + r() * 80).toFixed(0) + 'h' + (14 + r() * 26).toFixed(0) + '" stroke="#fff" stroke-opacity="' + (night ? .15 : .35) + '" stroke-width="1.5" stroke-linecap="round"/>';
+    // 町（建物・灯台・橋）
+    var bc = night ? '#141a28' : mix('#4c5866', bot, .25), lit = night || sl === 'after' && g > .4;
+    h += '<path d="M0 298L40 286L90 292L110 300Z" fill="' + bc + '"/>';
+    h += '<g fill="' + bc + '"><rect x="58" y="214" width="16" height="76"/><path d="M54 214h24l-4-10h-16z"/><rect x="61" y="196" width="10" height="9"/><path d="M58 196l8-9 8 9z"/></g>';
+    var lamp = night || g >= .6;
+    if (lamp) h += '<path d="M66 200L-20 170L-20 232Z" fill="#fff3b0" opacity=".25"/><circle cx="66" cy="200" r="5" fill="#fff3b0"/>';
+    var x = 150;
+    while (x < 760) {
+      var bw = 18 + r() * 34, bh = 22 + r() * (x > 380 && x < 560 ? 90 : 50);
+      h += '<rect x="' + x.toFixed(0) + '" y="' + (296 - bh).toFixed(0) + '" width="' + bw.toFixed(0) + '" height="' + bh.toFixed(0) + '" fill="' + bc + '"/>';
+      if (lit) for (var wy = 296 - bh + 6; wy < 290; wy += 9) for (var wx2 = x + 4; wx2 < x + bw - 5; wx2 += 8) if (r() < .45) h += '<rect x="' + wx2.toFixed(0) + '" y="' + wy.toFixed(0) + '" width="3" height="4" fill="#ffd779" opacity=".9"/>';
+      x += bw + 2 + r() * 6;
+    }
+    h += '<g stroke="' + bc + '" stroke-width="3" fill="none"><path d="M120 300L240 300"/><path d="M120 300Q150 282 180 300Q210 282 240 300"/></g>';
+    // 季節（春は花びら、秋は葉）
+    if ((k === 'sun' || k === 'cloud') && !night && (m >= 3 && m <= 4 || m >= 10 && m <= 11)) {
+      var pc = m <= 4 ? '#f7c6d6' : '#e08a3c';
+      for (var p = 0; p < 26; p++) h += '<ellipse class="pet" style="animation-delay:-' + (r() * 9).toFixed(1) + 's;animation-duration:' + (7 + r() * 5).toFixed(1) + 's" cx="' + (r() * 800).toFixed(0) + '" cy="' + (-r() * 300).toFixed(0) + '" rx="3.5" ry="2" fill="' + pc + '"/>';
+    }
+    // 雨・雪・雷
+    if (k === 'rain' || k === 'storm' || k === 'typhoon') {
+      var n = k === 'rain' ? 90 : k === 'storm' ? 160 : 220, sl2 = k === 'typhoon' ? 18 : k === 'storm' ? 8 : 4;
+      h += '<g class="rain" stroke="' + (night ? '#9fb2d0' : '#e8f0f8') + '" stroke-opacity=".7" stroke-width="1.3">';
+      for (var q = 0; q < n; q++) { var rx = r() * 860 - 30, ry = r() * 420 - 420; h += '<line style="animation-delay:-' + (r() * .55).toFixed(2) + 's" x1="' + rx.toFixed(0) + '" y1="' + ry.toFixed(0) + '" x2="' + (rx - sl2).toFixed(0) + '" y2="' + (ry + 16).toFixed(0) + '"/>'; }
+      h += '</g>';
+    }
+    if (k === 'snow') { h += '<g class="snowf" fill="#fff">'; for (var z = 0; z < 120; z++) h += '<circle style="animation-delay:-' + (r() * 6).toFixed(1) + 's;animation-duration:' + (5 + r() * 4).toFixed(1) + 's" cx="' + (r() * 800).toFixed(0) + '" cy="' + (-r() * 420).toFixed(0) + '" r="' + (1 + r() * 2.2).toFixed(1) + '" opacity=".9"/>'; h += '</g>'; }
+    if (k === 'storm' || k === 'typhoon') h += '<rect class="fl" width="800" height="400" fill="#fff"/><path class="fl" d="M520 40L490 120L515 120L480 210L545 100L518 100L545 40Z" fill="#fff8d0"/>';
+    return h;
+  }
+
+  // ---- 計算 ----
+  function calc() { RUN = S.run(day, 1); }
+  var ICON = { school: '🎒', weather: '🌧️', prov: '🏙️', town: '🏘️', pol: '🏛️', dip: '🤝', mil: '🛡️' };
+  function render() {
+    var w = S.wdate(day), wx = S.climate(pi, day), P = S.PROV[pi], sl = day === TODAY ? slot : 'day';
+    $('scene').innerHTML = scene(wx, sl, w.m, day * 97 + pi * 13 + 5);
+    $('o-d').textContent = w.label + '・' + P[0] + (day === TODAY ? '（いま・' + SLOT[sl] + '）' : '');
+    $('o-t').textContent = Math.round(wx.t) + '°';
+    $('o-w').textContent = S.WX[wx.k][1] + ' ' + S.WX[wx.k][0];
+    $('o-s').textContent = wx.mm ? '雨・雪の量 ' + wx.mm + 'mm' : '';
+    $('prev').disabled = day <= 0; $('next').disabled = day >= TODAY + 6;
+    $('fc').innerHTML = [0, 1, 2, 3, 4, 5, 6].map(function (i) {
+      var d = TODAY + i, c = S.climate(pi, d), x = S.wdate(d);
+      return '<div' + (d === day ? ' class="on"' : '') + ' data-d="' + d + '">' + (i === 0 ? '今日' : x.m + '/' + x.d) + '<b>' + S.WX[c.k][1] + '</b><span>' + Math.round(c.t) + '°</span></div>';
+    }).join('');
+    if (day > TODAY) { $('ev').innerHTML = '<li><i>🔭</i><span>まだ来ていない日です。天気だけ、予報で見られます。</span></li>'; }
+    else {
+      var L = RUN.log.filter(function (l) { return l.d > day - 7; }).reverse(), items = [];
+      L.forEach(function (l) { l.ev.forEach(function (e) { items.push('<li><i>' + (ICON[e.k] || '•') + '</i><span>' + esc(e.t) + '<small>' + esc(l.date) + (e.where ? '・' + esc(e.where) : '') + '</small></span></li>'); }); });
+      $('ev').innerHTML = items.slice(0, 12).join('') || '<li><i>🍃</i><span>この1週間は、しずかな日でした。</span></li>';
+    }
+    people();
+    var st = RUN.state;
+    $('dong').innerHTML = st.dong.slice().sort(function (a, b) { return b.busy - a.busy; }).map(function (g) { return '<div><b>' + esc(g.name) + '</b>' + esc(g.ku) + '・' + esc(g.use) + '<div class="bar"><i style="width:' + Math.min(100, g.busy) + '%"></i></div></div>'; }).join('');
+    details(st);
+  }
+  function people() {
+    var sl = slot;
+    [].forEach.call($('slots').children, function (b) { b.setAttribute('aria-pressed', String(b.dataset.s === sl)); });
+    if (day > TODAY) { $('nine').innerHTML = '<p class="note">まだ来ていない日です。</p>'; return; }
+    var cls = {}; (window.CHARS || []).forEach(function (c) { var n = (window.SEED && SEED[c.id] || {}).name; if (n) cls[n] = c.c; });
+    $('nine').innerHTML = S.people(day, RUN.state, sl).map(function (p) { return '<div class="' + (cls[p.name] || '') + '"><b>' + esc(p.name) + '</b><small>📍' + esc(p.at) + '</small><p>' + esc(p.what) + '</p></div>'; }).join('');
+  }
+  function f1(x) { return (+x).toFixed(1); }
+  function details(st) {
+    $('pol').innerHTML = st.nat.map(function (n, i) {
+      var N = S.NATS[i], pt = N.parties[n.party] || N.parties[0];
+      return '<div style="--c:' + NCOL[i] + '"><h3>' + esc(n.name) + '</h3><p>' + esc(N.sys) + '</p><dl class="kv"><dt>治める人</dt><dd>' + esc(pt[0]) + '（' + esc(pt[1]) + '）</dd><dt>支持</dt><dd>' + Math.round(n.approval) + '%</dd><dt>不満</dt><dd>' + Math.round(n.unrest) + '</dd><dt>守りの隊</dt><dd>' + esc(N.army) + '</dd><dt>隊の人数</dt><dd>約' + f1(n.soldiers) + '万人</dd><dt>装備</dt><dd>' + Math.round(n.equip) + ' / 100</dd><dt>守りの力</dt><dd>' + n.power + '</dd></dl></div>';
+    }).join('');
+    var pairs = [[0, 1], [0, 2], [1, 2]];
+    $('rel').innerHTML = pairs.map(function (p) {
+      var v = st.rel[p[0]][p[1]], t = v > 40 ? '仲がよい' : v > 10 ? 'ふつう' : v > -20 ? 'ややぎくしゃく' : v > -40 ? '緊張' : '物の行き来を止めている', tr = st.treaty[p[0] + '-' + p[1]] != null;
+      return '<div>' + st.nat[p[0]].name + ' と ' + st.nat[p[1]].name + '：<b>' + t + '</b>' + (tr ? '（通商条約あり）' : '') + '<div class="bar"><i style="left:calc(' + ((v + 100) / 2).toFixed(1) + '% - 2px)"></i></div></div>';
+    }).join('');
+    var prov = st.prov, sp = prov[pi];
+    $('eco').innerHTML = '<div class="scroll"><table class="tbl"><tr><th>国</th><th>お金</th><th>1' + '文あたり</th><th>物価</th><th>物価の上がり方</th><th>国の借金</th><th>1年の生産</th></tr>' + st.nat.map(function (n, i) {
+      return '<tr><td>' + n.name + '</td><td>' + S.NATS[i].cur + '</td><td>' + (i === 0 ? '—' : f1(n.fx) + S.NATS[i].cur.slice(0, 1) + '…') + '</td><td>' + Math.round(n.cpi) + '</td><td>' + f1(n.infl || 0) + '%</td><td>' + Math.round(n.debt) + '</td><td>' + Math.round(n.gdpY || n.gdp || 0) + '</td></tr>';
+    }).join('') + '</table></div>' +
+      '<b>' + esc(sp.name) + 'の仕事のわりあい</b><div class="sect">' + S.SECT.map(function (s, i) { return '<i title="' + s[1] + '" style="width:' + (sp.share[i] * 100).toFixed(1) + '%;background:' + s[4] + '"></i>'; }).join('') + '</div><div class="leg">' + S.SECT.map(function (s, i) { return '<span><i style="background:' + s[4] + '"></i>' + s[1] + ' ' + Math.round(sp.share[i] * 100) + '%</span>'; }).join('') + '</div>' +
+      '<div class="scroll"><table class="tbl"><tr><th>州</th><th>人口</th><th>仕事がない人</th><th>食べ物の値段</th><th>品物の値段</th><th>暮らしの満足</th></tr>' + prov.map(function (p) {
+        return '<tr><td>' + p.name + '</td><td>' + Math.round(p.pop) + '万</td><td>' + f1(p.unemp * 100) + '%</td><td>' + Math.round(p.price.food * 100) + '</td><td>' + Math.round(p.price.goods * 50) + '</td><td>' + Math.round(p.mood) + '</td></tr>';
+      }).join('') + '</table></div><p class="note">値段は、ふつうを100とした目安です。「1文あたり」は水和国のお金1文で買える、その国のお金の量です。</p>';
+    $('cli').innerHTML = '<table class="tbl"><tr><th>州</th><th>天気</th><th>気温</th><th>雨・雪</th></tr>' + S.PROV.map(function (p, i) { var c = S.climate(i, day); return '<tr><td>' + p[0] + '</td><td>' + S.WX[c.k][1] + ' ' + S.WX[c.k][0] + '</td><td>' + f1(c.t) + '℃</td><td>' + c.mm + 'mm</td></tr>'; }).join('') + '</table>';
+  }
+
+  // ---- 操作 ----
+  function go(d) { day = Math.max(0, Math.min(TODAY + 6, d)); if (day <= TODAY) calc(); render(); }
+  $('prev').onclick = function () { go(day - 1); };
+  $('next').onclick = function () { go(day + 1); };
+  $('today').onclick = function () { slot = S.slotOf(); go(TODAY); };
+  $('where').onchange = function () { pi = +this.value; render(); };
+  $('fc').onclick = function (e) { var x = e.target.closest('[data-d]'); if (x) go(+x.dataset.d); };
+  $('slots').onclick = function (e) { var b = e.target.closest('button'); if (!b) return; slot = b.dataset.s; if (day === TODAY) render(); else people(); };
+  calc(); render();
+})();
+</script>
+</body></html>
