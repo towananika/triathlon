@@ -3,20 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="TRIATHLON のお知らせとアップデート。版ごとに1ページで、変更点と変わったページへのリンクをまとめています。">
-<title>お知らせ・アップデート | TRIATHLON</title>
-<link rel="stylesheet" href="news.css?v=0.24">
+<meta name="description" content="TRIATHLONのお知らせと、キャラたちが共有する世界のニュース。">
+<title>お知らせ・ニュース | TRIATHLON</title>
+<link rel="stylesheet" href="news.css?v=world-1">
 </head>
 <body>
 <script src="../site-nav.js?v=0.36"></script>
 <main>
-<header class="head"><p class="kicker">NEWS & UPDATES</p><h1>お知らせ・アップデート</h1><p class="lead">版ごとに1ページ。押すと、その版で何が変わったかと、変わったページへのリンクが見られます。</p><a class="rules" href="rules.html">📏 アップデートの基準 →</a></header>
+<header class="head"><p class="kicker">NEWS & UPDATES</p><h1>お知らせ・ニュース</h1></header>
+<div class="news-tabs" role="tablist" aria-label="お知らせの種類"><button type="button" id="tab-notices" role="tab" aria-selected="true" aria-controls="panel-notices" tabindex="0">お知らせ</button><button type="button" id="tab-world" role="tab" aria-selected="false" aria-controls="panel-world" tabindex="-1">ニュース</button></div>
+<section id="panel-notices" role="tabpanel" aria-labelledby="tab-notices">
+<a class="rules" href="rules.html">アップデートの基準</a>
 <section class="latest" id="latest" aria-label="最新の更新"></section>
 <div class="filter" role="group" aria-label="種類で絞り込み"><button type="button" data-f="" aria-pressed="true">すべて</button><button type="button" data-f="update" aria-pressed="false">アップデート</button><button type="button" data-f="info" aria-pressed="false">お知らせ</button><button type="button" data-f="fix" aria-pressed="false">修正</button></div>
 <ol class="list" id="list"></ol>
+</section>
+<section id="panel-world" role="tabpanel" aria-labelledby="tab-world" hidden>
+<header class="world-head"><h2>世界のニュース</h2><p id="world-date"></p><p class="lead">キャラたちと共有する、世界の出来事。</p></header>
+<div class="world-controls"><div class="filter" role="group" aria-label="ニュースの種類"><button type="button" data-world-filter="all" aria-pressed="true">すべて</button><button type="button" data-world-filter="voice" aria-pressed="false">キャラの声</button><button type="button" data-world-filter="change" aria-pressed="false">文明・暮らし</button></div><label>検索<input id="world-search" type="search" placeholder="人物・場所・出来事"></label><label>読む人<select id="world-reader"><option value="">ユーザー</option></select></label></div>
+<p class="lead" id="world-reader-status" role="status"></p>
+<ol class="world-list" id="world-list"></ol>
+<p class="world-note">世界の変化は現在のルール式シミュレーションから集計しています。自律AIによる判断ではありません。キャラに共有されるのは、このタブのニュース本文だけです。</p>
+</section>
 </main>
 <footer><a href="../">TRIATHLON トップ</a> / <a href="rules.html">アップデートの基準</a></footer>
 <script src="news.js?v=0.36"></script>
+<script src="../sim/world-sim.js?v=0.36"></script>
+<script src="world-news.js?v=1"></script>
+<script src="world-news-ui.js?v=1"></script>
 <script>
 (function () {
   'use strict';
