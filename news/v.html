@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="TRIATHLON の版ごとのアップデート内容。">
 <title>アップデート | TRIATHLON</title>
-<link rel="stylesheet" href="news.css?v=0.18">
+<link rel="stylesheet" href="news.css?v=0.22">
 </head>
 <body>
-<script src="../site-nav.js?v=0.21"></script>
+<script src="../site-nav.js?v=0.22"></script>
 <main id="post">
 <p class="crumb"><a href="./">← お知らせ一覧</a></p>
 </main>
 <footer><a href="./">お知らせ一覧</a> / <a href="rules.html">アップデートの基準</a> / <a href="../">TRIATHLON トップ</a></footer>
-<script src="news.js?v=0.20"></script>
+<script src="news.js?v=0.22"></script>
 <script>
 (function () {
   'use strict';
@@ -25,7 +25,7 @@
   var n = list[i];
   if (!n) { box.insertAdjacentHTML('beforeend', '<section class="post"><h1>この版のページは見つかりませんでした</h1><p class="lead">お知らせ一覧から選んでください。</p></section>'); return; }
   document.title = (n.ver ? n.ver + ' ' : '') + n.title + ' | TRIATHLON';
-  var h = '<article class="post"><p class="meta"><span class="cat c-' + n.cat + '">' + CAT[n.cat] + '</span>' + (n.ver ? '<span class="ver">' + esc(n.ver) + '</span>' : '') + (n.date ? '<time>' + n.date.replace(/-/g, '.') + '</time>' : '') + (i === 0 ? '<span class="new">NEW</span>' : '') + '</p><h1>' + esc(n.title) + '</h1><p class="lead">' + esc(n.lead) + '</p></article>';
+  var h = '<article class="post"><p class="meta"><span class="cat c-' + n.cat + '">' + CAT[n.cat] + '</span>' + (n.ver ? '<span class="ver">' + esc(n.ver) + '</span>' : '') + window.triNewsTimes(n) + (i === 0 ? '<span class="new">NEW</span>' : '') + '</p><h1>' + esc(n.title) + '</h1><p class="lead">' + esc(n.lead) + '</p></article>';
   if (n.changes && n.changes.length) h += '<section class="block"><h2>変わったところ</h2><ul class="chg">' + n.changes.map(function(c){ return '<li><em class="k-' + c[0] + '">' + KIND[c[0]] + '</em><span>' + esc(c[1]) + '</span></li>'; }).join('') + '</ul></section>';
   if (n.check && n.check.length) h += '<section class="block"><h2>確認してほしいところ</h2><ul class="chk">' + n.check.map(function(c){ return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></section>';
   if (n.links && n.links.length) h += '<section class="block"><h2>変わったページへ</h2><ul class="links">' + n.links.map(function(l){

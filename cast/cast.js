@@ -18,7 +18,7 @@ function render(){
 function open(id){
   var c = CHARS.filter(function(x){ return x.id === id; })[0], L = LOOK[id], T = TEXT[id];
   function row(k, v){ return v ? '<div><dt>' + k + '</dt><dd>' + esc(v) + '</dd></div>' : ''; }
-  $('sheet-in').innerHTML = '<button class="x" type="button" data-close aria-label="閉じる">✕</button><div class="hd" style="--c:var(--' + c.c + ')"><span class="face">' + face(c, true) + '</span><div><p class="meta">' + SNAME[c.s] + ' · ' + CNAME[c.c] + '</p><h2>' + esc(nm(c)) + '</h2><p class="cls">' + esc(c.cls) + '・' + esc(c.sex) + '</p></div></div>' +
+  $('sheet-in').innerHTML = '<button class="x" type="button" data-close aria-label="閉じる">✕</button><div class="hd" style="--c:var(--' + c.c + ')"><span class="face">' + face(c, true) + '</span><div><p class="meta">' + (admin ? SNAME[c.s] + ' · ' : '') + CNAME[c.c] + '</p><h2>' + esc(nm(c)) + '</h2><p class="cls">' + esc(c.cls) + '・' + esc(c.sex) + '</p></div></div>' +
     '<p class="say">「' + esc(T.say) + '」</p>' +
     '<dl>' + row('外見', L.h + 'cm・' + L.b + '。髪は' + L.hair + '、目は' + L.eye) + row('服', L.wear) + row('好き', T.like) + row('苦手', T.dislike) + row('願い', T.wish) + row('関係', T.rel) + '</dl>';
   $('sheet').hidden = false; $('sheet-in').querySelector('.x').focus();
@@ -28,9 +28,11 @@ document.addEventListener('click', function(e){
   if (e.target.id === 'sheet' || (b && b.hasAttribute('data-close'))) { $('sheet').hidden = true; return; }
   if (!b) return;
   if (b.dataset.id) { open(b.dataset.id); return; }
-  if (b.dataset.t != null) { tab = +b.dataset.t; render(); }
+  if (b.dataset.t != null && admin) { tab = +b.dataset.t; render(); }
 });
 document.addEventListener('keydown', function(e){ if (e.key === 'Escape') $('sheet').hidden = true; });
 var admin = false; try { admin = !!localStorage.getItem('tri-admin'); } catch (e) {}
+// 公開は今の期だけ。期の名前も出さない
+if (!admin) tab = 1;
 if (admin && castApply(castEdits())) $('preview').hidden = false;
 render();

@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="TRIATHLON のお知らせとアップデート。版ごとに1ページで、変更点と変わったページへのリンクをまとめています。">
 <title>お知らせ・アップデート | TRIATHLON</title>
-<link rel="stylesheet" href="news.css?v=0.18">
+<link rel="stylesheet" href="news.css?v=0.22">
 </head>
 <body>
-<script src="../site-nav.js?v=0.21"></script>
+<script src="../site-nav.js?v=0.22"></script>
 <main>
 <header class="head"><p class="kicker">NEWS & UPDATES</p><h1>お知らせ・アップデート</h1><p class="lead">版ごとに1ページ。押すと、その版で何が変わったかと、変わったページへのリンクが見られます。</p><a class="rules" href="rules.html">📏 アップデートの基準 →</a></header>
 <section class="latest" id="latest" aria-label="最新の更新"></section>
@@ -16,7 +16,7 @@
 <ol class="list" id="list"></ol>
 </main>
 <footer><a href="../">TRIATHLON トップ</a> / <a href="rules.html">アップデートの基準</a></footer>
-<script src="news.js?v=0.20"></script>
+<script src="news.js?v=0.22"></script>
 <script>
 (function () {
   'use strict';
@@ -25,7 +25,7 @@
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function url(n){ return 'v.html?id=' + encodeURIComponent(n.id); }
   function meta(n, isNew){
-    return '<p class="meta"><span class="cat c-' + n.cat + '">' + CAT[n.cat] + '</span>' + (n.ver ? '<span class="ver">' + esc(n.ver) + '</span>' : '') + (n.date ? '<time>' + n.date.replace(/-/g, '.') + '</time>' : '') + (isNew ? '<span class="new">NEW</span>' : '') + '</p>';
+    return '<p class="meta"><span class="cat c-' + n.cat + '">' + CAT[n.cat] + '</span>' + (n.ver ? '<span class="ver">' + esc(n.ver) + '</span>' : '') + window.triNewsTimes(n) + (isNew ? '<span class="new">NEW</span>' : '') + '</p>';
   }
   var newest = list[0];
   if (newest) document.getElementById('latest').innerHTML = meta(newest, true) + '<h2>' + esc(newest.title) + '</h2><p>' + esc(newest.lead) + '</p><a class="go" href="' + url(newest) + '">この版のページを開く →</a>';

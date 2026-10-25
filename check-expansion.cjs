@@ -1,3 +1,4 @@
+// 設定資料は管理者だけのページなので、テストでは管理者として開く
 const {chromium} = require('playwright');
 const assert = require('node:assert/strict');
 const {pathToFileURL} = require('node:url');
@@ -6,7 +7,7 @@ const path = require('node:path');
   const browser = await chromium.launch({headless:true,channel:'chrome'});
   try {
     const context = await browser.newContext({acceptDownloads:true,reducedMotion:'reduce'});
-    const page = await context.newPage();
+    const page = await context.newPage(); await page.addInitScript(()=>{try{localStorage.setItem('tri-admin','x')}catch(e){}});
     const errors=[];
     page.on('pageerror',e=>errors.push(e.message));
     const url=process.env.PAGE_URL||pathToFileURL(path.join(__dirname,'guide.html')).href;
@@ -119,8 +120,8 @@ const path = require('node:path');
     console.log('Verified Earth geometry, region selection, planning draft persistence, safe text, dossiers, individual notes, export and responsive layouts.');
     await context.close();
     const blocked=await browser.newContext();
-    await blocked.addInitScript(()=>{Storage.prototype.setItem=function(){throw new DOMException('Blocked','SecurityError');};});
-    const fallback=await blocked.newPage();
+    await blocked.addInitScript(()=>{const g=Storage.prototype.getItem;Storage.prototype.getItem=function(k){return k==='tri-admin'?'x':g.call(this,k);};Storage.prototype.setItem=function(){throw new DOMException('Blocked','SecurityError');};});
+    const fallback=await blocked.newPage(); await fallback.addInitScript(()=>{try{localStorage.setItem('tri-admin','x')}catch(e){}});
     await fallback.goto(url+'#atlas');
     await fallback.locator('#city-name').fill('保存不可のテスト');
     assert.match(await fallback.locator('#draft-status').innerText(),/保存できません/);

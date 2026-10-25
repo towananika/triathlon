@@ -5,7 +5,7 @@ const path = require('node:path');
 (async () => {
   const browser = await chromium.launch({headless:true,channel:'msedge'});
   try {
-    const page = await browser.newPage();
+    const page = await browser.newPage(); await page.addInitScript(()=>{try{localStorage.setItem('tri-admin','x')}catch(e){}});
     const errors = [];
     page.on('pageerror',error=>errors.push(error.message));
     const url = process.env.PAGE_URL || pathToFileURL(path.join(__dirname,'guide.html')).href;
