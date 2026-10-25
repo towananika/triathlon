@@ -33,10 +33,10 @@
 </style>
 </head>
 <body>
-<script src="site-nav.js?v=0.45"></script>
+<script src="site-nav.js?v=0.46"></script>
 <script src="stories/stories.js?v=0.45"></script>
 <script src="cast/cast-data.js?v=0.19"></script>
-<script src="notes/notes.js?v=0.42"></script>
+<script src="notes/notes.js?v=0.46"></script>
 <script src="daily/daily.js?v=0.43"></script>
 <main>
 <section class="hero" aria-labelledby="hero-title">
@@ -59,7 +59,7 @@
 <div class="box"><p class="kick" aria-hidden="true">Life Map</p><b id="life-h">一生の地図</b><p>9人の0歳から80歳まで。あなたと同じ年のころ、9人は何をしていた？</p>
 <svg viewBox="0 0 300 70" aria-hidden="true"><g id="mini"></g></svg>
 <form class="agef" id="agef"><label for="myage">あなたは</label><input id="myage" type="number" min="0" max="80" inputmode="numeric" placeholder="40"><span>歳</span><button type="submit">地図を開く</button></form></div>
-<a class="box" href="notes/" id="note"><p class="kick" aria-hidden="true">Notes</p><b>からだと心のノート</b><p>物語のあとに読む1枚。</p></a>
+<a class="box" href="notes/" id="note"><p class="kick" aria-hidden="true">Notes</p><b>ひみつのメモ</b><p>話のあとにひらくメモ。</p></a>
 </div>
 </section>
 
@@ -100,8 +100,8 @@
 </div>
 </section>
 </main>
-<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.45</span></p></footer>
-<script src="news/news.js?v=0.45"></script>
+<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.46</span></p></footer>
+<script src="news/news.js?v=0.46"></script>
 <script>
 (function () {
   'use strict';
@@ -125,10 +125,11 @@
   for (var i = 0; i < 9; i++) { var y = 8 + i * 6.4; mini += '<line x1="10" x2="290" y1="' + y + '" y2="' + y + '" stroke="var(--line)" stroke-width="2.4" stroke-linecap="round"/><line x1="10" x2="98" y1="' + y + '" y2="' + y + '" stroke="' + ['#D9707A', '#4FAE84', '#5B8FD6'][i % 3] + '" stroke-width="2.4" stroke-linecap="round"/>'; }
   document.getElementById('mini').innerHTML = mini + '<line x1="150" x2="150" y1="2" y2="66" stroke="#C9A646" stroke-width="2"/>';
   document.getElementById('agef').onsubmit = function (e) { e.preventDefault(); var a = Math.max(0, Math.min(80, parseInt(document.getElementById('myage').value, 10) || 40)); try { localStorage.setItem('tri-life-age', a); } catch (x) {} location.href = 'life/'; };
-  // ノート（最新の1枚と「親として」の1行）
+  // ひみつのメモ（いちばん新しい1枚）
   var N = window.TRI_NOTES || [];
-  if (N.length) { var nt = N[N.length - 1]; document.getElementById('note').href = 'notes/?id=' + nt.id;
-    document.getElementById('note').innerHTML = '<p class="kick" aria-hidden="true">Notes</p><b>からだと心のノート</b><p>' + esc(nt.title) + '</p><p class="par">親として：' + esc(nt.parent.split('\n')[0]) + '</p><span class="go">読む →</span>'; }
+  var MM = window.TRI_MEMO || {};
+  if (N.length) { var nt = N[N.length - 1], mm = MM[nt.id] || {who: '', title: nt.title}; document.getElementById('note').href = 'notes/?id=' + nt.id;
+    document.getElementById('note').innerHTML = '<p class="kick" aria-hidden="true">Memo</p><b>ひみつのメモ</b><p>' + esc(mm.who) + '：' + esc(mm.title) + '</p><span class="go">読む →</span>'; }
   // いまの時間のひとこと（昼はごはん、夜20時〜5時はおやすみの話。日ごとに入れかわる）
   var DL = window.TRI_DAILY, hr = new Date().getHours(), day = Math.floor((Date.now() + 9 * 36e5) / 864e5);
   if (DL) { var night = hr >= 20 || hr < 5, L = night ? DL.sleep : DL.food, it = L[day % L.length];
