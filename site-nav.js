@@ -32,7 +32,7 @@
     '.tri-top{display:none;gap:4px}.tri-top a{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border-radius:10px;color:#163744;text-decoration:none;font-size:15px;font-weight:700}' +
     '.tri-top a:hover{background:#edf5f4}.tri-top a[aria-current="page"]{color:#007f87;box-shadow:inset 0 -3px 0 #007f87;border-radius:0}' +
     '.tri-menu{position:relative;background:none!important;padding:0!important;border:0!important;border-radius:0!important;margin:0!important}.tri-nav,.tri-bottom{box-sizing:border-box}.tri-nav *,.tri-bottom *{box-sizing:border-box}.tri-menu summary{list-style:none;cursor:pointer;display:grid;place-items:center;width:44px;height:44px;border:1px solid #cbdedf;border-radius:10px;font-size:20px;color:#163744;background:#fff}' +
-    '.tri-act{display:flex;align-items:center;gap:8px;margin-left:auto}.tri-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:999px;font-size:14px;font-weight:800;text-decoration:none;white-space:nowrap;border:1px solid #007f87;color:#007f87;background:#fff}.tri-btn.play{background:#ffd76a;border-color:#ffd76a;color:#163744}.tri-btn:hover{filter:brightness(.97)}' +
+    '.tri-act{display:flex;align-items:center;gap:8px;margin-left:auto}.tri-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:999px;font-size:14px;font-weight:800;text-decoration:none;white-space:nowrap;border:1px solid #007f87;color:#007f87;background:#fff}.tri-btn.in{gap:6px;padding:0 12px 0 4px;max-width:150px}.tri-btn.in img{width:30px;height:30px;border-radius:50%}.tri-btn.in span{overflow:hidden;text-overflow:ellipsis}.tri-btn.play{background:#ffd76a;border-color:#ffd76a;color:#163744}.tri-btn:hover{filter:brightness(.97)}' +
     '.tri-foot{text-align:left;margin:0;max-width:none;background:#123640;color:#cfe2e4;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;font-size:14px;padding:36px 5% 28px}.tri-foot a{color:#fff;text-decoration:none}.tri-foot a:hover{text-decoration:underline}.tri-fcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;max-width:1000px;margin:0 auto}.tri-fcols b{display:block;color:#fff;font-size:13px;letter-spacing:.08em;margin-bottom:8px}.tri-fcols a{display:block;padding:5px 0}.tri-fbase{max-width:1000px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,.18);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:12px}.tri-fbase .logo{font-family:var(--tri-logo);font-weight:700;letter-spacing:.22em;color:#fff;font-size:15px}' +
     '.tri-menu summary::-webkit-details-marker{display:none}.tri-menu[open] summary{border-color:#007f87;color:#007f87}' +
     '.tri-more{position:absolute;right:0;top:calc(100% + 8px);display:flex;flex-direction:column;min-width:240px;padding:6px;background:#fff;border:1px solid #cbdedf;border-radius:14px;box-shadow:0 10px 30px rgba(22,55,68,.16)}' +
@@ -70,16 +70,23 @@
     foot.innerHTML = '<div class="tri-fcols">' + fl('ゲーム', [['play/', 'ゲームをはじめる'], ['mall/', 'トライアスロンモール']]) + fl('作品', [['saga/', 'トライアスロン物語'], ['cast/', 'キャラクター']]) +
       fl('サポート', [['news/', 'お知らせ'], ['news/rules.html', 'アップデートの基準'], ['login/', 'ログイン']]) + '</div>' +
       '<div class="tri-fbase"><span class="logo">TRIATHLON</span><span>開発中のサイトです。画像は検討中のイメージで、ゲーム画面ではありません。' + (ver ? ' · ' + ver.textContent : '') + '</span></div>';
-    if (old) old.replaceWith(foot); else document.body.insertBefore(foot, bottom);
+    if (old) old.replaceWith(foot); else document.body.insertBefore(foot, bottom.parentNode ? bottom : null);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addFoot); else addFoot();
   document.body.appendChild(bottom);
-  fetch(root + 'login/config.json', {cache:'no-store'}).then(function(response){return response.ok ? response.json() : null;}).then(function(config){
-    if (!config || config.enabled !== true) return;
-    var entry = document.createElement('a'); entry.className = 'tri-login'; entry.href = root + 'login/'; entry.textContent = 'ログイン';
-    entry.className = 'tri-login tri-btn';
-    bar.querySelector('.tri-act').insertBefore(entry, bar.querySelector('.tri-act').firstChild);
-  }).catch(function(){});
+  // ログイン（Google）。右上のボタンは、ログイン中なら顔写真と名前に変わる
+  var entry = document.createElement('a'); entry.className = 'tri-login tri-btn'; entry.href = root + 'login/'; entry.textContent = 'ログイン';
+  bar.querySelector('.tri-act').insertBefore(entry, bar.querySelector('.tri-act').firstChild);
+  function showUser(u) {
+    entry.textContent = '';
+    if (!u) { entry.textContent = 'ログイン'; entry.classList.remove('in'); return; }
+    entry.classList.add('in');
+    if (u.photo) { var im = document.createElement('img'); im.src = u.photo; im.alt = ''; im.referrerPolicy = 'no-referrer'; entry.appendChild(im); }
+    var nm = document.createElement('span'); nm.textContent = u.name.split(' ')[0]; entry.appendChild(nm);
+    entry.setAttribute('aria-label', u.name + '（ログイン中）');
+  }
+  document.addEventListener('tri-user', function (e) { showUser(e.detail); });
+  if (!document.querySelector('script[src*="login/auth.js"],script[src^="auth.js"]')) { var au = document.createElement('script'); au.type = 'module'; au.src = root + 'login/auth.js?v=0.27.3'; document.head.appendChild(au); }
   var topStyle = document.createElement('link'); topStyle.rel = 'stylesheet'; topStyle.href = root + 'back-to-top.css'; document.head.appendChild(topStyle);
   var topScript = document.createElement('script'); topScript.src = root + 'back-to-top.js'; document.body.appendChild(topScript);
   document.addEventListener('click', function (e) {
