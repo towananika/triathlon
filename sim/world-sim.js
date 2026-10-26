@@ -128,7 +128,9 @@
       s.prov.push(o);
     });
     s.dong = DONG.map(function (g) { return { name: g[0], ku: g[1], use: g[2], pop: g[3], busy: 50, shops: Math.round(g[3] / 300), river: g[4] }; });
-    s.development = DEV ? NATS.map(function (n) { return DEV.create(n.name); }) : [];
+    // 新暦312年の出発点（2026-10-26 ひびき「速すぎる」）：新暦200年ごろから早送りで進んできた社会。電気や水道はもう多くの家にあり、ゆっくり現代（320年）に届く
+    var START = {institutions: .82, research: .72, power: .78, water: .78, health: .70, education: .82, communications: .65};
+    s.development = DEV ? NATS.map(function (n) { return DEV.create(n.name, START); }) : [];
     return s;
   }
 
@@ -418,7 +420,7 @@
     return Object.assign({ name: name, place: character[1], basis: '二水州の地域物価。職業・支援・住居・交通は別設定が必要' }, DEV.costOfLiving(s.prov[0], profile));
   }
   // 社会の5段階（studio/text/world/society_stages_v1.md）。年ごとの4つの数字から、町がどの段階にいるかを決める
-  var SOC_K = [[300, 2.8, 8, 18, 46], [312, 2.2, 14, 24, 50], [334, 1.2, 32, 38, 56], [345, .85, 38, 42, 54], [356, 1.0, 36, 34, 48], [378, 1.5, 30, 27, 42], [395, 1.65, 28, 25, 40]];
+  var SOC_K = [[200, 5.2, 3, 12, 62], [260, 4.2, 5, 15, 58], [300, 2.8, 8, 18, 46], [312, 2.2, 14, 24, 50], [334, 1.2, 32, 38, 56], [345, .85, 38, 42, 54], [356, 1.0, 36, 34, 48], [378, 1.5, 30, 27, 42], [395, 1.65, 28, 25, 40]];
   var STAGES = ['問題の前', '生まれはじめ', 'そのまま', '解決に向かう', '解決された'];
   function socRaw(y) {
     var K = SOC_K, i = 0; if (y <= K[0][0]) return K[0].slice(1); if (y >= K[K.length - 1][0]) return K[K.length - 1].slice(1);

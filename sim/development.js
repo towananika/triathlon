@@ -1,9 +1,9 @@
 (function(root){
   'use strict';
-  // 発展の速さ。2026-10-26 ひびき：今（新暦322年）の時点で現代の文明に届いているように速めた（新暦320年に到達）
-  var PACE=4;var LABELS={power:'電力',water:'上下水道',health:'医療',education:'教育',communications:'通信'};
+  // 発展の速さ。ふつうの速さより少しゆっくり（2026-10-26 ひびき「速すぎる」）。312年より前の歩みは history.js に早送りで記録してある
+  var PACE=0.35;var LABELS={power:'電力',water:'上下水道',health:'医療',education:'教育',communications:'通信'};
   function clamp(v){return Math.max(0,Math.min(1,v));}
-  function create(name){return {name:name,stableMonths:0,institutions:.2,research:0,services:{power:0,water:0,health:0,education:0,communications:0},formedDay:null,modernDay:null,spent:0,blocked:'調査・資源の確認',milestones:[]};}
+  function create(name,start){var a=start||{};return {name:name,stableMonths:0,institutions:a.institutions||.2,research:a.research||0,services:{power:a.power||0,water:a.water||0,health:a.health||0,education:a.education||0,communications:a.communications||0},formedDay:start?-1:null,modernDay:null,spent:0,blocked:'調査・資源の確認',milestones:[]};}
   function stage(c){return c.modernDay!==null?'現代基盤':c.formedDay!==null?'文明成立':'基盤整備';}
   function step(c,provinces,nation,day){
     if(day%30!==0)return [];
