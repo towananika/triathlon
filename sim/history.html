@@ -39,12 +39,13 @@ details summary{cursor:pointer;color:var(--blue);font-size:14px;margin-top:6px}
   var C=[['3つの国の人口',H.map(function(y){return y.pop}),last.pop+'万人','#2F6FB8'],
     ['文明の発展（電気・水道・医療など）',H.map(dev),dev(last)+'%','#22AAA6'],
     ['子どもの数（1人の女性あたり）',H.map(function(y){return y.soc.tfr}),last.soc.tfr+'人','#D9707A'],
+    ['未来のしくみをとり入れた割合',H.map(function(y){return y.fut||0}),(last.fut||0)+'%','#4FAE84'],
     ['ひとりで暮らす人',H.map(function(y){return y.soc.alone}),last.soc.alone+'%','#C9A646']];
   document.getElementById('charts').innerHTML=C.map(function(c){return '<div class="ch"><small>'+c[0]+'</small><b>'+c[2]+'</b>'+spark(c[1],c[3])+'<small>'+first.y+'年 → 今日</small></div>'}).join('');
   function card(y){
     var st=y.pre?'早送り':y.nat[0].stage,ev=y.ev.map(function(e){return '<li><time>'+esc(e[0].replace(/^新暦\d+年/,''))+'</time>'+esc(e[1])+'</li>'});
     return '<section class="yr"><h3>新暦'+y.y+'年<span>'+st+'</span><span>段階：'+esc(y.soc.name)+'</span></h3>'+
-      '<div class="kv"><div><small>人口</small>'+y.pop+'万人</div><div><small>文明の発展</small>'+dev(y)+'%</div><div><small>子どもの数</small>'+y.soc.tfr+'人</div><div><small>ひとり暮らし</small>'+y.soc.alone+'%</div><div><small>家賃</small>収入の'+y.soc.rent+'%</div>'+(y.civ!=null?'<div><small>出会った文明</small>'+y.civ+'つ</div>':'')+'</div>'+
+      '<div class="kv"><div><small>人口</small>'+y.pop+'万人</div><div><small>文明の発展</small>'+dev(y)+'%</div><div><small>子どもの数</small>'+y.soc.tfr+'人</div><div><small>ひとり暮らし</small>'+y.soc.alone+'%</div><div><small>家賃</small>収入の'+y.soc.rent+'%</div>'+(y.fut!=null?'<div><small>未来のしくみ</small>'+y.fut+'%</div>':'')+(y.civ!=null?'<div><small>出会った文明</small>'+y.civ+'つ</div>':'')+'</div>'+
       (ev.length?'<ul class="ev">'+ev.slice(0,5).join('')+'</ul>'+(ev.length>5?'<details><summary>ほかの出来事（'+(ev.length-5)+'）</summary><ul class="ev">'+ev.slice(5).join('')+'</ul></details>':''):'')+'</section>'}
   var sim=H.filter(function(y){return !y.pre}),pre=H.filter(function(y){return y.pre&&y.ev.length});
   document.getElementById('years').innerHTML=sim.slice().reverse().map(card).join('')+(pre.length?'<h2>早送りの時代（新暦'+H[0].y+'〜311年）</h2><p class="lead">312年より前は、発展の進み方を曲線で早送りした記録です。できごとがあった年だけ並べています。</p>'+pre.slice().reverse().map(card).join(''):'');

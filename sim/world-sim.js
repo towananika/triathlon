@@ -23,7 +23,7 @@
     var real = new Date(EPOCH + d * DAY + 9 * 36e5), y2 = MON[i] <= 3 ? y + 1 : y;
     return { y: y2, school: y, m: MON[i], d: n + 1, doy: (((d % 365) + 365) % 365 + 90) % 365, wd: real.getUTCDay(), label: '新暦' + y2 + '年' + MON[i] + '月' + (n + 1) + '日（' + WK[real.getUTCDay()] + '）' };
   }
-  var SHIFT = 3650; // 2026-10-25 に、世界を10年先へ進めた
+  var SHIFT = 12410; // 2026-10-25 に10年先へ、2026-10-26 にさらに24年先へ（新暦346年：3つの国が未来のしくみを60%とり入れた年）
   function today(now) { return Math.floor(((now || Date.now()) - EPOCH) / DAY) + SHIFT; }
 
   // 産業：[キー, 名前, 作るもの, 1人1日あたり, 色]
@@ -205,7 +205,7 @@
       p.mood = clamp(p.mood * .95 + target * .05, 0, 100); avgMood += p.mood / s.prov.length;
       p.pop *= 1 + (.010 - .009 - p.short * .02) / 365;
     });
-    if (w.d === 1) s.prov.forEach(function (p) { p.pop *= 1 + (p.mood - avgMood) * .00015 + .0005 + (p.mood - 55) * .00003 - (p.price.food > 1.5 ? .001 : 0); }); // 月ごと：生まれる・亡くなる（満足と食べ物で年0〜1%ほど）、引っこす
+    if (w.d === 1) s.prov.forEach(function (p) { p.pop *= 1 + (p.mood - avgMood) * .00015 + .0005 + (society(w.y).tfr - 2.1) * .0006 + (p.mood - 55) * .00003 - (p.price.food > 1.5 ? .001 : 0); }); // 月ごと：生まれる・亡くなる（満足と食べ物で年0〜1%ほど）、引っこす
 
     // 6. 政治・軍事・外交
     s.nat.forEach(function (n, i) {
@@ -420,7 +420,7 @@
     return Object.assign({ name: name, place: character[1], basis: '二水州の地域物価。職業・支援・住居・交通は別設定が必要' }, DEV.costOfLiving(s.prov[0], profile));
   }
   // 社会の5段階（studio/text/world/society_stages_v1.md）。年ごとの4つの数字から、町がどの段階にいるかを決める
-  var SOC_K = [[200, 5.2, 3, 12, 62], [260, 4.2, 5, 15, 58], [300, 2.8, 8, 18, 46], [312, 2.2, 14, 24, 50], [334, 1.2, 32, 38, 56], [345, .85, 38, 42, 54], [356, 1.0, 36, 34, 48], [378, 1.5, 30, 27, 42], [395, 1.65, 28, 25, 40]];
+  var SOC_K = [[200, 5.2, 3, 12, 62], [260, 4.2, 5, 15, 58], [300, 2.8, 8, 18, 46], [312, 2.2, 14, 24, 50], [328, 1.05, 34, 40, 56], [346, 1.36, 27, 30, 44], [365, 1.6, 22, 25, 38], [395, 1.7, 20, 23, 35]];
   var STAGES = ['問題の前', '生まれはじめ', 'そのまま', '解決に向かう', '解決された'];
   function socRaw(y) {
     var K = SOC_K, i = 0; if (y <= K[0][0]) return K[0].slice(1); if (y >= K[K.length - 1][0]) return K[K.length - 1].slice(1);
@@ -428,6 +428,9 @@
     var a = K[i], b = K[i + 1], t = (y - a[0]) / (b[0] - a[0]);
     return [1, 2, 3, 4].map(function (j) { return a[j] + (b[j] - a[j]) * t; });
   }
+  // 未来のしくみをとり入れた割合（312年に4つの文明と出会ってから、行き来で広まる）。[分野, 広まる中心の年]
+  var ADOPT = [['働く時間', 330], ['住まい', 340], ['ひとりぼっち', 345], ['子育て', 352]];
+  function adoption(y) { var a = ADOPT.map(function (x) { return [x[0], Math.round(100 / (1 + Math.exp(-(y - x[1]) / 6)))]; }); return { items: a, total: Math.round(a.reduce(function (n, x) { return n + x[1]; }, 0) / a.length) }; }
   function society(y) {
     var v = socRaw(y), r = rng(y * 7919 + 11), n = function (x, k) { return x * (1 + (r() - .5) * k); };
     var o = { y: y, tfr: +n(v[0], .04).toFixed(2), alone: Math.round(n(v[1], .06)), rent: Math.round(n(v[2], .05)), hours: Math.round(n(v[3], .03)) };
@@ -436,6 +439,6 @@
     o.name = STAGES[o.stage];
     return o;
   }
-  root.TRI_SIM = { CIV_ADV: CIV_ADV, society: society, STAGES: STAGES, LINK: LINK, SITES: SITES, CIVS: CIVS, NATS: NATS, CHAIRS: CHAIRS, EPOCH: EPOCH, today: today, wdate: wdate, climate: climate, WX: WX, run: run, people: people, slotOf: slotOf, PROV: PROV, SECT: SECT, DONG: DONG, CH: CH, untilModern: untilModern, livingCosts: livingCosts };
+  root.TRI_SIM = { adoption: adoption, CIV_ADV: CIV_ADV, society: society, STAGES: STAGES, LINK: LINK, SITES: SITES, CIVS: CIVS, NATS: NATS, CHAIRS: CHAIRS, EPOCH: EPOCH, today: today, wdate: wdate, climate: climate, WX: WX, run: run, people: people, slotOf: slotOf, PROV: PROV, SECT: SECT, DONG: DONG, CH: CH, untilModern: untilModern, livingCosts: livingCosts };
   if (typeof module === 'object' && module.exports) module.exports = root.TRI_SIM;
 })(typeof window !== 'undefined' ? window : globalThis);
