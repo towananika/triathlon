@@ -1,0 +1,50 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>世界のこれまで | TRIATHLON</title><meta property="og:type" content="website"><meta property="og:site_name" content="TRIATHLON 九つの光の、一生"><meta property="og:title" content="世界のこれまで | TRIATHLON"><meta property="og:description" content="新暦312年から今日まで、世界が現代の文明に届くまでの1年ごとの記録。"><meta property="og:url" content="https://towananika.github.io/triathlon/sim/history.html"><meta property="og:image" content="https://towananika.github.io/triathlon/assets/ogp.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="description" content="新暦312年から今日まで、世界が現代の文明に届くまでの1年ごとの記録。">
+<style>
+:root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mute:#5f6f78;--line:#d9e3e2;--tq:#22AAA6;--blue:#2F6FB8;--deep:#173A63;--gold:#C9A646;--mist:#DCF1EF}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mute:#9fb0b4;--line:#2b3a42;--blue:#7fb0e8;--deep:#cfe0f2;--mist:#1f3a3c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mute:#9fb0b4;--line:#2b3a42;--blue:#7fb0e8;--deep:#cfe0f2;--mist:#1f3a3c;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.8 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 56px max(16px,env(safe-area-inset-left,0px))}
+h1{font-size:24px;margin:0 0 4px;color:var(--blue)}.lead{color:var(--mute);margin:0 0 18px}h2{font-size:18px;color:var(--deep);margin:28px 0 10px}
+.charts{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.ch{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;min-width:0}.ch small{color:var(--mute);font-size:13px}.ch b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.ch svg{display:block;width:100%;height:56px;margin-top:4px}
+.yr{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:0 0 12px}
+.yr h3{margin:0;font-size:17px;color:var(--deep);display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}.yr h3 span{font-size:12px;font-weight:600;border-radius:999px;padding:1px 10px;background:var(--mist);color:var(--deep)}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:4px 12px;margin:8px 0;font-size:14px;font-variant-numeric:tabular-nums}.kv div small{display:block;color:var(--mute);font-size:12px}
+.ev{margin:6px 0 0;padding-left:1.2em;font-size:14px}.ev li{margin:2px 0}.ev time{color:var(--mute);font-size:12px;margin-right:6px}
+details summary{cursor:pointer;color:var(--blue);font-size:14px;margin-top:6px}
+.back a{color:var(--blue);font-weight:700}
+</style></head><body>
+<script src="../site-nav.js?v=0.52"></script>
+<main>
+<h1>世界のこれまで</h1>
+<p class="lead">新暦312年から今日まで、3つの国が現代の文明に届くまでの1年ごとの記録です。数字は世界のシミュレーションから取り出しました。</p>
+<div class="charts" id="charts"></div>
+<h2>1年ごとの記録</h2>
+<div id="years"></div>
+<p class="back"><a href="./">← 今日の世界へ</a></p>
+</main>
+<script src="history.js?v=0.52"></script>
+<script>
+(function(){
+  var H=(window.TRI_HISTORY||{years:[]}).years;if(!H.length)return;
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function spark(v,col){var mn=Math.min.apply(0,v),mx=Math.max.apply(0,v),r=mx-mn||1,w=200,h=50;
+    var pts=v.map(function(x,i){return [4+i*(w-8)/Math.max(1,v.length-1),h-4-(x-mn)/r*(h-8)]});
+    var d=pts.map(function(p,i){return (i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)}).join('');
+    var e=pts[pts.length-1];
+    return '<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" aria-hidden="true"><path d="'+d+' L'+e[0]+' '+h+' L4 '+h+'Z" fill="'+col+'" opacity=".15"/><path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2" vector-effect="non-scaling-stroke"/><circle cx="'+e[0]+'" cy="'+e[1]+'" r="3" fill="'+col+'"/></svg>'}
+  var first=H[0],last=H[H.length-1],dev=function(y){return Math.round(y.nat.reduce(function(n,x){return n+x.dev},0)/y.nat.length)};
+  var C=[['3つの国の人口',H.map(function(y){return y.pop}),last.pop+'万人','#2F6FB8'],
+    ['文明の発展（電気・水道・医療など）',H.map(dev),dev(last)+'%','#22AAA6'],
+    ['子どもの数（1人の女性あたり）',H.map(function(y){return y.soc.tfr}),last.soc.tfr+'人','#D9707A'],
+    ['仕事が見つからない人',H.map(function(y){return y.unemp}),last.unemp+'%','#C9A646']];
+  document.getElementById('charts').innerHTML=C.map(function(c){return '<div class="ch"><small>'+c[0]+'</small><b>'+c[2]+'</b>'+spark(c[1],c[3])+'<small>'+first.y+'年 → 今日</small></div>'}).join('');
+  document.getElementById('years').innerHTML=H.slice().reverse().map(function(y){
+    var st=y.nat[0].stage,ev=y.ev.map(function(e){return '<li><time>'+esc(e[0].replace(/^新暦\d+年/,''))+'</time>'+esc(e[1])+'</li>'});
+    return '<section class="yr"><h3>新暦'+y.y+'年<span>'+st+'</span><span>段階：'+esc(y.soc.name)+'</span></h3>'+
+      '<div class="kv"><div><small>人口</small>'+y.pop+'万人</div><div><small>文明の発展</small>'+dev(y)+'%</div><div><small>子どもの数</small>'+y.soc.tfr+'人</div><div><small>ひとり暮らし</small>'+y.soc.alone+'%</div><div><small>家賃</small>収入の'+y.soc.rent+'%</div><div><small>出会った文明</small>'+y.civ+'つ</div></div>'+
+      (ev.length?'<ul class="ev">'+ev.slice(0,5).join('')+'</ul>'+(ev.length>5?'<details><summary>ほかの出来事（'+(ev.length-5)+'）</summary><ul class="ev">'+ev.slice(5).join('')+'</ul></details>':''):'')+'</section>'}).join('');
+})();
+</script></body></html>
