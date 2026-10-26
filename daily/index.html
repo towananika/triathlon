@@ -13,8 +13,12 @@ h1{font-size:24px;margin:0 0 4px;color:var(--blue);line-height:1.4}h2{font-size:
 .sleep{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-size:18px;line-height:2.2}.sleep p{margin:0 0 1.2em}
 .list{list-style:none;margin:0;padding:0;display:grid;gap:10px}.list a{display:block;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 16px;color:var(--fg);text-decoration:none}.list small{color:var(--mute)}.list b{display:block}
 a{color:var(--blue)}
+.gu{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:18px 0 6px}.gu h2{margin:0 0 4px}.gu .sub{margin:0 0 12px;color:var(--mute);font-size:14px}
+.gg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gg button{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:14px;padding:10px 4px;font:inherit;font-size:15px;cursor:pointer}.gg button span{display:block;font-size:26px;line-height:1.3}
+.gg button[aria-pressed="true"]{border-color:var(--tq);box-shadow:inset 0 0 0 2px var(--tq);background:var(--mist)}.gg button:focus-visible{outline:3px solid #C9A646;outline-offset:2px}
+.gs{margin:12px 0 0;background:var(--mist);border-radius:14px;padding:12px 14px;font-size:15px}.gs b{color:var(--deep)}
 </style></head><body>
-<script src="../site-nav.js?v=0.49"></script>
+<script src="../site-nav.js?v=0.50"></script>
 <main id="m"><p>読みこみ中…</p></main>
 <script src="daily.js?v=0.47"></script>
 <script>
@@ -32,5 +36,17 @@ a{color:var(--blue)}
     m.innerHTML='<p class="kick">おやすみの話・約3分</p><h1>'+esc(s.title)+'</h1><div class="sleep">'+s.body.split(/\n\s*\n/).map(function(b){return '<p>'+b.split('\n').map(esc).join('<br>')+'</p>'}).join('')+'</div><p><a href="./">ほかの話 →</a></p>';return}
   function li(x,k){return '<li><a href="?id='+x.id+'"><small>'+k+'</small><b>'+esc(x.title)+'</b></a></li>'}
   m.innerHTML='<h1>今日のごはん・おやすみの話</h1><p class="kick">ホームでは、昼はごはん、夜（20時から朝5時）はおやすみの話が出ます。</p><h2>今日のごはん</h2><ul class="list">'+D.food.map(function(x){return li(x,esc(x.who))}).join('')+'</ul><h2>おやすみの話</h2><ul class="list">'+D.sleep.map(function(x){return li(x,'約3分')}).join('')+'</ul>';
+  // ごはんの具を3つそろえる（セイラの台所）
+  var GU=[['c','🍚','ごはん'],['c','🍜','めん'],['c','🍞','パン'],['p','🐟','魚'],['p','🥚','卵'],['p','🫘','豆腐'],['v','🥬','青菜'],['v','🍄','きのこ'],['v','🥕','にんじん']],sel=[];
+  var SAY={all:'力のもと、体をつくるもの、ととのえるもの。ぜんぶそろったね。これなら訓練の日でも、夕方までもつよ。',p:'おいしそう。でも、体をつくるもの（たんぱく質）が入ってないね。卵をひとつ落とすだけで、ずいぶんちがうよ。',c:'体をつくるものと野菜はいいね。でも力のもと（ごはんやめん）がないと、昼すぎにおなかが鳴っちゃう。',v:'野菜やきのこがないね。からだの調子をととのえる役なの。青菜をひとつかみ足そうか。',one:'同じなかまばかりだね。ちがうなかまから1つずつ選ぶと、からだがよろこぶよ。'};
+  var box=document.createElement('section');box.className='gu';box.setAttribute('aria-labelledby','gu-h');
+  box.innerHTML='<h2 id="gu-h">🍲 セイラの台所：今日の具を3つ</h2><p class="sub">鍋に入れたい具を3つ選んでね。</p><div class="gg">'+GU.map(function(g,j){return '<button type="button" data-j="'+j+'" aria-pressed="false"><span aria-hidden="true">'+g[1]+'</span>'+g[2]+'</button>'}).join('')+'</div><p class="gs" id="gs" aria-live="polite">あと3つ。</p>';
+  m.insertBefore(box,m.querySelector('h2')||null);
+  [].forEach.call(box.querySelectorAll('.gg button'),function(b){b.onclick=function(){var j=+b.dataset.j,k=sel.indexOf(j);
+    if(k>=0)sel.splice(k,1);else{if(sel.length>=3)sel.shift();sel.push(j)}
+    [].forEach.call(box.querySelectorAll('.gg button'),function(x){x.setAttribute('aria-pressed',sel.indexOf(+x.dataset.j)>=0)});
+    var t=document.getElementById('gs');if(sel.length<3){t.textContent='あと'+(3-sel.length)+'つ。';return}
+    var has={};sel.forEach(function(x){has[GU[x][0]]=1});var n=Object.keys(has).length;
+    t.innerHTML='<b>セイラ</b>「'+(n===3?SAY.all:n===1?SAY.one:SAY[['c','p','v'].filter(function(x){return !has[x]})[0]])+'」'}});
 })();
 </script></body></html>
