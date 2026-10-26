@@ -1,6 +1,7 @@
 (function(root){
   'use strict';
-  var LABELS={power:'電力',water:'上下水道',health:'医療',education:'教育',communications:'通信'};
+  // 発展の速さ。2026-10-26 ひびき：今（新暦322年）の時点で現代の文明に届いているように速めた（新暦320年に到達）
+  var PACE=4;var LABELS={power:'電力',water:'上下水道',health:'医療',education:'教育',communications:'通信'};
   function clamp(v){return Math.max(0,Math.min(1,v));}
   function create(name){return {name:name,stableMonths:0,institutions:.2,research:0,services:{power:0,water:0,health:0,education:0,communications:0},formedDay:null,modernDay:null,spent:0,blocked:'調査・資源の確認',milestones:[]};}
   function stage(c){return c.modernDay!==null?'現代基盤':c.formedDay!==null?'文明成立':'基盤整備';}
@@ -20,15 +21,15 @@
       provinces.forEach(function(p){var amount=Math.min(remaining,Math.max(0,p.stock.mat-p.pop*2),Math.max(0,p.stock.goods-p.pop*20));p.stock.mat-=amount;p.stock.goods-=amount;remaining-=amount;});
       var effort=(invest-remaining)/Math.max(1,pop*.08);
       c.spent+=invest-remaining;
-      c.institutions=clamp(c.institutions+.006*effort);
-      c.services.education=clamp(c.services.education+.006*effort);
-      c.research=clamp(c.research+.004*effort*(.25+.75*c.services.education));
+      c.institutions=clamp(c.institutions+.006*PACE*effort);
+      c.services.education=clamp(c.services.education+.006*PACE*effort);
+      c.research=clamp(c.research+.004*PACE*effort*(.25+.75*c.services.education));
       Object.keys(LABELS).forEach(function(key){
         if(key==='education')return;
         var gate=key==='communications'?.45:key==='health'?.25:.1;
         if(c.research<gate)return;
         if((key==='health'||key==='communications')&&c.services.power<.3)return;
-        c.services[key]=clamp(c.services[key]+.005*effort);
+        c.services[key]=clamp(c.services[key]+.005*PACE*effort);
       });
     }
     if(!stable)Object.keys(c.services).forEach(function(key){c.services[key]=clamp(c.services[key]-.002);});
