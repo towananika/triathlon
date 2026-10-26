@@ -20,6 +20,7 @@ main{max-width:980px;margin:0 auto;padding:14px 14px 56px}
 .nine{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
 .nine div{background:#fff;border:1px solid #eadfcd;border-left:5px solid var(--c,#9a7630);border-radius:12px;padding:8px 12px}.nine b{font-size:16px}.nine small{color:#7a6f63;font-size:12px;margin-left:6px}.nine p{margin:2px 0 0;font-size:14px}
 .R{--c:#d94b4b}.G{--c:#2e9b5f}.B{--c:#2f6fd6}
+.soc .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:0 0 8px}.soc .steps span{font-size:11px;line-height:1.4;text-align:center;padding:6px 2px;border-radius:8px;background:#efe7d8;color:#7a6f63}.soc .steps span.on{background:#22AAA6;color:#FBFCFC;font-weight:700}.soc .nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}.soc .nums div{background:#fff;border:1px solid #eadfcd;border-radius:10px;padding:6px 10px;font-size:13px}.soc .nums b{display:block;font-size:18px}
 .dong{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
 .dong div{background:#fff;border:1px solid #eadfcd;border-radius:10px;padding:6px 10px;font-size:13px}.dong b{display:block;font-size:14px}.bar{height:6px;border-radius:3px;background:#efe7d8;margin-top:4px;overflow:hidden}.bar i{display:block;height:100%;background:#00677a}
 details{background:#fff;border:1px solid #eadfcd;border-radius:14px;padding:4px 14px;margin-top:10px}
@@ -58,6 +59,9 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 
 <h2>開拓と出会い</h2>
 <div class="exp" id="exp"></div>
+
+<h2>町の段階</h2>
+<div class="soc" id="soc"></div>
 
 <h2>二水の町のにぎわい</h2>
 <div class="dong" id="dong"></div>
@@ -181,6 +185,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
     var st = RUN.state;
     development(st);
     expo(st);
+    var so = S.society(w.y); $('soc').innerHTML = '<div class="steps">' + S.STAGES.map(function (n, i) { return '<span' + (i === so.stage ? ' class="on"' : '') + '>' + (i + 1) + ' ' + n + '</span>'; }).join('') + '</div><div class="nums"><div>子どもの数（1人の女性あたり）<b>' + so.tfr + '人</b></div><div>ひとりで暮らす人<b>' + so.alone + '%</b></div><div>収入のうち家賃<b>' + so.rent + '%</b></div><div>1週間に働く時間<b>' + so.hours + '時間</b></div></div>';
     $('dong').innerHTML = st.dong.slice().sort(function (a, b) { return b.busy - a.busy; }).map(function (g) { return '<div><b>' + esc(g.name) + '</b>' + esc(g.ku) + '・' + esc(g.use) + '<div class="bar"><i style="width:' + Math.min(100, g.busy) + '%"></i></div></div>'; }).join('');
     details(st);
     culture(st);

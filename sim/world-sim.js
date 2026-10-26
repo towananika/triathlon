@@ -412,6 +412,23 @@
     if (!character || !DEV) throw new RangeError('Unknown character or development module unavailable');
     return Object.assign({ name: name, place: character[1], basis: '二水州の地域物価。職業・支援・住居・交通は別設定が必要' }, DEV.costOfLiving(s.prov[0], profile));
   }
-  root.TRI_SIM = { LINK: LINK, SITES: SITES, CIVS: CIVS, NATS: NATS, CHAIRS: CHAIRS, EPOCH: EPOCH, today: today, wdate: wdate, climate: climate, WX: WX, run: run, people: people, slotOf: slotOf, PROV: PROV, SECT: SECT, DONG: DONG, CH: CH, untilModern: untilModern, livingCosts: livingCosts };
+  // 社会の5段階（studio/text/world/society_stages_v1.md）。年ごとの4つの数字から、町がどの段階にいるかを決める
+  var SOC_K = [[300, 2.8, 8, 18, 46], [312, 2.2, 14, 24, 50], [334, 1.2, 32, 38, 56], [345, .85, 38, 42, 54], [356, 1.0, 36, 34, 48], [378, 1.5, 30, 27, 42], [395, 1.65, 28, 25, 40]];
+  var STAGES = ['問題の前', '生まれはじめ', 'そのまま', '解決に向かう', '解決された'];
+  function socRaw(y) {
+    var K = SOC_K, i = 0; if (y <= K[0][0]) return K[0].slice(1); if (y >= K[K.length - 1][0]) return K[K.length - 1].slice(1);
+    while (K[i + 1][0] < y) i++;
+    var a = K[i], b = K[i + 1], t = (y - a[0]) / (b[0] - a[0]);
+    return [1, 2, 3, 4].map(function (j) { return a[j] + (b[j] - a[j]) * t; });
+  }
+  function society(y) {
+    var v = socRaw(y), r = rng(y * 7919 + 11), n = function (x, k) { return x * (1 + (r() - .5) * k); };
+    var o = { y: y, tfr: +n(v[0], .04).toFixed(2), alone: Math.round(n(v[1], .06)), rent: Math.round(n(v[2], .05)), hours: Math.round(n(v[3], .03)) };
+    var falling = v[0] < socRaw(y - 5)[0];
+    o.stage = v[0] >= 2.4 ? 0 : falling && v[0] > 1.3 ? 1 : falling || (v[0] < 1.3 && v[2] >= 35) ? 2 : v[0] < 1.45 ? 3 : 4;
+    o.name = STAGES[o.stage];
+    return o;
+  }
+  root.TRI_SIM = { society: society, STAGES: STAGES, LINK: LINK, SITES: SITES, CIVS: CIVS, NATS: NATS, CHAIRS: CHAIRS, EPOCH: EPOCH, today: today, wdate: wdate, climate: climate, WX: WX, run: run, people: people, slotOf: slotOf, PROV: PROV, SECT: SECT, DONG: DONG, CH: CH, untilModern: untilModern, livingCosts: livingCosts };
   if (typeof module === 'object' && module.exports) module.exports = root.TRI_SIM;
 })(typeof window !== 'undefined' ? window : globalThis);
