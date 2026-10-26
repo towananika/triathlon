@@ -71,11 +71,16 @@
   ];
   // まだだれも知らない文明：[名前, 中心の緯度, 経度, 人口(万), 近い候補地, 説明, 色]
   var CIVS = [
-    ['大河の民', 34.8, 115.5, 900, [3, 6], '西の大陸の大きな川ぞいに、たくさんの町と田んぼをもつ古い国。文字と暦がある。', '#b5651d'],
-    ['白樺の民', 46.5, 127.5, 40, [1, 4, 8], '北の森と草原を、季節ごとに移りながら暮らす人びと。馬と弓が得意。', '#5b8c5a'],
-    ['東雲国', 35.6, 137.6, 300, [5, 7], '東の大きな陸にある、山と海の国。鉄をきたえる技にすぐれる。', '#c0392b'],
-    ['珊瑚の民', 26.4, 127.9, 15, [0, 2], '南の島々を舟でつなぐ海の人びと。星を読んで海をわたる。', '#1e8bc3']
+    ['大河の民', 34.8, 115.5, 900, [3, 6], '西の大陸の大きな川ぞいの古い国。町全体で子どもを育てるしくみがあり、子どもの声が絶えない。', '#b5651d'],
+    ['白樺の民', 46.5, 127.5, 40, [1, 4, 8], '北の森と草原の人びと。家をひとりで持たず、季節ごとに住まいを分け合いながら暮らす。', '#5b8c5a'],
+    ['東雲国', 35.6, 137.6, 300, [5, 7], '東の山と海の国。鉄と機械の技で、人が働く時間を週30時間まで減らした。', '#c0392b'],
+    ['珊瑚の民', 26.4, 127.9, 15, [0, 2], '南の島々を舟でつなぐ海の人びと。だれもひとりにしない「舟の組」で暮らす。', '#1e8bc3']
   ];
+  // 出会った文明は、3つの国（現代）より進んだ社会（2026-10-26 ひびき：現代40%、進んだ社会60%）。[段階, 分野, しくみ]
+  var CIV_ADV = [[4, '子育て', '「町の子は町の子」。親が働くあいだ、近所の家とまなびやが順番に子を見る。子を持たない人も、週に半日は子どもと過ごす。'],
+    [3, '住まい', '家は「買う」でも「借りる」でもなく「使う」。町の家をみんなで持ち、暮らしに合わせて広さを替える。家賃は収入の2割まで。'],
+    [4, '働く時間', '機械にできる仕事は機械に。働く時間の短さを、国のほこりにしている。'],
+    [3, 'ひとりぼっち', '「舟の組」。家族でなくても5〜8人で組をつくり、毎晩いっしょに食べる。']];
   var STAGE = [[0, '開拓地'], [1000, '村'], [5000, '町'], [20000, '市']];
   function stageOf(n) { var t = STAGE[0][1]; STAGE.forEach(function (x) { if (n >= x[0]) t = x[1]; }); return t; }
   var CHAIRS = ['明山リン', '星原ソウ', '北林カナ', '明山ハク', '星原ユイ'];
@@ -429,6 +434,6 @@
     o.name = STAGES[o.stage];
     return o;
   }
-  root.TRI_SIM = { society: society, STAGES: STAGES, LINK: LINK, SITES: SITES, CIVS: CIVS, NATS: NATS, CHAIRS: CHAIRS, EPOCH: EPOCH, today: today, wdate: wdate, climate: climate, WX: WX, run: run, people: people, slotOf: slotOf, PROV: PROV, SECT: SECT, DONG: DONG, CH: CH, untilModern: untilModern, livingCosts: livingCosts };
+  root.TRI_SIM = { CIV_ADV: CIV_ADV, society: society, STAGES: STAGES, LINK: LINK, SITES: SITES, CIVS: CIVS, NATS: NATS, CHAIRS: CHAIRS, EPOCH: EPOCH, today: today, wdate: wdate, climate: climate, WX: WX, run: run, people: people, slotOf: slotOf, PROV: PROV, SECT: SECT, DONG: DONG, CH: CH, untilModern: untilModern, livingCosts: livingCosts };
   if (typeof module === 'object' && module.exports) module.exports = root.TRI_SIM;
 })(typeof window !== 'undefined' ? window : globalThis);
