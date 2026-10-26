@@ -78,7 +78,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 <details><summary>💰 経済（仕事・物の値段・お金）</summary><div id="eco"></div></details>
 <details><summary>🎎 文化（食べ物・祭り・ことば・信仰・芸術）</summary><div class="nat" id="cul"></div></details>
 <details><summary>🌡️ 各地の気候</summary><div class="scroll" id="cli"></div></details>
-<p class="note">この世界は、毎日少しずつ動いています。現実の1日が、世界の1日です（世界は新暦312年にはじまり、2026年10月25日に10年進めて、この日が新暦322年4月1日）。数字は物語のための目安です。</p>
+<p class="note">この世界は、毎日少しずつ動いています。現実の1日が、世界の1日です（記録は新暦312年からはじまり、2026年10月に何度か時を早送りして、いまは新暦546年）。数字は物語のための目安です。</p>
 </main>
 <script src="../cast/cast-data.js?v=0.19"></script>
 <script src="development.js?v=0.51"></script>
@@ -204,7 +204,9 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
     [].forEach.call($('slots').children, function (b) { b.setAttribute('aria-pressed', String(b.dataset.s === sl)); });
     if (day > TODAY) { $('nine').innerHTML = '<p class="note">まだ来ていない日です。</p>'; return; }
     var cls = {}; (window.CHARS || []).forEach(function (c) { var n = (window.SEED && SEED[c.id] || {}).name; if (n) cls[n] = c.c; });
-    $('nine').innerHTML = S.people(day, RUN.state, sl).map(function (p) { return '<div class="' + (cls[p.name] || '') + '"><b>' + esc(p.name) + '</b><small>📍' + esc(p.at) + '</small>' + (p.job ? '<p class="note" style="margin:0">' + esc(p.job) + '</p>' : '') + '<p>' + esc(p.what) + '</p></div>'; }).join('');
+    var nine = S.people(day, RUN.state, sl);
+    if (!nine.length) { $('nine').innerHTML = '<p class="note">9人の時代は、もう昔のことです。9人は新暦390年ごろまでに、みんな町の歴史の人になりました。いまの二水には、9人の子や孫、ひ孫たちが暮らしています。</p>'; return; }
+    $('nine').innerHTML = nine.map(function (p) { return '<div class="' + (cls[p.name] || '') + '"><b>' + esc(p.name) + '</b><small>📍' + esc(p.at) + '</small>' + (p.job ? '<p class="note" style="margin:0">' + esc(p.job) + '</p>' : '') + '<p>' + esc(p.what) + '</p></div>'; }).join('');
   }
   function expo(st) {
     if (day > TODAY) { $('exp').innerHTML = '<p class="note">まだ来ていない日です。</p>'; return; }

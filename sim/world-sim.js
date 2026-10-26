@@ -23,7 +23,7 @@
     var real = new Date(EPOCH + d * DAY + 9 * 36e5), y2 = MON[i] <= 3 ? y + 1 : y;
     return { y: y2, school: y, m: MON[i], d: n + 1, doy: (((d % 365) + 365) % 365 + 90) % 365, wd: real.getUTCDay(), label: '新暦' + y2 + '年' + MON[i] + '月' + (n + 1) + '日（' + WK[real.getUTCDay()] + '）' };
   }
-  var SHIFT = 12410; // 2026-10-25 に10年先へ、2026-10-26 にさらに24年先へ（新暦346年：3つの国が未来のしくみを60%とり入れた年）
+  var SHIFT = 85410; // 2026-10-25 に10年先へ、2026-10-26 にさらに24年先へ（新暦346年：3つの国が未来のしくみを60%とり入れた年）。2026-10-26 にさらに200年先へ（新暦546年）
   function today(now) { return Math.floor(((now || Date.now()) - EPOCH) / DAY) + SHIFT; }
 
   // 産業：[キー, 名前, 作るもの, 1人1日あたり, 色]
@@ -84,6 +84,39 @@
   var STAGE = [[0, '開拓地'], [1000, '村'], [5000, '町'], [20000, '市']];
   function stageOf(n) { var t = STAGE[0][1]; STAGE.forEach(function (x) { if (n >= x[0]) t = x[1]; }); return t; }
   var CHAIRS = ['明山リン', '星原ソウ', '北林カナ', '明山ハク', '星原ユイ'];
+  // 347年からの、時代のできごと（9月1日と2月1日。sim の乱数とは別にして、それまでの記録を変えない）
+  var ERA = [
+    ['civ', '{c}の人びとをまねて、{p}で「{a}」のしくみを試しはじめた', 1],
+    ['town', '{p}に、新しい「みんなの帰る場所」がひらいた。どの年の人も夕ごはんを食べに来る'],
+    ['town', '灯石の新しい使い方が見つかり、{p}の夜の町が明るくなった'],
+    ['civ', '{c}の学者が二水学園に来て、町の人に話をした'],
+    ['town', '二水の大川に、大水に備える新しい堤ができた'],
+    ['pol', '3つの国で、子育ての休みを同じ長さにする決まりができた'],
+    ['town', '{p}の町のお祭りが、いままででいちばんにぎわった'],
+    ['town', '星原の天文台が、新しい星を見つけた'],
+    ['town', '電車が{p}までのびた'],
+    ['town', 'はやり病が出たが、医療のおかげで早くおさまった'],
+    ['town', '地震があったが、家の建て方のおかげで{p}の被害は小さかった'],
+    ['civ', '{c}との船の行き来が、いままででいちばん多い年になった'],
+    ['town', '二水学園に、ほかの文明から来た生徒がたくさん入った'],
+    ['pol', '国どうしの話し合いで、働く時間を週30時間にそろえることが決まった'],
+    ['town', '{p}で、古い工場あとが森と畑にもどされた'],
+    ['town', '{p}の家の多くが、暮らしに合わせて広さを替えられる「みんなの家」になった'],
+    ['civ', '{c}の歌が、{p}の若い人のあいだで流行った'],
+    ['town', '大きな台風が来たが、町の見張りで、けが人は出なかった'],
+    ['town', '二水の灯籠祭りに、7つの文明の人がそろった'],
+    ['town', '{p}で、百歳のお祝いをする人が多い年になった']
+  ];
+  function era(k) {
+    var r = rng(k * 15485863 + 5); if (r() < .3) return null;
+    var e = ERA[Math.floor(r() * ERA.length)], y = k >> 1, ad = adoption(y);
+    if (e[2] && ad.total >= 99) e = ERA[1];
+    var c = CIVS[Math.floor(r() * CIVS.length)][0], p = PROV[Math.floor(r() * PROV.length)], a = ad.items[Math.floor(r() * 4)][0];
+    return { k: e[0], t: e[1].replace('{c}', c).replace('{p}', typeof p === 'string' ? p : p.name || p[0]).replace('{a}', a), where: '', era: 1 };
+  }
+  // 347年からは議長の任期を4年にして、世代ごとに新しい人が選ばれる
+  var FAM = ['明山', '星原', '北林', '花田', '火山', '南田'], GIV = ['リン', 'ソウ', 'カナ', 'ハク', 'ユイ', 'トウ', 'ミオ', 'ケイ', 'ナギ', 'アキ', 'シン', 'ホノ', 'サク', 'ヨウ'];
+  function chairName(y) { var k = (y - 347) / 4; return FAM[(k * 5 + 1) % FAM.length] + GIV[(k * 9 + 4) % GIV.length]; }
   var CAL = [[4, 1, '二水学園の入学式'], [5, 15, '新緑の遠足'], [4, 5, '花の渡し（川べりの花見）'], [6, 5, '初夏の灯石祭り'], [6, 20, '夏の力だめし'], [7, 25, '灯籠祭りの準備がはじまる'], [8, 15, '灯籠祭り'], [9, 20, '体育祭・三種リレー'],
     [10, 18, '学園対抗戦'], [11, 15, '文化祭'], [12, 10, '冬の川守訓練'], [1, 7, '新年の灯流し'], [12, 22, '冬至の灯石鍋'], [2, 20, '冬のふりかえりの日'], [3, 10, '卒業式']];
 
@@ -205,7 +238,7 @@
       p.mood = clamp(p.mood * .95 + target * .05, 0, 100); avgMood += p.mood / s.prov.length;
       p.pop *= 1 + (.010 - .009 - p.short * .02) / 365;
     });
-    if (w.d === 1) s.prov.forEach(function (p) { p.pop *= 1 + (p.mood - avgMood) * .00015 + .0005 + (society(w.y).tfr - 2.1) * .0006 + (p.mood - 55) * .00003 - (p.price.food > 1.5 ? .001 : 0); }); // 月ごと：生まれる・亡くなる（満足と食べ物で年0〜1%ほど）、引っこす
+    if (w.d === 1) s.prov.forEach(function (p) { p.pop *= 1 + (p.mood - avgMood) * .00015 + .0005 + (society(w.y).tfr - 2.1) * .0006 + (p.mood - 55) * .00003 - (p.price.food > 1.5 ? .001 : 0) + (w.y < 347 ? 0 : -.0004 + (society(w.y).tfr - 2.1) * .0006); }); // 月ごと：生まれる・亡くなる（満足と食べ物で年0〜1%ほど）、引っこす。347年からは子どもの数がそのまま人口に効く
 
     // 6. 政治・軍事・外交
     s.nat.forEach(function (n, i) {
@@ -244,7 +277,9 @@
       n0.approval = keep ? n0.approval : 60;
       ev.push({ k: 'pol', t: '水和国の選挙：' + NATS[0].parties[n0.party][0] + (keep ? 'が勝ち、今の方針が続く' : 'が勝ち、' + old + 'から政権が交代した'), where: '水和国' });
     }
-    if (w.m === 4 && w.d === 1 && d > 0) { s.nat[1].chair = (s.nat[1].chair + 1) % CHAIRS.length; ev.push({ k: 'pol', t: '文光国の評議会で、新しい議長に' + CHAIRS[s.nat[1].chair] + 'が選ばれた', where: '文光国' }); }
+    if (w.y >= 347 && ((w.m === 9 && w.d === 1) || (w.m === 2 && w.d === 1))) { var e2 = era(w.y * 2 + (w.m === 2 ? 1 : 0)); if (e2) ev.push(e2); }
+    if (w.m === 4 && w.d === 1 && w.y >= 347) { if ((w.y - 347) % 4 === 0) ev.push({ k: 'pol', t: '文光国の評議会で、新しい議長に' + chairName(w.y) + 'が選ばれた（4年の任期）', where: '文光国' }); }
+    else if (w.m === 4 && w.d === 1 && d > 0) { s.nat[1].chair = (s.nat[1].chair + 1) % CHAIRS.length; ev.push({ k: 'pol', t: '文光国の評議会で、新しい議長に' + CHAIRS[s.nat[1].chair] + 'が選ばれた', where: '文光国' }); }
     // 改神国：祭司長は任期なし。年をとると代わる（およそ12年に1度）
     if (w.m === 1 && w.d === 7 && r() < .08) { var n2 = s.nat[2]; n2.chair = (n2.chair || 0) + 1; n2.approval = clamp(n2.approval + 8, 5, 95); ev.push({ k: 'pol', t: '改神国で祭司長が代わり、' + n2.chair + '代目の祭司長が鐘を鳴らした', where: '改神国' }); }
     // 外交：取引が多いと仲よく、相手の軍が増えると警戒。小さな事件や話し合いも
@@ -277,11 +312,11 @@
       c.pop = Math.max(50, c.pop * (1 + g) + (r() < .03 ? Math.round(20 + r() * 80) : 0)); // ときどき本国から移り住む人
       var st = stageOf(c.pop);
       if (st !== c.stage) { c.stage = st; ev.push({ k: 'exp', t: S[0] + 'の開拓地が大きくなり、' + st + 'になった（約' + Math.round(c.pop).toLocaleString() + '人）', where: S[0] }); }
-      if (r() < .004) ev.push({ k: 'exp', t: S[0] + 'で' + pick(r, ['はじめての畑のとり入れ', '小さな港ができた', '学校がひらいた', '本国との定期船が出はじめた', '井戸が掘られた', '道が本国までつながった']), where: S[0] });
+      if (r() < .004 && d - c.day < 14600) ev.push({ k: 'exp', t: S[0] + 'で' + pick(r, ['はじめての畑のとり入れ', '小さな港ができた', '学校がひらいた', '本国との定期船が出はじめた', '井戸が掘られた', '道が本国までつながった']), where: S[0] });
     });
     s.civ.forEach(function (v, j) {
       var C = CIVS[j];
-      v.pop *= 1 + .00004 + (r() - .5) * .0002; // 知らないあいだも、それぞれに栄えている
+      v.pop *= 1 + (w.y < 347 ? .00004 : .000005) + (r() - .5) * .0002; // 知らないあいだも、それぞれに栄えている（347年からは、進んだ社会なので人口が落ち着く）
       if (!v.known) {
         var near = s.col.filter(function (c) { return C[4].indexOf(c.site) >= 0; })[0];
         if ((near && r() < .02 * (d - near.day > 20 ? 1 : 0)) || r() < .0003) {
@@ -340,6 +375,7 @@
   function people(d, s, slot) {
     var w = wdate(d), wx = climate(0, d), r = rng(d * 31337 + 3), sch = schoolDay(w), cal = CAL.filter(function (c) { return c[0] === w.m && c[1] === w.d; })[0];
     var p1 = w.school === 312 && w.m >= 5 && w.m <= 8, bad = /storm|typhoon/.test(wx.k);
+    if (w.school >= 392) return []; // 9人はこのころまでに、みんな町の歴史の人になった（2026-10-26 に200年進めた）
     if (w.school >= 315) return adults(d, s, slot, w, wx, r, cal, bad);
     return CH.map(function (c) {
       var at, what;
@@ -420,7 +456,7 @@
     return Object.assign({ name: name, place: character[1], basis: '二水州の地域物価。職業・支援・住居・交通は別設定が必要' }, DEV.costOfLiving(s.prov[0], profile));
   }
   // 社会の5段階（studio/text/world/society_stages_v1.md）。年ごとの4つの数字から、町がどの段階にいるかを決める
-  var SOC_K = [[200, 5.2, 3, 12, 62], [260, 4.2, 5, 15, 58], [300, 2.8, 8, 18, 46], [312, 2.2, 14, 24, 50], [328, 1.05, 34, 40, 56], [346, 1.36, 27, 30, 44], [365, 1.6, 22, 25, 38], [395, 1.7, 20, 23, 35]];
+  var SOC_K = [[200, 5.2, 3, 12, 62], [260, 4.2, 5, 15, 58], [300, 2.8, 8, 18, 46], [312, 2.2, 14, 24, 50], [328, 1.05, 34, 40, 56], [346, 1.36, 27, 30, 44], [365, 1.6, 22, 25, 38], [395, 1.7, 20, 23, 35], [460, 1.85, 18, 22, 32], [546, 1.9, 17, 21, 30]];
   var STAGES = ['問題の前', '生まれはじめ', 'そのまま', '解決に向かう', '解決された'];
   function socRaw(y) {
     var K = SOC_K, i = 0; if (y <= K[0][0]) return K[0].slice(1); if (y >= K[K.length - 1][0]) return K[K.length - 1].slice(1);
@@ -435,7 +471,7 @@
     var v = socRaw(y), r = rng(y * 7919 + 11), n = function (x, k) { return x * (1 + (r() - .5) * k); };
     var o = { y: y, tfr: +n(v[0], .04).toFixed(2), alone: Math.round(n(v[1], .06)), rent: Math.round(n(v[2], .05)), hours: Math.round(n(v[3], .03)) };
     var falling = v[0] < socRaw(y - 5)[0];
-    o.stage = v[0] >= 2.4 ? 0 : falling && v[0] > 1.3 ? 1 : falling || (v[0] < 1.3 && v[2] >= 35) ? 2 : v[0] < 1.45 ? 3 : 4;
+    o.stage = v[0] >= 2.4 ? 0 : falling && v[0] > 1.3 ? 1 : falling || (v[0] < 1.3 && v[2] >= 35) ? 2 : v[0] < 1.6 ? 3 : 4;
     o.name = STAGES[o.stage];
     return o;
   }
