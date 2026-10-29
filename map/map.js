@@ -60,7 +60,7 @@
   defs.append('clipPath').attr('id', 'landclip').append('path').attr('id', 'landclipP');
   // 地形のある範囲では、本物の海岸線（地形データ）を使い、粗い世界地図の陸はかくす
   var mk = defs.append('mask').attr('id', 'nobox'); mk.append('rect').attr('x', -1e4).attr('y', -1e4).attr('width', 3e4).attr('height', 3e4).attr('fill', '#fff'); mk.append('path').attr('id', 'boxP').attr('fill', '#000');
-  var gOcean = svg.append('path').attr('class', 'ocean'), gGrat = svg.append('path').attr('class', 'grat'), gSea = svg.append('g').attr('class', 'ctl-sea'), gLand = svg.append('path').attr('class', 'land');
+  var gOcean = svg.append('path').attr('class', 'ocean'), gGrat = svg.append('path').attr('class', 'grat'), gSea = svg.append('g').attr('class', 'ctl-sea'), gLand = svg.append('path').attr('class', 'land'), gSurf = svg.append('g').attr('class', 'surf');
   var gRel = svg.append('g').attr('class', 'relief'), gTile = svg.append('g').attr('class', 'tiles'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gRiv = svg.append('g').attr('class', 'riv'), gNet = svg.append('g').attr('class', 'net');
   var gCiv = svg.append('g'), gRim = svg.append('path').attr('class', 'rim'), gCol = svg.append('g'), gLab = svg.append('g'), gWx = svg.append('g').attr('class', 'wxl'), gPin = svg.append('g'), gScale = svg.append('g').attr('class', 'scale');
 
@@ -91,6 +91,23 @@
     var b = g.bb, xs = [b[0], (b[0] + b[2]) / 2, b[2]], ys = [b[1], (b[1] + b[3]) / 2, b[3]], hit = false, mnx = 1e9, mxx = -1e9, mny = 1e9, mxy = -1e9;
     xs.forEach(function (x) { ys.forEach(function (y) { if (!visible([x, y])) return; var q = proj([x, y]); if (!q) return; hit = true; mnx = Math.min(mnx, q[0]); mxx = Math.max(mxx, q[0]); mny = Math.min(mny, q[1]); mxy = Math.max(mxy, q[1]); }); });
     return hit && mxx > 0 && mnx < W && mxy > 0 && mny < H || (hit && mnx <= 0 && mxx >= W) || (hit && mny <= 0 && mxy >= H);
+  }
+
+  // ---- 世界の表面の地形（assets/data/world/）：遠くでは世界全体の粗い形（w0）、近づくと見えているブロック（主な都市ごと、w1）だけ読む ----
+  var SCOL = { '-200': '#c3e2fb', '0': '#f2efe9', '500': '#ebe6d8', '1500': '#e0d8c3', '3000': '#d3c8ae', bg: '#aadaff' };
+  function wdec(arr, id) { return arr.map(function (x) { return { k: id + ':' + x[0], v: String(x[0]), g: { type: 'MultiPolygon', coordinates: dec(x[1]) } }; }); }
+  var W0 = window.TRI_WORLD && TRI_WORLD.w0 ? wdec(TRI_WORLD.w0, 'w0') : [], WIDX = window.TRI_WORLD_IDX || [], WB = {}, WASK = {};
+  window.TRI_WORLD_ON = function (id) { var B = (window.TRI_WORLD_B || {})[id]; if (!B || WB[id]) return; var b = WIDX.filter(function (x) { return x.id === id; })[0]; WB[id] = [{ k: id + ':bg', v: 'bg', g: poly(b.bb[0], b.bb[1], b.bb[2], b.bb[3]) }].concat(wdec(B, id)); if (typeof draw === 'function') draw(); };
+  function wneed(id) { if (WASK[id]) return; WASK[id] = 1; var sc = document.createElement('script'); sc.src = '../assets/data/world/w1/' + id + '.js?v=0.53'; document.head.appendChild(sc); }
+  function drawSurface(pk) {
+    if (!W0.length) return; gLand.style('display', 'none'); gSurf.attr('mask', REL.length ? 'url(#nobox)' : null);
+    var d = W0.slice();
+    var bl = [];
+    if (pk > .15) WIDX.forEach(function (b) { if (!regionOn({ id: b.id, bb: b.bb })) return; wneed(b.id); if (WB[b.id]) bl = bl.concat(WB[b.id]); });
+    var LV = ['bg', '-200', '0', '500', '1500', '3000']; bl.sort(function (a, b) { return LV.indexOf(a.v) - LV.indexOf(b.v); }); d = d.concat(bl); // ブロックの海を先に、段の低い順に重ねる
+    var j = gSurf.selectAll('path').data(d, function (x) { return x.k; }); j.exit().remove();
+    j.enter().append('path').style('fill', function (x) { return SCOL[x.v]; }).merge(j).attr('d', function (x) { return path(x.g) || ''; });
+    gSurf.selectAll('path').order();
   }
 
   // ---- くわしい地形の画像（assets/terrain/z/x/y.jpg）：東アジアの3つの国のあたり、約0.5km単位 ----
@@ -178,6 +195,7 @@
     gOcean.attr('d', path({ type: 'Sphere' })); gRim.attr('d', path({ type: 'Sphere' }));
     gGrat.attr('d', pk < 30 ? path(d3.geoGraticule10()) : null);
     gLand.attr('d', path(land)).attr('mask', REL.length ? 'url(#nobox)' : null); // 3つの国のあたりは、本物の地形からとった海岸線（いちばん低い段）を陸にする
+    drawSurface(pk);
     d3.select('#boxP').attr('d', REL.length ? path(BOX) : null);
     d3.select('#landclipP').attr('d', REL.length ? path(REL[0].g) : path(land));
     var covered = drawTiles(pk);
