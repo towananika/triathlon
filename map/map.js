@@ -123,7 +123,8 @@
 
   // ---- 交通網：州の中心の町をむすぶ道・鉄道・航路・港 ----
   function town(i) { var nm = PROV[i][6], pl = PLACES.filter(function (x) { return x.name === nm; })[0]; return pl ? pl.ll : PROV[i].c; }
-  var RAIL = [[0, 4], [0, 3], [0, 2], [4, 6], [7, 8], [7, 9]], PORTMAIN = [3, 5, 7]; // 開拓団が出る港（国ごと）
+  // 交通網はまだつくらない（2026-10-29 ひびき：つくるならとても少し、小町ほど）。町と町をむすぶ道すじは計算だけして、出さない
+  var BUILT = {}, RAIL = [], PORTMAIN = [3, 5, 7]; // 開拓団が出る港（国ごと）
   // 道すじ（assets/data/routes.js）：本物の標高から計算した、坂・トンネル・橋の工事費を考えた道すじ。遠くでは粗い線（lo）、近くでは細かい線（hi）。なければ直線
   function rt(kind, key, pk) {
     var R = window.TRI_ROUTES && TRI_ROUTES.v === 2 && TRI_ROUTES[kind][key]; if (!R) return null;
@@ -137,6 +138,7 @@
   function netData(pk) {
     var L = (SIM && SIM.LINK) || [], out = [];
     function add(kind, key, cl, a, b, name) {
+      if (!BUILT[kind] || BUILT[kind].indexOf(key) < 0) return;
       var r = rt(kind, key, pk), info = { kind: kind, name: name, s: r && r.s };
       if (!r) { out.push({ cl: cl, c: [a, b], info: info }); return; }
       r.segs.forEach(function (q) { out.push({ cl: cl + (q.t === 1 ? ' tun' : q.t === 2 ? ' br' : ''), c: q.c, info: info }); });
