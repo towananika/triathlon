@@ -67,12 +67,31 @@
   // ---- 本物の地形（assets/data/relief.js）----
   var RCOL = { 1: '#dfe6c8', 200: '#e6dfbd', 500: '#d8c99f', 1000: '#c4ad83', 1500: '#ae9572', 2000: '#98806a', 3000: '#857065' };
   function dec(mp) { return mp.map(function (poly) { return poly.map(function (r) { var o = [], x = 0, y = 0; for (var i = 0; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; o.push([x / 100, y / 100]); } return o; }); }); }
-  var REL = window.TRI_RELIEF ? [].concat(
-    TRI_RELIEF.b.map(function (b) { return { cl: 'rb', col: RCOL[b[0]], g: { type: 'MultiPolygon', coordinates: dec(b[1]) } }; }),
-    TRI_RELIEF.d.map(function (b) { return { cl: 'rd', op: b[0] < .4 ? .1 : .2, g: { type: 'MultiPolygon', coordinates: dec(b[1]) } }; }),
-    TRI_RELIEF.l.map(function (b) { return { cl: 'rl', g: { type: 'MultiPolygon', coordinates: dec(b[1]) } }; })) : [];
+  // 地形は地域ごとのファイルに分けてある（assets/data/relief/）。はじめは一番低い段だけ読み、画面に見えている地域の分をあとから読む
+  var RB = window.TRI_RELIEF_BASE, REG = RB ? RB.regions.concat([{ id: 99, bb: [110, 22, 145, 50] }]) : [], LOADED = {}, ASKED = {};
+  var REL = RB ? [{ cl: 'rb', col: RCOL[RB.b0[0]], g: { type: 'MultiPolygon', coordinates: dec(RB.b0[1]) }, o: 0, r: -1 }] : [];
   var BOX = poly(110.02, 22.02, 144.98, 49.98);
-  gRel.selectAll('path').data(REL).enter().append('path').attr('class', function (d) { return d.cl; }).style('fill', function (d) { return d.col || null; }).style('fill-opacity', function (d) { return d.op || null; });
+  function relJoin() {
+    REL.sort(function (a, b) { return a.o - b.o || a.r - b.r; });
+    var j = gRel.selectAll('path').data(REL, function (d) { return d.o + ':' + d.r; });
+    j.enter().append('path').attr('class', function (d) { return d.cl; }).style('fill', function (d) { return d.col || null; }).style('fill-opacity', function (d) { return d.op || null; });
+    gRel.selectAll('path').order();
+  }
+  relJoin();
+  window.TRI_RELIEF_ON = function (id) {
+    var P = (window.TRI_RELIEF_PART || {})[id]; if (!P || LOADED[id]) return; LOADED[id] = 1;
+    P.b.forEach(function (g) { REL.push({ cl: 'rb', col: RCOL[g[1]], g: { type: 'MultiPolygon', coordinates: dec(g[2]) }, o: g[0], r: id }); });
+    P.d.forEach(function (g) { REL.push({ cl: 'rd', op: g[1] < .4 ? .1 : .2, g: { type: 'MultiPolygon', coordinates: dec(g[2]) }, o: 10 + g[0], r: id }); });
+    relJoin(); if (typeof draw === 'function') draw();
+  };
+  function need(id) { if (ASKED[id]) return; ASKED[id] = 1; var sc = document.createElement('script'); sc.src = '../assets/data/relief/r' + id + '.js?v=0.52'; document.head.appendChild(sc); }
+  // その地域が、いま画面に見えているか（四すみ・辺のまん中・中心のどれかが見えていれば見えている）
+  function regionOn(g) {
+    if (g.id === 99) return true;
+    var b = g.bb, xs = [b[0], (b[0] + b[2]) / 2, b[2]], ys = [b[1], (b[1] + b[3]) / 2, b[3]], hit = false, mnx = 1e9, mxx = -1e9, mny = 1e9, mxy = -1e9;
+    xs.forEach(function (x) { ys.forEach(function (y) { if (!visible([x, y])) return; var q = proj([x, y]); if (!q) return; hit = true; mnx = Math.min(mnx, q[0]); mxx = Math.max(mxx, q[0]); mny = Math.min(mny, q[1]); mxy = Math.max(mxy, q[1]); }); });
+    return hit && mxx > 0 && mnx < W && mxy > 0 && mny < H || (hit && mnx <= 0 && mxx >= W) || (hit && mny <= 0 && mxy >= H);
+  }
 
   // ---- くわしい地形の画像（assets/terrain/z/x/y.jpg）：東アジアの3つの国のあたり、約0.5km単位 ----
   var TERR = { 6: [53, 55, 23, 26], 7: [107, 111, 47, 52], 8: [214, 223, 94, 104] };
@@ -134,7 +153,10 @@
     d3.select('#landclipP').attr('d', LY.relief && REL.length ? path(REL[0].g) : path(land));
     var covered = drawTiles(pk);
     gRel.style('display', LY.relief && !covered ? null : 'none');
-    if (LY.relief && !covered) gRel.selectAll('path').each(function (d) { var sh = d.cl !== 'rb'; this.style.display = FAST && sh ? 'none' : ''; if (!(FAST && sh)) this.setAttribute('d', path(d.g) || ''); }); // 動かしている間は陰影を休む
+    if (LY.relief && !covered) {
+      var on = {}; REG.forEach(function (g) { on[g.id] = regionOn(g); if (on[g.id] && !(g.id === 99 && FAST)) need(g.id); });
+      gRel.selectAll('path').each(function (d) { var sh = d.cl !== 'rb', hide = (FAST && sh) || (d.r >= 0 && !on[d.r]); this.style.display = hide ? 'none' : ''; if (!hide) this.setAttribute('d', path(d.g) || ''); }); // 動かしている間は陰影を休む。見えない地域は計算しない
+    }
     drawCtl();
     // 州
     var S = (LY.mood || LY.wx) && simData(), SU = LY.use && simData();
