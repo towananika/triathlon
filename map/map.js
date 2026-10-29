@@ -61,7 +61,7 @@
   // 地形のある範囲では、本物の海岸線（地形データ）を使い、粗い世界地図の陸はかくす
   var mk = defs.append('mask').attr('id', 'nobox'); mk.append('rect').attr('x', -1e4).attr('y', -1e4).attr('width', 3e4).attr('height', 3e4).attr('fill', '#fff'); mk.append('path').attr('id', 'boxP').attr('fill', '#000');
   var gOcean = svg.append('path').attr('class', 'ocean'), gGrat = svg.append('path').attr('class', 'grat'), gSea = svg.append('g').attr('class', 'ctl-sea'), gLand = svg.append('path').attr('class', 'land');
-  var gRel = svg.append('g').attr('class', 'relief'), gTile = svg.append('g').attr('class', 'tiles'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gNet = svg.append('g').attr('class', 'net');
+  var gRel = svg.append('g').attr('class', 'relief'), gTile = svg.append('g').attr('class', 'tiles'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gRiv = svg.append('g').attr('class', 'riv'), gNet = svg.append('g').attr('class', 'net');
   var gCiv = svg.append('g'), gRim = svg.append('path').attr('class', 'rim'), gCol = svg.append('g'), gLab = svg.append('g'), gWx = svg.append('g').attr('class', 'wxl'), gPin = svg.append('g'), gScale = svg.append('g').attr('class', 'scale');
 
   // ---- 本物の地形（assets/data/relief.js）----
@@ -123,17 +123,44 @@
 
   // ---- 交通網：州の中心の町をむすぶ道・鉄道・航路・港 ----
   function town(i) { var nm = PROV[i][6], pl = PLACES.filter(function (x) { return x.name === nm; })[0]; return pl ? pl.ll : PROV[i].c; }
-  var RAIL = [[0, 4], [0, 3]], PORTMAIN = [3, 5, 7]; // 開拓団が出る港（国ごと）
-  function netData() {
+  var RAIL = [[0, 4], [0, 3], [0, 2], [4, 6], [7, 8], [7, 9]], PORTMAIN = [3, 5, 7]; // 開拓団が出る港（国ごと）
+  // 道すじ（assets/data/routes.js）：本物の標高から計算した、坂・トンネル・橋の工事費を考えた道すじ。遠くでは粗い線（lo）、近くでは細かい線（hi）。なければ直線
+  function rt(kind, key, pk) {
+    var R = window.TRI_ROUTES && TRI_ROUTES.v === 2 && TRI_ROUTES[kind][key]; if (!R) return null;
+    var A = pk > .7 ? R.hi : R.lo, segs = [], cur = null;
+    for (var i = 0; i < A.length; i += 3) { var p = [A[i] / 1000, A[i + 1] / 1000], t = A[i + 2];
+      if (!cur || (t !== cur.t && i > 0)) { cur = { t: t, c: cur ? [cur.c[cur.c.length - 1]] : [] }; segs.push(cur); }
+      cur.c.push(p); }
+    return { segs: segs.filter(function (q) { return q.c.length > 1; }), s: R.s };
+  }
+  var TNAME = { road: '🛣️ 道', rail: '🚃 鉄道', sea: '⛴️ 航路', col: '🚩 開拓の道' };
+  function netData(pk) {
     var L = (SIM && SIM.LINK) || [], out = [];
-    L.forEach(function (l) { out.push({ cl: l[2] ? 'sea' : 'road', a: town(l[0]), b: town(l[1]) }); });
-    RAIL.forEach(function (l) { out.push({ cl: 'rail', a: town(l[0]), b: town(l[1]) }); });
-    var S = simData(); if (S) S.col.forEach(function (c) { var X = SIM.SITES[c.site]; out.push({ cl: 'colr n' + (c.nat + 1), a: town(PORTMAIN[c.nat]), b: [X[3], X[2]] }); });
+    function add(kind, key, cl, a, b, name) {
+      var r = rt(kind, key, pk), info = { kind: kind, name: name, s: r && r.s };
+      if (!r) { out.push({ cl: cl, c: [a, b], info: info }); return; }
+      r.segs.forEach(function (q) { out.push({ cl: cl + (q.t === 1 ? ' tun' : q.t === 2 ? ' br' : ''), c: q.c, info: info }); });
+    }
+    function nm(i) { return PROV[i][6]; }
+    L.forEach(function (l) { add(l[2] ? 'sea' : 'road', l[0] + '-' + l[1], l[2] ? 'sea' : 'road', town(l[0]), town(l[1]), nm(l[0]) + '〜' + nm(l[1])); });
+    RAIL.forEach(function (l) { add('rail', l[0] + '-' + l[1], 'rail', town(l[0]), town(l[1]), nm(l[0]) + '〜' + nm(l[1])); });
+    var S = simData(); if (S) S.col.forEach(function (c) { var X = SIM.SITES[c.site]; add('col', c.nat + '-' + c.site, 'colr n' + (c.nat + 1), town(PORTMAIN[c.nat]), [X[3], X[2]], nm(PORTMAIN[c.nat]) + '〜' + X[0]); });
     return out;
+  }
+  function openRoute(f) {
+    var s = f.s, km = s ? s[0] : null, sp = { road: 60, rail: 120, sea: 30, col: 30 }[f.kind], h = km && km / sp;
+    showCard({ id: 'r-' + f.kind + f.name, title: TNAME[f.kind] + '　' + f.name, sub: f.kind === 'rail' ? '電車' : f.kind === 'road' ? '車' : '船',
+      stats: km ? ['長さ：約' + km + 'km', (f.kind === 'rail' ? '電車' : f.kind === 'road' ? '車' : '船') + 'で約' + (h < 1 ? Math.round(h * 60) + '分' : (Math.round(h * 2) / 2) + '時間')].concat(s.length > 1 && s[1] ? ['トンネル：' + s[1] + 'km'] : []) : [], text: '' });
+  }
+  function drawRiver(pk) {
+    var RV = window.TRI_ROUTES && TRI_ROUTES.river || [], d = pk > .3 ? RV : [];
+    var j = gRiv.selectAll('path').data(d); j.exit().remove();
+    j.enter().append('path').merge(j).attr('d', function (r) { var A = pk > 2 ? r.hi : r.lo, c = []; for (var i = 0; i < A.length; i += 3) c.push([A[i] / 1000, A[i + 1] / 1000]); return path({ type: 'LineString', coordinates: c }); })
+      .style('stroke-width', function (r) { return Math.max(1.2, r.w / 1000 * pk) + 'px'; });
   }
   // 1km が何px か
   function pxkm() { return proj.scale() / 6371; }
-  var LY = { prov: true, wx: false, mood: false, relief: true, net: true, use: false, ctl: false }, selP = null, SIMD = null;
+  var LY = { prov: true, wx: false, mood: false, relief: false, net: true, use: false, ctl: false }, selP = null, SIMD = null;
   function simData() {
     if (SIMD || !SIM) return SIMD;
     var d = SIM.today(), x = SIM.run(d, 1);
@@ -148,11 +175,12 @@
     var pk = pxkm();
     gOcean.attr('d', path({ type: 'Sphere' })); gRim.attr('d', path({ type: 'Sphere' }));
     gGrat.attr('d', pk < 30 ? path(d3.geoGraticule10()) : null);
-    gLand.attr('d', path(land)).attr('mask', LY.relief && REL.length ? 'url(#nobox)' : null);
-    d3.select('#boxP').attr('d', LY.relief && REL.length ? path(BOX) : null);
-    d3.select('#landclipP').attr('d', LY.relief && REL.length ? path(REL[0].g) : path(land));
+    gLand.attr('d', path(land)).attr('mask', REL.length ? 'url(#nobox)' : null); // 3つの国のあたりは、本物の地形からとった海岸線（いちばん低い段）を陸にする
+    d3.select('#boxP').attr('d', REL.length ? path(BOX) : null);
+    d3.select('#landclipP').attr('d', REL.length ? path(REL[0].g) : path(land));
     var covered = drawTiles(pk);
-    gRel.style('display', LY.relief && !covered ? null : 'none');
+    gRel.style('display', !LY.relief || !covered ? null : 'none').classed('plain', !LY.relief);
+    if (!LY.relief) gRel.selectAll('path').each(function (d) { var on = d.r < 0; this.style.display = on ? '' : 'none'; if (on) this.setAttribute('d', path(d.g) || ''); }); // 地形なし：海岸線だけ
     if (LY.relief && !covered) {
       var on = {}; REG.forEach(function (g) { on[g.id] = regionOn(g); if (on[g.id] && !(g.id === 99 && FAST)) need(g.id); });
       gRel.selectAll('path').each(function (d) { var sh = d.cl !== 'rb', hide = (FAST && sh) || (d.r >= 0 && !on[d.r]); this.style.display = hide ? 'none' : ''; if (!hide) this.setAttribute('d', path(d.g) || ''); }); // 動かしている間は陰影を休む。見えない地域は計算しない
@@ -193,8 +221,11 @@
   function useOf(i) { var sh = STATE ? STATE.prov[i].share : SIM.PROV[i][6], b = 0; for (var j = 1; j < 7; j++) if (sh[j] > sh[b]) b = j; var key = SIM.SECT[b][0]; return [key, USEC[key][0], USEC[key][1], Math.round(sh[b] * 100)]; }
   function drawNet(pk) {
     gNet.style('display', LY.net ? null : 'none'); if (!LY.net) return;
-    var nd = netData(), ln = gNet.selectAll('path.l').data(nd); ln.exit().remove();
-    ln.enter().append('path').merge(ln).attr('class', function (d) { return 'l ' + d.cl; }).attr('d', function (d) { return path({ type: 'LineString', coordinates: [d.a, d.b] }); });
+    drawRiver(pk);
+    // 地図アプリのように：道と鉄道は、ふちどり（cas）を下に、本体を上に重ねる
+    var nd0 = netData(pk), nd = nd0.filter(function (d) { return /road|rail/.test(d.cl) && !/tun/.test(d.cl); }).map(function (d) { return { cl: d.cl + ' cas', c: d.c, info: d.info }; }).concat(nd0);
+    var ln = gNet.selectAll('path.l').data(nd); ln.exit().remove();
+    ln.enter().append('path').on('click', function (e, d) { openRoute(d.info); }).merge(ln).attr('class', function (d) { return 'l ' + d.cl; }).attr('d', function (d) { return path({ type: 'LineString', coordinates: d.c }); });
     var ports = PROV.map(function (p, i) { return i; }).filter(function (i) { return SIM && SIM.PROV[i][4] >= .8; });
     var pt = gNet.selectAll('text.port').data(ports); pt.exit().remove();
     pt.enter().append('text').attr('class', 'port').text('⚓').merge(pt).each(function (i) { var ll = town(i), q = proj(ll); d3.select(this).style('display', q && visible(ll) && k >= 3 ? null : 'none').attr('x', q ? q[0] - 22 : 0).attr('y', q ? q[1] + 5 : 0); });
