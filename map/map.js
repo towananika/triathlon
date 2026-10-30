@@ -158,10 +158,15 @@
   var SCOL = { '-200': '#c3e2fb', '-100': '#c3e2fb', '0': '#f2efe9', '100': '#eeebe2', '200': '#e9e5d9', '500': '#e3ddcc', '1000': '#dcd3be', '1500': '#d4c9b0', '2000': '#cbbfa4', '3000': '#c4b8a0', '4000': '#efefec', bg: '#aadaff', gf: '#c8e0b4', gg: '#e4eabf', gd: '#f2e2b8', gt: '#dde3d6', gi: '#fbfbfb', lk: '#aadaff', r0: '#9ccff5', 's0.14': '#5e5246', 's0.32': '#5e5246' };
   function wline(r, sc) { var o = [], x = 0, y = 0; for (var i = 0; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; o.push([x / sc, y / sc]); } return o; }
   var SNUM = Object.keys(SCOL).filter(function (v) { return !isNaN(+v); }).map(Number).sort(function (a, b) { return a - b; }), SINT = d3.scaleLinear().domain(SNUM).range(SNUM.map(function (v) { return SCOL[v]; })); // 町の細かい段（10m・20m…）は、まわりの段の色のあいだ
-  function scol(v) { return SCOL[v] || (isNaN(+v) ? null : SINT(+v)); }
+  // 衛星の見た目（宇宙から見た色）：低い土地は濃い緑、高いほど茶・灰、雪は白、海は深い青
+  var SCOL_SAT = { '-200': '#0e3150', '-100': '#123a5e', '0': '#5d7840', '100': '#55703a', '200': '#4e6836', '500': '#596238', '1000': '#6b6845', '1500': '#776e58', '2000': '#837a67', '3000': '#938a7d', '4000': '#e6eaee', bg: '#0b2a48', gf: '#2e5028', gg: '#788948', gd: '#bda476', gt: '#868b77', gi: '#eef2f5', lk: '#1d4f7a', r0: '#1d4f7a', 's0.14': '#000', 's0.32': '#000' };
+  var SINT_SAT = d3.scaleLinear().domain(SNUM).range(SNUM.map(function (v) { return SCOL_SAT[v] || SCOL[v]; })), SAT = false;
+  try { SAT = localStorage.getItem('tri-map-style') === 'sat'; } catch (e) {}
+  function scol(v) { var C = SAT ? SCOL_SAT : SCOL; return C[v] || (isNaN(+v) ? null : (SAT ? SINT_SAT : SINT)(+v)); }
   // 町のまわり（100m）：低い土地は緑、高いほど茶色。等高線つき
   var TCOL = d3.scaleLinear().domain([0, 20, 60, 100, 200, 400, 700, 1500]).range(['#e6efd9', '#dbe8cb', '#cfdfbb', '#c6d6ab', '#d1c798', '#c4ad86', '#b09879', '#d8d4cc']);
-  function fillOf(x) { return x.lv === 3 && !isNaN(+x.v) && +x.v >= 0 ? TCOL(+x.v) : scol(x.v); }
+  var TCOL_SAT = d3.scaleLinear().domain([0, 100, 400, 1500]).range(['#5d7840', '#4e6836', '#6b6845', '#938a7d']);
+  function fillOf(x) { return x.lv === 3 && !isNaN(+x.v) && +x.v >= 0 ? (SAT ? TCOL_SAT : TCOL)(+x.v) : scol(x.v); }
   function wdec(arr, id, sc) { sc = sc || 100; return arr.map(function (x) { var rv = String(x[0]).charAt(0) === 'r'; return { k: id + ':' + x[0], v: String(x[0]), g: rv ? { type: 'MultiLineString', coordinates: x[1].map(function (r) { return wline(r, sc); }) } : { type: 'MultiPolygon', coordinates: dec(x[1], sc) } }; }); }
   var W0 = window.TRI_WORLD && TRI_WORLD.w0 ? wdec(TRI_WORLD.w0, 'w0') : [], WIDX = (window.TRI_WORLD_IDX || []).map(function (b) { b.lv = 1; return b; }).concat((window.TRI_WORLD_IDX2 || []).map(function (b) { b.lv = 2; return b; })).concat((window.TRI_WORLD_IDX3 || []).map(function (b) { b.lv = 3; return b; })), WB = {}, WASK = {};
   window.TRI_WORLD_ON = function (id) { var B = (window.TRI_WORLD_B || {})[id]; if (!B || WB[id]) return; var b = WIDX.filter(function (x) { return x.id === id; })[0]; WB[id] = [{ k: id + ':bg', v: 'bg', g: poly(b.bb[0], b.bb[1], b.bb[2], b.bb[3]) }].concat(wdec(B, id, b.sc)); WB[id].forEach(function (x) { x.lv = b.lv; }); if (typeof draw === 'function') draw(); };
@@ -248,23 +253,23 @@
     j.enter().append('path').merge(j).attr('d', function (r) { return path(r.g); }).style('stroke-width', function (r) { return ([.6, 1, 1.6, 2.6][r.c] * z).toFixed(2) + 'px'; });
   }
   // 土地のようす（assets/data/world/land.js）：数値の升目を一度だけcanvasに描いて画像にし、6×6枚に分けて地図に貼る。動かすときは画像を動かすだけ
-  var LU = null;
+  var LUS = {};
   function luBuild() {
     var L = window.TRI_LAND; if (!L) return []; var raw = atob(L.d), g = (L.e - L.w) / L.nx, CH = 6, cw = Math.ceil(L.nx / CH), ch = Math.ceil(L.ny / CH), out = [];
-    var COL = [null, [229, 224, 176], [146, 182, 118], [205, 196, 170], [192, 179, 152], [222, 168, 156]]; // 畑・森・高地・荒れ地・町
+    var COL = SAT ? [null, [118, 126, 74], [44, 76, 38], [126, 114, 90], [136, 118, 90], [138, 130, 122]] : [null, [240, 239, 226], [205, 228, 194], [232, 228, 216], [236, 231, 220], [236, 232, 230]]; // 畑・森・高地・荒れ地・町（衛星／地図）
     for (var cy = 0; cy < CH; cy++) for (var cx = 0; cx < CH; cx++) {
       var x0 = Math.max(0, cx * cw - 1), y0 = Math.max(0, cy * ch - 1), w = Math.min(cw + 2, L.nx - x0), h = Math.min(ch + 2, L.ny - y0), // となりと1マスずつ重ねて、つなぎ目の線を出さない
         cv = document.createElement('canvas'); cv.width = w; cv.height = h;
       var ctx = cv.getContext('2d'), im = ctx.createImageData(w, h), any = false;
-      for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) { var b = raw.charCodeAt((y0 + y) * L.nx + x0 + x), c = COL[b >> 4], o = (y * w + x) * 4; if (!c) continue; var f = .6 + .04 * (b & 15); im.data[o] = Math.min(255, c[0] * f); im.data[o + 1] = Math.min(255, c[1] * f); im.data[o + 2] = Math.min(255, c[2] * f); im.data[o + 3] = Math.round(255 * Math.min(1, Math.min(x0 + x, y0 + y, L.nx - 1 - x0 - x, L.ny - 1 - y0 - y) / (14 * L.nx / 238))); any = true; } // 四角のふちはうすくして、まわりの地図になじませる
+      for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) { var b = raw.charCodeAt((y0 + y) * L.nx + x0 + x), c = COL[b >> 4], o = (y * w + x) * 4; if (!c) continue; var f = SAT ? .5 + .055 * (b & 15) : .9 + .01 * (b & 15); /* 衛星は陰影を強く、地図はうすく */ im.data[o] = Math.min(255, c[0] * f); im.data[o + 1] = Math.min(255, c[1] * f); im.data[o + 2] = Math.min(255, c[2] * f); im.data[o + 3] = Math.round(255 * Math.min(1, Math.min(x0 + x, y0 + y, L.nx - 1 - x0 - x, L.ny - 1 - y0 - y) / (14 * L.nx / 238))); any = true; } // 四角のふちはうすくして、まわりの地図になじませる
       if (!any) continue; ctx.putImageData(im, 0, 0);
       var big = document.createElement('canvas'); big.width = w * 4; big.height = h * 4; var bx = big.getContext('2d'); bx.imageSmoothingEnabled = true; bx.imageSmoothingQuality = 'high'; bx.drawImage(cv, 0, 0, w * 4, h * 4); // なめらかにのばしておく（升目のかくかくを消す）
-      out.push({ id: cx + '_' + cy, url: big.toDataURL(), w: w, h: h, nw: [L.w + x0 * g, L.n - y0 * g], ne: [L.w + (x0 + w) * g, L.n - y0 * g], sw: [L.w + x0 * g, L.n - (y0 + h) * g] });
+      out.push({ id: (SAT ? 's' : 'm') + cx + '_' + cy, url: big.toDataURL(), w: w, h: h, nw: [L.w + x0 * g, L.n - y0 * g], ne: [L.w + (x0 + w) * g, L.n - y0 * g], sw: [L.w + x0 * g, L.n - (y0 + h) * g] });
     }
     return out;
   }
   function drawLand(pk) {
-    var on = LY.land && pk > .2 && pk < 4; if (on && !LU) LU = luBuild();
+    var key = SAT ? 's' : 'm', on = LY.land && pk > .2 && pk < 4; if (on && !LUS[key]) LUS[key] = luBuild(); var LU = LUS[key];
     var list = on ? LU.filter(function (t) { return visible(t.nw) && visible(t.ne) && visible(t.sw); }) : [];
     var im = gLU.selectAll('image').data(list, function (d) { return d.id; }); im.exit().remove();
     im.enter().append('image').attr('preserveAspectRatio', 'none').attr('width', function (d) { return d.w; }).attr('height', function (d) { return d.h; }).attr('href', function (d) { return d.url; })
@@ -272,7 +277,7 @@
   }
   // 1km が何px か
   function pxkm() { return proj.scale() / 6371; }
-  var LY = { land: true, far: true, town: true, ruin: true, grid: false, prov: true, wx: false, mood: false, relief: false, net: true, use: false, ctl: false, hydro:true, labels:false }, selP = null, SIMD = null;
+  var LY = { land: true, far: true, town: false, ruin: false, grid: false, prov: true, wx: false, mood: false, relief: false, net: true, use: false, ctl: false, hydro:true, labels:false }, selP = null, SIMD = null;
   function simData() {
     if (SIMD || !SIM) return SIMD;
     var d = SIM.today(), x = SIM.run(d, 1);
@@ -338,7 +343,7 @@
     var pin = gPin.selectAll('g').data(PLACES);
     var en = pin.enter().append('g').attr('class', 'pin').attr('tabindex', 0).attr('role', 'button').attr('aria-label', function (d) { return d.name; })
       .on('click', function (e, d) { openPlace(d); }).on('keydown', function (e, d) { if (e.key === 'Enter') openPlace(d); });
-    en.append('circle').attr('r', 7); en.append('text').attr('x', 11).attr('y', 6).text(function (d) { return d.name; });
+    en.append('circle').attr('r', 4); en.append('text').attr('x', 8).attr('y', 6).text(function (d) { return d.name; });
     en.merge(pin).each(function (d) { var q = proj(d.ll), g = d3.select(this), hide = false; g.style('display', q && visible(d.ll) && !hide ? null : 'none'); if (q) g.attr('transform', 'translate(' + q[0] + ',' + q[1] + ')'); });
     drawTowns(pk);
     drawWorld(pk);
@@ -372,7 +377,7 @@
     var nd0 = netData(pk), nd = nd0.filter(function (d) { return /road|rail/.test(d.cl) && !/tun/.test(d.cl); }).map(function (d) { return { cl: d.cl + ' cas', c: d.c, info: d.info }; }).concat(nd0);
     var ln = gNet.selectAll('path.l').data(nd); ln.exit().remove();
     ln.enter().append('path').on('click', function (e, d) { openRoute(d.info); }).merge(ln).attr('class', function (d) { return 'l ' + d.cl; }).attr('d', function (d) { return path({ type: 'LineString', coordinates: d.c }); });
-    var ports = PROV.map(function (p, i) { return i; }).filter(function (i) { return SIM && SIM.PROV[i][4] >= .8; });
+    var ports = []; // 港の印は出さない（2026-10-30：見やすい定番の地図に）
     var pt = gNet.selectAll('text.port').data(ports); pt.exit().remove();
     pt.enter().append('text').attr('class', 'port').text('⚓').merge(pt).each(function (i) { var ll = town(i), q = proj(ll); d3.select(this).style('display', q && visible(ll) && k >= 3 ? null : 'none').attr('x', q ? q[0] - 32 : 0).attr('y', q ? q[1] + 5 : 0); }); // 町の円の左に離して置く
   }
@@ -460,6 +465,9 @@
     if (e.touches.length === 2 && pinch) { var a = e.touches[0], b = e.touches[1], d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY), r = stage.getBoundingClientRect(); zoomAt(d / pinch, (a.clientX + b.clientX) / 2 - r.left, (a.clientY + b.clientY) / 2 - r.top); pinch = d; }
   }, { passive: true });
   el.addEventListener('touchend', function (e) { if (e.touches.length < 2) pinch = null; });
+  // 見た目の切りかえ：地図（見やすい定番）と衛星（宇宙から見た色）
+  function setStyle(sat) { SAT = sat; try { localStorage.setItem('tri-map-style', sat ? 'sat' : 'map'); } catch (e) {} stage.classList.toggle('sat', sat); $('st-map').classList.toggle('on', !sat); $('st-sat').classList.toggle('on', sat); gSurf.selectAll('path').style('fill', fillOf); draw(); }
+  $('st-map').onclick = function () { setStyle(false); }; $('st-sat').onclick = function () { setStyle(true); }; stage.classList.toggle('sat', SAT); $('st-map').classList.toggle('on', !SAT); $('st-sat').classList.toggle('on', SAT);
   $('z-in').onclick = function () { zoomAt(2, W / 2, H / 2); };
   $('z-out').onclick = function () { zoomAt(.5, W / 2, H / 2); };
   // ll へ飛ぶ（拡大は対数でなめらかに）
