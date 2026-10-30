@@ -94,19 +94,22 @@
   }
 
   // ---- 世界の表面の地形（assets/data/world/）：遠くでは世界全体の粗い形（w0）、近づくと見えているブロック（主な都市ごと、w1）だけ読む ----
-  var SCOL = { '-200': '#c3e2fb', '0': '#f2efe9', '500': '#ebe6d8', '1500': '#e0d8c3', '3000': '#d3c8ae', bg: '#aadaff' };
-  function wdec(arr, id) { return arr.map(function (x) { return { k: id + ':' + x[0], v: String(x[0]), g: { type: 'MultiPolygon', coordinates: dec(x[1]) } }; }); }
+  var SCOL = { '-200': '#c3e2fb', '0': '#f2efe9', '100': '#eeebe2', '200': '#e9e5d9', '500': '#e3ddcc', '1000': '#dcd3be', '1500': '#d4c9b0', '2000': '#cbbfa4', '3000': '#c4b8a0', '4000': '#efefec', bg: '#aadaff', 's0.14': '#5e5246', 's0.32': '#5e5246' };
+  function wline(r) { var o = [], x = 0, y = 0; for (var i = 0; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; o.push([x / 100, y / 100]); } return o; }
+  function wdec(arr, id) { return arr.map(function (x) { var rv = String(x[0]).charAt(0) === 'r'; return { k: id + ':' + x[0], v: String(x[0]), g: rv ? { type: 'MultiLineString', coordinates: x[1].map(wline) } : { type: 'MultiPolygon', coordinates: dec(x[1]) } }; }); }
   var W0 = window.TRI_WORLD && TRI_WORLD.w0 ? wdec(TRI_WORLD.w0, 'w0') : [], WIDX = window.TRI_WORLD_IDX || [], WB = {}, WASK = {};
   window.TRI_WORLD_ON = function (id) { var B = (window.TRI_WORLD_B || {})[id]; if (!B || WB[id]) return; var b = WIDX.filter(function (x) { return x.id === id; })[0]; WB[id] = [{ k: id + ':bg', v: 'bg', g: poly(b.bb[0], b.bb[1], b.bb[2], b.bb[3]) }].concat(wdec(B, id)); if (typeof draw === 'function') draw(); };
   function wneed(id) { if (WASK[id]) return; WASK[id] = 1; var sc = document.createElement('script'); sc.src = '../assets/data/world/w1/' + id + '.js?v=0.53'; document.head.appendChild(sc); }
   function drawSurface(pk) {
-    if (!W0.length) return; gLand.style('display', 'none'); gSurf.attr('mask', REL.length ? 'url(#nobox)' : null);
+    if (!W0.length) return; gLand.style('display', 'none'); gSurf.attr('mask', REL.length && LY.relief ? 'url(#nobox)' : null); // 世界の地形がくわしくなったので、東アジアの四角は「地形」レイヤーのときだけ
     var d = W0.slice();
     var bl = [];
     if (pk > .15) WIDX.forEach(function (b) { if (!regionOn({ id: b.id, bb: b.bb })) return; wneed(b.id); if (WB[b.id]) bl = bl.concat(WB[b.id]); });
-    var LV = ['bg', '-200', '0', '500', '1500', '3000']; bl.sort(function (a, b) { return LV.indexOf(a.v) - LV.indexOf(b.v); }); d = d.concat(bl); // ブロックの海を先に、段の低い順に重ねる
+    var LV = ['bg', '-200', '0', '100', '200', '500', '1000', '1500', '2000', '3000', '4000', 's0.14', 's0.32', 'r1', 'r2', 'r3']; bl.sort(function (a, b) { return LV.indexOf(a.v) - LV.indexOf(b.v); }); d = d.concat(bl); // ブロックの海を先に、段の低い順に、影は最後に重ねる
+    // 拡大の質：見えているブロックのとなりも、手が空いたときに先に読んでおく
+    if (pk > .15 && !FAST) { clearTimeout(drawSurface.t); drawSurface.t = setTimeout(function () { WIDX.forEach(function (b) { if (!WB[b.id]) return; var p = b.id.split('_'); [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (q) { var id = (+p[0] + q[0]) + '_' + (+p[1] + q[1]); if (WIDX.some(function (x) { return x.id === id; })) wneed(id); }); }); }, 600); }
     var j = gSurf.selectAll('path').data(d, function (x) { return x.k; }); j.exit().remove();
-    j.enter().append('path').style('fill', function (x) { return SCOL[x.v]; }).merge(j).attr('d', function (x) { return path(x.g) || ''; });
+    j.enter().append('path').attr('class', function (x) { var c = x.v.charAt(0); return c === 's' ? 'shade' : c === 'r' ? 'river ' + x.v : null; }).style('fill', function (x) { return SCOL[x.v]; }).merge(j).each(function (x) { var sh = x.v.charAt(0) === 's'; this.style.display = sh && FAST ? 'none' : ''; if (!(sh && FAST)) this.setAttribute('d', path(x.g) || ''); }); // 動かしている間は影を休む
     gSurf.selectAll('path').order();
   }
 
@@ -199,7 +202,7 @@
     d3.select('#boxP').attr('d', REL.length ? path(BOX) : null);
     d3.select('#landclipP').attr('d', REL.length ? path(REL[0].g) : path(land));
     var covered = drawTiles(pk);
-    gRel.style('display', !LY.relief || !covered ? null : 'none').classed('plain', !LY.relief);
+    gRel.style('display', (!LY.relief && !W0.length) || (LY.relief && !covered) ? null : 'none').classed('plain', !LY.relief);
     if (!LY.relief) gRel.selectAll('path').each(function (d) { var on = d.r < 0; this.style.display = on ? '' : 'none'; if (on) this.setAttribute('d', path(d.g) || ''); }); // 地形なし：海岸線だけ
     if (LY.relief && !covered) {
       var on = {}; REG.forEach(function (g) { on[g.id] = regionOn(g); if (on[g.id] && !(g.id === 99 && FAST)) need(g.id); });
