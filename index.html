@@ -30,7 +30,7 @@
 .team{display:grid;gap:10px}.team div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center}
 .team span{grid-row:span 2;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:var(--card)}.team b{font-size:17px}.team p{margin:0;color:var(--sub);font-size:15px}
 @media(min-width:760px){.duo{grid-template-columns:1fr 1fr}.wlinks{grid-template-columns:repeat(3,1fr)}.team{grid-template-columns:repeat(3,1fr)}}
-</style>
+.nextep{margin:8px 2px 0;font-size:13px;color:#9a7630;font-weight:700}</style>
 </head>
 <body>
 <script src="site-nav.js?v=0.55"></script>
@@ -100,7 +100,7 @@
 </div>
 </section>
 </main>
-<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.59</span></p></footer>
+<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.59.1</span></p></footer>
 <script src="news/news.js?v=0.55"></script>
 <script>
 (function () {
@@ -119,6 +119,8 @@
     document.getElementById('cta-read').textContent = '📖 第' + s0.no + '話を読む';
     document.getElementById('ep').innerHTML = '<a href="stories/v.html?id=' + encodeURIComponent(s0.id) + '"><span class="no">第' + s0.no + '話・' + esc(s0.who) + '</span><b>' + esc(s0.title) + '</b><small>' + esc(s0.lead) + '</small>' +
       (cols.length ? '<span class="band" aria-label="この話の心の光">' + cols.map(function (c) { return '<i style="background:' + c + '"></i>'; }).join('') + '</span>' : '') + '<span class="go">読む →</span></a>';
+    var nx = (window.TRI_STORIES_ALL || []).filter(function (x) { return x.no === s0.no + 1; })[0]; // 次の話の公開日（毎週月曜）
+    if (nx) document.getElementById('ep').insertAdjacentHTML('beforeend', '<p class="nextep">次の話：第' + nx.no + '話・' + esc(nx.who) + '　' + (+nx.date.slice(5, 7)) + '月' + (+nx.date.slice(8)) + '日（月）公開</p>');
   }
   // 一生の地図の小さな見本
   var mini = '';
