@@ -61,6 +61,7 @@ dt{color:#7a6f63;font-size:14px;font-weight:700}dd{margin:0}
   h += '<h2>プロフィール</h2><dl>' + row('一人称', T.me) + row('外見', look) + row('服', L.wear) + row('好き', T.like) + row('苦手', T.dislike) + row('願い', T.wish) + row('弱いところ', T.weak) + row('関係', T.rel) + '</dl>';
   if (fr.length) h += '<h2>仲間</h2><div class="friends">' + fr.map(function (x) { return '<a href="c.html?id=' + encodeURIComponent(x.id) + '">' + esc(nm(x)) + '</a>'; }).join('') + '</div>';
   h += '<h2>好きな場所</h2>' + (P ? '<a class="card" href="../places/#' + esc(P.id) + '"><small>' + esc(P.area) + '・' + esc(P.time) + '</small><b>' + esc(P.place) + '</b><p>' + esc(P.say[0]) + '</p></a>' : '<p class="none">まだありません。</p>');
+  if (c.s === 1) h += '<h2>暮らした町</h2><a class="card" href="../map/#life=' + encodeURIComponent(name) + '"><small>マップ</small><b>' + esc(name) + 'の一生をマップでたどる →</b></a>';
   if (c.s === 1) h += '<h2>思い出のアルバム</h2><a class="card" href="../album/?who=' + encodeURIComponent(name) + '"><small>いつもの活動2つ</small><b>' + esc(name) + 'の思い出を見る →</b></a>';
   h += '<h2>登場する物語</h2>' + (S.length ? '<div class="list">' + S.map(function (s) { return '<a class="card" href="../stories/v.html?id=' + encodeURIComponent(s.id) + '"><small>第' + s.no + '話・' + esc(s.who) + 'の話</small><b>' + esc(s.title) + '</b></a>'; }).join('') + '</div>' : '<p class="none">これからの話に登場します。</p>');
   var pv = list[(i + list.length - 1) % list.length], nx = list[(i + 1) % list.length];
