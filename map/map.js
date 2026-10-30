@@ -73,7 +73,7 @@
   // 地形のある範囲では、本物の海岸線（地形データ）を使い、粗い世界地図の陸はかくす
   var mk = defs.append('mask').attr('id', 'nobox'); mk.append('rect').attr('x', -1e4).attr('y', -1e4).attr('width', 3e4).attr('height', 3e4).attr('fill', '#fff'); mk.append('path').attr('id', 'boxP').attr('fill', '#000');
   var gOcean = svg.append('path').attr('class', 'ocean'), gGrat = svg.append('path').attr('class', 'grat'), gSea = svg.append('g').attr('class', 'ctl-sea'), gLand = svg.append('path').attr('class', 'land'), gSurf = svg.append('g').attr('class', 'surf');
-  var gRel = svg.append('g').attr('class', 'relief'), gTile = svg.append('g').attr('class', 'tiles'), gLU = svg.append('g').attr('class', 'landuse'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gRiv = svg.append('g').attr('class', 'riv'), gNet = svg.append('g').attr('class', 'net');
+  var gRel = svg.append('g').attr('class', 'relief'), gTile = svg.append('g').attr('class', 'tiles'), gLU = svg.append('g').attr('class', 'landuse').attr('clip-path', 'url(#landclip)'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gRiv = svg.append('g').attr('class', 'riv'), gNet = svg.append('g').attr('class', 'net');
   var gCiv = svg.append('g'), gRim = svg.append('path').attr('class', 'rim'), gCol = svg.append('g'), gLab = svg.append('g'), gWx = svg.append('g').attr('class', 'wxl'), gPin = svg.append('g'), gScale = svg.append('g').attr('class', 'scale');
   var gHydro = svg.insert('g', '.net').attr('class', 'geography');
   var gFar = svg.insert('g', '.net').attr('class', 'far'), gGrid = svg.insert('g', '.net').attr('class', 'grid'), gTown = svg.insert('g', '.net').attr('class', 'towns');
@@ -241,9 +241,10 @@
     var L = window.TRI_LAND; if (!L) return []; var raw = atob(L.d), g = (L.e - L.w) / L.nx, CH = 6, cw = Math.ceil(L.nx / CH), ch = Math.ceil(L.ny / CH), out = [];
     var COL = [null, [229, 224, 176], [146, 182, 118], [205, 196, 170], [192, 179, 152], [222, 168, 156]]; // 畑・森・高地・荒れ地・町
     for (var cy = 0; cy < CH; cy++) for (var cx = 0; cx < CH; cx++) {
-      var x0 = cx * cw, y0 = cy * ch, w = Math.min(cw + 1, L.nx - x0), h = Math.min(ch + 1, L.ny - y0), cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      var x0 = Math.max(0, cx * cw - 1), y0 = Math.max(0, cy * ch - 1), w = Math.min(cw + 2, L.nx - x0), h = Math.min(ch + 2, L.ny - y0), // となりと1マスずつ重ねて、つなぎ目の線を出さない
+        cv = document.createElement('canvas'); cv.width = w; cv.height = h;
       var ctx = cv.getContext('2d'), im = ctx.createImageData(w, h), any = false;
-      for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) { var b = raw.charCodeAt((y0 + y) * L.nx + x0 + x), c = COL[b >> 4], o = (y * w + x) * 4; if (!c) continue; var f = .6 + .04 * (b & 15); im.data[o] = Math.min(255, c[0] * f); im.data[o + 1] = Math.min(255, c[1] * f); im.data[o + 2] = Math.min(255, c[2] * f); im.data[o + 3] = Math.round(255 * Math.min(1, Math.min(x0 + x, y0 + y, L.nx - 1 - x0 - x, L.ny - 1 - y0 - y) / 14)); any = true; } // 四角のふちはうすくして、まわりの地図になじませる
+      for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) { var b = raw.charCodeAt((y0 + y) * L.nx + x0 + x), c = COL[b >> 4], o = (y * w + x) * 4; if (!c) continue; var f = .6 + .04 * (b & 15); im.data[o] = Math.min(255, c[0] * f); im.data[o + 1] = Math.min(255, c[1] * f); im.data[o + 2] = Math.min(255, c[2] * f); im.data[o + 3] = Math.round(255 * Math.min(1, Math.min(x0 + x, y0 + y, L.nx - 1 - x0 - x, L.ny - 1 - y0 - y) / (14 * L.nx / 238))); any = true; } // 四角のふちはうすくして、まわりの地図になじませる
       if (!any) continue; ctx.putImageData(im, 0, 0);
       var big = document.createElement('canvas'); big.width = w * 4; big.height = h * 4; var bx = big.getContext('2d'); bx.imageSmoothingEnabled = true; bx.imageSmoothingQuality = 'high'; bx.drawImage(cv, 0, 0, w * 4, h * 4); // なめらかにのばしておく（升目のかくかくを消す）
       out.push({ id: cx + '_' + cy, url: big.toDataURL(), w: w, h: h, nw: [L.w + x0 * g, L.n - y0 * g], ne: [L.w + (x0 + w) * g, L.n - y0 * g], sw: [L.w + x0 * g, L.n - (y0 + h) * g] });
