@@ -75,7 +75,7 @@
   var gOcean = svg.append('path').attr('class', 'ocean'), gGrat = svg.append('path').attr('class', 'grat'), gSea = svg.append('g').attr('class', 'ctl-sea'), gLand = svg.append('path').attr('class', 'land'), gSurf = svg.append('g').attr('class', 'surf');
   var gRel = svg.append('g').attr('class', 'relief'), gTile = svg.append('g').attr('class', 'tiles'), gLU = svg.append('g').attr('class', 'landuse').attr('clip-path', 'url(#landclip)'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gRiv = svg.append('g').attr('class', 'riv'), gNet = svg.append('g').attr('class', 'net');
   var gCiv = svg.append('g'), gRim = svg.append('path').attr('class', 'rim'), gCol = svg.append('g'), gLab = svg.append('g'), gWx = svg.append('g').attr('class', 'wxl'), gPin = svg.append('g'), gScale = svg.append('g').attr('class', 'scale');
-  var gHydro = svg.insert('g', '.net').attr('class', 'geography');
+  var gHydro = svg.insert('g', '.net').attr('class', 'geography'), gLife = svg.insert('g', function () { return gLab.node(); }).attr('class', 'life');
   var gFar = svg.insert('g', '.net').attr('class', 'far'), gGrid = svg.insert('g', '.net').attr('class', 'grid'), gTown = svg.insert('g', '.net').attr('class', 'towns');
   // 地図のすべての層を1つにまとめる。動かしているあいだはこれごと拡大・移動し、手を止めたら描きなおす（地図アプリのやり方。層どうしがずれない）
   var gMap = svg.insert('g', ':first-child').attr('class', 'mapall'), MAP0 = null;
@@ -113,7 +113,7 @@
       if (off || hit(b) || count >= max) node.style.display = 'none';
       else { put(b); count++; }
     }
-    gPin.selectAll('text').nodes().forEach(label); // 物語の町の名前がいちばん先
+    gPin.selectAll('text').nodes().forEach(label); gLife.selectAll('text').nodes().forEach(label); // 物語の町の名前と、たどっている人の年がいちばん先
     // 町の円：大きい順。ほかの町の円や名前と重なる小さい町は出さない（物語の町の印とは重なってよい：同じ場所）
     gTown.selectAll('circle.town').nodes().filter(shown).map(function (n) { var r = +n.getAttribute('r'); return { n: n, r: r, b: [+n.getAttribute('cx') - r, +n.getAttribute('cy') - r, +n.getAttribute('cx') + r, +n.getAttribute('cy') + r] }; })
       .sort(function (a, b) { return b.r - a.r; }).forEach(function (t) { if (hit(t.b)) t.n.style.display = 'none'; else put(t.b); });
@@ -346,7 +346,7 @@
     en.append('circle').attr('r', 4); en.append('text').attr('x', 8).attr('y', 6).text(function (d) { return d.name; });
     en.merge(pin).each(function (d) { var q = proj(d.ll), g = d3.select(this), hide = false; g.style('display', q && visible(d.ll) && !hide ? null : 'none'); if (q) g.attr('transform', 'translate(' + q[0] + ',' + q[1] + ')'); });
     drawTowns(pk);
-    drawWorld(pk);
+    drawWorld(pk); drawLife();
     declutterLabels();
     drawScale(pk);
   }
@@ -509,8 +509,30 @@
     showCard({ id: 'p-' + i, title: p[0], sub: NAT[p[1]] + 'の州', stats: st, text: p[8], zoom: p[0] === '二水州' ? function () { flyTo(C0, kFor(7)); } : null });
     draw();
   }
+  // 一生をたどる（life/lives.js）：選んだ人が暮らした町を、年の順に線でつなぐ
+  var LIFE = null, LIVES = window.TRI_LIVES || {}, LN = Object.keys(LIVES);
+  function lifePts(n) { var L = LIVES[n]; return L ? L.s.map(function (s) { return { a: s[0], ll: town(s[1]), p: PROV[s[1]][6], t: s[2], u: s[3] }; }) : null; }
+  function drawLife() {
+    var P = LIFE && lifePts(LIFE), line = [], spots = {};
+    if (P) P.forEach(function (s, i) { if (!i || s.p !== P[i - 1].p) line.push(s.ll); (spots[s.p] = spots[s.p] || { ll: s.ll, ages: [] }).ages.push(s.a); });
+    var ln = gLife.selectAll('path').data(line.length > 1 ? [line] : []); ln.exit().remove();
+    ln.enter().append('path').attr('class', 'lifeline').merge(ln).attr('d', function (c) { return path({ type: 'LineString', coordinates: c }); });
+    var sp = gLife.selectAll('g').data(Object.keys(spots).map(function (k) { return spots[k]; })); sp.exit().remove();
+    var e = sp.enter().append('g').attr('class', 'lifept'); e.append('circle').attr('r', 7); e.append('text').attr('x', 0).attr('y', 32);
+    e.merge(sp).each(function (d) { var q = proj(d.ll), g = d3.select(this); g.style('display', q && visible(d.ll) ? null : 'none').attr('transform', q ? 'translate(' + q[0] + ',' + q[1] + ')' : null); g.select('text').text(d.ages.join('・') + '歳'); });
+  }
+  function openLife(n) {
+    LIFE = LIVES[n] ? n : null; $('life-sel').value = LIFE || ''; if (!LIFE) { card.hidden = true; draw(); return; }
+    var L = LIVES[n], P = lifePts(n), c = d3.geoCentroid({ type: 'MultiPoint', coordinates: P.map(function (s) { return s.ll; }) });
+    rot = [-c[0], -c[1], 0]; k = kFor(1300); draw();
+    showCard({ id: 'l-' + LN.indexOf(n), title: n + 'の一生', sub: '新暦' + L.y + '年生まれ・暮らした町を線でつないでいます', html: '<ol class="lifel">' + P.map(function (s) { return '<li><b>' + s.a + '歳</b>（新暦' + (L.y + s.a) + '年）' + esc(s.p) + '：' + esc(s.t) + (s.u ? ' <a href="' + s.u + '">読む →</a>' : '') + '</li>'; }).join('') + '</ol><span class="lnote">15歳（新暦312年）の暮らし：あんパン15文、路面電車10文、若い働き手の月給は1万8千文。26歳から先は、まだ書かれていません。</span>' });
+    card.querySelector('.x').onclick = function () { card.hidden = true; LIFE = null; $('life-sel').value = ''; draw(); };
+  }
+  LN.forEach(function (n) { var o = document.createElement('option'); o.value = n; o.textContent = n; $('life-sel').appendChild(o); });
+  $('life-sel').onchange = function () { openLife(this.value); };
   function openId(id) {
     var t = id.slice(0, 1), v = id.slice(2), i = +v;
+    if (t === 'l') { openLife(LN[i]); return; }
     if (t === 'g') {
       var feature = geography.filter(function (f) { return f.properties.id === v; })[0];
       if (feature) { flyTo(d3.geoCentroid(feature), 6); openGeography(feature); }
@@ -580,7 +602,8 @@
   });
   fit(); simData(); draw();
   window.addEventListener('resize', function () { fit(); draw(); });
-  var h = location.hash.match(/^#p=([a-z])-([\w-]+)$/);
+  var h = location.hash.match(/^#p=([a-z])-([\w-]+)$/), lh = decodeURIComponent(location.hash).match(/^#life=(.+)$/);
+  if (lh) setTimeout(function () { openLife(lh[1]); }, 200);
   if (h) setTimeout(function () { openId(h[1] + '-' + h[2]); }, 200);
   else if (location.hash === '#nisui') { rot = [-C0[0], -C0[1], 0]; k = kFor(7); draw(); }
   else if ((h = location.hash.match(/^#v=(-?[\d.]+),(-?[\d.]+),([\d.]+)$/))) { rot = [-h[1], -h[2], 0]; k = kFor(+h[3]); draw(); } // #v=経度,緯度,画面の幅km

@@ -26,6 +26,7 @@ svg{display:block;width:100%;height:auto}svg text{font-family:inherit}
  <div class="pop" id="pop" aria-live="polite"></div>
  <svg id="map" viewBox="0 0 360 540" role="img" aria-label="9人の0歳から80歳までの線と、できごとの点"></svg>
 </div>
+<p class="memo"><a href="../map/#life=%E3%82%A2%E3%82%AB%E3%83%AA">マップで、9人が暮らした町をたどる →</a></p>
 <p class="memo">9人は新暦297年ごろの生まれ。新暦312年に15歳で二水学園に入り、いま（新暦322年）は25歳です。あなたの年は、この端末にだけ残ります。</p>
 </main>
 <script>
@@ -57,7 +58,7 @@ svg{display:block;width:100%;height:auto}svg text{font-family:inherit}
     ev.forEach(function(e){
       var g=el('g',{'class':'dot',tabindex:0,role:'button','aria-label':n+' '+Math.floor(e[0])+'歳 '+e[2]});
       el('circle',{cx:x,cy:AGE(e[0]+(e[4]||0)),r:e[1]==='x'?4.5:6.5,fill:COL[e[1]],stroke:'var(--card)','stroke-width':2},g);
-      function show(){pop.innerHTML='<b>'+esc(n)+'　'+Math.floor(e[0])+'歳</b>'+esc(e[2])+(e[3]?'　<a href="'+e[3]+'">読む・見る →</a>':'')}
+      function show(){pop.innerHTML='<b>'+esc(n)+'　'+Math.floor(e[0])+'歳</b>'+esc(e[2])+(e[3]?'　<a href="'+e[3]+'">読む・見る →</a>':'')+'　<a href="../map/#life='+encodeURIComponent(n)+'">暮らした町をマップで →</a>'}
       g.addEventListener('click',show);g.addEventListener('keydown',function(k){if(k.key==='Enter'||k.key===' '){k.preventDefault();show()}});
     });
   });
