@@ -15,6 +15,10 @@
     { id: 'hakko', name: '白港', sub: '改神国の首都', ll: [130.4, 33.6], text: '海のむこうの、白い石の港。祈りの鐘の音で一日が動きます。' }
   ];
   var NATIONS = [{ name: '水和国', n: 'n1', c: [127.3, 36.4], col: '#2f7d4a' }, { name: '文光国', n: 'n2', c: [127.6, 39.8], col: '#4c56a8' }, { name: '改神国', n: 'n3', c: [131.2, 32.6], col: '#a86412' }];
+  // 自然の名前（海・川・山）。この世界の人たちの呼び名。[名前, 経度, 緯度, 種類 w水 m山 i島, 出す近さ k]
+  var NAMES = [['東の海', 131.2, 39.6, 'w', 3], ['西の海', 124.2, 36.2, 'w', 3], ['南の海峡', 129.0, 34.2, 'w', 3],
+    ['北川', 127.55, 37.8, 'w', 3.5], ['南川', 127.75, 37.3, 'w', 3.5], ['大川', 126.8, 37.62, 'w', 3.5], ['西境川', 124.9, 40.2, 'w', 3.5],
+    ['背骨山脈', 128.95, 36.9, 'm', 3.5], ['白峰', 128.08, 42.0, 'm', 3.5], ['南の島', 126.55, 33.38, 'i', 3.5]];
   var NAT = { n1: '水和国', n2: '文光国', n3: '改神国' };
   // 州：[名前, 国, 西,南,東,北, 中心の町, 人口(仮), 説明]（並びは world-sim.js と同じ）
   var PROV = [
@@ -94,22 +98,22 @@
   }
 
   // ---- 世界の表面の地形（assets/data/world/）：遠くでは世界全体の粗い形（w0）、近づくと見えているブロック（主な都市ごと、w1）だけ読む ----
-  var SCOL = { '-200': '#c3e2fb', '0': '#f2efe9', '100': '#eeebe2', '200': '#e9e5d9', '500': '#e3ddcc', '1000': '#dcd3be', '1500': '#d4c9b0', '2000': '#cbbfa4', '3000': '#c4b8a0', '4000': '#efefec', bg: '#aadaff', 's0.14': '#5e5246', 's0.32': '#5e5246' };
+  var SCOL = { '-200': '#c3e2fb', '0': '#f2efe9', '100': '#eeebe2', '200': '#e9e5d9', '500': '#e3ddcc', '1000': '#dcd3be', '1500': '#d4c9b0', '2000': '#cbbfa4', '3000': '#c4b8a0', '4000': '#efefec', bg: '#aadaff', gf: '#c8e0b4', gg: '#e4eabf', gd: '#f2e2b8', gt: '#dde3d6', gi: '#fbfbfb', lk: '#aadaff', r0: '#9ccff5', 's0.14': '#5e5246', 's0.32': '#5e5246' };
   function wline(r) { var o = [], x = 0, y = 0; for (var i = 0; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; o.push([x / 100, y / 100]); } return o; }
   function wdec(arr, id) { return arr.map(function (x) { var rv = String(x[0]).charAt(0) === 'r'; return { k: id + ':' + x[0], v: String(x[0]), g: rv ? { type: 'MultiLineString', coordinates: x[1].map(wline) } : { type: 'MultiPolygon', coordinates: dec(x[1]) } }; }); }
-  var W0 = window.TRI_WORLD && TRI_WORLD.w0 ? wdec(TRI_WORLD.w0, 'w0') : [], WIDX = window.TRI_WORLD_IDX || [], WB = {}, WASK = {};
-  window.TRI_WORLD_ON = function (id) { var B = (window.TRI_WORLD_B || {})[id]; if (!B || WB[id]) return; var b = WIDX.filter(function (x) { return x.id === id; })[0]; WB[id] = [{ k: id + ':bg', v: 'bg', g: poly(b.bb[0], b.bb[1], b.bb[2], b.bb[3]) }].concat(wdec(B, id)); if (typeof draw === 'function') draw(); };
-  function wneed(id) { if (WASK[id]) return; WASK[id] = 1; var sc = document.createElement('script'); sc.src = '../assets/data/world/w1/' + id + '.js?v=0.53'; document.head.appendChild(sc); }
+  var W0 = window.TRI_WORLD && TRI_WORLD.w0 ? wdec(TRI_WORLD.w0, 'w0') : [], WIDX = (window.TRI_WORLD_IDX || []).map(function (b) { b.lv = 1; return b; }).concat((window.TRI_WORLD_IDX2 || []).map(function (b) { b.lv = 2; return b; })), WB = {}, WASK = {};
+  window.TRI_WORLD_ON = function (id) { var B = (window.TRI_WORLD_B || {})[id]; if (!B || WB[id]) return; var b = WIDX.filter(function (x) { return x.id === id; })[0]; WB[id] = [{ k: id + ':bg', v: 'bg', g: poly(b.bb[0], b.bb[1], b.bb[2], b.bb[3]) }].concat(wdec(B, id)); WB[id].forEach(function (x) { x.lv = b.lv; }); if (typeof draw === 'function') draw(); };
+  function wneed(id) { if (WASK[id]) return; WASK[id] = 1; var sc = document.createElement('script'); sc.src = '../assets/data/world/' + (id.charAt(0) === 'n' ? 'w2/' : 'w1/') + id + '.js?v=0.53'; document.head.appendChild(sc); }
   function drawSurface(pk) {
     if (!W0.length) return; gLand.style('display', 'none'); gSurf.attr('mask', REL.length && LY.relief ? 'url(#nobox)' : null); // 世界の地形がくわしくなったので、東アジアの四角は「地形」レイヤーのときだけ
     var d = W0.slice();
     var bl = [];
-    if (pk > .15) WIDX.forEach(function (b) { if (!regionOn({ id: b.id, bb: b.bb })) return; wneed(b.id); if (WB[b.id]) bl = bl.concat(WB[b.id]); });
-    var LV = ['bg', '-200', '0', '100', '200', '500', '1000', '1500', '2000', '3000', '4000', 's0.14', 's0.32', 'r1', 'r2', 'r3']; bl.sort(function (a, b) { return LV.indexOf(a.v) - LV.indexOf(b.v); }); d = d.concat(bl); // ブロックの海を先に、段の低い順に、影は最後に重ねる
+    if (pk > .15) WIDX.forEach(function (b) { if (b.lv === 2 && pk < 1.2) return; if (!regionOn({ id: b.id, bb: b.bb })) return; wneed(b.id); if (WB[b.id]) bl = bl.concat(WB[b.id]); });
+    var LV = ['bg', '-200', '0', '100', '200', '500', '1000', '1500', '2000', '3000', '4000', 'gf', 'gg', 'gd', 'gt', 'gi', 's0.14', 's0.32', 'lk', 'r0', 'r1', 'r2', 'r3']; bl.sort(function (a, b) { return (a.lv - b.lv) || (LV.indexOf(a.v) - LV.indexOf(b.v)); }); d = d.concat(bl); // ブロックの海を先に、段の低い順に、影は最後に重ねる
     // 拡大の質：見えているブロックのとなりも、手が空いたときに先に読んでおく
     if (pk > .15 && !FAST) { clearTimeout(drawSurface.t); drawSurface.t = setTimeout(function () { WIDX.forEach(function (b) { if (!WB[b.id]) return; var p = b.id.split('_'); [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (q) { var id = (+p[0] + q[0]) + '_' + (+p[1] + q[1]); if (WIDX.some(function (x) { return x.id === id; })) wneed(id); }); }); }, 600); }
     var j = gSurf.selectAll('path').data(d, function (x) { return x.k; }); j.exit().remove();
-    j.enter().append('path').attr('class', function (x) { var c = x.v.charAt(0); return c === 's' ? 'shade' : c === 'r' ? 'river ' + x.v : null; }).style('fill', function (x) { return SCOL[x.v]; }).merge(j).each(function (x) { var sh = x.v.charAt(0) === 's'; this.style.display = sh && FAST ? 'none' : ''; if (!(sh && FAST)) this.setAttribute('d', path(x.g) || ''); }); // 動かしている間は影を休む
+    j.enter().append('path').attr('class', function (x) { var c = x.v.charAt(0); return c === 's' ? 'shade' : c === 'r' ? 'river ' + x.v : c === 'g' ? 'kind ' + x.v : x.v === 'lk' ? 'lake' : null; }).style('fill', function (x) { return SCOL[x.v]; }).merge(j).each(function (x) { var sh = x.v.charAt(0) === 's'; this.style.display = sh && FAST ? 'none' : ''; if (!(sh && FAST)) this.setAttribute('d', path(x.g) || ''); }); // 動かしている間は影を休む
     gSurf.selectAll('path').order();
   }
 
@@ -222,6 +226,7 @@
     var labs = [];
     if (k >= 2 && k < 3.5) NATIONS.forEach(function (n) { labs.push({ t: n.name, c: n.c, cl: 'nlab', col: n.col }); });
     else if (k >= 3.5 && pk < 40) PROV.forEach(function (p) { labs.push({ t: p[0], c: p.c, cl: 'plab', dy: PLACES.some(function (x) { return x.name === p[6]; }) ? 30 : 0 }); });
+    NAMES.forEach(function (n) { if (k >= n[4] && pk < 40) labs.push({ t: n[0], c: [n[1], n[2]], cl: 'flab ' + n[3] }); }); // 海・川・山の名前
     var lb = gLab.selectAll('text').data(labs); lb.exit().remove();
     lb.enter().append('text').merge(lb).attr('class', function (d) { return d.cl; }).style('fill', function (d) { return d.col || null; }).text(function (d) { return d.t; })
       .each(function (d) { var q = proj(d.c), v = q && visible(d.c); d3.select(this).style('display', v ? null : 'none'); if (q) d3.select(this).attr('x', q[0]).attr('y', q[1] + (d.dy || 0)); });
@@ -419,4 +424,5 @@
   var h = location.hash.match(/^#p=([a-z])-([\w-]+)$/);
   if (h) setTimeout(function () { openId(h[1] + '-' + h[2]); }, 200);
   else if (location.hash === '#nisui') { rot = [-C0[0], -C0[1], 0]; k = kFor(7); draw(); }
+  else if ((h = location.hash.match(/^#v=(-?[\d.]+),(-?[\d.]+),([\d.]+)$/))) { rot = [-h[1], -h[2], 0]; k = kFor(+h[3]); draw(); } // #v=経度,緯度,画面の幅km
 })();

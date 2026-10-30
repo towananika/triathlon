@@ -12,7 +12,7 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
 .civ path{fill-opacity:.18;stroke-opacity:.5;stroke-width:1;stroke-dasharray:4 3;cursor:pointer}.civ text{font-size:14px;font-weight:800;paint-order:stroke;stroke:#fbf8f2;stroke-width:4px;text-anchor:middle;cursor:pointer}
 .col{cursor:pointer}.col rect{stroke:#fff;stroke-width:1.5}.col text{font-size:13px;font-weight:700;fill:#2a2622;paint-order:stroke;stroke:#fbf8f2;stroke-width:3px}
 .relief path{stroke:none}.relief .rd{fill:#2e2618}.relief .rl{fill:#fff;fill-opacity:.22}
-.net path{fill:none;stroke-linecap:round}.net .road{stroke:#f8c967;stroke-width:2.6}.net .road.cas{stroke:#e2a73b;stroke-width:4}.net .rail.cas{stroke:#8d8d8d;stroke-width:3.4;stroke-dasharray:none}.net .rail{stroke:#fff;stroke-width:1.4;stroke-dasharray:6 6}.net .sea{stroke:#5b9fd6;stroke-width:1.4;stroke-dasharray:5 4}.net .colr{stroke-width:1.2;stroke-dasharray:2 4;opacity:.7}.net .colr.n1{stroke:#2f7d4a}.net .colr.n2{stroke:#4c56a8}.net .colr.n3{stroke:#a86412}.net .port{font-size:13px}.net path{cursor:pointer}.net .tun{stroke-dasharray:3 3;opacity:.5}.net .br.cas{stroke:#9a8a6a}.surf path{stroke:none}.surf .shade{fill-opacity:.09}.surf .river{fill:none!important;stroke:#9ccff5;stroke-linecap:round;stroke-linejoin:round}.surf .r1{stroke-width:.9}.surf .r2{stroke-width:1.6}.surf .r3{stroke-width:2.6}.relief.plain path{fill:#f2efe9!important;fill-opacity:1!important}.riv path{fill:none;stroke:#aadaff;stroke-linecap:round;stroke-linejoin:round}
+.net path{fill:none;stroke-linecap:round}.net .road{stroke:#f8c967;stroke-width:2.6}.net .road.cas{stroke:#e2a73b;stroke-width:4}.net .rail.cas{stroke:#8d8d8d;stroke-width:3.4;stroke-dasharray:none}.net .rail{stroke:#fff;stroke-width:1.4;stroke-dasharray:6 6}.net .sea{stroke:#5b9fd6;stroke-width:1.4;stroke-dasharray:5 4}.net .colr{stroke-width:1.2;stroke-dasharray:2 4;opacity:.7}.net .colr.n1{stroke:#2f7d4a}.net .colr.n2{stroke:#4c56a8}.net .colr.n3{stroke:#a86412}.net .port{font-size:13px}.net path{cursor:pointer}.net .tun{stroke-dasharray:3 3;opacity:.5}.net .br.cas{stroke:#9a8a6a}.surf path{stroke:none}.surf .shade{fill-opacity:.09}.surf .river{fill:none!important;stroke:#9ccff5;stroke-linecap:round;stroke-linejoin:round}.surf .r0{stroke-width:.5}.surf .r1{stroke-width:.9}.surf .kind{fill-opacity:.6}.surf .gi{fill-opacity:.9}.surf .lake{stroke:#9ccff5;stroke-width:.4}.flab{font-size:12px;pointer-events:none;text-anchor:middle;font-style:italic;letter-spacing:.15em;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}.flab.w{fill:#3d7fb8}.flab.m{fill:#7a6040}.flab.i{fill:#555}.surf .r2{stroke-width:1.6}.surf .r3{stroke-width:2.6}.relief.plain path{fill:#f2efe9!important;fill-opacity:1!important}.riv path{fill:none;stroke:#aadaff;stroke-linecap:round;stroke-linejoin:round}
 .ctl-sea path{fill-opacity:.22;stroke:none}.ctl-land path{fill-opacity:.45;stroke:#fff;stroke-width:.8}.n1{fill:#2f7d4a}.n2{fill:#4c56a8}.n3{fill:#a86412}
 .lg{display:inline-block;width:18px!important;height:0!important;border-radius:0!important;border-top:3px solid}.lg.road{border-color:#f8c967}.lg.rail{border-top:3px dashed #8d8d8d}.lg.sea{border-top:2px dashed #5b9fd6}.lg.tun{border-top:3px dashed #f8c967;opacity:.6}.lg.colr{border-top:2px dotted #2f7d4a}
 .lmenu .legend{margin:0 0 4px 22px;font-size:11px;gap:2px 8px}
@@ -33,7 +33,7 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
 .toast{position:absolute;left:50%;bottom:84px;transform:translateX(-50%);background:#2a2622;color:#fff;border-radius:999px;padding:8px 16px;font-size:13px;z-index:9;white-space:nowrap}
 @media (max-width:760px){main{padding:6px 6px 6px}h1.mt small{display:none}.gcard{left:8px;right:8px;width:auto;top:auto;bottom:8px;max-height:48%;border-radius:16px 16px 12px 12px}.glayer{bottom:auto;top:62px}.lmenu{bottom:auto;top:46px}.zoom{top:62px;bottom:auto}}
 </style></head><body>
-<script src="../site-nav.js?v=0.52"></script>
+<script src="../site-nav.js?v=0.53"></script>
 <main>
 <h1 class="mt">マップ <small>回す・拡大する・押すと説明</small></h1>
 <div class="stage" id="stage">
@@ -55,10 +55,11 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
 <script src="../assets/data/land-110m.js"></script>
 <script src="../assets/data/world/w0.js?v=0.53"></script>
 <script src="../assets/data/world/w1/index.js?v=0.53"></script>
-<script src="../assets/data/relief/base.js?v=0.52"></script>
-<script src="../assets/data/routes.js?v=0.52"></script>
-<script src="../sim/development.js?v=0.52"></script>
-<script src="../sim/checkpoint.js?v=0.52"></script>
-<script src="../sim/world-sim.js?v=0.52"></script>
-<script src="map.js?v=0.52"></script>
+<script src="../assets/data/world/w2/index.js?v=0.53"></script>
+<script src="../assets/data/relief/base.js?v=0.53"></script>
+<script src="../assets/data/routes.js?v=0.53"></script>
+<script src="../sim/development.js?v=0.53"></script>
+<script src="../sim/checkpoint.js?v=0.53"></script>
+<script src="../sim/world-sim.js?v=0.53"></script>
+<script src="map.js?v=0.53"></script>
 </body></html>
