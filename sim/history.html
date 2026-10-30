@@ -1,4 +1,4 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>世界のこれまで | TRIATHLON</title><meta property="og:type" content="website"><meta property="og:site_name" content="TRIATHLON 九つの光の、一生"><meta property="og:title" content="世界のこれまで | TRIATHLON"><meta property="og:description" content="新暦200年から今日まで、世界が現代の文明に届き、その先へ進む記録。"><meta property="og:url" content="https://towananika.github.io/triathlon/sim/history.html"><meta property="og:image" content="https://towananika.github.io/triathlon/assets/ogp.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="description" content="新暦200年から今日まで、世界が現代の文明に届き、その先へ進む記録。">
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>世界のこれまで | TRIATHLON</title><meta property="og:type" content="website"><meta property="og:site_name" content="TRIATHLON 九つの光の、一生"><meta property="og:title" content="世界のこれまで | TRIATHLON"><meta property="og:description" content="新暦1年から今日まで、世界が立ち直り、現代の文明に届き、その先へ進む記録。"><meta property="og:url" content="https://towananika.github.io/triathlon/sim/history.html"><meta property="og:image" content="https://towananika.github.io/triathlon/assets/ogp.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="description" content="新暦1年から今日まで、世界が立ち直り、現代の文明に届き、その先へ進む記録。">
 <style>
 :root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mute:#5f6f78;--line:#d9e3e2;--tq:#22AAA6;--blue:#2F6FB8;--deep:#173A63;--gold:#C9A646;--mist:#DCF1EF}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mute:#9fb0b4;--line:#2b3a42;--blue:#7fb0e8;--deep:#cfe0f2;--mist:#1f3a3c;color-scheme:dark}}
@@ -16,16 +16,16 @@ h1{font-size:24px;margin:0 0 4px;color:var(--blue)}.lead{color:var(--mute);margi
 details summary{cursor:pointer;color:var(--blue);font-size:14px;margin-top:6px}
 .back a{color:var(--blue);font-weight:700}
 </style></head><body>
-<script src="../site-nav.js?v=0.52"></script>
+<script src="../site-nav.js?v=0.53"></script>
 <main>
 <h1>世界のこれまで</h1>
-<p class="lead">新暦200年から今日まで、3つの国が現代の文明に届き、その先の社会へ進んでいく記録です。312年からはシミュレーションの1年ごとの記録、それより前は早送りの記録です。</p>
+<p class="lead">新暦1年から今日まで、生き残った者たちが暮らしを立て直し、現代の文明に届き、その先の社会へ進んでいく記録です。312年からはシミュレーションの1年ごとの記録、それより前は早送りの記録です。</p>
 <div class="charts" id="charts"></div>
 <h2>1年ごとの記録</h2>
 <div id="years"></div>
 <p class="back"><a href="./">← 今日の世界へ</a></p>
 </main>
-<script src="history.js?v=0.52"></script>
+<script src="history.js?v=0.53"></script>
 <script>
 (function(){
   var H=(window.TRI_HISTORY||{years:[]}).years;if(!H.length)return;
@@ -43,7 +43,7 @@ details summary{cursor:pointer;color:var(--blue);font-size:14px;margin-top:6px}
     ['ひとりで暮らす人',H.map(function(y){return y.soc.alone}),last.soc.alone+'%','#C9A646']];
   document.getElementById('charts').innerHTML=C.map(function(c){return '<div class="ch"><small>'+c[0]+'</small><b>'+c[2]+'</b>'+spark(c[1],c[3])+'<small>'+first.y+'年 → 今日</small></div>'}).join('');
   function card(y){
-    var st=y.pre?'早送り':y.nat[0].stage,ev=y.ev.map(function(e){return '<li><time>'+esc(e[0].replace(/^新暦\d+年/,''))+'</time>'+esc(e[1])+'</li>'});
+    var st=y.pre===2?'立て直し':y.pre?'早送り':y.nat[0].stage,ev=y.ev.map(function(e){return '<li><time>'+esc(e[0].replace(/^新暦\d+年/,''))+'</time>'+esc(e[1])+'</li>'});
     return '<section class="yr"><h3>新暦'+y.y+'年<span>'+st+'</span><span>段階：'+esc(y.soc.name)+'</span></h3>'+
       '<div class="kv"><div><small>人口</small>'+y.pop+'万人</div><div><small>文明の発展</small>'+dev(y)+'%</div><div><small>子どもの数</small>'+y.soc.tfr+'人</div><div><small>ひとり暮らし</small>'+y.soc.alone+'%</div><div><small>家賃</small>収入の'+y.soc.rent+'%</div>'+(y.fut!=null?'<div><small>未来のしくみ</small>'+y.fut+'%</div>':'')+(y.civ!=null?'<div><small>出会った文明</small>'+y.civ+'つ</div>':'')+'</div>'+
       (ev.length?'<ul class="ev">'+ev.slice(0,5).join('')+'</ul>'+(ev.length>5?'<details><summary>ほかの出来事（'+(ev.length-5)+'）</summary><ul class="ev">'+ev.slice(5).join('')+'</ul></details>':''):'')+'</section>'}
