@@ -28,6 +28,13 @@ const {pathToFileURL} = require('node:url');
       await page.locator('#gres button').first().click();
       await page.waitForTimeout(1400);
       if(!(await page.locator('#card').innerText()).includes('バイカル')) throw Error('Geography search failed');
+      for(const id of ['R','G','B']) {
+        await page.locator('[data-region="'+id+'"]').click();
+        await page.waitForTimeout(1400);
+        if(await page.locator('#card').isVisible()) throw Error('Stale place card');
+        if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)) throw Error('Region navigation overflow');
+      }
+      await page.screenshot({path:path.join(require('node:os').tmpdir(),`tri-regions-${width}.png`)});
     }
     if(errors.length) throw Error(errors.join('\n'));
     console.log('PASS: 6 region/viewport views, hydro toggle, no new transport, search, no JS errors or overflow');

@@ -465,6 +465,17 @@
   });
 
   // ---- はじめ ----
+  var regions = {R:[127,39,2800],G:[-58,-30,3400],B:[34,-12,1700]};
+  document.querySelectorAll('[data-region]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var view = regions[button.dataset.region];
+      $('card').hidden = true;
+      res.hidden = true;
+      q.value = '';
+      qx.hidden = true;
+      flyTo(view.slice(0,2), kFor(view[2]));
+    });
+  });
   fit(); simData(); draw();
   window.addEventListener('resize', function () { fit(); draw(); });
   var h = location.hash.match(/^#p=([a-z])-([\w-]+)$/);
