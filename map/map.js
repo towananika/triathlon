@@ -136,8 +136,12 @@
   var W0 = window.TRI_WORLD && TRI_WORLD.w0 ? wdec(TRI_WORLD.w0, 'w0') : [], WIDX = (window.TRI_WORLD_IDX || []).map(function (b) { b.lv = 1; return b; }).concat((window.TRI_WORLD_IDX2 || []).map(function (b) { b.lv = 2; return b; })).concat((window.TRI_WORLD_IDX3 || []).map(function (b) { b.lv = 3; return b; })), WB = {}, WASK = {};
   window.TRI_WORLD_ON = function (id) { var B = (window.TRI_WORLD_B || {})[id]; if (!B || WB[id]) return; var b = WIDX.filter(function (x) { return x.id === id; })[0]; WB[id] = [{ k: id + ':bg', v: 'bg', g: poly(b.bb[0], b.bb[1], b.bb[2], b.bb[3]) }].concat(wdec(B, id, b.sc)); WB[id].forEach(function (x) { x.lv = b.lv; }); if (typeof draw === 'function') draw(); };
   function wneed(id) { if (WASK[id]) return; WASK[id] = 1; var sc = document.createElement('script'); sc.src = '../assets/data/world/' + ({ n: 'w2/', t: 'w3/' }[id.charAt(0)] || 'w1/') + id + '.js?v=0.55'; document.head.appendChild(sc); }
+  // 動かしているあいだは、地形を計算しなおさず、前の絵を拡大・移動して見せる（手を止めたら描きなおす）
+  var SURF0 = null;
   function drawSurface(pk) {
-    if (!W0.length) return; gLand.style('display', 'none'); gSurf.attr('mask', REL.length && LY.relief ? 'url(#nobox)' : null); // 世界の地形がくわしくなったので、東アジアの四角は「地形」レイヤーのときだけ
+    if (!W0.length) return;
+    if (FAST && SURF0) { var sc = proj.scale() / SURF0.s, q = proj(SURF0.ll); if (q && visible(SURF0.ll) && sc > .5 && sc < 2) { gSurf.attr('transform', 'translate(' + (q[0] - sc * SURF0.c[0]) + ',' + (q[1] - sc * SURF0.c[1]) + ') scale(' + sc + ')'); return; } }
+    gSurf.attr('transform', null); var c0 = proj.translate(); SURF0 = { s: proj.scale(), c: c0, ll: proj.invert(c0) }; gLand.style('display', 'none'); gSurf.attr('mask', REL.length && LY.relief ? 'url(#nobox)' : null); // 世界の地形がくわしくなったので、東アジアの四角は「地形」レイヤーのときだけ
     var d = W0.slice(); // 1km（二水）と100m（都会になれる町）のブロックは、近づいたときだけ読む
     var bl = [];
     if (pk > .15) WIDX.forEach(function (b) { if ((b.lv === 2 && pk < 1.2) || (b.lv === 3 && pk < 5)) return; if (!regionOn({ id: b.id, bb: b.bb })) return; wneed(b.id); if (WB[b.id]) bl = bl.concat(WB[b.id]); });
@@ -230,6 +234,7 @@
   function visible(ll) { return d3.geoDistance(ll, [-rot[0], -rot[1]]) < Math.PI / 2 - .02; }
 
   function draw() {
+    proj.precision(FAST ? 4 : .7); // 動かしているあいだは線を粗く計算して軽くする
     gPin.selectAll('text').style('display', null); gLab.selectAll('text').style('display', null);
     gCiv.selectAll('text').style('display', null); gCol.selectAll('text').style('display', null);
     proj.translate([W / 2, H / 2]).scale(base * k).rotate(rot);
@@ -282,7 +287,7 @@
     en.merge(pin).each(function (d) { var q = proj(d.ll), g = d3.select(this), hide = false; g.style('display', q && visible(d.ll) && !hide ? null : 'none'); if (q) g.attr('transform', 'translate(' + q[0] + ',' + q[1] + ')'); });
     drawTowns(pk);
     drawWorld(pk);
-    declutterLabels();
+    if (!FAST) declutterLabels(); // 名前の重なり調べは重いので、手を止めたときだけ
     drawScale(pk);
   }
 
