@@ -12,13 +12,14 @@
     if (!sim) return entries;
     var run = sim.run(day, Math.min(day + 1, 30));
     var first = run.hist[0], last = run.hist[run.hist.length - 1];
-    var population = run.state.prov.reduce(function (n, p) { return n + p.pop; }, 0);
+    var popK = function (h, d) { var P = root.TRI_POP, t = h.prov.reduce(function (n, p) { return n + p.pop; }, 0), y = 312 + Math.floor(d / 365); return P && P[y] && t ? P[y] / t : 1; }; // 人口の大きさを sim/pop.js にそろえる
+    var population = popK(run.state, day) * run.state.prov.reduce(function (n, p) { return n + p.pop; }, 0);
     entries.push(article('world-summary-' + day, day, 'change', '3か国の暮らしの現在地',
       '10州の人口は合計約' + Math.round(population).toLocaleString('ja-JP') + '万人。開拓地は' + run.state.col.length + 'か所、知られるようになった文明は' + run.state.civ.filter(function (c) { return c.known; }).length + 'つです。',
       { place: '世界', source: '世界シミュレーション・当日集計', record: 'ルール式の計算結果' }));
     if (first && last && first.d < last.d) {
-      var before = first.prov.reduce(function (n, p) { return n + p.pop; }, 0);
-      var after = last.prov.reduce(function (n, p) { return n + p.pop; }, 0);
+      var before = popK(first, first.d) * first.prov.reduce(function (n, p) { return n + p.pop; }, 0);
+      var after = popK(last, last.d) * last.prov.reduce(function (n, p) { return n + p.pop; }, 0);
       var delta = Math.round((after - before) * 10000);
       entries.push(article('population-' + day, day, 'change', '人口の変化',
         sim.wdate(first.d).label + 'から' + sim.wdate(last.d).label + 'までに、10州の人口は約' + Math.abs(delta).toLocaleString('ja-JP') + '人' + (delta < 0 ? '減りました。' : delta > 0 ? '増えました。' : 'で、変化はありませんでした。'),

@@ -16,7 +16,7 @@ h1{font-size:24px;margin:0 0 4px;color:var(--blue)}.lead{color:var(--mute);margi
 details summary{cursor:pointer;color:var(--blue);font-size:14px;margin-top:6px}
 .back a{color:var(--blue);font-weight:700}
 </style></head><body>
-<script src="../site-nav.js?v=0.54"></script>
+<script src="../site-nav.js?v=0.55"></script>
 <main>
 <h1>世界のこれまで</h1>
 <p class="lead">旧シミュレーションの仮年表です。312年より前は曲線で補った記録、312年以降も作品内の簡易モデルによる記録で、核戦争からの現実の復旧予測ではありません。R・G・Bの地域設定との統合と、現代文明の復旧年の確定はまだ行っていません。<a href="../map/world-audit.json">確認記録</a></p>
@@ -25,10 +25,12 @@ details summary{cursor:pointer;color:var(--blue);font-size:14px;margin-top:6px}
 <div id="years"></div>
 <p class="back"><a href="./">← 今日の世界へ</a></p>
 </main>
-<script src="history.js?v=0.54"></script>
+<script src="history.js?v=0.55"></script>
+<script src="pop.js?v=0.55"></script>
 <script>
 (function(){
   var H=(window.TRI_HISTORY||{years:[]}).years;if(!H.length)return;
+  var PP=window.TRI_POP;if(PP)H.forEach(function(y){if(PP[y.y]!=null)y.pop=PP[y.y]});
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
   function spark(v,col){var mn=Math.min.apply(0,v),mx=Math.max.apply(0,v),r=mx-mn||1,w=200,h=50;
     var pts=v.map(function(x,i){return [4+i*(w-8)/Math.max(1,v.length-1),h-4-(x-mn)/r*(h-8)]});

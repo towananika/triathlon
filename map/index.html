@@ -8,6 +8,7 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
 .prov.n1{fill:#2f7d4a}.prov.n2{fill:#4c56a8}.prov.n3{fill:#a86412}
 .plab{font-size:12px;font-weight:700;fill:#2a2622;paint-order:stroke;stroke:#fbf8f2;stroke-width:3px;pointer-events:none;text-anchor:middle}
 .nlab{font-size:16px;font-weight:800;paint-order:stroke;stroke:#fbf8f2;stroke-width:4px;pointer-events:none;text-anchor:middle}
+.towns .town{fill:#c0392b;fill-opacity:.35;stroke:#c0392b;stroke-width:1.2;cursor:pointer}.towns .ruin{fill:#8a8478;fill-opacity:.55;stroke:#fbf8f2;stroke-width:1;cursor:pointer}.grid path{fill:#f4d35e;fill-opacity:.22;stroke:#d4a017;stroke-width:1;stroke-dasharray:3 3}
 .pin{cursor:pointer}.pin circle{fill:#c0392b;stroke:#fff;stroke-width:1.5}.pin text{font-size:16px;font-weight:700;fill:#2a2622;paint-order:stroke;stroke:#fbf8f2;stroke-width:3px}
 .civ path{fill-opacity:.18;stroke-opacity:.5;stroke-width:1;stroke-dasharray:4 3;cursor:pointer}.civ text{font-size:14px;font-weight:800;paint-order:stroke;stroke:#fbf8f2;stroke-width:4px;text-anchor:middle;cursor:pointer}
 .col{cursor:pointer}.col rect{stroke:#fff;stroke-width:1.5}.col text{font-size:13px;font-weight:700;fill:#2a2622;paint-order:stroke;stroke:#fbf8f2;stroke-width:3px}
@@ -34,7 +35,7 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
 @media (max-width:760px){main{padding:6px 6px 6px}h1.mt small{display:none}.gcard{left:8px;right:8px;width:auto;top:auto;bottom:8px;max-height:48%;border-radius:16px 16px 12px 12px}.glayer{bottom:auto;top:62px}.lmenu{bottom:auto;top:46px}.zoom{top:62px;bottom:auto}}
 .region-nav{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.region-nav button{font:inherit;font-size:13px;padding:8px 10px;border:1px solid #b4d9dc;border-radius:6px;background:#f2fbfb;color:#164b55;cursor:pointer;min-height:40px}.region-nav button:focus-visible{outline:2px solid #126ba0;outline-offset:2px}.map-status{font-size:12px;line-height:1.6;margin:6px 0;color:#43595f}.map-status a{color:#125d80}
 </style></head><body>
-<script src="../site-nav.js?v=0.54"></script>
+<script src="../site-nav.js?v=0.55"></script>
 <main>
 <h1 class="mt">マップ <small>回す・拡大する・押すと説明</small></h1>
 <nav aria-label="舞台地域" class="region-nav"><button type="button" data-region="R">R · 朝鮮半島・遼東</button><button type="button" data-region="G">G · ラプラタ流域</button><button type="button" data-region="B">B · マラウイ湖周辺</button></nav>
@@ -50,6 +51,7 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
   
   <label><input type="checkbox" id="ly-ctl"> 🏳️ 実効支配の範囲（陸と海）</label>
   <label><input type="checkbox" id="ly-use"> 🏭 土地の使い道（おもな仕事）</label><div class="legend"><span><i style="background:#8bc34a"></i>農業</span><span><i style="background:#29b6f6"></i>漁業</span><span><i style="background:#2e7d32"></i>林業</span><span><i style="background:#8d6e63"></i>採掘</span><span><i style="background:#5c6bc0"></i>工業</span><span><i style="background:#ff8a65"></i>商業</span></div>
+  <b>546年の町</b><label><input type="checkbox" id="ly-town" checked> 🔴 町の大きさ（人口）</label><label><input type="checkbox" id="ly-ruin" checked> ▪️ 昔の町の跡</label><label><input type="checkbox" id="ly-grid"> ⚡ 電気の網（灯石が使える範囲）</label>
   <b>重ねる</b><label><input type="checkbox" id="ly-prov" checked> 州の境界</label><label><input type="checkbox" id="ly-wx"> 今日の天気</label><label><input type="checkbox" id="ly-mood"> 暮らしの満足</label>
   <p>地形は現代の標高データ（Terrain Tiles：SRTM・ETOPO1 など）。戦後の破壊・汚染・復興を計算した地形ではありません。国・州・町・開拓地は旧シミュレーションの仮配置で、R・G・Bの配置への移行は未完了です。現代文明への復旧年も未確定です。</p></div></div>
  <div class="zoom"><button type="button" id="z-in" aria-label="大きく">＋</button><button type="button" id="z-out" aria-label="小さく">−</button></div>
@@ -59,15 +61,17 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
 <script src="../vendor/d3-7.9.0.min.js"></script>
 <script src="../vendor/topojson-client-3.1.0.min.js"></script>
 <script src="../assets/data/land-110m.js"></script>
-<script src="../assets/data/world/w0.js?v=0.54"></script>
-<script src="../assets/data/world/w1/index.js?v=0.54"></script>
-<script src="../assets/data/world/w2/index.js?v=0.54"></script>
-<script src="../assets/data/world/w3/index.js?v=0.54"></script>
-<script src="../assets/data/relief/base.js?v=0.54"></script>
-<script src="../assets/data/routes.js?v=0.54"></script>
+<script src="../assets/data/world/w0.js?v=0.55"></script>
+<script src="../assets/data/world/w1/index.js?v=0.55"></script>
+<script src="../assets/data/world/w2/index.js?v=0.55"></script>
+<script src="../assets/data/world/w3/index.js?v=0.55"></script>
+<script src="../assets/data/relief/base.js?v=0.55"></script>
+<script src="../assets/data/routes.js?v=0.55"></script>
 <script src="../assets/data/geography.js?v=20261030"></script>
-<script src="../sim/development.js?v=0.54"></script>
-<script src="../sim/checkpoint.js?v=0.54"></script>
-<script src="../sim/world-sim.js?v=0.54"></script>
+<script src="../sim/development.js?v=0.55"></script>
+<script src="../sim/checkpoint.js?v=0.55"></script>
+<script src="../sim/world-sim.js?v=0.55"></script>
+<script src="../sim/pop.js?v=0.55"></script>
+<script src="../assets/data/world/ruins.js?v=0.55"></script>
 <script src="map.js?v=20261030-geography"></script>
 </body></html>
