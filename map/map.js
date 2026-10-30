@@ -51,6 +51,7 @@
     f.geometry.coordinates.forEach(function (poly) { poly.forEach(function (r) { if (d3.geoArea({ type: 'Polygon', coordinates: [r] }) > 2 * Math.PI) r.reverse(); }); });
     p.f = f; p.c = TRI_BORDERS.c[i];
   });
+  if (window.TRI_BORDERS) PLACES.forEach(function (pl) { PROV.forEach(function (p, i) { if (p[6] === pl.name) pl.ll = TRI_BORDERS.c[i]; }); }); // 町の位置は地形に合わせた場所（平野・河口・合流点）
 
   // 二水の町の座標（360×290、60で1km）と経緯度の対応。町の真ん中 (180,145) が二水の点
   var C0 = [126.98, 37.57], KM = 60, COSL = Math.cos(C0[1] * Math.PI / 180);
@@ -72,7 +73,7 @@
   // 地形のある範囲では、本物の海岸線（地形データ）を使い、粗い世界地図の陸はかくす
   var mk = defs.append('mask').attr('id', 'nobox'); mk.append('rect').attr('x', -1e4).attr('y', -1e4).attr('width', 3e4).attr('height', 3e4).attr('fill', '#fff'); mk.append('path').attr('id', 'boxP').attr('fill', '#000');
   var gOcean = svg.append('path').attr('class', 'ocean'), gGrat = svg.append('path').attr('class', 'grat'), gSea = svg.append('g').attr('class', 'ctl-sea'), gLand = svg.append('path').attr('class', 'land'), gSurf = svg.append('g').attr('class', 'surf');
-  var gRel = svg.append('g').attr('class', 'relief'), gTile = svg.append('g').attr('class', 'tiles'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gRiv = svg.append('g').attr('class', 'riv'), gNet = svg.append('g').attr('class', 'net');
+  var gRel = svg.append('g').attr('class', 'relief'), gTile = svg.append('g').attr('class', 'tiles'), gLU = svg.append('g').attr('class', 'landuse'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gRiv = svg.append('g').attr('class', 'riv'), gNet = svg.append('g').attr('class', 'net');
   var gCiv = svg.append('g'), gRim = svg.append('path').attr('class', 'rim'), gCol = svg.append('g'), gLab = svg.append('g'), gWx = svg.append('g').attr('class', 'wxl'), gPin = svg.append('g'), gScale = svg.append('g').attr('class', 'scale');
   var gHydro = svg.insert('g', '.net').attr('class', 'geography');
   var gFar = svg.insert('g', '.net').attr('class', 'far'), gGrid = svg.insert('g', '.net').attr('class', 'grid'), gTown = svg.insert('g', '.net').attr('class', 'towns');
@@ -195,7 +196,7 @@
   }
 
   // ---- 交通網：州の中心の町をむすぶ道・鉄道・航路・港 ----
-  function town(i) { var nm = PROV[i][6], pl = PLACES.filter(function (x) { return x.name === nm; })[0]; return pl ? pl.ll : PROV[i].c; }
+  function town(i) { if (window.TRI_BORDERS) return TRI_BORDERS.c[i]; var nm = PROV[i][6], pl = PLACES.filter(function (x) { return x.name === nm; })[0]; return pl ? pl.ll : PROV[i].c; }
   // 交通網はまだつくらない（2026-10-29 ひびき：つくるならとても少し、小町ほど）。町と町をむすぶ道すじは計算だけして、出さない
   var BUILT = {}, RAIL = [], PORTMAIN = [3, 5, 7]; // 開拓団が出る港（国ごと）
   // 道すじ（assets/data/routes.js）：本物の標高から計算した、坂・トンネル・橋の工事費を考えた道すじ。遠くでは粗い線（lo）、近くでは細かい線（hi）。なければ直線
@@ -227,15 +228,38 @@
     showCard({ id: 'r-' + f.kind + f.name, title: TNAME[f.kind] + '　' + f.name, sub: f.kind === 'rail' ? '電車' : f.kind === 'road' ? '車' : '船',
       stats: km ? ['長さ：約' + km + 'km', (f.kind === 'rail' ? '電車' : f.kind === 'road' ? '車' : '船') + 'で約' + (h < 1 ? Math.round(h * 60) + '分' : (Math.round(h * 2) / 2) + '時間')].concat(s.length > 1 && s[1] ? ['トンネル：' + s[1] + 'km'] : []) : [], text: '' });
   }
+  // 川（assets/data/world/rivers.js：集水面積の段 0〜3）。遠くからは大きな川だけ、近づくほど支流も。太さは段で決める
+  var RVD = (window.TRI_RIVERS || []).map(function (r, n) { var c = [], x = 0, y = 0; for (var i = 1; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; c.push([x / 100, y / 100]); } return { n: n, c: r[0], g: { type: 'LineString', coordinates: c } }; });
   function drawRiver(pk) {
-    var RV = window.TRI_ROUTES && TRI_ROUTES.river || [], d = pk > .3 ? RV : [];
-    var j = gRiv.selectAll('path').data(d); j.exit().remove();
-    j.enter().append('path').merge(j).attr('d', function (r) { var A = pk > 2 ? r.hi : r.lo, c = []; for (var i = 0; i < A.length; i += 3) c.push([A[i] / 1000, A[i + 1] / 1000]); return path({ type: 'LineString', coordinates: c }); })
-      .style('stroke-width', function (r) { return Math.max(1.2, r.w / 1000 * pk) + 'px'; });
+    var min = pk > 2.5 ? 0 : pk > 1.2 ? 1 : pk > .5 ? 2 : 3, d = LY.hydro && pk > .2 && pk < 4 ? RVD.filter(function (r) { return r.c >= min; }) : [], z = Math.max(.8, Math.min(1.6, Math.sqrt(pk)));
+    var j = gRiv.selectAll('path').data(d, function (r) { return r.n; }); j.exit().remove();
+    j.enter().append('path').merge(j).attr('d', function (r) { return path(r.g); }).style('stroke-width', function (r) { return ([.6, 1, 1.6, 2.6][r.c] * z).toFixed(2) + 'px'; });
+  }
+  // 土地のようす（assets/data/world/land.js）：数値の升目を一度だけcanvasに描いて画像にし、6×6枚に分けて地図に貼る。動かすときは画像を動かすだけ
+  var LU = null;
+  function luBuild() {
+    var L = window.TRI_LAND; if (!L) return []; var raw = atob(L.d), g = (L.e - L.w) / L.nx, CH = 6, cw = Math.ceil(L.nx / CH), ch = Math.ceil(L.ny / CH), out = [];
+    var COL = [null, [229, 224, 176], [146, 182, 118], [205, 196, 170], [192, 179, 152], [222, 168, 156]]; // 畑・森・高地・荒れ地・町
+    for (var cy = 0; cy < CH; cy++) for (var cx = 0; cx < CH; cx++) {
+      var x0 = cx * cw, y0 = cy * ch, w = Math.min(cw + 1, L.nx - x0), h = Math.min(ch + 1, L.ny - y0), cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      var ctx = cv.getContext('2d'), im = ctx.createImageData(w, h), any = false;
+      for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) { var b = raw.charCodeAt((y0 + y) * L.nx + x0 + x), c = COL[b >> 4], o = (y * w + x) * 4; if (!c) continue; var f = .6 + .04 * (b & 15); im.data[o] = Math.min(255, c[0] * f); im.data[o + 1] = Math.min(255, c[1] * f); im.data[o + 2] = Math.min(255, c[2] * f); im.data[o + 3] = Math.round(255 * Math.min(1, Math.min(x0 + x, y0 + y, L.nx - 1 - x0 - x, L.ny - 1 - y0 - y) / 14)); any = true; } // 四角のふちはうすくして、まわりの地図になじませる
+      if (!any) continue; ctx.putImageData(im, 0, 0);
+      var big = document.createElement('canvas'); big.width = w * 4; big.height = h * 4; var bx = big.getContext('2d'); bx.imageSmoothingEnabled = true; bx.imageSmoothingQuality = 'high'; bx.drawImage(cv, 0, 0, w * 4, h * 4); // なめらかにのばしておく（升目のかくかくを消す）
+      out.push({ id: cx + '_' + cy, url: big.toDataURL(), w: w, h: h, nw: [L.w + x0 * g, L.n - y0 * g], ne: [L.w + (x0 + w) * g, L.n - y0 * g], sw: [L.w + x0 * g, L.n - (y0 + h) * g] });
+    }
+    return out;
+  }
+  function drawLand(pk) {
+    var on = LY.land && pk > .2 && pk < 4; if (on && !LU) LU = luBuild();
+    var list = on ? LU.filter(function (t) { return visible(t.nw) && visible(t.ne) && visible(t.sw); }) : [];
+    var im = gLU.selectAll('image').data(list, function (d) { return d.id; }); im.exit().remove();
+    im.enter().append('image').attr('preserveAspectRatio', 'none').attr('width', function (d) { return d.w; }).attr('height', function (d) { return d.h; }).attr('href', function (d) { return d.url; })
+      .merge(im).attr('transform', function (d) { var a = proj(d.nw), b = proj(d.ne), c = proj(d.sw); return 'matrix(' + [(b[0] - a[0]) / d.w, (b[1] - a[1]) / d.w, (c[0] - a[0]) / d.h, (c[1] - a[1]) / d.h, a[0], a[1]].map(function (v) { return v.toFixed(4); }).join(',') + ')'; });
   }
   // 1km が何px か
   function pxkm() { return proj.scale() / 6371; }
-  var LY = { far: true, town: true, ruin: true, grid: false, prov: true, wx: false, mood: false, relief: false, net: true, use: false, ctl: false, hydro:true, labels:false }, selP = null, SIMD = null;
+  var LY = { land: true, far: true, town: true, ruin: true, grid: false, prov: true, wx: false, mood: false, relief: false, net: true, use: false, ctl: false, hydro:true, labels:false }, selP = null, SIMD = null;
   function simData() {
     if (SIMD || !SIM) return SIMD;
     var d = SIM.today(), x = SIM.run(d, 1);
@@ -263,7 +287,7 @@
     drawSurface(pk);
     d3.select('#boxP').attr('d', REL.length ? path(BOX) : null);
     d3.select('#landclipP').attr('d', REL.length ? path(REL[0].g) : path(land));
-    var covered = drawTiles(pk);
+    var covered = drawTiles(pk); drawLand(pk);
     gRel.style('display', (!LY.relief && !W0.length) || (LY.relief && !covered) ? null : 'none').classed('plain', !LY.relief);
     if (!LY.relief) gRel.selectAll('path').each(function (d) { var on = d.r < 0; this.style.display = on ? '' : 'none'; if (on) this.setAttribute('d', path(d.g) || ''); }); // 地形なし：海岸線だけ
     if (LY.relief && !covered) {
@@ -312,7 +336,8 @@
   // 546年の町（2026-10-30）：州の中心の町を人口の大きさの円で、昔の町の跡を小さな四角で、電気の網（灯石が使える範囲）を淡い円で
   function drawTowns(pk) {
     var S = simData(), pop = S && S.pop, T = [], G = [], R = [];
-    if (pop) PROV.forEach(function (p, i) { var ll = town(i), km = .75 * Math.sqrt(pop[i]); T.push({ i: i, ll: ll, r: 3 + Math.sqrt(pop[i]) / 8 }); if (LY.grid) G.push({ i: i, g: d3.geoCircle().center(ll).radius(km / 111)() }); });
+    var mx = pop ? Math.max.apply(0, pop) : 0; // 町の大きさ：州の人口の35%を町に住むとして、順位規模の法則（1位の町の1/n）と半々にする
+    if (pop) PROV.forEach(function (p, i) { var ll = town(i), km = .75 * Math.sqrt(pop[i]), rk = pop.filter(function (u) { return u > pop[i]; }).length + 1, tp = .35 * (.5 * pop[i] + .5 * mx / rk); T.push({ i: i, ll: ll, r: 3 + Math.sqrt(tp) / 5 }); if (LY.grid) G.push({ i: i, g: d3.geoCircle().center(ll).radius(km / 111)() }); });
     var RU = window.TRI_RUINS || [];
     if (LY.ruin) for (var j = 0; j < RU.length; j += 3) { var ll = [RU[j] / 100, RU[j + 1] / 100]; if (!PROV.some(function (p, i) { return d3.geoDistance(ll, town(i)) * 6371 < 15; })) R.push({ ll: ll, p: RU[j + 2] }); }
     var gg = gGrid.selectAll('path').data(G); gg.exit().remove(); gg.enter().append('path').merge(gg).attr('d', function (d) { return path(d.g); });
@@ -515,7 +540,7 @@
   lm.addEventListener('change', function (e) {
     var x = e.target;
     if (x.id === 'ly-prov') { LY.prov = x.checked; draw(); }
-    if (/^ly-(relief|net|use|ctl|hydro|labels|town|ruin|grid|far)$/.test(x.id)) { LY[x.id.slice(3)] = x.checked; if (x.id === 'ly-use' && x.checked) { $('ly-mood').checked = LY.mood = false; } if (x.id === 'ly-mood' && x.checked) { $('ly-use').checked = LY.use = false; } draw(); }
+    if (/^ly-(relief|net|use|ctl|hydro|labels|town|ruin|grid|far|land)$/.test(x.id)) { LY[x.id.slice(3)] = x.checked; if (x.id === 'ly-use' && x.checked) { $('ly-mood').checked = LY.mood = false; } if (x.id === 'ly-mood' && x.checked) { $('ly-use').checked = LY.use = false; } draw(); }
     if (x.id === 'ly-mood' && x.checked) { $('ly-use').checked = LY.use = false; }
     if (x.id === 'ly-wx' || x.id === 'ly-mood') { LY[x.id === 'ly-wx' ? 'wx' : 'mood'] = x.checked; var S = simData(); if (x.checked && S) toast('世界シミュレーション：' + S.date); draw(); }
   });
