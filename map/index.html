@@ -3,6 +3,9 @@ body{margin:0;background:#fbf8f2;color:#2a2622;font:15px/1.7 system-ui,-apple-sy
 main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h1.mt small{font-size:12px;color:#7a6f63;font-weight:400;margin-left:6px}
 .stage{position:relative;height:70vh;background:#dfeef0;border:1px solid #d7e5e6;border-radius:14px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
 #world{display:block;width:100%;height:100%;cursor:grab}#world:active{cursor:grabbing}
+.mstyle{position:absolute;left:132px;bottom:34px;z-index:4;display:flex;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.15);overflow:hidden}.mstyle button{border:0;background:none;padding:0 14px;height:40px;font-size:14px;font-weight:700;color:#2a2622;cursor:pointer}.mstyle button.on{background:#2a2622;color:#fff}
+.civ path{display:none}.pin circle{fill:#fff!important;stroke:#3a3632!important;stroke-width:1.6!important}.col rect{width:6px;height:6px;x:-3px;y:-3px;rx:3px;fill:#6b6560!important;stroke:#fff}
+.stage.sat{background:#000}.sat .ocean{fill:#0b2a48}.sat .grat{display:none}.sat .land{fill:#5d7840;stroke:none}.sat .relief.plain path{fill:#5d7840!important}.sat .riv path,.sat .surf .river,.sat .surf .lake{stroke:#1d4f7a}.sat .rim{stroke:#4a7aa8}.sat svg text{fill:#fff!important;stroke:rgba(0,0,0,.7)!important}.sat .prov{stroke:#e8e2c8}.sat [class^=geo-]{stroke:#2a5f8f!important}.sat .geo-lake{fill:#1d4f7a!important}.sat .surf .lake{fill:#1d4f7a!important}
 .ocean{fill:#aadaff}.grat{fill:none;stroke:#8fc3ea;stroke-width:.5;opacity:.35}.land{fill:#f2efe9;stroke:#c9c3b8;stroke-width:.5}.rim{fill:none;stroke:#9cbcc2;stroke-width:1}
 .prov{fill-opacity:.03;stroke:#9a9a9a;stroke-width:.8;stroke-dasharray:4 3;cursor:pointer}.prov:hover{fill-opacity:.16}.prov.sel{fill-opacity:.2;stroke:#2a2622;stroke-width:1.4}
 .prov.n1{fill:#2f7d4a}.prov.n2{fill:#4c56a8}.prov.n3{fill:#a86412}
@@ -54,6 +57,7 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
   <b>546年の町</b><label><input type="checkbox" id="ly-town" checked> 🔴 町の大きさ（人口）</label><label><input type="checkbox" id="ly-ruin" checked> ▪️ 昔の町の跡</label><label><input type="checkbox" id="ly-far" checked> 🌍 遠い大陸の国や民</label><label><input type="checkbox" id="ly-grid"> ⚡ 電気の網（灯石が使える範囲）</label>
   <b>重ねる</b><label><input type="checkbox" id="ly-prov" checked> 州の境界</label><label><input type="checkbox" id="ly-wx"> 今日の天気</label><label><input type="checkbox" id="ly-mood"> 暮らしの満足</label>
   <p>地形は現代の標高データ（Terrain Tiles：SRTM・ETOPO1 など）。戦後の破壊・汚染・復興を計算した地形ではありません。国・州・町・開拓地は旧シミュレーションの仮配置で、R・G・Bの配置への移行は未完了です。現代文明への復旧年も未確定です。</p></div></div>
+ <div class="mstyle" role="group" aria-label="地図の見た目"><button type="button" id="st-map" class="on">地図</button><button type="button" id="st-sat">衛星</button></div>
  <div class="zoom"><button type="button" id="z-in" aria-label="大きく">＋</button><button type="button" id="z-out" aria-label="小さく">−</button></div>
  <div class="gcard" id="card" hidden></div>
 </div>
@@ -77,5 +81,5 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
 <script src="../assets/data/world/borders.js?v=0.57"></script>
 <script src="../assets/data/world/rivers.js?v=0.57"></script>
 <script src="../assets/data/world/land.js?v=0.57.1"></script>
-<script src="map.js?v=0.57.2"></script>
+<script src="map.js?v=0.58"></script>
 </body></html>
