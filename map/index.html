@@ -51,7 +51,7 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
   
   <label><input type="checkbox" id="ly-ctl"> 🏳️ 実効支配の範囲（陸と海）</label>
   <label><input type="checkbox" id="ly-use"> 🏭 土地の使い道（おもな仕事）</label><div class="legend"><span><i style="background:#8bc34a"></i>農業</span><span><i style="background:#29b6f6"></i>漁業</span><span><i style="background:#2e7d32"></i>林業</span><span><i style="background:#8d6e63"></i>採掘</span><span><i style="background:#5c6bc0"></i>工業</span><span><i style="background:#ff8a65"></i>商業</span></div>
-  <b>546年の町</b><label><input type="checkbox" id="ly-town" checked> 🔴 町の大きさ（人口）</label><label><input type="checkbox" id="ly-ruin" checked> ▪️ 昔の町の跡</label><label><input type="checkbox" id="ly-grid"> ⚡ 電気の網（灯石が使える範囲）</label>
+  <b>546年の町</b><label><input type="checkbox" id="ly-town" checked> 🔴 町の大きさ（人口）</label><label><input type="checkbox" id="ly-ruin" checked> ▪️ 昔の町の跡</label><label><input type="checkbox" id="ly-far" checked> 🌍 遠い大陸の国や民</label><label><input type="checkbox" id="ly-grid"> ⚡ 電気の網（灯石が使える範囲）</label>
   <b>重ねる</b><label><input type="checkbox" id="ly-prov" checked> 州の境界</label><label><input type="checkbox" id="ly-wx"> 今日の天気</label><label><input type="checkbox" id="ly-mood"> 暮らしの満足</label>
   <p>地形は現代の標高データ（Terrain Tiles：SRTM・ETOPO1 など）。戦後の破壊・汚染・復興を計算した地形ではありません。国・州・町・開拓地は旧シミュレーションの仮配置で、R・G・Bの配置への移行は未完了です。現代文明への復旧年も未確定です。</p></div></div>
  <div class="zoom"><button type="button" id="z-in" aria-label="大きく">＋</button><button type="button" id="z-out" aria-label="小さく">−</button></div>
@@ -73,5 +73,6 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
 <script src="../sim/world-sim.js?v=0.55"></script>
 <script src="../sim/pop.js?v=0.55"></script>
 <script src="../assets/data/world/ruins.js?v=0.55"></script>
+<script src="../assets/data/world/civ546.js?v=0.55.1"></script>
 <script src="map.js?v=20261030-geography"></script>
 </body></html>

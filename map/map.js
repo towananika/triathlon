@@ -68,7 +68,7 @@
   var gRel = svg.append('g').attr('class', 'relief'), gTile = svg.append('g').attr('class', 'tiles'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gRiv = svg.append('g').attr('class', 'riv'), gNet = svg.append('g').attr('class', 'net');
   var gCiv = svg.append('g'), gRim = svg.append('path').attr('class', 'rim'), gCol = svg.append('g'), gLab = svg.append('g'), gWx = svg.append('g').attr('class', 'wxl'), gPin = svg.append('g'), gScale = svg.append('g').attr('class', 'scale');
   var gHydro = svg.insert('g', '.net').attr('class', 'geography');
-  var gGrid = svg.insert('g', '.net').attr('class', 'grid'), gTown = svg.insert('g', '.net').attr('class', 'towns');
+  var gFar = svg.insert('g', '.net').attr('class', 'far'), gGrid = svg.insert('g', '.net').attr('class', 'grid'), gTown = svg.insert('g', '.net').attr('class', 'towns');
   var geography = (window.TRI_GEOGRAPHY || {features:[]}).features;
   gHydro.selectAll('path').data(geography).enter().append('path')
     .attr('class', function (f) { return 'geo-' + f.properties.kind; })
@@ -84,7 +84,7 @@
   }
   function declutterLabels() {
     var boxes = [], count = 0;
-    var nodes = gPin.selectAll('text').nodes().concat(gLab.selectAll('text').nodes(), gCiv.selectAll('text').nodes(), gCol.selectAll('text').nodes());
+    var nodes = gPin.selectAll('text').nodes().concat(gCiv.selectAll('text').nodes(), gFar.selectAll('text').nodes(), gLab.selectAll('text').nodes(), gCol.selectAll('text').nodes()); // 国や民の名前を、地名より先に残す
     nodes.forEach(function (node) {
       if (getComputedStyle(node).display === 'none' || getComputedStyle(node.parentNode).display === 'none') return;
       var b = node.getBoundingClientRect(), frame = stage.getBoundingClientRect();
@@ -218,7 +218,7 @@
   }
   // 1km が何px か
   function pxkm() { return proj.scale() / 6371; }
-  var LY = { town: true, ruin: true, grid: false, prov: true, wx: false, mood: false, relief: false, net: true, use: false, ctl: false, hydro:true, labels:false }, selP = null, SIMD = null;
+  var LY = { far: true, town: true, ruin: true, grid: false, prov: true, wx: false, mood: false, relief: false, net: true, use: false, ctl: false, hydro:true, labels:false }, selP = null, SIMD = null;
   function simData() {
     if (SIMD || !SIM) return SIMD;
     var d = SIM.today(), x = SIM.run(d, 1);
@@ -328,7 +328,20 @@
 
   // ---- 開拓地と、出会った文明（世界シミュレーションから） ----
   var NCOL = ['#2f7d4a', '#4c56a8', '#a86412'];
+  // 遠い大陸の国や民（546年。世界の歩みの計算から）：人口の大きさの円と名前。押すと説明
+  var FARCOL = { '大河の民': '#b5651d', '東雲国': '#c0392b', '白樺の民': '#5b8c5a', '珊瑚の民': '#1e8bc3', '川の国': '#8e44ad', '砂の商人': '#d4a017', '西の塔': '#34495e', '赤土の民': '#b0412e', '北の大陸の町': '#2471a3', '森の川の民': '#1e8449' };
+  function drawFar() {
+    var S = simData(), known = S ? S.civ.filter(function (v) { return v.known; }).map(function (v) { return SIM.CIVS[S.civ.indexOf(v)][0]; }) : [];
+    var F = LY.far ? (window.TRI_CIV546 || []).filter(function (c) { return known.indexOf(c[0]) < 0; }) : [];
+    var fv = gFar.selectAll('g').data(F); fv.exit().remove();
+    var fe = fv.enter().append('g').attr('class', 'civ').on('click', function (e, c) { var p = c[3] >= 10000 ? '約' + (c[3] / 10000).toFixed(1) + '億人' : '約' + Math.round(c[3]).toLocaleString('ja-JP') + '万人'; showCard({ id: 'f-' + c[0] + c[5], title: c[0], sub: c[5], text: '遠い大陸に暮らす国や民。三国とは海をこえて行き来がある。', stats: ['人口：' + p, 'AIへの考え方：' + c[4]] }); });
+    fe.append('path'); fe.append('text');
+    fe.merge(fv).each(function (c) { var ll = [c[1], c[2]], q = proj(ll), g = d3.select(this), col = FARCOL[c[0]] || '#7f8c8d';
+      g.select('path').attr('d', path(d3.geoCircle().center(ll).radius(Math.max(2, Math.sqrt(c[3]) / 25))())).style('fill', col).style('stroke', col);
+      g.select('text').text(c[0]).style('fill', col).style('display', q && visible(ll) ? null : 'none').attr('x', q ? q[0] : 0).attr('y', q ? q[1] : 0); });
+  }
   function drawWorld(pk) {
+    drawFar();
     var S = simData(), cols = S ? S.col : [], civs = S ? S.civ.filter(function (v) { return v.known; }) : [];
     var cv = gCiv.selectAll('g').data(civs); cv.exit().remove();
     var ce = cv.enter().append('g').attr('class', 'civ').on('click', function (e, v) { openId('v-' + S.civ.indexOf(v)); });
@@ -476,7 +489,7 @@
   lm.addEventListener('change', function (e) {
     var x = e.target;
     if (x.id === 'ly-prov') { LY.prov = x.checked; draw(); }
-    if (/^ly-(relief|net|use|ctl|hydro|labels|town|ruin|grid)$/.test(x.id)) { LY[x.id.slice(3)] = x.checked; if (x.id === 'ly-use' && x.checked) { $('ly-mood').checked = LY.mood = false; } if (x.id === 'ly-mood' && x.checked) { $('ly-use').checked = LY.use = false; } draw(); }
+    if (/^ly-(relief|net|use|ctl|hydro|labels|town|ruin|grid|far)$/.test(x.id)) { LY[x.id.slice(3)] = x.checked; if (x.id === 'ly-use' && x.checked) { $('ly-mood').checked = LY.mood = false; } if (x.id === 'ly-mood' && x.checked) { $('ly-use').checked = LY.use = false; } draw(); }
     if (x.id === 'ly-mood' && x.checked) { $('ly-use').checked = LY.use = false; }
     if (x.id === 'ly-wx' || x.id === 'ly-mood') { LY[x.id === 'ly-wx' ? 'wx' : 'mood'] = x.checked; var S = simData(); if (x.checked && S) toast('世界シミュレーション：' + S.date); draw(); }
   });
