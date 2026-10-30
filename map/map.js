@@ -96,21 +96,33 @@
   // 名前の重なりをなくす（地図アプリのやり方）：文字の大きさは文字数とフォントの大きさから見積もり、画面を升目に分けて、先においた名前とぶつかるものは出さない。DOMを測らないので速い
   var FS = {};
   function fsOf(node) { var key = (node.getAttribute('class') || '') + '|' + (node.parentNode.getAttribute('class') || ''); if (!FS[key]) { var cs = getComputedStyle(node); FS[key] = [parseFloat(cs.fontSize) || 14, cs.textAnchor]; } return FS[key]; }
+  // 重ならない表示（地図アプリと同じ考え方）：どの縮尺でも、町の円・印・名前をおおよその四角で調べ、先においたものとぶつかるものは出さない
+  // 順番：物語の町の名前 → 大きい町の円 → 物語の町の印 → 国や民の名前 → 開拓地の印 → 地名・開拓地の名前・港の印 → 昔の町の跡
   function declutterLabels() {
     var CELL = 64, grid = {}, count = 0, max = LY.labels ? 999 : (W < 600 ? 9 : 18);
-    var nodes = gPin.selectAll('text').nodes().concat(gCiv.selectAll('text').nodes(), gFar.selectAll('text').nodes(), gLab.selectAll('text').nodes(), gCol.selectAll('text').nodes(), gNet.selectAll('text.port').nodes()); // 国や民の名前を、地名より先に残す。港の印はいちばん後
     function hit(b) { for (var gx = Math.floor(b[0] / CELL); gx <= Math.floor(b[2] / CELL); gx++) for (var gy = Math.floor(b[1] / CELL); gy <= Math.floor(b[3] / CELL); gy++) { var L = grid[gx + ',' + gy]; if (L) for (var i = 0; i < L.length; i++) { var a = L[i]; if (b[0] < a[2] && b[2] > a[0] && b[1] < a[3] && b[3] > a[1]) return true; } } return false; }
     function put(b) { for (var gx = Math.floor(b[0] / CELL); gx <= Math.floor(b[2] / CELL); gx++) for (var gy = Math.floor(b[1] / CELL); gy <= Math.floor(b[3] / CELL); gy++) (grid[gx + ',' + gy] = grid[gx + ',' + gy] || []).push(b); }
-    nodes.forEach(function (node) {
-      var par = node.parentNode; if (node.style.display === 'none' || par.style.display === 'none' || !node.textContent) return;
-      var x = +node.getAttribute('x') || 0, y = +node.getAttribute('y') || 0, m = /translate\(([-\d.e]+),\s*([-\d.e]+)\)/.exec(par.getAttribute('transform') || '');
-      if (m) { x += +m[1]; y += +m[2]; }
-      var f = fsOf(node), w = node.textContent.length * f[0] * 1.02, x0 = f[1] === 'middle' ? x - w / 2 : f[1] === 'end' ? x - w : x;
-      var b = [x0 - 6, y - f[0] * .9 - 3, x0 + w + 6, y + f[0] * .3 + 3];
+    function shown(n) { return n.style.display !== 'none' && n.parentNode.style.display !== 'none'; }
+    function tr(n) { var m = /translate\(([-\d.e]+),\s*([-\d.e]+)\)/.exec(n.getAttribute('transform') || ''); return m ? [+m[1], +m[2]] : [0, 0]; }
+    function label(node) {
+      if (!shown(node) || !node.textContent) return;
+      var x = +node.getAttribute('x') || 0, y = +node.getAttribute('y') || 0, m = tr(node.parentNode); x += m[0]; y += m[1];
+      var f = fsOf(node), w = node.textContent.length * f[0] * 1.02, x0 = f[1] === 'middle' ? x - w / 2 : f[1] === 'end' ? x - w : x, pl = f[1] === 'middle' || f[1] === 'end' ? 6 : 1; // 印の右に書く名前は、左のすきまを小さく（自分の印とはぶつけない）
+      var b = [x0 - pl, y - f[0] * .9 - 3, x0 + w + 6, y + f[0] * .3 + 3];
       var off = b[0] < 8 || b[2] > W - 48 || b[1] < 62 || b[3] > H - 34;
       if (off || hit(b) || count >= max) node.style.display = 'none';
       else { put(b); count++; }
-    });
+    }
+    gPin.selectAll('text').nodes().forEach(label); // 物語の町の名前がいちばん先
+    // 町の円：大きい順。ほかの町の円や名前と重なる小さい町は出さない（物語の町の印とは重なってよい：同じ場所）
+    gTown.selectAll('circle.town').nodes().filter(shown).map(function (n) { var r = +n.getAttribute('r'); return { n: n, r: r, b: [+n.getAttribute('cx') - r, +n.getAttribute('cy') - r, +n.getAttribute('cx') + r, +n.getAttribute('cy') + r] }; })
+      .sort(function (a, b) { return b.r - a.r; }).forEach(function (t) { if (hit(t.b)) t.n.style.display = 'none'; else put(t.b); });
+    gPin.selectAll('g.pin').nodes().filter(function (n) { return n.style.display !== 'none'; }).forEach(function (n) { var p = tr(n); put([p[0] - 8, p[1] - 8, p[0] + 8, p[1] + 8]); });
+    gCiv.selectAll('text').nodes().concat(gFar.selectAll('text').nodes()).forEach(label); // 国や民の名前
+    gCol.selectAll('g').nodes().filter(function (n) { return n.style.display !== 'none'; }).forEach(function (n) { var p = tr(n), b = [p[0] - 6, p[1] - 6, p[0] + 6, p[1] + 6]; if (hit(b)) n.style.display = 'none'; else put(b); });
+    gLab.selectAll('text').nodes().concat(gCol.selectAll('text').nodes(), gNet.selectAll('text.port').nodes()).forEach(label); // 地名、開拓地の名前、港の印はいちばん後
+    // 昔の町の跡：何かとぶつかるものは出さない
+    gTown.selectAll('rect.ruin').nodes().filter(shown).forEach(function (n) { var x = +n.getAttribute('x'), y = +n.getAttribute('y'), b = [x - 1, y - 1, x + 8, y + 8]; if (hit(b)) n.style.display = 'none'; else put(b); });
   }
 
   // ---- 本物の地形（assets/data/relief.js）----
@@ -362,7 +374,7 @@
     ln.enter().append('path').on('click', function (e, d) { openRoute(d.info); }).merge(ln).attr('class', function (d) { return 'l ' + d.cl; }).attr('d', function (d) { return path({ type: 'LineString', coordinates: d.c }); });
     var ports = PROV.map(function (p, i) { return i; }).filter(function (i) { return SIM && SIM.PROV[i][4] >= .8; });
     var pt = gNet.selectAll('text.port').data(ports); pt.exit().remove();
-    pt.enter().append('text').attr('class', 'port').text('⚓').merge(pt).each(function (i) { var ll = town(i), q = proj(ll); d3.select(this).style('display', q && visible(ll) && k >= 3 ? null : 'none').attr('x', q ? q[0] - 22 : 0).attr('y', q ? q[1] + 5 : 0); });
+    pt.enter().append('text').attr('class', 'port').text('⚓').merge(pt).each(function (i) { var ll = town(i), q = proj(ll); d3.select(this).style('display', q && visible(ll) && k >= 3 ? null : 'none').attr('x', q ? q[0] - 32 : 0).attr('y', q ? q[1] + 5 : 0); }); // 町の円の左に離して置く
   }
   // 実効支配：州と開拓地（陸）、そのまわりの海
   function drawCtl() {
