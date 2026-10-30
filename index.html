@@ -33,7 +33,7 @@
 .nextep{margin:8px 2px 0;font-size:13px;color:#9a7630;font-weight:700}</style>
 </head>
 <body>
-<script src="site-nav.js?v=0.55"></script>
+<script src="site-nav.js?v=0.61"></script>
 <script src="stories/stories.js?v=0.45"></script>
 <script src="cast/cast-data.js?v=0.19"></script>
 <script src="notes/notes.js?v=0.46"></script>
@@ -100,7 +100,7 @@
 </div>
 </section>
 </main>
-<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.60</span></p></footer>
+<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.61</span></p></footer>
 <script src="news/news.js?v=0.55"></script>
 <script>
 (function () {
@@ -121,6 +121,7 @@
       (cols.length ? '<span class="band" aria-label="この話の心の光">' + cols.map(function (c) { return '<i style="background:' + c + '"></i>'; }).join('') + '</span>' : '') + '<span class="go">読む →</span></a>';
     var nx = (window.TRI_STORIES_ALL || []).filter(function (x) { return x.no === s0.no + 1; })[0]; // 次の話の公開日（毎週月曜）
     if (nx) document.getElementById('ep').insertAdjacentHTML('beforeend', '<p class="nextep">次の話：第' + nx.no + '話・' + esc(nx.who) + '　' + (+nx.date.slice(5, 7)) + '月' + (+nx.date.slice(8)) + '日（月）公開</p>');
+    document.getElementById('ep').insertAdjacentHTML('beforeend', '<p class="nextep"><a href="part1/" style="color:#2F6FB8">🏮 第1部の道のり（九つの灯り）を見る →</a></p>');
   }
   // 一生の地図の小さな見本
   var mini = '';

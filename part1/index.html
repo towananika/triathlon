@@ -1,0 +1,75 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>第1部 灯台館をもう一度 | TRIATHLON</title><meta name="description" content="第1部の道のり。13話で、九つの灯りがともるまで。"><meta property="og:title" content="第1部 灯台館をもう一度 | TRIATHLON"><meta property="og:image" content="https://towananika.github.io/triathlon/assets/ogp.jpg"><meta name="twitter:card" content="summary_large_image">
+<style>
+body{margin:0;background:#F3F6F5;color:#26323A;font:16px/1.8 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{max-width:720px;margin:0 auto;padding:28px 16px 64px}
+.kick{color:#9a7630;font-size:12px;margin:0;letter-spacing:.1em}
+h1{font-size:28px;margin:4px 0 4px;line-height:1.4;color:#173A63}
+h2{font-size:18px;color:#2F6FB8;margin:36px 0 12px}
+.sub{color:#5a6670;margin:0 0 18px}
+.sky{background:linear-gradient(#173A63,#2F6FB8 70%,#22AAA6);border-radius:18px;padding:22px 16px 18px;color:#E3EBEA;text-align:center}
+.lamps{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin:14px 0 8px}
+.lamp{display:flex;flex-direction:column;align-items:center;font-size:10px;white-space:nowrap;letter-spacing:-.05em;color:#c9d6dc;text-decoration:none}
+.lamp i{width:26px;height:26px;border-radius:50%;background:#2b4766;border:2px solid #4d6a88;display:block;margin-bottom:4px}
+.lamp.on i{background:radial-gradient(#fff6d0,#C9A646 70%);border-color:#f3dc8a;box-shadow:0 0 14px 4px rgba(243,220,138,.55)}
+.lamp.on{color:#fff}
+.count{font-size:15px;margin:6px 0 0}.count b{font-size:22px;color:#f3dc8a}
+.bar{height:10px;background:#2b4766;border-radius:99px;overflow:hidden;margin:12px auto 4px;max-width:420px}.bar span{display:block;height:100%;background:linear-gradient(90deg,#22AAA6,#C9A646)}
+.next{background:#FBFCFC;border:1px solid #cfe3e1;border-radius:14px;padding:14px 16px;margin-top:16px;display:flex;gap:14px;align-items:center}
+.next .d{font-size:30px;font-weight:800;color:#22AAA6;line-height:1}.next .d small{font-size:12px;display:block;color:#5a6670;font-weight:400}
+.road{list-style:none;margin:0;padding:0 0 0 18px;border-left:3px solid #DCF1EF}
+.road li{position:relative;margin:0 0 10px}
+.road li:before{content:"";position:absolute;left:-26px;top:16px;width:13px;height:13px;border-radius:50%;background:#cfd8dc;border:2px solid #F3F6F5}
+.road li.on:before{background:#C9A646}.road li.now:before{background:#22AAA6;box-shadow:0 0 0 4px #DCF1EF}
+.road a,.road div{display:block;background:#FBFCFC;border:1px solid #e1e8e7;border-radius:12px;padding:10px 14px;color:#26323A;text-decoration:none}
+.road .no{font-size:12px;color:#9a7630;font-weight:700}.road b{display:block;font-size:16px}.road small{color:#5a6670}
+.road li.off div{opacity:.6}
+.road li.fork a,.road li.fork div{border:2px dashed #C9A646;background:#fffaf0}
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.p{background:#FBFCFC;border:1px solid #e1e8e7;border-radius:12px;padding:12px 14px}
+.p b{color:#173A63}.p small{display:block;color:#5a6670;font-size:13px}.p .q{margin:6px 0 0;font-size:14px}
+.p a{font-size:13px;color:#2F6FB8}
+.fork{background:#fffaf0;border:1px solid #ecd9a6;border-radius:14px;padding:16px}
+</style></head><body>
+<script src="../site-nav.js?v=0.61"></script>
+<main>
+<p class="kick">PART 1 · 高等部1年 · 新暦312年</p>
+<h1>第1部　灯台館をもう一度</h1>
+<p class="sub">消えたままの灯台館。九人がひとりずつ語るたび、灯りがひとつともります。</p>
+<section class="sky"><div class="lamps" id="lamps"></div><p class="count">ともった灯り <b id="lit">0</b> / 9</p><div class="bar"><span id="bar"></span></div><small id="pct"></small></section>
+<div class="next" id="next"></div>
+<h2>13話の道のり</h2>
+<ol class="road" id="road"></ol>
+<h2>九人の、いま</h2>
+<div class="people" id="people"></div>
+<h2>第13話は、あなたが選ぶ</h2>
+<div class="fork">灯籠祭りの夜、物語は二つに分かれます。どちらへ進むかは、読者の投票で決めます。投票は第12話の公開と同時に始まります。</div>
+</main>
+<script src="../stories/stories.js?v=0.61"></script>
+<script>
+(function(){
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var NINE=['アカリ','ツバサ','セイラ','シオン','カイ','シズク','ルイ','ミナト','リク'];
+// 7話から先は予定（題は変わることがあります）
+var PLAN=[[7,'アカリ','放課後の焼きそばパン','2026-11-30'],[8,'ルイ','テスト前の勉強会','2026-12-07'],[9,'セイラ','班会議','2026-12-14'],[10,'カイ','回路と影','2026-12-21'],[11,'ミナト','トメさんの設計図','2026-12-28'],[12,'リク','徹夜','2027-01-04'],[13,'ツバサ','灯籠祭り','2027-01-11']];
+// 九人の第1部での「はじまり」と「問い」
+var Q={'アカリ':['強いことだけが取りえ','強いだけじゃ、川は渡れない？'],'ツバサ':['言えないことを抱えている','言葉にしたら、何が変わる？'],'セイラ':['人のペースを待てる人','自分のことは、待ってあげられる？'],'シオン':['家の名を背負っている','自分の名で立つとは？'],'カイ':['人との距離がわからない','近いって、どのくらい？'],'シズク':['よく聞く、あまり話さない','聞く人は、だれに聞いてもらう？'],'ルイ':['知りたいことが多すぎる','わかることと、わかり合うこと'],'ミナト':['手を動かすのが好き','つくりたいのは、何のため？'],'リク':['ひとりで抱えこみがち','頼るのは、弱さ？']};
+var now=new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
+var A=(window.TRI_STORIES_ALL||window.TRI_STORIES||[]).filter(function(s){return s.no<=13});
+var eps=A.map(function(s){return{no:s.no,who:s.who,title:s.title,date:s.date,id:s.id}});
+PLAN.forEach(function(p){if(!eps.some(function(e){return e.no===p[0]}))eps.push({no:p[0],who:p[1],title:p[2],date:p[3],plan:1})});
+eps.sort(function(a,b){return a.no-b.no});
+var pub=eps.filter(function(e){return !e.plan&&e.date<=now});
+var told={};pub.forEach(function(e){told[e.who]=(told[e.who]||0)+1});
+var lit=NINE.filter(function(n){return told[n]}).length;
+document.getElementById('lamps').innerHTML=NINE.map(function(n){return '<a class="lamp'+(told[n]?' on':'')+'" href="../map/#life='+encodeURIComponent(n)+'"><i></i>'+esc(n)+'</a>'}).join('');
+document.getElementById('lit').textContent=lit;
+document.getElementById('bar').style.width=(pub.length/13*100)+'%';
+document.getElementById('pct').textContent='13話のうち '+pub.length+' 話まで公開';
+var nx=eps.filter(function(e){return e.date>now})[0];
+if(nx){var days=Math.round((new Date(nx.date)-new Date(now))/864e5);document.getElementById('next').innerHTML='<div class="d">'+days+'<small>日後</small></div><div><small>次の話</small><br><b>第'+nx.no+'話・'+esc(nx.who)+'</b>　'+(+nx.date.slice(5,7))+'月'+(+nx.date.slice(8))+'日（月）公開</div>'}else document.getElementById('next').style.display='none';
+document.getElementById('road').innerHTML=eps.map(function(e){var on=!e.plan&&e.date<=now,isNext=nx&&e.no===nx.no,md=(+e.date.slice(5,7))+'月'+(+e.date.slice(8))+'日';
+ var inner='<span class="no">第'+e.no+'話・'+esc(e.who)+'　'+md+(on?'':e.plan?'（予定）':'公開')+'</span><b>'+esc(e.title)+'</b>'+(e.no===13?'<small>分かれ道：読者の投票</small>':'');
+ return '<li class="'+(on?'on':isNext?'now':'off')+(e.no===13?' fork':'')+'">'+(on?'<a href="../stories/v.html?id='+encodeURIComponent(e.id)+'">'+inner+'</a>':'<div>'+inner+'</div>')+'</li>'}).join('');
+document.getElementById('people').innerHTML=NINE.map(function(n){var q=Q[n];return '<div class="p"><b>'+esc(n)+'</b><small>'+(told[n]?'語った話 '+told[n]+'話':'まだ語っていない')+'</small><p class="q">はじまり：'+esc(q[0])+'<br>問い：'+esc(q[1])+'</p><a href="../map/#life='+encodeURIComponent(n)+'">一生をたどる →</a></div>'}).join('');
+})();
+</script></body></html>
