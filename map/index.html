@@ -40,6 +40,9 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
  <svg id="world" role="img" aria-label="TRIATHLON の世界地図"></svg>
  <div class="gbar"><div class="gsearch"><span aria-hidden="true">🔍</span><input id="q" type="search" placeholder="国・州・開拓地をさがす" autocomplete="off" aria-label="さがす"><button type="button" id="q-x" aria-label="消す" hidden>✕</button></div><ul class="gres" id="gres" hidden></ul></div>
  <div class="glayer"><button type="button" id="b-layer" aria-expanded="false">🗂️ レイヤー</button><div class="lmenu" id="lmenu" hidden>
+  <label><input type="checkbox" id="ly-hydro" checked> 主要河川・自然湖</label>
+  <label><input type="checkbox" id="ly-labels"> 地名を多く表示</label>
+  <p>自然地理：<a href="https://www.naturalearthdata.com/downloads/110m-physical-vectors/" target="_blank" rel="noopener">Natural Earth</a>。2026年10月30日取得。広域概略で、工事用の精度ではありません。<a href="geography-sources.json">データの範囲</a></p>
   <b>地図</b><label><input type="checkbox" id="ly-relief"> ⛰️ 地形（本物の高さ）</label><div class="legend rleg"><span><i style="background:#dfe6c8"></i>〜200m</span><span><i style="background:#e6dfbd"></i>〜500m</span><span><i style="background:#d8c99f"></i>〜1000m</span><span><i style="background:#c4ad83"></i>〜1500m</span><span><i style="background:#ae9572"></i>〜2000m</span><span><i style="background:#98806a"></i>2000m〜</span></div>
   
   <label><input type="checkbox" id="ly-ctl"> 🏳️ 実効支配の範囲（陸と海）</label>
@@ -59,8 +62,9 @@ main{padding:8px 10px 10px}h1.mt{font-size:18px;margin:0 0 6px;line-height:1.4}h
 <script src="../assets/data/world/w3/index.js?v=0.54"></script>
 <script src="../assets/data/relief/base.js?v=0.54"></script>
 <script src="../assets/data/routes.js?v=0.54"></script>
+<script src="../assets/data/geography.js?v=20261030"></script>
 <script src="../sim/development.js?v=0.54"></script>
 <script src="../sim/checkpoint.js?v=0.54"></script>
 <script src="../sim/world-sim.js?v=0.54"></script>
-<script src="map.js?v=0.54"></script>
+<script src="map.js?v=20261030-geography"></script>
 </body></html>
