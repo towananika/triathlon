@@ -70,7 +70,7 @@
 
   // ---- 本物の地形（assets/data/relief.js）----
   var RCOL = { 1: '#dfe6c8', 200: '#e6dfbd', 500: '#d8c99f', 1000: '#c4ad83', 1500: '#ae9572', 2000: '#98806a', 3000: '#857065' };
-  function dec(mp) { return mp.map(function (poly) { return poly.map(function (r) { var o = [], x = 0, y = 0; for (var i = 0; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; o.push([x / 100, y / 100]); } return o; }); }); }
+  function dec(mp, sc) { sc = sc || 100; return mp.map(function (poly) { return poly.map(function (r) { var o = [], x = 0, y = 0; for (var i = 0; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; o.push([x / sc, y / sc]); } return o; }); }); }
   // 地形は地域ごとのファイルに分けてある（assets/data/relief/）。はじめは一番低い段だけ読み、画面に見えている地域の分をあとから読む
   var RB = window.TRI_RELIEF_BASE, REG = RB ? RB.regions.concat([{ id: 99, bb: [110, 22, 145, 50] }]) : [], LOADED = {}, ASKED = {};
   var REL = RB ? [{ cl: 'rb', col: RCOL[RB.b0[0]], g: { type: 'MultiPolygon', coordinates: dec(RB.b0[1]) }, o: 0, r: -1 }] : [];
@@ -98,22 +98,27 @@
   }
 
   // ---- 世界の表面の地形（assets/data/world/）：遠くでは世界全体の粗い形（w0）、近づくと見えているブロック（主な都市ごと、w1）だけ読む ----
-  var SCOL = { '-200': '#c3e2fb', '0': '#f2efe9', '100': '#eeebe2', '200': '#e9e5d9', '500': '#e3ddcc', '1000': '#dcd3be', '1500': '#d4c9b0', '2000': '#cbbfa4', '3000': '#c4b8a0', '4000': '#efefec', bg: '#aadaff', gf: '#c8e0b4', gg: '#e4eabf', gd: '#f2e2b8', gt: '#dde3d6', gi: '#fbfbfb', lk: '#aadaff', r0: '#9ccff5', 's0.14': '#5e5246', 's0.32': '#5e5246' };
-  function wline(r) { var o = [], x = 0, y = 0; for (var i = 0; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; o.push([x / 100, y / 100]); } return o; }
-  function wdec(arr, id) { return arr.map(function (x) { var rv = String(x[0]).charAt(0) === 'r'; return { k: id + ':' + x[0], v: String(x[0]), g: rv ? { type: 'MultiLineString', coordinates: x[1].map(wline) } : { type: 'MultiPolygon', coordinates: dec(x[1]) } }; }); }
-  var W0 = window.TRI_WORLD && TRI_WORLD.w0 ? wdec(TRI_WORLD.w0, 'w0') : [], WIDX = (window.TRI_WORLD_IDX || []).map(function (b) { b.lv = 1; return b; }).concat((window.TRI_WORLD_IDX2 || []).map(function (b) { b.lv = 2; return b; })), WB = {}, WASK = {};
-  window.TRI_WORLD_ON = function (id) { var B = (window.TRI_WORLD_B || {})[id]; if (!B || WB[id]) return; var b = WIDX.filter(function (x) { return x.id === id; })[0]; WB[id] = [{ k: id + ':bg', v: 'bg', g: poly(b.bb[0], b.bb[1], b.bb[2], b.bb[3]) }].concat(wdec(B, id)); WB[id].forEach(function (x) { x.lv = b.lv; }); if (typeof draw === 'function') draw(); };
-  function wneed(id) { if (WASK[id]) return; WASK[id] = 1; var sc = document.createElement('script'); sc.src = '../assets/data/world/' + (id.charAt(0) === 'n' ? 'w2/' : 'w1/') + id + '.js?v=0.53'; document.head.appendChild(sc); }
+  var SCOL = { '-200': '#c3e2fb', '-100': '#c3e2fb', '0': '#f2efe9', '100': '#eeebe2', '200': '#e9e5d9', '500': '#e3ddcc', '1000': '#dcd3be', '1500': '#d4c9b0', '2000': '#cbbfa4', '3000': '#c4b8a0', '4000': '#efefec', bg: '#aadaff', gf: '#c8e0b4', gg: '#e4eabf', gd: '#f2e2b8', gt: '#dde3d6', gi: '#fbfbfb', lk: '#aadaff', r0: '#9ccff5', 's0.14': '#5e5246', 's0.32': '#5e5246' };
+  function wline(r, sc) { var o = [], x = 0, y = 0; for (var i = 0; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; o.push([x / sc, y / sc]); } return o; }
+  var SNUM = Object.keys(SCOL).filter(function (v) { return !isNaN(+v); }).map(Number).sort(function (a, b) { return a - b; }), SINT = d3.scaleLinear().domain(SNUM).range(SNUM.map(function (v) { return SCOL[v]; })); // 町の細かい段（10m・20m…）は、まわりの段の色のあいだ
+  function scol(v) { return SCOL[v] || (isNaN(+v) ? null : SINT(+v)); }
+  // 町のまわり（100m）：低い土地は緑、高いほど茶色。等高線つき
+  var TCOL = d3.scaleLinear().domain([0, 20, 60, 100, 200, 400, 700, 1500]).range(['#e6efd9', '#dbe8cb', '#cfdfbb', '#c6d6ab', '#d1c798', '#c4ad86', '#b09879', '#d8d4cc']);
+  function fillOf(x) { return x.lv === 3 && !isNaN(+x.v) && +x.v >= 0 ? TCOL(+x.v) : scol(x.v); }
+  function wdec(arr, id, sc) { sc = sc || 100; return arr.map(function (x) { var rv = String(x[0]).charAt(0) === 'r'; return { k: id + ':' + x[0], v: String(x[0]), g: rv ? { type: 'MultiLineString', coordinates: x[1].map(function (r) { return wline(r, sc); }) } : { type: 'MultiPolygon', coordinates: dec(x[1], sc) } }; }); }
+  var W0 = window.TRI_WORLD && TRI_WORLD.w0 ? wdec(TRI_WORLD.w0, 'w0') : [], WIDX = (window.TRI_WORLD_IDX || []).map(function (b) { b.lv = 1; return b; }).concat((window.TRI_WORLD_IDX2 || []).map(function (b) { b.lv = 2; return b; })).concat((window.TRI_WORLD_IDX3 || []).map(function (b) { b.lv = 3; return b; })), WB = {}, WASK = {};
+  window.TRI_WORLD_ON = function (id) { var B = (window.TRI_WORLD_B || {})[id]; if (!B || WB[id]) return; var b = WIDX.filter(function (x) { return x.id === id; })[0]; WB[id] = [{ k: id + ':bg', v: 'bg', g: poly(b.bb[0], b.bb[1], b.bb[2], b.bb[3]) }].concat(wdec(B, id, b.sc)); WB[id].forEach(function (x) { x.lv = b.lv; }); if (typeof draw === 'function') draw(); };
+  function wneed(id) { if (WASK[id]) return; WASK[id] = 1; var sc = document.createElement('script'); sc.src = '../assets/data/world/' + ({ n: 'w2/', t: 'w3/' }[id.charAt(0)] || 'w1/') + id + '.js?v=0.54'; document.head.appendChild(sc); }
   function drawSurface(pk) {
     if (!W0.length) return; gLand.style('display', 'none'); gSurf.attr('mask', REL.length && LY.relief ? 'url(#nobox)' : null); // 世界の地形がくわしくなったので、東アジアの四角は「地形」レイヤーのときだけ
-    var d = W0.slice();
+    var d = W0.slice(); // 1km（二水）と100m（都会になれる町）のブロックは、近づいたときだけ読む
     var bl = [];
-    if (pk > .15) WIDX.forEach(function (b) { if (b.lv === 2 && pk < 1.2) return; if (!regionOn({ id: b.id, bb: b.bb })) return; wneed(b.id); if (WB[b.id]) bl = bl.concat(WB[b.id]); });
-    var LV = ['bg', '-200', '0', '100', '200', '500', '1000', '1500', '2000', '3000', '4000', 'gf', 'gg', 'gd', 'gt', 'gi', 's0.14', 's0.32', 'lk', 'r0', 'r1', 'r2', 'r3']; bl.sort(function (a, b) { return (a.lv - b.lv) || (LV.indexOf(a.v) - LV.indexOf(b.v)); }); d = d.concat(bl); // ブロックの海を先に、段の低い順に、影は最後に重ねる
+    if (pk > .15) WIDX.forEach(function (b) { if ((b.lv === 2 && pk < 1.2) || (b.lv === 3 && pk < 5)) return; if (!regionOn({ id: b.id, bb: b.bb })) return; wneed(b.id); if (WB[b.id]) bl = bl.concat(WB[b.id]); });
+    var LV = ['bg', '-200', '0', '100', '200', '500', '1000', '1500', '2000', '3000', '4000', 'gf', 'gg', 'gd', 'gt', 'gi', 's0.14', 's0.32', 'lk', 'r0', 'r1', 'r2', 'r3']; var rk = function (v) { return v === 'bg' ? -1e9 : isNaN(+v) ? 1e5 + LV.indexOf(v) : +v; }; bl.sort(function (a, b) { return (a.lv - b.lv) || (rk(a.v) - rk(b.v)); }); d = d.concat(bl); // ブロックの海を先に、段の低い順に、影は最後に重ねる
     // 拡大の質：見えているブロックのとなりも、手が空いたときに先に読んでおく
     if (pk > .15 && !FAST) { clearTimeout(drawSurface.t); drawSurface.t = setTimeout(function () { WIDX.forEach(function (b) { if (!WB[b.id]) return; var p = b.id.split('_'); [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (q) { var id = (+p[0] + q[0]) + '_' + (+p[1] + q[1]); if (WIDX.some(function (x) { return x.id === id; })) wneed(id); }); }); }, 600); }
     var j = gSurf.selectAll('path').data(d, function (x) { return x.k; }); j.exit().remove();
-    j.enter().append('path').attr('class', function (x) { var c = x.v.charAt(0); return c === 's' ? 'shade' : c === 'r' ? 'river ' + x.v : c === 'g' ? 'kind ' + x.v : x.v === 'lk' ? 'lake' : null; }).style('fill', function (x) { return SCOL[x.v]; }).merge(j).each(function (x) { var sh = x.v.charAt(0) === 's'; this.style.display = sh && FAST ? 'none' : ''; if (!(sh && FAST)) this.setAttribute('d', path(x.g) || ''); }); // 動かしている間は影を休む
+    j.enter().append('path').attr('class', function (x) { var c = x.v.charAt(0); return c === 's' ? 'shade' : c === 'r' ? 'river ' + x.v : c === 'g' ? 'kind ' + x.v : x.v === 'lk' ? 'lake' : null; }).style('fill', fillOf).classed('b3', function (x) { return x.lv === 3 && !isNaN(+x.v) && +x.v > 0; }).classed('k3', function (x) { return x.lv === 3 && x.v.charAt(0) === 'g'; }).merge(j).each(function (x) { var sh = x.v.charAt(0) === 's'; this.style.display = sh && FAST ? 'none' : ''; if (!(sh && FAST)) this.setAttribute('d', path(x.g) || ''); }); // 動かしている間は影を休む
     gSurf.selectAll('path').order();
   }
 
@@ -301,7 +306,7 @@
 
   // ---- 動かす・拡大する ----
   var KMIN = .8, anim = null;
-  function kmax() { return 20 * 6371 / base; } // いまは 1km＝20px まで（町の地図を入れたらもっと先へ）
+  function kmax() { return 200 * 6371 / base; } // 1km＝200px（100m＝20px）まで。100mの地形は都会になれる町のまわりだけ
   function degpx() { return 57.2958 / proj.scale(); }
   function clampRot() { rot[1] = Math.max(-85, Math.min(85, rot[1])); }
   function zoomAt(f, px, py) {
