@@ -43,7 +43,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 .rain line{animation:fall .55s linear infinite}.snowf circle{animation:snow 6s linear infinite}.cl{animation:drift 90s linear infinite}.fl{animation:flash 7s infinite}.star{animation:tw 3s ease-in-out infinite}.pet{animation:snow 9s linear infinite}
 @media (prefers-reduced-motion:reduce){.rain line,.snowf circle,.cl,.fl,.star,.pet{animation:none}}
 </style></head><body>
-<script src="../site-nav.js?v=0.54"></script>
+<script src="../site-nav.js?v=0.55"></script>
 <main>
 <p class="kick">TODAY IN THE WORLD</p>
 <div class="sky" id="sky"><svg id="scene" viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice" role="img" aria-label="今日の空"></svg><div class="ov"><div class="d" id="o-d"></div><div class="t" id="o-t"></div><div class="w" id="o-w"></div><div class="s" id="o-s"></div></div></div>
@@ -81,14 +81,17 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
 <p class="note">この世界は、毎日少しずつ動いています。現実の1日が、世界の1日です（記録は新暦312年からはじまり、2026年10月に何度か時を早送りして、いまは新暦546年）。数字は物語のための目安です。</p>
 </main>
 <script src="../cast/cast-data.js?v=0.19"></script>
-<script src="development.js?v=0.54"></script>
-<script src="checkpoint.js?v=0.54"></script>
-<script src="world-sim.js?v=0.54"></script>
+<script src="development.js?v=0.55"></script>
+<script src="checkpoint.js?v=0.55"></script>
+<script src="world-sim.js?v=0.55"></script>
+<script src="pop.js?v=0.55"></script>
 <script>
 (function () {
   'use strict';
   var S = window.TRI_SIM, $ = function (id) { return document.getElementById(id); };
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  // 人口の表示：計算の州の人口を、3つの国の人口（pop.js）に合わせて大きさをそろえる
+  function popk(st, d) { var P = window.TRI_POP, y = 312 + Math.floor(d / 365), t = st.prov.reduce(function (a, p) { return a + p.pop; }, 0); return P && P[y] && t ? P[y] / t : 1; }
   var TODAY = S.today(), day = TODAY, pi = 0, slot = S.slotOf(), RUN = null;
   $('civil-target').onclick = function(event) {
     var button = event.target.closest('[data-target]'); if (!button) return;
@@ -245,7 +248,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
   }
   function future(Y) {
     var D = TODAY + Y * 365, x = S.run(D, D - TODAY + 1), st = x.state, h0 = x.hist[0], h1 = x.hist[x.hist.length - 1];
-    var pop0 = h0.prov.reduce(function (a, p) { return a + p.pop; }, 0), pop1 = h1.prov.reduce(function (a, p) { return a + p.pop; }, 0), cp = st.col.reduce(function (a, c) { return a + c.pop; }, 0);
+    var pop0 = popk(h0, TODAY) * h0.prov.reduce(function (a, p) { return a + p.pop; }, 0), pop1 = popk(h1, D) * h1.prov.reduce(function (a, p) { return a + p.pop; }, 0), cp = st.col.reduce(function (a, c) { return a + c.pop; }, 0);
     function chg(a, b, u) { var d = b - a; return '<span class="' + (d >= 0 ? 'up' : 'dn') + '">' + (d >= 0 ? '＋' : '−') + Math.abs(Math.round(d * 10) / 10) + u + '</span>'; }
     var h = '<div class="fut-h">' + x.date.label + '</div><p class="note">' + Y + '年後の世界（いまのまま進んだ場合の予想）</p>';
     h += '<div class="big"><div><small>3つの国の人口</small><b>' + Math.round(pop1) + '万</b>' + chg(pop0, pop1, '万') + '</div><div><small>開拓地</small><b>' + st.col.length + 'か所</b>約' + Math.round(cp).toLocaleString() + '人</div><div><small>出会った文明</small><b>' + st.civ.filter(function (v) { return v.known; }).length + ' / ' + S.CIVS.length + '</b></div></div>';
@@ -281,7 +284,7 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;font-size:16px}
     }).join('') + '</table></div>' +
       '<b>' + esc(sp.name) + 'の仕事のわりあい</b><div class="sect">' + S.SECT.map(function (s, i) { return '<i title="' + s[1] + '" style="width:' + (sp.share[i] * 100).toFixed(1) + '%;background:' + s[4] + '"></i>'; }).join('') + '</div><div class="leg">' + S.SECT.map(function (s, i) { return '<span><i style="background:' + s[4] + '"></i>' + s[1] + ' ' + Math.round(sp.share[i] * 100) + '%</span>'; }).join('') + '</div>' +
       '<div class="scroll"><table class="tbl"><tr><th>州</th><th>人口</th><th>仕事がない人</th><th>食べ物の値段</th><th>品物の値段</th><th>暮らしの満足</th></tr>' + prov.map(function (p) {
-        return '<tr><td>' + p.name + '</td><td>' + Math.round(p.pop) + '万</td><td>' + f1(p.unemp * 100) + '%</td><td>' + Math.round(p.price.food * 100) + '</td><td>' + Math.round(p.price.goods * 50) + '</td><td>' + Math.round(p.mood) + '</td></tr>';
+        return '<tr><td>' + p.name + '</td><td>' + Math.round(p.pop * popk(RUN.state, day)) + '万</td><td>' + f1(p.unemp * 100) + '%</td><td>' + Math.round(p.price.food * 100) + '</td><td>' + Math.round(p.price.goods * 50) + '</td><td>' + Math.round(p.mood) + '</td></tr>';
       }).join('') + '</table></div><p class="note">値段は、ふつうを100とした目安です。「1文あたり」は水和国のお金1文で買える、その国のお金の量です。</p>';
     $('cli').innerHTML = '<table class="tbl"><tr><th>州</th><th>天気</th><th>気温</th><th>雨・雪</th></tr>' + S.PROV.map(function (p, i) { var c = S.climate(i, day); return '<tr><td>' + p[0] + '</td><td>' + S.WX[c.k][1] + ' ' + S.WX[c.k][0] + '</td><td>' + f1(c.t) + '℃</td><td>' + c.mm + 'mm</td></tr>'; }).join('') + '</table>';
   }
