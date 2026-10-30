@@ -15,10 +15,10 @@
     { id: 'hakko', name: '白港', sub: '改神国の首都', ll: [130.4, 33.6], text: '海のむこうの、白い石の港。祈りの鐘の音で一日が動きます。' }
   ];
   var NATIONS = [{ name: '水和国', n: 'n1', c: [127.3, 36.4], col: '#2f7d4a' }, { name: '文光国', n: 'n2', c: [127.6, 39.8], col: '#4c56a8' }, { name: '改神国', n: 'n3', c: [131.2, 32.6], col: '#a86412' }];
-  // 自然の名前（海・川・山）。この世界の人たちの呼び名。[名前, 経度, 緯度, 種類 w水 m山 i島, 出す近さ k]
-  var NAMES = [['東の海', 131.2, 39.6, 'w', 3], ['西の海', 124.2, 36.2, 'w', 3], ['南の海峡', 129.0, 34.2, 'w', 3],
-    ['北川', 127.55, 37.8, 'w', 3.5], ['南川', 127.75, 37.3, 'w', 3.5], ['大川', 126.8, 37.62, 'w', 3.5], ['西境川', 124.9, 40.2, 'w', 3.5],
-    ['背骨山脈', 128.95, 36.9, 'm', 3.5], ['白峰', 128.08, 42.0, 'm', 3.5], ['南の島', 126.55, 33.38, 'i', 3.5]];
+  // 自然地理は現代の地名。国・都市の作品設定とは分離する。
+  var NAMES = [['黄海', 124.2, 36.2, 'w', 3], ['対馬海峡', 129.0, 34.2, 'w', 6],
+    ['北漢江', 127.55, 37.8, 'w', 18], ['南漢江', 127.75, 37.3, 'w', 18], ['漢江', 126.8, 37.62, 'w', 10], ['鴨緑江', 124.9, 40.2, 'w', 10],
+    ['太白山脈', 128.95, 36.9, 'm', 6], ['白頭山', 128.08, 42.0, 'm', 6], ['済州島', 126.55, 33.38, 'i', 6]];
   var NAT = { n1: '水和国', n2: '文光国', n3: '改神国' };
   // 州：[名前, 国, 西,南,東,北, 中心の町, 人口(仮), 説明]（並びは world-sim.js と同じ）
   var PROV = [
@@ -67,6 +67,32 @@
   var gOcean = svg.append('path').attr('class', 'ocean'), gGrat = svg.append('path').attr('class', 'grat'), gSea = svg.append('g').attr('class', 'ctl-sea'), gLand = svg.append('path').attr('class', 'land'), gSurf = svg.append('g').attr('class', 'surf');
   var gRel = svg.append('g').attr('class', 'relief'), gTile = svg.append('g').attr('class', 'tiles'), gProv = svg.append('g').attr('clip-path', 'url(#landclip)'), gCtl = svg.append('g').attr('class', 'ctl-land'), gRiv = svg.append('g').attr('class', 'riv'), gNet = svg.append('g').attr('class', 'net');
   var gCiv = svg.append('g'), gRim = svg.append('path').attr('class', 'rim'), gCol = svg.append('g'), gLab = svg.append('g'), gWx = svg.append('g').attr('class', 'wxl'), gPin = svg.append('g'), gScale = svg.append('g').attr('class', 'scale');
+  var gHydro = svg.insert('g', '.net').attr('class', 'geography');
+  var geography = (window.TRI_GEOGRAPHY || {features:[]}).features;
+  gHydro.selectAll('path').data(geography).enter().append('path')
+    .attr('class', function (f) { return 'geo-' + f.properties.kind; })
+    .style('fill', function (f) { return f.properties.kind === 'lake' ? '#aadaff' : 'none'; })
+    .style('stroke', '#6aaecb').style('stroke-width', 1.1)
+    .attr('tabindex', 0).attr('role', 'button').attr('aria-label', function (f) { return f.properties.name; })
+    .on('click', function (e, f) { openGeography(f); })
+    .on('keydown', function (e, f) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openGeography(f); } });
+  function openGeography(f) {
+    showCard({id:'g-' + f.properties.id, title:f.properties.name,
+      sub:f.properties.kind === 'lake' ? '自然湖・広域概略' : '河川・広域概略',
+      text:'Natural Earthの自然地理データ。小さな支流や湖岸の細部、流量・水深は含みません。都市や復興の状態を表すものではありません。'});
+  }
+  function declutterLabels() {
+    var boxes = [], count = 0;
+    var nodes = gPin.selectAll('text').nodes().concat(gLab.selectAll('text').nodes(), gCiv.selectAll('text').nodes(), gCol.selectAll('text').nodes());
+    nodes.forEach(function (node) {
+      if (getComputedStyle(node).display === 'none' || getComputedStyle(node.parentNode).display === 'none') return;
+      var b = node.getBoundingClientRect(), frame = stage.getBoundingClientRect();
+      var overlaps = boxes.some(function (a) { return b.left < a.right + 10 && b.right + 10 > a.left && b.top < a.bottom + 6 && b.bottom + 6 > a.top; });
+      var offscreen = b.width === 0 || b.left < frame.left + 8 || b.right > frame.right - 48 || b.top < frame.top + 62 || b.bottom > frame.bottom - 34;
+      if (offscreen || (!LY.labels && (overlaps || count >= (W < 600 ? 7 : 14)))) node.style.display = 'none';
+      else { boxes.push(b); count++; }
+    });
+  }
 
   // ---- 本物の地形（assets/data/relief.js）----
   var RCOL = { 1: '#dfe6c8', 200: '#e6dfbd', 500: '#d8c99f', 1000: '#c4ad83', 1500: '#ae9572', 2000: '#98806a', 3000: '#857065' };
@@ -191,7 +217,7 @@
   }
   // 1km が何px か
   function pxkm() { return proj.scale() / 6371; }
-  var LY = { prov: true, wx: false, mood: false, relief: false, net: true, use: false, ctl: false }, selP = null, SIMD = null;
+  var LY = { prov: true, wx: false, mood: false, relief: false, net: true, use: false, ctl: false, hydro:true, labels:false }, selP = null, SIMD = null;
   function simData() {
     if (SIMD || !SIM) return SIMD;
     var d = SIM.today(), x = SIM.run(d, 1);
@@ -202,6 +228,8 @@
   function visible(ll) { return d3.geoDistance(ll, [-rot[0], -rot[1]]) < Math.PI / 2 - .02; }
 
   function draw() {
+    gPin.selectAll('text').style('display', null); gLab.selectAll('text').style('display', null);
+    gCiv.selectAll('text').style('display', null); gCol.selectAll('text').style('display', null);
     proj.translate([W / 2, H / 2]).scale(base * k).rotate(rot);
     var pk = pxkm();
     gOcean.attr('d', path({ type: 'Sphere' })); gRim.attr('d', path({ type: 'Sphere' }));
@@ -227,11 +255,17 @@
       .style('fill', function (d) { if (LY.use && SU) return useOf(PROV.indexOf(d))[2]; if (!LY.mood || !S) return null; var m = S.mood[PROV.indexOf(d)]; return d3.interpolateRdYlGn(Math.max(0, Math.min(1, (m - 35) / 45))); })
       .style('fill-opacity', LY.mood || LY.use ? .7 : LY.ctl ? .55 : LY.relief ? (pk > 1.5 ? .08 : .16) : (pk > 40 ? .12 : null));
     drawNet(pk);
+    gHydro.style('display', LY.hydro ? null : 'none');
+    gRiv.style('display', LY.hydro ? null : 'none');
+    if (LY.hydro) gHydro.selectAll('path').attr('d', function (f) { return path(f); });
     // 国・州の名前（町が見えるほど近いと消す）
     var labs = [];
     if (k >= 2 && k < 3.5) NATIONS.forEach(function (n) { labs.push({ t: n.name, c: n.c, cl: 'nlab', col: n.col }); });
-    else if (k >= 3.5 && pk < 40) PROV.forEach(function (p) { labs.push({ t: p[0], c: p.c, cl: 'plab', dy: PLACES.some(function (x) { return x.name === p[6]; }) ? 30 : 0 }); });
+    else if (k >= (LY.labels ? 3.5 : 12) && pk < 40) PROV.forEach(function (p) { labs.push({ t: p[0], c: p.c, cl: 'plab', dy: PLACES.some(function (x) { return x.name === p[6]; }) ? 30 : 0 }); });
     NAMES.forEach(function (n) { if (k >= n[4] && pk < 40) labs.push({ t: n[0], c: [n[1], n[2]], cl: 'flab ' + n[3] }); }); // 海・川・山の名前
+    if (LY.hydro && k >= 3 && pk < 2) geography.forEach(function (f) {
+      labs.push({t:f.properties.name,c:d3.geoCentroid(f),cl:'flab w'});
+    });
     var lb = gLab.selectAll('text').data(labs); lb.exit().remove();
     lb.enter().append('text').merge(lb).attr('class', function (d) { return d.cl; }).style('fill', function (d) { return d.col || null; }).text(function (d) { return d.t; })
       .each(function (d) { var q = proj(d.c), v = q && visible(d.c); d3.select(this).style('display', v ? null : 'none'); if (q) d3.select(this).attr('x', q[0]).attr('y', q[1] + (d.dy || 0)); });
@@ -245,6 +279,7 @@
     en.append('circle').attr('r', 7); en.append('text').attr('x', 11).attr('y', 6).text(function (d) { return d.name; });
     en.merge(pin).each(function (d) { var q = proj(d.ll), g = d3.select(this), hide = false; g.style('display', q && visible(d.ll) && !hide ? null : 'none'); if (q) g.attr('transform', 'translate(' + q[0] + ',' + q[1] + ')'); });
     drawWorld(pk);
+    declutterLabels();
     drawScale(pk);
   }
 
@@ -253,8 +288,8 @@
   var STATE = null;
   function useOf(i) { var sh = STATE ? STATE.prov[i].share : SIM.PROV[i][6], b = 0; for (var j = 1; j < 7; j++) if (sh[j] > sh[b]) b = j; var key = SIM.SECT[b][0]; return [key, USEC[key][0], USEC[key][1], Math.round(sh[b] * 100)]; }
   function drawNet(pk) {
-    gNet.style('display', LY.net ? null : 'none'); if (!LY.net) return;
     drawRiver(pk);
+    gNet.style('display', LY.net ? null : 'none'); if (!LY.net) return;
     // 地図アプリのように：道と鉄道は、ふちどり（cas）を下に、本体を上に重ねる
     var nd0 = netData(pk), nd = nd0.filter(function (d) { return /road|rail/.test(d.cl) && !/tun/.test(d.cl); }).map(function (d) { return { cl: d.cl + ' cas', c: d.c, info: d.info }; }).concat(nd0);
     var ln = gNet.selectAll('path.l').data(nd); ln.exit().remove();
@@ -374,6 +409,11 @@
   }
   function openId(id) {
     var t = id.slice(0, 1), v = id.slice(2), i = +v;
+    if (t === 'g') {
+      var feature = geography.filter(function (f) { return f.properties.id === v; })[0];
+      if (feature) { flyTo(d3.geoCentroid(feature), 6); openGeography(feature); }
+      return;
+    }
     if (t === 'c') { var d = PLACES.filter(function (q) { return q.id === v; })[0]; if (d) openPlace(d); return; }
     if (t === 'p') { var p = PROV[i]; if (!p) return; flyTo(p.c, Math.max(6, Math.min(k, 10))); openProv(p); }
     var S = simData();
@@ -395,6 +435,7 @@
     if (IDX) return IDX; IDX = [];
     PLACES.forEach(function (d) { IDX.push({ id: 'c-' + d.id, i: '📍', t: d.name, s: d.sub }); });
     PROV.forEach(function (p, i) { IDX.push({ id: 'p-' + i, i: '🗺️', t: p[0], s: NAT[p[1]] + 'の州' }); });
+    geography.forEach(function (f) { IDX.push({id:'g-' + f.properties.id,i:'',t:f.properties.name,s:f.properties.kind === 'lake' ? '自然湖' : '河川'}); });
     var S = simData();
     if (S) {
       S.col.forEach(function (c) { IDX.push({ id: 'x-' + c.site, i: '🚩', t: SIM.SITES[c.site][0], s: SIM.NATS[c.nat].name + 'の' + c.stage }); });
@@ -418,7 +459,7 @@
   lm.addEventListener('change', function (e) {
     var x = e.target;
     if (x.id === 'ly-prov') { LY.prov = x.checked; draw(); }
-    if (/^ly-(relief|net|use|ctl)$/.test(x.id)) { LY[x.id.slice(3)] = x.checked; if (x.id === 'ly-use' && x.checked) { $('ly-mood').checked = LY.mood = false; } if (x.id === 'ly-mood' && x.checked) { $('ly-use').checked = LY.use = false; } draw(); }
+    if (/^ly-(relief|net|use|ctl|hydro|labels)$/.test(x.id)) { LY[x.id.slice(3)] = x.checked; if (x.id === 'ly-use' && x.checked) { $('ly-mood').checked = LY.mood = false; } if (x.id === 'ly-mood' && x.checked) { $('ly-use').checked = LY.use = false; } draw(); }
     if (x.id === 'ly-mood' && x.checked) { $('ly-use').checked = LY.use = false; }
     if (x.id === 'ly-wx' || x.id === 'ly-mood') { LY[x.id === 'ly-wx' ? 'wx' : 'mood'] = x.checked; var S = simData(); if (x.checked && S) toast('世界シミュレーション：' + S.date); draw(); }
   });

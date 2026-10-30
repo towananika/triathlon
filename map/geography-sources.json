@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-30",
+  "added": {
+    "dataset": "Natural Earth 1:110 million rivers and natural lakes",
+    "revision": "ca96624a56bd078437bca8184e78163e5039ad19",
+    "repository": "https://github.com/nvkelso/natural-earth-vector",
+    "description": "https://www.naturalearthdata.com/downloads/110m-physical-vectors/",
+    "license": "Public domain",
+    "terms": "https://www.naturalearthdata.com/about/terms-of-use/",
+    "build": "node map/build-geography.cjs",
+    "limits": "広域概略用。110mは縮尺1:110,000,000の意味で、110メートル解像度ではない。小河川、湖岸の細部、水深、流量、洪水域は保証しない。工事・航行の判断には使わない。現代データが戦後の水系を保証するものではない。"
+  },
+  "retained": {
+    "terrain": "既存の標高・地形ブロックと東アジアの詳細データは今回更新していない。",
+    "fiction": "国・州・都市・交通網・復興状況は作品設定または既存シミュレーションで、自然地理データとは別。"
+  },
+  "workStatus": {"complete": "世界の主要河川・自然湖の追加と地名の整理", "notIncluded": "全球の高解像度標高更新・洪水計算・戦後地形の物理計算", "next": "必要な地域だけ詳細水系・標高を追加する"}
+}
