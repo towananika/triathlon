@@ -44,6 +44,13 @@
     return f;
   }
   PROV.forEach(function (p) { p.f = poly(p[2], p[3], p[4], p[5]); p.c = [(p[2] + p[4]) / 2, (p[3] + p[5]) / 2]; });
+  // 自然な境界（assets/data/world/borders.js：尾根や海峡にそった線）があれば、四角のかわりに使う
+  if (window.TRI_BORDERS) PROV.forEach(function (p, i) {
+    var P = TRI_BORDERS.p[i]; if (!P || !P.length) return;
+    var f = { type: 'Feature', geometry: { type: 'MultiPolygon', coordinates: P.map(function (poly) { return poly.map(function (r) { var c = r.slice(); if (c[0][0] !== c[c.length - 1][0] || c[0][1] !== c[c.length - 1][1]) c.push(c[0]); return c; }); }) } };
+    f.geometry.coordinates.forEach(function (poly) { poly.forEach(function (r) { if (d3.geoArea({ type: 'Polygon', coordinates: [r] }) > 2 * Math.PI) r.reverse(); }); });
+    p.f = f; p.c = TRI_BORDERS.c[i];
+  });
 
   // 二水の町の座標（360×290、60で1km）と経緯度の対応。町の真ん中 (180,145) が二水の点
   var C0 = [126.98, 37.57], KM = 60, COSL = Math.cos(C0[1] * Math.PI / 180);
@@ -150,7 +157,7 @@
     if (!W0.length) return; gLand.style('display', 'none'); gSurf.attr('mask', REL.length && LY.relief ? 'url(#nobox)' : null); // 世界の地形がくわしくなったので、東アジアの四角は「地形」レイヤーのときだけ
     var d = W0.slice(); // 1km（二水）と100m（都会になれる町）のブロックは、近づいたときだけ読む
     var bl = [];
-    if (pk > .15) WIDX.forEach(function (b) { if ((b.lv === 2 && pk < 1.2) || (b.lv === 3 && pk < 5)) return; if (!regionOn({ id: b.id, bb: b.bb })) return; wneed(b.id); if (WB[b.id]) bl = bl.concat(WB[b.id]); });
+    if (pk > .15 && !FAST) WIDX.forEach(function (b) { if ((b.lv === 2 && pk < 1.2) || (b.lv === 3 && pk < 5)) return; if (!regionOn({ id: b.id, bb: b.bb })) return; wneed(b.id); if (WB[b.id]) bl = bl.concat(WB[b.id]); });
     var LV = ['bg', '-200', '0', '100', '200', '500', '1000', '1500', '2000', '3000', '4000', 'gf', 'gg', 'gd', 'gt', 'gi', 's0.14', 's0.32', 'lk', 'r0', 'r1', 'r2', 'r3']; var rk = function (v) { return v === 'bg' ? -1e9 : isNaN(+v) ? 1e5 + LV.indexOf(v) : +v; }; bl.sort(function (a, b) { return (a.lv - b.lv) || (rk(a.v) - rk(b.v)); }); d = d.concat(bl); // ブロックの海を先に、段の低い順に、影は最後に重ねる
     // 拡大の質：見えているブロックのとなりも、手が空いたときに先に読んでおく
     if (pk > .15 && !FAST) { clearTimeout(drawSurface.t); drawSurface.t = setTimeout(function () { WIDX.forEach(function (b) { if (!WB[b.id]) return; var p = b.id.split('_'); [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (q) { var id = (+p[0] + q[0]) + '_' + (+p[1] + q[1]); if (WIDX.some(function (x) { return x.id === id; })) wneed(id); }); }); }, 600); }
@@ -241,7 +248,8 @@
 
   function draw() {
     proj.translate([W / 2, H / 2]).scale(base * k).rotate(rot);
-    if (FAST && MAP0) { var sc = proj.scale() / MAP0.s, q = proj(MAP0.ll); if (q && visible(MAP0.ll) && sc > .4 && sc < 2.5) { gMap.attr('transform', 'translate(' + (q[0] - sc * MAP0.c[0]) + ',' + (q[1] - sc * MAP0.c[1]) + ') scale(' + sc + ')');
+    if (FAST && MAP0 && (ZM || W / pxkm() < 2000)) { // 拡大中か、せまい範囲のときだけ前の絵を動かす。広い範囲を回すときは描きなおす（地球の丸みでずれるため）
+      var sc = proj.scale() / MAP0.s, q = proj(MAP0.ll); if (q && visible(MAP0.ll) && sc > .4 && sc < 2.5) { gMap.attr('transform', 'translate(' + (q[0] - sc * MAP0.c[0]) + ',' + (q[1] - sc * MAP0.c[1]) + ') scale(' + sc + ')');
         gMap.selectAll('text').each(function () { var x = +this.getAttribute('x') || 0, y = +this.getAttribute('y') || 0; this.setAttribute('transform', 'translate(' + x + ',' + y + ') scale(' + (1 / sc) + ') translate(' + (-x) + ',' + (-y) + ')'); }); // 名前の大きさは変えない
         drawScale(pxkm()); return; } }
     gMap.attr('transform', null); gMap.selectAll('text[transform]').attr('transform', null); MAP0 = { s: proj.scale(), c: [W / 2, H / 2], ll: proj.invert([W / 2, H / 2]) };
@@ -393,15 +401,18 @@
     var nk = Math.max(KMIN, Math.min(kmax(), k * f)); if (nk === k) return;
     var g = proj.invert([px, py]); k = nk; proj.scale(base * k);
     if (g) { var q = proj(g); if (q) { var dp = degpx(); rot[0] -= (q[0] - px) * dp; rot[1] += (q[1] - py) * dp; clampRot(); } }
-    FAST = true; draw(); settle();
+    ZM = true; FAST = true; draw(); settle();
   }
-  var drag0 = null, FAST = false, rq = null, slow = null;
+  var drag0 = null, ZM = false, FAST = false, rq = null, slow = null;
   function soon() { if (!rq) rq = requestAnimationFrame(function () { rq = null; draw(); }); }
   function settle() { clearTimeout(slow); slow = setTimeout(function () { FAST = false; draw(); }, 160); }
   svg.call(d3.drag().clickDistance(4)
-    .on('start', function (e) { if (anim) anim.stop(); drag0 = { x: e.x, y: e.y, r: rot.slice() }; })
+    .on('start', function (e) { if (anim) anim.stop(); drag0 = { x: e.x, y: e.y, r: rot.slice(), g: proj.invert([e.x, e.y]) }; ZM = false; })
     .on('end', function () { settle(); })
-    .on('drag', function (e) { if (pinch) return; var dp = degpx(); rot = [drag0.r[0] + (e.x - drag0.x) * dp, drag0.r[1] - (e.y - drag0.y) * dp, 0]; clampRot(); FAST = true; soon(); }));
+    .on('drag', function (e) { if (pinch) return; var dp = degpx(); rot = [drag0.r[0] + (e.x - drag0.x) * dp, drag0.r[1] - (e.y - drag0.y) * dp, 0]; clampRot();
+      // つかんだ場所が指の下にとどまるように、回転を少しずつ合わせる（地図アプリと同じ感触）
+      if (drag0.g) for (var it = 0; it < 3; it++) { proj.rotate(rot); var q = proj(drag0.g); if (!q) break; rot[0] -= (q[0] - e.x) * dp; rot[1] += (q[1] - e.y) * dp; clampRot(); }
+      ZM = false; FAST = true; soon(); }));
   svg.on('wheel', function (e) { e.preventDefault(); var r = stage.getBoundingClientRect(); zoomAt(Math.pow(1.0018, -e.deltaY), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
   svg.on('dblclick.zoom', null);
   svg.on('dblclick', function (e) { var r = stage.getBoundingClientRect(); zoomAt(2, e.clientX - r.left, e.clientY - r.top); });
