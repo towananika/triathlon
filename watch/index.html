@@ -19,7 +19,7 @@ h1{font-size:24px;font-weight:600;margin:2px 0 4px;color:#173A63}
 .bond ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px;font-size:14px}
 .bond li{display:flex;justify-content:space-between;gap:6px}.bond b{font-weight:600;color:#22AAA6;font-variant-numeric:tabular-nums}
 .note{margin:28px 0 0;font-size:12px;color:#7a868c}
-.note a{color:#2F6FB8}
+.note a{color:#2F6FB8}.waza{display:grid;gap:10px}.waza .w{background:#FBFCFC;border:1px solid #DCE5E4;border-radius:10px;padding:10px 12px}.waza b{font-weight:600}.bond .waza ul{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-columns:1fr;gap:2px;font-size:14px}.waza li{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.waza small{color:#5E6B72;font-size:12px}.waza .m{color:#C9A646;letter-spacing:1px}.memo{margin:10px 0 0;font-size:14px;color:#173A63}
 </style></head><body>
 <script src="../site-nav.js?v=0.63"></script>
 <main>
@@ -28,15 +28,21 @@ h1{font-size:24px;font-weight:600;margin:2px 0 4px;color:#173A63}
 <p class="day" id="day"></p>
 <div id="box"></div>
 <section class="bond"><h2>見守った日</h2><ul id="bond"></ul></section>
-<p class="note">一日に見守れるのは、ひとりだけです。三日見守ると、その人の小さな話が開きます（次の版から）。記録はこの端末にだけ残ります。<a href="../part1/">第1部の道のり →</a></p>
+<section class="bond"><h2>家から継いだ技</h2><div class="waza" id="waza"></div></section>
+<p class="note">一日に見守れるのは、ひとりだけです。三日見守ると、その人の小さな話が開きます（次の版から）。見守った場面は、その人の家の技の思い出（●）になり、いつか次の代へ渡ります。記録はこの端末にだけ残ります。<a href="../part1/">第1部の道のり →</a></p>
 </main>
 <script src="lines.js?v=0.63"></script>
+<script src="skills.js?v=0.64"></script>
 <script>
 (function(){
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var SK=window.TRI_SKILLS||{};
 var NINE=['アカリ','ツバサ','セイラ','シオン','カイ','シズク','ルイ','ミナト','リク'],L=window.TRI_WATCH||{};
 var today=new Date(Date.now()+9*36e5).toISOString().slice(0,10);
 var W={};try{W=JSON.parse(localStorage.getItem('tri-watch')||'{}')||{}}catch(e){}
+function dnum(d){return Math.floor(Date.parse(d)/864e5)}
+function skillOf(n,d){var k=(SK[n]||{}).k||[];return k.length?k[dnum(d)%k.length]:null}
+function memos(n,i){var k=(SK[n]||{}).k||[];return Object.keys(W).filter(function(d){return W[d]===n&&dnum(d)%k.length===i}).length}
 function bond(n){return Object.keys(W).filter(function(d){return W[d]===n}).length}
 var dn=Math.floor(Date.parse(today)/864e5),wd='日月火水木金土'.charAt(new Date(today+'T00:00:00Z').getUTCDay());
 document.getElementById('day').textContent=(+today.slice(5,7))+'月'+(+today.slice(8))+'日（'+wd+'）';
@@ -44,7 +50,8 @@ function render(){var n=W[today],box=document.getElementById('box');
  if(!n){box.innerHTML='<p class="q">今日は、だれを見守りますか。</p><div class="nine">'+NINE.map(function(x){var b=Math.min(bond(x),3),d='';for(var i=0;i<b;i++)d+='<i></i>';return '<button type="button" data-n="'+esc(x)+'">'+esc(x)+'<span class="dots">'+d+'</span></button>'}).join('')+'</div>';
   [].forEach.call(box.querySelectorAll('button'),function(b){b.onclick=function(){W[today]=b.dataset.n;try{localStorage.setItem('tri-watch',JSON.stringify(W))}catch(e){}render()}})}
  else{var arr=L[n]||[''],t=arr[((dn%arr.length)+arr.length)%arr.length],b=bond(n);
-  box.innerHTML='<div class="scene"><p class="who">今日の'+esc(n)+'</p><p class="t">'+esc(t)+'</p></div><p class="after">'+(b>=3?esc(n)+'の小さな話が、開くのを待っています。':'あと '+(3-b)+' 日見守ると、'+esc(n)+'の小さな話が開きます。')+'　また明日。</p>'}
+  box.innerHTML='<div class="scene"><p class="who">今日の'+esc(n)+'</p><p class="t">'+esc(t)+'</p>'+(skillOf(n,today)?'<p class="memo">この場面は「'+esc(skillOf(n,today)[0])+'」の思い出になりました。</p>':'')+'</div><p class="after">'+(b>=3?esc(n)+'の小さな話が、開くのを待っています。':'あと '+(3-b)+' 日見守ると、'+esc(n)+'の小さな話が開きます。')+'　また明日。</p>'}
+ document.getElementById('waza').innerHTML=NINE.map(function(x){var o=SK[x];if(!o)return '';var C={r:0,g:1,b:2};return '<div class="w"><b>'+esc(x)+'</b><ul>'+o.k.map(function(k,i){var fit=o.c[C[k[3]]]>=140,m=memos(x,i),dots='';for(var j=0;j<Math.min(m,10);j++)dots+='●';return '<li><span>'+esc(k[0])+' <small>'+esc(k[1])+'・'+k[2]+'代目・'+(fit?'手になじんでいる':'まだ手になじまない')+'</small></span><span class="m" title="思い出">'+dots+'</span></li>'}).join('')+'</ul></div>'}).join('');
  document.getElementById('bond').innerHTML=NINE.map(function(x){return '<li><span>'+esc(x)+'</span><b>'+bond(x)+'</b></li>'}).join('')}
 render();
 })();
