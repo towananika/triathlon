@@ -40,74 +40,50 @@ table.nine{width:100%;border-collapse:collapse;font-size:13px;background:var(--c
 .muted{color:var(--mut);font-size:13px}.skill-body{display:grid;gap:8px}summary{font-weight:700;color:var(--deep);cursor:pointer}
 .scroll{overflow-x:auto}.scroll table{border-collapse:collapse;font-size:13px;min-width:100%}.scroll th,.scroll td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}.scroll th{color:var(--mut);font-weight:600;white-space:nowrap}
 .card table{border-collapse:collapse;font-size:13px;width:100%}.card td,.card th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tree{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--k);border-radius:12px;padding:12px 14px}
+.tree h2{color:var(--k);margin:0 0 4px}
+.tree ol{margin:0;padding-left:1.5em;font-size:14px;line-height:1.75}.tree>ol>li{font-weight:700;margin-top:4px}.tree ol ol{font-weight:400}
+.tree ol ol ol{font-size:13px}
+.tree li::marker{color:var(--mut)}
+s{text-decoration:none;font-size:11px;font-weight:700;color:#fff;background:var(--k,var(--deep));border-radius:4px;padding:0 5px;margin-left:2px;font-variant-numeric:tabular-nums}
+q{quotes:none;font-size:12px;color:var(--mut)}q::before{content:"Req. "}
+.tree small{display:block;font-size:12px;color:var(--mut)}
 </style></head><body>
 <div class="wrap">
 <header><p class="kick">TRIATHLON · 開発 · 仮名世界</p><h1>スキルツリー（R・G・B）</h1>
 <nav class="dv"><a href="./">← 開発トップ</a> · <a href="skill.html">スキル</a> · <a href="stat.html">ステータス</a> · <a href="skill-sim.html">シミュレーター</a></nav></header>
 <p class="one">仮名世界で戦うための技。<br>General → Option → クラスの順に、<b>Req.（前提の技）</b>を満たすと覚えられる。<br>技ごとに、RGBの9ステータスのどれかが上がる。</p>
-<p class="mut">2026-10-25 にひびきが示した原案を、そのまま戻したもの（v0.20で開発ページを移したときに公開サイトから外れていた）。未確定のところは「未指定」「要確認」のまま。</p>
-<section class="card" id="skills"><details class="skill-details" open><summary>スキルシステム（日英）</summary><div class="skill-body"><p>General → Option → 専門スキル。習得条件は「Req.」で管理する。</p><div class="scroll"><table><tr><th>分類</th><th>英語</th><th>日本語</th><th>能力</th><th>Req.</th></tr>
-<tr><td>General</td><td>Physical Training (PT)</td><td>基礎体力訓練</td><td>HP</td><td>—</td></tr>
-<tr><td>General</td><td>Upper Body Training (UBT)</td><td>上半身強化訓練</td><td>ATK</td><td>PT</td></tr>
-<tr><td>General</td><td>Lower Body Training (LBT)</td><td>下半身強化訓練</td><td>DEF</td><td>PT</td></tr>
-<tr><td>Option</td><td>Offensive Strategy (OS)</td><td>攻撃戦術</td><td>ATK</td><td>UBT</td></tr>
-<tr><td>Option</td><td>Defensive Strategy (DS)</td><td>防御戦術</td><td>DEF</td><td>LBT</td></tr>
-<tr><td>Option</td><td>Intelligence Education (IE)</td><td>知識教育</td><td>MAG</td><td>—</td></tr>
-<tr><td>Option</td><td>Mind Control Training (MCT)</td><td>精神統制訓練</td><td>RES</td><td>—</td></tr>
-<tr><td>Fighter</td><td>Battle Understanding (BU)</td><td>戦闘理解</td><td>ATK</td><td>OS</td></tr>
-<tr><td>Fighter</td><td>Dodge Understanding (DU)</td><td>回避理解</td><td>SPD</td><td>DS</td></tr>
-<tr><td>Warrior</td><td>Sword Theory (ST)</td><td>剣術理論</td><td>RAN</td><td>MCT</td></tr>
-<tr><td>Warrior</td><td>Sword Practice (SP)</td><td>剣術実習</td><td>ATS</td><td>MCT + ST</td></tr>
-<tr><td>Knight</td><td>Movement Strategy (MS)</td><td>移動戦術</td><td>SPD</td><td>MCT</td></tr>
-<tr><td>Knight</td><td>Weapon Handling (WH)</td><td>武器操作術</td><td>ATS</td><td>MCT + MS</td></tr></table></div><p>剣術実習の技候補：straight（直線斬り／突き、要確認）、slice（斬撃）。RANとATSの正確な意味は未確定。</p><details><summary>以前のG・B簡略スキル案（未承認・現行原案ではない）</summary><div class="scroll"><table><tr><th>クラス</th><th>スキル案</th><th>能力</th><th>Req.</th></tr>
-<tr><td>Ranger</td><td>射撃理論 / Ranged Combat Theory</td><td>RAN</td><td>IE</td></tr><tr><td>Ranger</td><td>精密射撃 / Precision Shooting</td><td>ATS</td><td>射撃理論</td></tr>
-<tr><td>Assassin</td><td>隠密行動 / Stealth Movement</td><td>SPD</td><td>MCT</td></tr><tr><td>Assassin</td><td>急所分析 / Weak Point Analysis</td><td>ATK</td><td>隠密行動</td></tr>
-<tr><td>Scout</td><td>地形観察 / Terrain Observation</td><td>RAN</td><td>IE</td></tr><tr><td>Scout</td><td>索敵行動 / Reconnaissance</td><td>SPD</td><td>地形観察</td></tr>
-<tr><td>Elemental Mage</td><td>元素理解 / Elemental Understanding</td><td>MAG</td><td>IE</td></tr><tr><td>Elemental Mage</td><td>元素制御 / Elemental Control</td><td>ATS</td><td>元素理解 + MCT</td></tr>
-<tr><td>Mage</td><td>魔法理論 / Magic Theory</td><td>MAG</td><td>IE</td></tr><tr><td>Mage</td><td>魔力操作 / Mana Control</td><td>ATS</td><td>魔法理論 + MCT</td></tr>
-<tr><td>Cleric</td><td>治癒理論 / Healing Theory</td><td>MAG</td><td>IE</td></tr><tr><td>Cleric</td><td>回復術 / Restoration</td><td>RES</td><td>治癒理論 + MCT</td></tr></table></div></details></div></details></section>
-<section class="card" id="g-skills"><details class="skill-details" open><summary>G系統 — ユーザー提示の原案</summary><div class="skill-body">
-<p>General：Physical Training（PT / HP）。Throwing / Shooting（RAN）— Req. PT。</p>
-<p>Options：Upper Body Training（UBT / ATK）— Req. PT。Lower Body Training（LBT / DEF）— Req. PT。Intelligence Training（IT / MAG）、Mind Control Training（MCT / RES）。後者2つの前提は未指定。</p>
-<div class="scroll"><table><tr><th>クラス</th><th>スキル</th><th>能力</th><th>Req.（原案の表記）</th></tr>
-<tr><td>Ranger</td><td>Rifle 1</td><td>未指定</td><td>Shooting＋UBT</td></tr>
-<tr><td>Ranger</td><td>Rifle 2〜4</td><td>未指定</td><td>IT 1〜3＋MCT 1〜3</td></tr>
-<tr><td>Ranger</td><td>Heavy Rifle 1</td><td>未指定</td><td>Rifle 2</td></tr>
-<tr><td>Ranger</td><td>Heavy Rifle 2〜4</td><td>未指定</td><td>IT 1〜3＋MCT 1〜3＋WH 1〜3</td></tr>
-<tr><td>Assassin</td><td>Assassination 1</td><td>ATS</td><td>Throwing＋UBT</td></tr>
-<tr><td>Assassin</td><td>Assassination 2〜4</td><td>未指定</td><td>IT 1〜3＋MCT 1〜3＋BU 1〜3（Fighter）</td></tr>
-<tr><td>Scout</td><td>Movement Strategy 1</td><td>SPD</td><td>PT</td></tr>
-<tr><td>Scout</td><td>Movement Strategy 2〜4</td><td>未指定</td><td>PT 2〜4</td></tr>
-</table></div><p>2・3・4と前提1・2・3の個別対応、前の段階の技能が必要かどうかは未確認。Throwing／Shootingの分岐、RのIEとGのITの関係も未確定。</p></div></details></section>
-<section class="card" id="magic-v014"><p class="kicker">NEW SETTINGS · 2026-10-25</p><h2>B文明の魔法・学校とG系統の能力（v0.14）</h2><p class="muted">ユーザー指定の内容を優先し、未確定事項は区別しています。</p><h3>学校・教育</h3><ul><li>「社会法政」：学校名か教育区分かは確認待ち。</li><li>Bの<strong>神学校</strong>は宗教を学ぶ。</li><li><strong>魔法学校</strong>の存在を確認（詳細未確定）。</li><li><strong>改神国</strong>の追加詳細は未指定。</li></ul><h3>線形魔法と円形魔法</h3><div class="scroll"><table><tr><th>項目</th><th>線形魔法</th><th>円形魔法</th></tr><tr><td>詠唱</td><td>言葉のように一列に詠唱する</td><td>線形魔法を区切って円形にする</td></tr><tr><td>発動</td><td>詠唱が終わると発動</td><td>詠唱が途中で切れても、途中までの魔法陣の効果が発動</td></tr><tr><td>所要時間</td><td>基本の詠唱</td><td>円形化の魔法が必要で、長い詠唱はさらに長くなる</td></tr><tr><td>計算</td><td>未指定</td><td>詠唱者の位置から方向などを相対計算するため計算しやすい</td></tr></table></div><p><small>要確認：途中までの魔法陣の効果の具体的な成立単位。</small></p><h3>G系統の適性</h3><div class="scroll"><table><tr><th>クラス</th><th>身体能力・特性</th></tr><tr><td>レンジャー</td><td>遠くまで見える視力。射撃・カメラなど上半身を鍛える。忍耐力と集中力がある。</td></tr><tr><td>アサシン</td><td>後で設定する（今回未指定）。</td></tr><tr><td>スカウト</td><td>行動・反応が速い。視力は平均以下ほど。</td></tr></table></div><p><a href="./records/magic_and_g_traits_v0_14.md">v0.14 設定記録を読む</a></p></section>
-<section class="card" id="b-schools"><details class="skill-details" open><summary>B系統 — 以前の4学校原案（新制度との対応未定）</summary><div class="skill-body"><p>最新の神学校・魔法学校・海洋学校との接続は未設定。以下は技能と学校の既存原案を保持した資料です。</p>
-<p><strong>ユーザー提示の原案。</strong>学校ごとに学び方・操作・成長の仕方が異なる。</p>
-<p>General：Physics（HP）、Academics（MAG）、Psycologics（RES・原文表記）。Optionは未記載。用語の正式な綴り・定義は未確定。</p>
-<h3>Elementary Academy — 線形魔法</h3>
-<div class="scroll"><table><tr><th>級</th><th>技能・条件</th></tr>
-<tr><td>Class 10</td><td>EM: Water（HP）— Req. Psycologics<br>EM: Earth（DEF）— Req. EM: Water</td></tr>
-<tr><td>Class 9</td><td>Mana Inspiration（MI / MP）<br>Elemental Mix Magic（EMM）：Water &amp; Earth</td></tr>
-<tr><td>Class 8</td><td>Advanced Mana Inspiration（AMI / MP）<br>EM: Wind（SPD）— Req. MI<br>EMM: Wind &amp; Water＝高圧・押す・水分<br>EMM: Wind &amp; Earth＝counter（定義未確定）</td></tr>
-<tr><td>Class 7</td><td>EM: Fire（MAG）— Req. AMI<br>EMM: Fire &amp; Water＝counter（定義未確定）<br>EMM: Fire &amp; Earth＝dry（乾燥）<br>EMM: Fire &amp; Wind＝低圧・引く</td></tr>
-<tr><td>Class 6 — Elemental Sublet</td><td>EMM: F&amp;E＋Wi&amp;Wa＝shot<br>EMM: F&amp;E＋F&amp;Wi＝shot(pull)<br>Sublet・shotの正式な名称と働きは未確定</td></tr>
-<tr><td>Class 5 — Elemental Mage</td><td>上位属性魔法（AEM）7種：Water（Ice）、Earth（Heal）、Earth（Poison）、Wind、Fire（Flame）、Fire（Thunder）、Fire（Light）。<br>Poison — Req. AEM: Earth。Light — Req. AEM: Thunder。Windの効果は未記載。</td></tr>
-<tr><td>Class 4</td><td>7種のAEMから2種</td></tr>
-<tr><td>3rd Class</td><td>7種のAEMから4種</td></tr>
-<tr><td>2nd Class</td><td>全7種のAEM</td></tr>
-<tr><td>1st Class</td><td>全7種のAEM。2級との差は未記載。</td></tr>
-</table></div>
-<p>略記：F＝Fire、E＝Earth、Wi＝Wind、Wa＝Water。EMはこの技能表ではElemental Magic、人物・クラスの会話ではElemental Mageを指す。原文のliniear-magicの正式名称は未確定。</p>
-<h3>Mage Academy — 回路魔法</h3><div class="scroll"><table><tr><th>区分</th><th>原案の条件</th></tr>
-<tr><td>Elemental Scholar Class</td><td>unqualified（意味未確定）</td></tr>
-<tr><td>Elemental Mage Class</td><td>Req. Elemental Mage（Class 5〜1st Class）。マナ5,000以上＋消費マナ1,000以上のスキルを持つ。</td></tr>
-<tr><td>Mage Class</td><td>A〜E Class。マナ10,000以上＋消費マナ2,000以上のスキルを持つ。</td></tr>
-<tr><td>Arch Mage Class</td><td>F〜I Class。マナ15,000以上＋消費マナ3,000以上のスキルを持つ。</td></tr>
-</table></div>
-<h3>Cleris Missionary School</h3><p>1〜13段階（Grade）。シンプルなプレイ、成長しやすいが潜在力は低め、ワンタップで詠唱する設計。</p>
-<ul><li>Engineering（工学）</li><li>Education（教育）</li><li>Humanities（人文）— Literature Club</li><li>Medicine（医療）— Medic Club</li><li>Liberal Arts — Art Club、Music Club、Atheletic Club（原文表記）</li><li>Social Sciences（社会科学）— Volunteer Club</li><li>Natural Sciences（自然科学）— Culinary Club</li></ul>
-<h3>Nacsha Missionary School — Full Open</h3><ul><li>すべてのスキルを解放可能。</li><li>ランダムなskill-techが生成される。</li><li>1ボタンで詠唱。タップ・長押しで変化する。</li><li>10,000回の詠唱で技能を習熟し、100%の性能を持てる原案。</li><li>魔法回路1〜4：<code>100p^1〜4</code>（数式・単位の意味は未確定）。</li></ul>
-<p>学校間の転籍、入学条件、段階の呼称や数値は今後の設計対象。現実の物理現象や学校制度を説明するものではなく、ゲーム内設定。</p></div></details></section>
-</div>
-<div role="tabpanel" id="panel-story" aria-labelledby="tab-story">
-
+<p class="mut"><s style="text-decoration:none">ATK</s> ＝上がるステータス　<q>PT</q> ＝前提の技（Req.）。2026-10-25 の原案。略語：PT・UBT・LBT・OS・DS・IE/IT・MCT・BU・DU・ST・MS・WH・EM（Elemental Magic）・EMM（Elemental Mix Magic）・MI・AMI・AEM。</p>
+<section class="tree" style="--k:var(--r)"><h2>R レッド</h2><ol>
+<li>General<ol><li>Physical Training <s>HP</s></li><li>Upper Body Training <s>ATK</s> <q>PT</q></li><li>Lower Body Training <s>DEF</s> <q>PT</q></li></ol></li>
+<li>Option<ol><li>Offensive Strategy <s>ATK</s> <q>UBT</q></li><li>Defensive Strategy <s>DEF</s> <q>LBT</q></li><li>Intelligence Education <s>MAG</s></li><li>Mind Control Training <s>RES</s></li></ol></li>
+<li>Fighter<ol><li>Battle Understanding <s>ATK</s> <q>OS</q></li><li>Dodge Understanding <s>SPD</s> <q>DS</q></li></ol></li>
+<li>Warrior<ol><li>Sword Theory <s>RAN</s> <q>MCT</q></li><li>Sword Practice <s>ATS</s> <q>MCT, ST</q><small>技：straight、slice</small></li></ol></li>
+<li>Knight<ol><li>Movement Strategy <s>SPD</s> <q>MCT</q></li><li>Weapon Handling <s>ATS</s> <q>MCT, MS</q></li></ol></li>
+</ol></section><section class="tree" style="--k:var(--g)"><h2>G グリーン</h2><ol>
+<li>General<ol><li>Physical Training <s>HP</s></li><li>Throwing / Shooting <s>RAN</s> <q>PT</q></li></ol></li>
+<li>Option<ol><li>Upper Body Training <s>ATK</s> <q>PT</q></li><li>Lower Body Training <s>DEF</s> <q>PT</q></li><li>Intelligence Training <s>MAG</s></li><li>Mind Control Training <s>RES</s></li></ol></li>
+<li>Ranger<ol><li>Rifle 1 <q>Shooting, UBT</q></li><li>Rifle 2〜4 <q>IT 1〜3, MCT 1〜3</q></li><li>Heavy Rifle 1 <q>Rifle 2</q></li><li>Heavy Rifle 2〜4 <q>IT 1〜3, MCT 1〜3, WH 1〜3</q></li></ol></li>
+<li>Assassin<ol><li>Assassination 1 <s>ATS</s> <q>Throwing, UBT</q></li><li>Assassination 2〜4 <q>IT 1〜3, MCT 1〜3, BU 1〜3</q></li></ol></li>
+<li>Scout<ol><li>Movement Strategy 1 <s>SPD</s> <q>PT</q></li><li>Movement Strategy 2〜4 <q>PT 2〜4</q></li></ol></li>
+</ol></section><section class="tree" style="--k:var(--b)"><h2>B ブルー</h2><ol>
+<li>General<ol><li>Physics <s>HP</s></li><li>Academics <s>MAG</s></li><li>Psycologics <s>RES</s></li></ol></li>
+<li>Elementary Academy（線形魔法）<ol>
+<li>Class 10<ol><li>EM: Water <s>HP</s> <q>Psycologics</q></li><li>EM: Earth <s>DEF</s> <q>EM: Water</q></li></ol></li>
+<li>Class 9<ol><li>Mana Inspiration <s>MP</s></li><li>EMM: Water &amp; Earth</li></ol></li>
+<li>Class 8<ol><li>Advanced Mana Inspiration <s>MP</s></li><li>EM: Wind <s>SPD</s> <q>MI</q></li><li>EMM: Wind &amp; Water<small>高圧・押す・水分</small></li><li>EMM: Wind &amp; Earth<small>counter</small></li></ol></li>
+<li>Class 7<ol><li>EM: Fire <s>MAG</s> <q>AMI</q></li><li>EMM: Fire &amp; Water<small>counter</small></li><li>EMM: Fire &amp; Earth<small>dry（乾燥）</small></li><li>EMM: Fire &amp; Wind<small>低圧・引く</small></li></ol></li>
+<li>Class 6 Elemental Sublet<ol><li>EMM: F&amp;E + Wi&amp;Wa<small>shot</small></li><li>EMM: F&amp;E + F&amp;Wi<small>shot（pull）</small></li></ol></li>
+<li>Class 5 Elemental Mage（AEM 7種）<ol><li>AEM: Water（Ice）</li><li>AEM: Earth（Heal）</li><li>AEM: Earth（Poison） <q>AEM: Earth</q></li><li>AEM: Wind</li><li>AEM: Fire（Flame）</li><li>AEM: Fire（Thunder）</li><li>AEM: Fire（Light） <q>AEM: Thunder</q></li></ol></li>
+<li>Class 4<small>AEM 7種から2種</small></li><li>3rd Class<small>AEM 7種から4種</small></li><li>2nd Class<small>AEM 全7種</small></li><li>1st Class<small>AEM 全7種（2級との差は未定）</small></li>
+</ol></li>
+<li>Mage Academy（回路魔法）<ol>
+<li>Elemental Scholar Class<small>unqualified（意味は未定）</small></li>
+<li>Elemental Mage Class <q>Elemental Mage（Class 5〜1st）</q><small>マナ5,000以上＋消費マナ1,000以上の技</small></li>
+<li>Mage Class（A〜E）<small>マナ10,000以上＋消費マナ2,000以上の技</small></li>
+<li>Arch Mage Class（F〜I）<small>マナ15,000以上＋消費マナ3,000以上の技</small></li></ol></li>
+<li>Cleris Missionary School<ol><li>Grade 1〜13<small>ワンタップで詠唱。伸びやすいが、伸びしろは低め</small></li><li>Engineering ／ Education ／ Humanities（Literature Club）／ Medicine（Medic Club）／ Liberal Arts（Art・Music・Atheletic Club）／ Social Sciences（Volunteer Club）／ Natural Sciences（Culinary Club）</li></ol></li>
+<li>Nacsha Missionary School（Full Open）<ol><li>すべての技を解放できる<small>ランダムな skill-tech が生まれる</small></li><li>1ボタンで詠唱<small>タップ・長押しで変化</small></li><li>10,000回の詠唱で100%の性能</li><li>魔法回路 1〜4<small>100p^1〜4</small></li></ol></li>
+</ol></section>
+<p class="mut">未定：GのRifle・Heavy Rifleの上がるステータス、2〜4段と前提1〜3の対応、RのIEとGのITの関係、EMの綴りと定義、級の数値。もと：ideas/skilltree_rgb.md</p>
 </div></body></html>
