@@ -20,10 +20,11 @@ h1{font-size:24px;margin:0 0 4px;color:var(--blue);line-height:1.4}.kick{font-si
 .memo{background:#FBF7EA;border-color:#eadfb8;font-size:17px}.memo .sign{text-align:right;color:var(--mute);margin:0}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .memo{background:#2a2a22;border-color:#4a4532}}:root[data-theme="dark"] .memo{background:#2a2a22;border-color:#4a4532}
 .door{margin:22px 0 0;font-size:14px;color:var(--mute)}.door a{color:var(--blue)}.more{border-top:1px dashed var(--line);padding-top:12px}
+.story{background:var(--card,#FBFCFC);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:0 0 16px}.story h2{font-size:13px;color:var(--mute);margin:0 0 8px;font-weight:600}.story p{margin:0 0 .6em;font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-size:16px;line-height:2}
 </style></head><body>
 <script src="../site-nav.js?v=0.65"></script>
 <main id="m"><p>読みこみ中…</p></main>
-<script src="notes.js?v=0.46"></script>
+<script src="notes.js?v=0.66"></script>
 <script>
 (function(){
   var N=window.TRI_NOTES||[],m=document.getElementById('m'),id=new URLSearchParams(location.search).get('id');
@@ -53,7 +54,7 @@ h1{font-size:24px;margin:0 0 4px;color:var(--blue);line-height:1.4}.kick{font-si
   if(full){
     document.title=n.title+' | まなびやの扉';
     m.innerHTML=HERE+'<p class="kick">まなびやの扉・ノート '+n.id+'</p><h1>'+esc(n.title)+'</h1><div class="meta"><span>'+esc(n.age)+'</span><span>心の光：'+esc(n.light)+'</span></div>'+
-      '<div class="card">'+md(n.body)+'</div><div class="parent"><h2>親として</h2>'+md(n.parent)+'</div>'+me+go+
+      (n.story?'<div class="story"><h2>'+esc(n.link)+'</h2>'+n.story.split('\n').map(function(l){return '<p>'+esc(l)+'</p>'}).join('')+'</div>':'')+'<div class="card">'+md(n.body)+'</div><div class="parent"><h2>親として</h2>'+md(n.parent)+'</div>'+me+go+
       '<p class="src">もとにした考え方：'+esc(n.src)+'</p>'+(t?'<p class="door"><a href="?id='+n.id+'">'+esc(t.who)+'のメモにもどる</a></p>':'')+
       '<div class="nav">'+nv(i-1,'← 前')+'<a href="?door=1">扉</a>'+nv(i+1,'次 →')+'</div>';
   }else{
