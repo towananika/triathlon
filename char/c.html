@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="TRIATHLON のキャラクター">
+<title>キャラクター | TRIATHLON</title>
+<style>
+body{margin:0;background:#fbf8f2;color:#2a2622;font:16px/1.8 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+.R{--c:#d94b4b;--s:#fbe9e6}.G{--c:#2e9b5f;--s:#e5f4ea}.B{--c:#2f6fd6;--s:#e6eefb}
+.top{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;background:linear-gradient(160deg,#fff 0%,var(--s) 60%);border:1px solid #eadfcd;border-top:6px solid var(--c);border-radius:20px;padding:20px 24px 0;overflow:hidden}
+.top .txt{padding-bottom:24px}
+@media(max-width:600px){.top{grid-template-columns:1fr;justify-items:center;text-align:center;padding:16px 16px 0}.top .txt{order:-1;padding-bottom:0}}
+.face{width:100%;max-width:300px}.face img{width:100%;aspect-ratio:2/3;object-fit:contain;object-position:bottom;display:block;filter:drop-shadow(0 8px 14px rgba(0,0,0,.12))}
+.face .ini{display:grid;place-items:center;width:100%;aspect-ratio:2/3;font-size:80px;font-weight:800;color:#fff;background:var(--c);border-radius:16px 16px 0 0}
+.cls{margin:0;color:var(--c);font-weight:800;font-size:14px}
+h1{margin:0;font-size:42px;line-height:1.25}
+.say{margin:8px 0 0;font-family:"Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;font-size:19px}
+h2{font-size:19px;margin:30px 0 10px;padding-left:10px;border-left:5px solid var(--c)}
+dl{margin:0;background:#fff;border:1px solid #eadfcd;border-radius:14px;overflow:hidden}
+dl div{display:grid;grid-template-columns:5em 1fr;gap:10px;padding:10px 16px}dl div+div{border-top:1px solid #f0e8da}
+dt{color:#7a6f63;font-size:14px;font-weight:700}dd{margin:0}
+.card{display:block;background:#fff;border:1px solid #eadfcd;border-radius:14px;padding:14px 16px;color:#2a2622;text-decoration:none}
+.card:hover{border-color:var(--c)}.card small{color:#7a6f63;font-size:13px}.card b{display:block;font-size:18px}
+.card p{margin:6px 0 0;font-family:"Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;font-size:15.5px}
+.list{display:grid;gap:10px}
+.friends{display:flex;flex-wrap:wrap;gap:8px}.friends a{border:1px solid #eadfcd;background:#fff;border-radius:999px;padding:6px 14px;color:#2a2622;text-decoration:none;font-weight:700;font-size:14px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:32px}.nav a{flex:1;text-align:center;border:1px solid #eadfcd;background:#fff;border-radius:999px;padding:10px;color:#2a2622;text-decoration:none;font-weight:700}
+.none{color:#7a6f63}
+.core{background:#fff;border:1px solid #eadfcd;border-left:6px solid var(--c);border-radius:14px;padding:14px 16px}
+.core b{font-family:"Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;font-size:22px}.core small{display:block;color:#7a6f63;font-size:13px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.tags span{background:var(--s);border-radius:999px;padding:3px 12px;font-size:14px}
+.grow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.grow div{background:#fff;border:1px solid #eadfcd;border-radius:14px;padding:10px 14px;font-size:15px}.grow small{display:block;color:#7a6f63;font-size:12px;font-weight:700}
+@media(max-width:480px){.grow{grid-template-columns:1fr}}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&display=swap">
+</head>
+<body>
+<script src="../site-nav.js?v=0.65"></script>
+<main id="main"><p class="none">読みこみ中…</p></main>
+<script src="cast-data.js?v=0.69"></script>
+<script src="persona.js?v=0.68"></script>
+<script src="../places/places.js?v=0.30"></script>
+<script src="../stories/stories.js?v=0.45"></script>
+<script>
+(function () {
+  'use strict';
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var list = CHARS.filter(function (c) { return c.s === 1; });
+  var id = new URLSearchParams(location.search).get('id'), i = 0;
+  list.forEach(function (c, k) { if (c.id === id) i = k; });
+  var c = list[i], L = LOOK[c.id] || {}, T = TEXT[c.id] || {};
+  function nm(x) { return (SEED[x.id] || {}).name || '？'; }
+  var name = nm(c);
+  document.title = name + ' | TRIATHLON';
+  var face = c.img != null ? '<img alt="' + esc(name) + 'の絵" src="' + IMG[c.img] + '">' : '<span class="ini" style="background:var(--c)">' + esc(name.slice(0, 1)) + '</span>';
+  function row(k, v) { return v ? '<div><dt>' + k + '</dt><dd>' + esc(v) + '</dd></div>' : ''; }
+  var look = L.h ? L.h + 'cm・' + L.b + '。髪は' + L.hair + '、目は' + L.eye : '';
+  var P = (window.TRI_PLACES || []).filter(function (p) { return p.who === name; })[0];
+  var S = (window.TRI_STORIES || []).filter(function (s) {
+    return s.who === name || s.secs.some(function (x) { return x.p.join('').indexOf(name) >= 0; });
+  });
+  // 関係の文に出てくる仲間
+  var fr = list.filter(function (x) { return x !== c && (T.rel || '').indexOf(nm(x)) >= 0; });
+  var h = '<div class="top"><div class="face">' + face + '</div><div class="txt"><p class="cls">' + esc(c.cls) + '</p><h1>' + esc(name) + '</h1><p class="say">「' + esc(T.say || '') + '」</p></div></div>';
+  h += '<h2>プロフィール</h2><dl>' + row('一人称', T.me) + row('外見', look) + row('服', L.wear) + row('好き', T.like) + row('苦手', T.dislike) + row('願い', T.wish) + row('弱いところ', T.weak) + row('関係', T.rel) + '</dl>';
+  var Q = (window.TRI_PERSONA || {})[name];
+  if (Q) {
+    h += '<h2>性格</h2><div class="core"><small>ゆずれないもの（ずっと変わらない）</small><b>' + esc(Q.line) + '</b></div>';
+    h += '<div class="tags">' + Q.tags.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('') + '</div>';
+    h += '<dl>' + row('こわいもの', Q.fear) + row('大事なもの', Q.values) + row('人との距離', Q.people) + row('話し方', Q.speech) + row('つらいとき', Q.stress) + row('ほっとする', Q.calm) + '</dl>';
+    h += '<div class="grow"><div><small>↗ 伸びると</small>' + esc(Q.up) + '</div><div><small>↘ くずれると</small>' + esc(Q.down) + '</div></div>';
+    h += '<p class="none" style="font-size:13px;margin-top:8px">性格は、物語の出来事で少しずつ変わります。芯は変わりません。</p>';
+  }
+  if (fr.length) h += '<h2>仲間</h2><div class="friends">' + fr.map(function (x) { return '<a href="c.html?id=' + encodeURIComponent(x.id) + '">' + esc(nm(x)) + '</a>'; }).join('') + '</div>';
+  h += '<h2>好きな場所</h2>' + (P ? '<a class="card" href="../places/#' + esc(P.id) + '"><small>' + esc(P.area) + '・' + esc(P.time) + '</small><b>' + esc(P.place) + '</b><p>' + esc(P.say[0]) + '</p></a>' : '<p class="none">まだありません。</p>');
+  if (c.s === 1) h += '<h2>暮らした町</h2><a class="card" href="../map/#life=' + encodeURIComponent(name) + '"><small>マップ</small><b>' + esc(name) + 'の一生をマップでたどる →</b></a>';
+  if (c.s === 1) h += '<h2>思い出のアルバム</h2><a class="card" href="../album/?who=' + encodeURIComponent(name) + '"><small>いつもの活動2つ</small><b>' + esc(name) + 'の思い出を見る →</b></a>';
+  h += '<h2>登場する物語</h2>' + (S.length ? '<div class="list">' + S.map(function (s) { return '<a class="card" href="../stories/v.html?id=' + encodeURIComponent(s.id) + '"><small>第' + s.no + '話・' + esc(s.who) + 'の話</small><b>' + esc(s.title) + '</b></a>'; }).join('') + '</div>' : '<p class="none">これからの話に登場します。</p>');
+  var pv = list[(i + list.length - 1) % list.length], nx = list[(i + 1) % list.length];
+  h += '<div class="nav"><a href="c.html?id=' + encodeURIComponent(pv.id) + '">← ' + esc(nm(pv)) + '</a><a href="./">9人の一覧</a><a href="c.html?id=' + encodeURIComponent(nx.id) + '">' + esc(nm(nx)) + ' →</a></div>';
+  var m = document.getElementById('main'); m.className = c.c; m.innerHTML = h;
+})();
+</script>
+</body>
+</html>
