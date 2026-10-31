@@ -10,7 +10,7 @@ h2{font-size:18px;color:#2F6FB8;margin:36px 0 12px}
 .lamps{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin:14px 0 8px}
 .lamp{display:flex;flex-direction:column;align-items:center;font-size:10px;white-space:nowrap;letter-spacing:-.05em;color:#c9d6dc;text-decoration:none}
 .lamp i{width:26px;height:26px;border-radius:50%;background:#2b4766;border:2px solid #4d6a88;display:block;margin-bottom:4px}
-.lamp.on i{background:radial-gradient(#fff6d0,#C9A646 70%);border-color:#f3dc8a;box-shadow:0 0 14px 4px rgba(243,220,138,.55)}
+.lamp.on i{border-color:#C9A646}
 .lamp.on{color:#fff}
 .count{font-size:15px;margin:6px 0 0}.count b{font-size:22px;color:#f3dc8a}
 .bar{height:10px;background:#2b4766;border-radius:99px;overflow:hidden;margin:12px auto 4px;max-width:420px}.bar span{display:block;height:100%;background:linear-gradient(90deg,#22AAA6,#C9A646)}
@@ -28,14 +28,14 @@ h2{font-size:18px;color:#2F6FB8;margin:36px 0 12px}
 .p{background:#FBFCFC;border:1px solid #e1e8e7;border-radius:12px;padding:12px 14px}
 .p b{color:#173A63}.p small{display:block;color:#5a6670;font-size:13px}.p .q{margin:6px 0 0;font-size:14px}
 .p a{font-size:13px;color:#2F6FB8}
-.fork{background:#fffaf0;border:1px solid #ecd9a6;border-radius:14px;padding:16px}
+.fork{background:#fffaf0;border:1px solid #ecd9a6;border-radius:14px;padding:16px}.lamp.read i{background:radial-gradient(#fff6d0,#C9A646 70%);border-color:#f3dc8a;box-shadow:0 0 14px 4px rgba(243,220,138,.55)}.lamp.oshi i{outline:2px solid #fff;outline-offset:3px}.lamp.oshi:after{content:"★";color:#f3dc8a;font-size:11px;line-height:1}.road .rd{float:right;font-size:11px;color:#22AAA6;font-weight:700}.p .ob{border:1px solid #C9A646;background:transparent;color:#9a7630;border-radius:999px;padding:2px 12px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;float:right}.p .ob[aria-pressed="true"]{background:#C9A646;color:#fff}.p.is-oshi{border-color:#C9A646;box-shadow:0 0 0 2px #f3e3b0}.yours{font-size:13px;color:#c9d6dc;margin:2px 0 0}
 </style></head><body>
 <script src="../site-nav.js?v=0.61"></script>
 <main>
 <p class="kick">PART 1 · 高等部1年 · 新暦312年</p>
 <h1>第1部　灯台館をもう一度</h1>
 <p class="sub">消えたままの灯台館。九人がひとりずつ語るたび、灯りがひとつともります。</p>
-<section class="sky"><div class="lamps" id="lamps"></div><p class="count">ともった灯り <b id="lit">0</b> / 9</p><div class="bar"><span id="bar"></span></div><small id="pct"></small></section>
+<section class="sky"><div class="lamps" id="lamps"></div><p class="count">ともった灯り <b id="lit">0</b> / 9</p><div class="bar"><span id="bar"></span></div><small id="pct"></small><p class="yours" id="yours"></p></section>
 <div class="next" id="next"></div>
 <h2>13話の道のり</h2>
 <ol class="road" id="road"></ol>
@@ -44,7 +44,7 @@ h2{font-size:18px;color:#2F6FB8;margin:36px 0 12px}
 <h2>第13話は、あなたが選ぶ</h2>
 <div class="fork">灯籠祭りの夜、物語は二つに分かれます。どちらへ進むかは、読者の投票で決めます。投票は第12話の公開と同時に始まります。</div>
 </main>
-<script src="../stories/stories.js?v=0.61"></script>
+<script src="../stories/stories.js?v=0.62"></script>
 <script>
 (function(){
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -60,16 +60,20 @@ PLAN.forEach(function(p){if(!eps.some(function(e){return e.no===p[0]}))eps.push(
 eps.sort(function(a,b){return a.no-b.no});
 var pub=eps.filter(function(e){return !e.plan&&e.date<=now});
 var told={};pub.forEach(function(e){told[e.who]=(told[e.who]||0)+1});
+var RD=[],OS='';try{RD=JSON.parse(localStorage.getItem('tri-read')||'[]');OS=localStorage.getItem('tri-oshi')||''}catch(e){}
+var mine={};pub.forEach(function(e){if(RD.indexOf(e.id)>=0)mine[e.who]=1});
 var lit=NINE.filter(function(n){return told[n]}).length;
-document.getElementById('lamps').innerHTML=NINE.map(function(n){return '<a class="lamp'+(told[n]?' on':'')+'" href="../map/#life='+encodeURIComponent(n)+'"><i></i>'+esc(n)+'</a>'}).join('');
+function lamps(){document.getElementById('lamps').innerHTML=NINE.map(function(n){return '<a class="lamp'+(told[n]?' on':'')+(mine[n]?' read':'')+(OS===n?' oshi':'')+'" href="../map/#life='+encodeURIComponent(n)+'"><i></i>'+esc(n)+'</a>'}).join('')}lamps();
+document.getElementById('yours').textContent='あなたがともした灯り '+Object.keys(mine).length+' / 9'+(OS?'・推し灯り '+OS:'');
 document.getElementById('lit').textContent=lit;
 document.getElementById('bar').style.width=(pub.length/13*100)+'%';
 document.getElementById('pct').textContent='13話のうち '+pub.length+' 話まで公開';
 var nx=eps.filter(function(e){return e.date>now})[0];
 if(nx){var days=Math.round((new Date(nx.date)-new Date(now))/864e5);document.getElementById('next').innerHTML='<div class="d">'+days+'<small>日後</small></div><div><small>次の話</small><br><b>第'+nx.no+'話・'+esc(nx.who)+'</b>　'+(+nx.date.slice(5,7))+'月'+(+nx.date.slice(8))+'日（月）公開</div>'}else document.getElementById('next').style.display='none';
 document.getElementById('road').innerHTML=eps.map(function(e){var on=!e.plan&&e.date<=now,isNext=nx&&e.no===nx.no,md=(+e.date.slice(5,7))+'月'+(+e.date.slice(8))+'日';
- var inner='<span class="no">第'+e.no+'話・'+esc(e.who)+'　'+md+(on?'':e.plan?'（予定）':'公開')+'</span><b>'+esc(e.title)+'</b>'+(e.no===13?'<small>分かれ道：読者の投票</small>':'');
+ var inner=(on&&RD.indexOf(e.id)>=0?'<span class="rd">✓ 読んだ</span>':'')+'<span class="no">第'+e.no+'話・'+esc(e.who)+'　'+md+(on?'':e.plan?'（予定）':'公開')+'</span><b>'+esc(e.title)+'</b>'+(e.no===13?'<small>分かれ道：読者の投票</small>':'');
  return '<li class="'+(on?'on':isNext?'now':'off')+(e.no===13?' fork':'')+'">'+(on?'<a href="../stories/v.html?id='+encodeURIComponent(e.id)+'">'+inner+'</a>':'<div>'+inner+'</div>')+'</li>'}).join('');
-document.getElementById('people').innerHTML=NINE.map(function(n){var q=Q[n];return '<div class="p"><b>'+esc(n)+'</b><small>'+(told[n]?'語った話 '+told[n]+'話':'まだ語っていない')+'</small><p class="q">はじまり：'+esc(q[0])+'<br>問い：'+esc(q[1])+'</p><a href="../map/#life='+encodeURIComponent(n)+'">一生をたどる →</a></div>'}).join('');
+document.getElementById('people').innerHTML=NINE.map(function(n){var q=Q[n];return '<div class="p'+(OS===n?' is-oshi':'')+'"><button type="button" class="ob" data-n="'+esc(n)+'" aria-pressed="'+(OS===n)+'">'+(OS===n?'★ 推し':'推しにする')+'</button><b>'+esc(n)+'</b><small>'+(told[n]?'語った話 '+told[n]+'話':'まだ語っていない')+'</small><p class="q">はじまり：'+esc(q[0])+'<br>問い：'+esc(q[1])+'</p><a href="../map/#life='+encodeURIComponent(n)+'">一生をたどる →</a></div>'}).join('');
+[].forEach.call(document.querySelectorAll('.ob'),function(b){b.onclick=function(){OS=OS===b.dataset.n?'':b.dataset.n;try{localStorage.setItem('tri-oshi',OS)}catch(e){}location.reload()}});
 })();
 </script></body></html>
