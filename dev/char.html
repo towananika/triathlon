@@ -1,0 +1,58 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>キャラ開発 | TRIATHLON</title>
+<style>
+/* layout: rules on top, then one sheet per character; axes as thin bars, core marked as fixed */
+:root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mut:#5E6B72;--line:#DCE5E4;--deep:#173A63;--teal:#22AAA6;--gold:#B08F33;--up:#3E9A73;--down:#C0565F;--track:#E6ECEB}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mut:#9FB0B4;--line:#2A3A42;--deep:#9CC3EC;--track:#26343B;--gold:#D9BC64;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mut:#9FB0B4;--line:#2A3A42;--deep:#9CC3EC;--track:#26343B;--gold:#D9BC64;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.8 "Hiragino Sans","Noto Sans JP",system-ui,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px;display:grid;gap:24px}
+h1{font-size:26px;color:var(--deep);margin:0}.kick{font-size:12px;letter-spacing:.14em;color:var(--gold);font-weight:700;margin:0}
+.rule{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:6px;font-size:14px}
+.rule b{color:var(--deep)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:10px;min-width:0}
+.c h2{margin:0;font-size:20px;color:var(--deep)}.c h2 small{font-size:12px;color:var(--mut);font-weight:400;margin-left:6px}
+.core{border-left:3px solid var(--gold);padding-left:10px;font-size:14px;display:grid;gap:2px}
+.core span{color:var(--mut);font-size:12px;margin-right:6px}
+.ax{display:grid;gap:4px;font-size:12px}
+.ax div{display:grid;grid-template-columns:7.5em 1fr;align-items:center;gap:8px}
+.ax i{display:block;height:6px;background:var(--track);border-radius:3px;position:relative;overflow:hidden}
+.ax i b{position:absolute;inset:0 auto 0 0;background:var(--teal);border-radius:3px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}.tags span{border:1px solid var(--line);border-radius:999px;padding:1px 10px;font-size:13px}
+dl{margin:0;display:grid;grid-template-columns:5em 1fr;gap:2px 10px;font-size:13px}dt{color:var(--mut)}dd{margin:0}
+.gr{display:grid;gap:4px;font-size:13px}.gr .u{color:var(--up)}.gr .d{color:var(--down)}
+.top{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center}
+.pic{width:96px;aspect-ratio:2/3;border-radius:10px;background:var(--track);overflow:hidden}.pic img{width:100%;height:100%;object-fit:contain;object-position:bottom}
+.st{display:inline-block;font-size:11px;border-radius:999px;padding:1px 8px;margin-top:4px;border:1px solid var(--line);color:var(--mut)}.st.new{background:#E7F5EE;color:#2B7A57;border-color:#BFE3D0}
+.ax span em{font-style:normal;color:var(--mut);margin-left:4px;font-variant-numeric:tabular-nums}
+.waza{font-size:13px}.waza span{color:var(--mut)}
+p{margin:0}nav.dv{font-size:13px}nav.dv a{color:var(--deep)}</style></head><body>
+<div class="wrap">
+<header><p class="kick">TRIATHLON · 開発 · キャラ</p><h1>キャラ開発</h1><nav class="dv"><a href="./">← 開発トップ</a> · <a href="../char/">公開のキャラ紹介</a> · <a href="../gpt/">GPTへの絵の依頼</a></nav></header>
+<section class="rule">
+<p><b>変わらない芯</b>：芯（願い・こわいもの・ゆずれないもの）は変わらない。</p>
+<p><b>気質の5つの軸</b>：0〜100。ビッグファイブ（開放性・誠実性・外向性・協調性・神経症傾向）を日常のことばにしたもの。画面には数字を出さない。</p>
+<p><b>小さく変わる決まり</b>：大きな出来事（各話の山場、見守った場面）で、1つの軸が1〜3だけ動く。1年で1つの軸は最大±10。芯に逆らう方向へは年に±5まで。</p>
+<p><b>向き</b>：伸びる向き＝その人が成長するとき動く向き。くずれる向き＝つらいことが重なると動く向き。</p>
+</section>
+<div class="grid" id="g"></div>
+<p class="kick" style="color:var(--mut);letter-spacing:0">もと：studio/text/chara/personality_v1.json ・ 絵：char/cast-data.js ・ 技：watch/skills.js</p>
+</div>
+<script src="../char/cast-data.js?v=0.69"></script>
+<script src="../watch/skills.js?v=0.64"></script>
+<script>
+var D={"version": "v1 2026-10-31", "rule": {"core": "芯（願い・こわいもの・ゆずれないもの）は変わらない。", "axes": ["好奇心", "きちょうめん", "人の輪へ", "やさしさ", "心のゆれ"], "axes_note": "0〜100。ビッグファイブ（開放性・誠実性・外向性・協調性・神経症傾向）を日常のことばにしたもの。画面には数字を出さない。", "drift": "大きな出来事（各話の山場、見守った場面）で、1つの軸が1〜3だけ動く。1年で1つの軸は最大±10。芯に逆らう方向へは年に±5まで。", "direction": "伸びる向き＝その人が成長するとき動く向き。くずれる向き＝つらいことが重なると動く向き。"}, "chars": [{"name": "アカリ", "me": "あたし", "axes": [45, 30, 85, 70, 40], "core": {"wish": "だれかの前に立てる強さ", "fear": "大事な人が、自分のいないところでいなくなること", "line": "逃げない"}, "surface": ["まっすぐ", "せっかち", "気前がいい"], "values": "約束、体を動かすこと、仲間", "stress": "考えるより先に動き、あとで一人で泣く", "calm": "朝の川べり、母さんの豆腐屋の湯気", "to_people": "だれにでも同じ声の大きさで話す。ツバサの迷いをついせかす", "speech": "短い。語尾は「〜じゃん」「いこ！」", "grow": {"up": "待つ・人に任せる（きちょうめん＋、心のゆれ−）", "down": "一人で抱えて無茶をする（心のゆれ＋）"}}, {"name": "ツバサ", "me": "わたし", "axes": [60, 65, 30, 80, 70], "core": {"wish": "自分の気持ちを、自分のことばで言える", "fear": "本音を言ったら、関係がこわれること", "line": "人を傷つけるうそはつかない"}, "surface": ["よく気づく", "ひかえめ", "ねばり強い"], "values": "静けさ、記録すること、信頼", "stress": "だまりこみ、日記に三行だけ書いて消す", "calm": "雨の音、セイラのお茶", "to_people": "相手の顔色を先に読む。セイラにだけ弱音を言える", "speech": "「……うん」から始まる。最後まで言い切らない", "grow": {"up": "四行目を書く・言い切る（人の輪へ＋、心のゆれ−）", "down": "読みすぎて疲れ、人から離れる（人の輪へ−）"}}, {"name": "セイラ", "me": "わたし", "axes": [50, 70, 65, 95, 55], "core": {"wish": "みんなが帰ってこられる場所になる", "fear": "だれかが、ひとりぼっちのまま去ること", "line": "けんかを放っておかない"}, "surface": ["おだやか", "世話好き", "自分を後回し"], "values": "居場所、もてなし、手仕事", "stress": "もっと人の世話をして、自分の疲れに気づかない", "calm": "三分待つお茶、刺繍のひと針", "to_people": "だれの話もゆっくり聞く。9人の「お母さん」と呼ばれて照れる", "speech": "「大丈夫、ゆっくりでいいよ」。やわらかい丁寧語まじり", "grow": {"up": "自分のための一杯をいれる・断る（やさしさは保ち、心のゆれ−）", "down": "疲れ切って急に泣く（心のゆれ＋）"}}, {"name": "シオン", "me": "わたくし", "axes": [40, 90, 45, 55, 50], "core": {"wish": "家の名ではなく、自分の名で認められる", "fear": "自分が、家の名の飾りでしかないこと", "line": "礼を欠いた勝ちはしない"}, "surface": ["りりしい", "きびしい", "実は好奇心が強い"], "values": "誇り、公正、きちんとした場", "stress": "規則にしがみつき、人に冷たくなる", "calm": "紅茶、古い騎士物語", "to_people": "はじめは距離をとる。認めた相手には不器用にやさしい。ルイと比べられてきた", "speech": "丁寧で硬い。「〜ですわ」は使わない。「〜です」「〜ではありません」", "grow": {"up": "庶民の遊びに混ざる・自分の名で選ぶ（好奇心＋、人の輪へ＋）", "down": "家の型に閉じこもる（きちょうめん＋、やさしさ−）"}}, {"name": "カイ", "me": "俺", "axes": [55, 60, 15, 75, 60], "core": {"wish": "だれにも気づかれず、だれかを助ける", "fear": "目立って、自分の居場所がなくなること", "line": "弱いものを見捨てない"}, "surface": ["無口", "観察力がある", "本当は寂しがり"], "values": "静けさ、猫、信じた数人", "stress": "屋上に消える。「……別に」でしめる", "calm": "夜の屋上、シズクのとなり", "to_people": "言葉より行動。ミナトの話を寝たふりで最後まで聞く", "speech": "最小限。「……別に」「……ああ」", "grow": {"up": "助けたことを、一度だけ言葉にする（人の輪へ＋）", "down": "だれとも話さなくなる（人の輪へ−、心のゆれ＋）"}}, {"name": "シズク", "me": "わたし", "axes": [75, 55, 20, 70, 35], "core": {"wish": "地図にない森を歩く", "fear": "自分の静かさが、冷たいと思われること", "line": "見たものを、うそで変えない"}, "surface": ["落ち着いている", "聞き上手", "ことばが少なすぎる"], "values": "自然、正確さ、ひとりの時間", "stress": "人ごみを避け、森へ行く", "calm": "森の朝、鳥の声", "to_people": "待って、最後に一言。カイとは無言で通じる。ミナトに慕われて少し困る", "speech": "「……見てて」。主語をよく省く", "grow": {"up": "自分の話を少しする（人の輪へ＋）", "down": "誤解されたまま説明しない（やさしさ−）"}}, {"name": "ルイ", "me": "僕", "axes": [90, 70, 50, 85, 65], "core": {"wish": "だれも置いていかれない学びの場", "fear": "期待にこたえられず、がっかりされること", "line": "知らない人を笑わない"}, "surface": ["知りたがり", "謙虚", "がんばりすぎる"], "values": "学び、公平、星", "stress": "眠らずにノートを作り続ける", "calm": "図書館、屋上の星", "to_people": "だれにでも同じ目線。特別扱いされると黙る。リクの挑戦を楽しみにしている", "speech": "「僕も、まだ知らないことばかりだよ」。やわらかい", "grow": {"up": "できないと言う・眠る（心のゆれ−）", "down": "期待のために自分を削る（心のゆれ＋）"}}, {"name": "ミナト", "me": "ぼく", "axes": [85, 25, 90, 75, 40], "core": {"wish": "世界中の道を自分の足で歩く", "fear": "置いていかれること", "line": "友だちを疑わない"}, "surface": ["人なつこい", "落ち着きがない", "見栄っぱり（方向音痴を隠す）"], "values": "冒険、お菓子、仲間", "stress": "よけいにはしゃぐ。迷ったことを言わない", "calm": "寮の窓の明かり、カイの部屋", "to_people": "会う人みんなにお菓子を配る。カイを勝手に親友だと思っている。シズクに憧れる", "speech": "「ねえねえ」で始まる。早口", "grow": {"up": "迷ったと言える・人に道を聞ける（きちょうめん＋）", "down": "隠しごとがふえる（心のゆれ＋）"}}, {"name": "リク", "me": "俺", "axes": [60, 40, 80, 45, 70], "core": {"wish": "ルイに一度でいいから勝つ", "fear": "二番の自分には価値がないこと", "line": "勝負から逃げない"}, "surface": ["自信家", "負けずぎらい", "失敗を笑ってごまかす"], "values": "勝負、認められること", "stress": "大声で笑い、帰り道に一人で練習", "calm": "ほめられた日、祖父のそろばんの音", "to_people": "場を盛り上げる。ルイを勝手にライバル視。シオンに片づけてもらって照れる", "speech": "「首席の俺に任せとけって」。いばった口調、照れると早口", "grow": {"up": "二番を受け入れ、地味な練習を続ける（きちょうめん＋、心のゆれ−）", "down": "ずるをしても勝とうとする（やさしさ−）"}}]};
+var NEW={"アカリ": "GPT採用 10/31（ボブ・赤ジャージ）", "ツバサ": "GPT採用 10/31（ポニーテール・赤ニット）"};
+function e(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var byName={};(window.CHARS||[]).filter(function(c){return c.s===1}).forEach(function(c){var n=(SEED[c.id]||{}).name;if(n)byName[n]=c});
+var SK=window.TRI_SKILLS||{};
+document.getElementById('g').innerHTML=D.chars.map(function(c){var k=byName[c.name],img=k&&k.img!=null?'<img alt="" src="'+IMG[k.img]+'">':'';
+var sk=(SK[c.name]||{}).k||[];
+return '<article class="c"><div class="top"><div class="pic">'+img+'</div><div><h2>'+e(c.name)+'<small>'+e(k?k.cls:'')+'・一人称「'+e(c.me)+'」</small></h2><span class="st'+(NEW[c.name]?' new':'')+'">'+e(NEW[c.name]||'絵：旧版（作り直し待ち）')+'</span></div></div>'+
+'<div class="core"><p><span>芯・願い</span>'+e(c.core.wish)+'</p><p><span>芯・こわいもの</span>'+e(c.core.fear)+'</p><p><span>ゆずれない</span>'+e(c.core.line)+'</p></div>'+
+'<div class="ax">'+D.rule.axes.map(function(a,i){return '<div><span>'+e(a)+'<em>'+c.axes[i]+'</em></span><i><b style="width:'+c.axes[i]+'%"></b></i></div>'}).join('')+'</div>'+
+'<div class="tags">'+c.surface.map(function(t){return '<span>'+e(t)+'</span>'}).join('')+'</div>'+
+'<dl><dt>大事なもの</dt><dd>'+e(c.values)+'</dd><dt>つらいとき</dt><dd>'+e(c.stress)+'</dd><dt>ほっとする</dt><dd>'+e(c.calm)+'</dd><dt>人との距離</dt><dd>'+e(c.to_people)+'</dd><dt>話し方</dt><dd>'+e(c.speech)+'</dd></dl>'+
+(sk.length?'<div class="waza">'+sk.map(function(s){return '<p><span>継いだ技</span> '+e(s[0])+'（'+e(s[1])+'・'+e(s[2])+'代）</p>'}).join('')+'</div>':'')+
+'<div class="gr"><p class="u">↗ 伸びる向き：'+e(c.grow.up)+'</p><p class="d">↘ くずれる向き：'+e(c.grow.down)+'</p></div></article>'}).join('');
+</script></body></html>

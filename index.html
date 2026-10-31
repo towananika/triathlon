@@ -35,7 +35,7 @@
 <body>
 <script src="site-nav.js?v=0.65"></script>
 <script src="stories/stories.js?v=0.45"></script>
-<script src="cast/cast-data.js?v=0.19"></script>
+<script src="char/cast-data.js?v=0.69"></script>
 <script src="notes/notes.js?v=0.46"></script>
 <script src="daily/daily.js?v=0.47"></script>
 <main>
@@ -66,7 +66,7 @@
 </section>
 
 <section class="sec" aria-labelledby="nine-h">
-<div class="sec-head"><div><p class="kick" aria-hidden="true">Characters</p><h2 id="nine-h">9人</h2></div><a class="more" href="cast/">キャラクター →</a></div>
+<div class="sec-head"><div><p class="kick" aria-hidden="true">Characters</p><h2 id="nine-h">9人</h2></div><a class="more" href="char/">キャラクター →</a></div>
 <div class="nine" id="nine"></div>
 </section>
 
@@ -98,7 +98,7 @@
 </div>
 </section>
 </main>
-<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.68</span></p></footer>
+<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.69</span></p></footer>
 <script src="news/news.js?v=0.55"></script>
 <script>
 (function () {
@@ -140,7 +140,7 @@
   if (window.CHARS) {
     document.getElementById('nine').innerHTML = CHARS.filter(function (c) { return c.s === 1; }).map(function (c) {
       var nm = (SEED[c.id] || {}).name || '？', f = c.img != null && window.IMG ? '<img alt="" src="' + IMG[c.img] + '" loading="lazy">' : '<span class="ini" style="background:var(--c)">' + esc(nm.slice(0, 1)) + '</span>';
-      return '<a class="' + c.c + '" href="cast/c.html?id=' + encodeURIComponent(c.id) + '">' + f + '<b>' + esc(nm) + '</b><small>' + esc(c.cls) + '</small></a>';
+      return '<a class="' + c.c + '" href="char/c.html?id=' + encodeURIComponent(c.id) + '">' + f + '<b>' + esc(nm) + '</b><small>' + esc(c.cls) + '</small></a>';
     }).join('');
   }
 })();
