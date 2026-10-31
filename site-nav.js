@@ -86,8 +86,13 @@
   // ログイン（Google）。右上のボタンは、ログイン中なら顔写真と名前に変わる
   var entry = document.createElement('a'); entry.className = 'tri-login tri-btn'; entry.href = root + 'login/'; entry.textContent = 'ログイン';
   bar.querySelector('.tri-act').insertBefore(entry, bar.querySelector('.tri-act').firstChild);
+  // ログイン中は、プロフィールの左に「開発版」（開発ページは誰でも見られる資料なので、守りは不要）
+  var devIn = document.createElement('a'); devIn.className = 'tri-devin'; devIn.href = root + 'dev/'; devIn.textContent = '開発版'; devIn.hidden = true;
+  bar.querySelector('.tri-act').insertBefore(devIn, entry);
+  var dvs = document.createElement('style'); dvs.textContent = '.tri-devin{background:#2b2f36;color:#ffd76a;font-size:12px;font-weight:800;letter-spacing:.08em;border-radius:6px;padding:5px 10px;text-decoration:none;white-space:nowrap;align-self:center}.tri-devin[hidden]{display:none}'; document.head.appendChild(dvs);
   function showUser(u) {
     entry.textContent = '';
+    devIn.hidden = !u;
     if (!u) { entry.textContent = 'ログイン'; entry.classList.remove('in'); return; }
     entry.classList.add('in');
     if (u.photo) { var im = document.createElement('img'); im.src = u.photo; im.alt = ''; im.referrerPolicy = 'no-referrer'; entry.appendChild(im); }
