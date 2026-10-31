@@ -1,4 +1,4 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>スキルとステータス | TRIATHLON</title>
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>スキル | TRIATHLON</title>
 <style>
 /* 開発用のゲーム紹介：色（ステータス）と技（スキル）。数字はここだけで見せる */
 :root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mut:#5E6B72;--line:#DCE5E4;--deep:#173A63;--gold:#B08F33;--track:#E6ECEB;--r:#D9707A;--g:#4FAE84;--b:#5B8FD6}
@@ -35,10 +35,10 @@ th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);verti
 @media(max-width:620px){.rgb{grid-template-columns:1fr}}
 </style></head><body>
 <div class="wrap">
-<header><p class="kick">TRIATHLON · 開発 · ゲーム紹介</p><h1>スキルとステータス</h1>
-<nav class="dv"><a href="./">← 開発トップ</a> · <a href="char.html">キャラ開発</a> · <a href="../watch/">見守る（公開）</a></nav></header>
+<header><p class="kick">TRIATHLON · 開発 · ゲーム紹介</p><h1>スキル</h1>
+<nav class="dv"><a href="./">← 開発トップ</a> · <a href="stat.html">ステータス</a> · <a href="char.html">キャラ開発</a> · <a href="../watch/">見守る（公開）</a></nav></header>
 
-<p class="one">このゲームの主役は<b>スキル（技）</b>。<br>人は死に、物は壊れても、技だけは代をこえて残る。<br>色（ステータス）は、その技がどれだけ伸びやすいかを決めるだけ。</p>
+<p class="one">このゲームの主役は<b>スキル（技）</b>。<br>人は死に、物は壊れても、技だけは代をこえて残る。<br>色（<a href="stat.html">ステータス</a>）は、その技がどれだけ伸びやすいかを決めるだけ。</p>
 
 <section><h2>スキル＝継がれる唯一のもの</h2>
 <div class="box">
@@ -70,19 +70,6 @@ th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);verti
 <p class="mut">二色の技：手（レッド＋ブルー：料理・工作・機械）、芸（グリーン＋ブルー：音楽・絵）、商い（レッド＋グリーン：お金・売り買い）。三色：仮想（ゲームの操作）。</p>
 </section>
 
-<section><h2>ステータス＝三つの色（伸びやすさ）</h2>
-<div class="tri">
-<div style="border-top-color:var(--r)"><b>レッド</b>体と熱。体・移動の技が伸びやすい</div>
-<div style="border-top-color:var(--g)"><b>グリーン</b>命とつながり。世話・土地・人の技</div>
-<div style="border-top-color:var(--b)"><b>ブルー</b>知と静けさ。数と理・言葉・心の技</div>
-</div>
-<div class="box">
-<p>・それぞれ 0〜255。<b>生まれたときにランダム</b>で決まり、子には継がれない。</p>
-<p>・二色の技もある：手（レッド＋ブルー）、芸（グリーン＋ブルー）、商い（レッド＋グリーン）。</p>
-<p>・伸びやすさ ＝ 40 ＋ 60 ×（色 ÷ 255）。色が高い技ほど、一生のうちによく伸びる。</p>
-<p class="mut">公開の画面には数字を出さない。「手になじんでいる／まだなじまない」の一言だけ（色140以上でなじむ）。</p>
-</div></section>
-
 
 
 <section><h2>プレイヤーがすること</h2>
@@ -94,10 +81,6 @@ th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);verti
 <div><b>一代の終わり：技に名前を付ける</b><span class="tag">案</span><p>「一発の踏みこみ」→「雨の日の踏みこみ」。付けた名前のまま子へ渡る。</p></div>
 </div></section>
 
-<section><h2>九人の今（第1部）</h2>
-<div class="ppl" id="ppl"></div>
-<p class="mut">データ：watch/skills.js（色 c と、家から継いだ技 k）。</p></section>
-
 <section><h2>入れないもの</h2>
 <div class="no"><span>数字の表示（公開）</span><span>スキルツリー</span><span>ポイント振り分け</span><span>ガチャ</span><span>ランキング</span><span>チャット</span></div>
 <p class="mut">もとの設計：ideas/skill.md（v0.2）・企画「灯をつぐ」</p></section>
@@ -107,7 +90,7 @@ th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);verti
 (function(){
 function e(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 var S=window.TRI_SKILLS||{},C={r:0,g:1,b:2},L=['R','G','B'],V=['var(--r)','var(--g)','var(--b)'];
-document.getElementById('ppl').innerHTML=Object.keys(S).map(function(n){var o=S[n];
+var _p=document.getElementById('ppl');if(_p)_p.innerHTML=Object.keys(S).map(function(n){var o=S[n];
 return '<div class="p"><h3>'+e(n)+'</h3>'+o.c.map(function(v,i){return '<div class="bar"><span>'+L[i]+'</span><i><b style="width:'+(v/2.55)+'%;background:'+V[i]+'"></b></i><span>'+v+'</span></div>'}).join('')+
 o.k.map(function(k){var fit=o.c[C[k[3]]]>=140;return '<p class="sk">'+e(k[0])+' <span>'+e(k[1])+'・'+k[2]+'代・'+(fit?'なじむ':'なじまない')+'</span></p>'}).join('')+'</div>'}).join('');
 document.querySelectorAll('.rgb ul').forEach(function(u){var c=u.dataset.c,h=[];Object.keys(S).forEach(function(n){S[n].k.forEach(function(k){if(k[3]===c){var fit=S[n].c[C[c]]>=140;h.push('<li>'+e(k[0])+' <span>'+e(n)+'・'+k[2]+'代・'+(fit?'なじむ':'なじまない')+'</span></li>')}})});u.innerHTML='<li><span>九人が継いだ技</span></li>'+h.join('')});
