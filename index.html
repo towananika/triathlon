@@ -33,7 +33,7 @@
 .nextep{margin:8px 2px 0;font-size:13px;color:#9a7630;font-weight:700}</style>
 </head>
 <body>
-<script src="site-nav.js?v=0.63"></script>
+<script src="site-nav.js?v=0.65"></script>
 <script src="stories/stories.js?v=0.45"></script>
 <script src="cast/cast-data.js?v=0.19"></script>
 <script src="notes/notes.js?v=0.46"></script>
@@ -45,7 +45,7 @@
 <h1 id="hero-title" class="logo">TRIATHLON</h1>
 <p class="tagline">九つの光の、一生</p>
 <p class="hero-lead">二つの川が出会う町・二水。9人の一生を、子どものころから年をとるまで、まるごと見守る物語です。</p>
-<div class="cta"><a class="btn primary" id="cta-read" href="stories/v.html?id=1">📖 最新話を読む</a><a class="btn" href="life/">🧭 一生の地図</a></div>
+<div class="cta"><a class="btn primary" id="cta-read" href="stories/v.html?id=1">📖 最新話を読む</a><a class="btn" href="watch/">🕯️ 今日を見守る</a></div>
 </div>
 </section>
 
@@ -56,9 +56,7 @@
 
 <section class="sec" aria-labelledby="life-h">
 <div class="duo">
-<div class="box"><p class="kick" aria-hidden="true">Life Map</p><b id="life-h">一生の地図</b><p>9人の0歳から80歳まで。あなたと同じ年のころ、9人は何をしていた？</p>
-<svg viewBox="0 0 300 70" aria-hidden="true"><g id="mini"></g></svg>
-<form class="agef" id="agef"><label for="myage">あなたは</label><input id="myage" type="number" min="0" max="80" inputmode="numeric" placeholder="40"><span>歳</span><button type="submit">地図を開く</button></form></div>
+<a class="box" href="watch/"><p class="kick" aria-hidden="true">Watch</p><b id="life-h">見守る</b><p>毎日ひとり、九人のうちだれかの一日を見守る。見た場面は、その人の家の技の思い出になります。</p></a>
 <a class="box" href="notes/" id="note"><p class="kick" aria-hidden="true">Notes</p><b>ひみつのメモ</b><p>話のあとにひらくメモ。</p></a>
 </div>
 </section>
@@ -100,7 +98,7 @@
 </div>
 </section>
 </main>
-<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.64</span></p></footer>
+<footer class="foot"><p class="logo-s">TRIATHLON</p><p>九つの光の、一生 · <span id="ver">v0.65</span></p></footer>
 <script src="news/news.js?v=0.55"></script>
 <script>
 (function () {
@@ -121,13 +119,8 @@
       (cols.length ? '<span class="band" aria-label="この話の心の光">' + cols.map(function (c) { return '<i style="background:' + c + '"></i>'; }).join('') + '</span>' : '') + '<span class="go">読む →</span></a>';
     var nx = (window.TRI_STORIES_ALL || []).filter(function (x) { return x.no === s0.no + 1; })[0]; // 次の話の公開日（毎週月曜）
     if (nx) document.getElementById('ep').insertAdjacentHTML('beforeend', '<p class="nextep">次の話：第' + nx.no + '話・' + esc(nx.who) + '　' + (+nx.date.slice(5, 7)) + '月' + (+nx.date.slice(8)) + '日（月）公開</p>');
-    document.getElementById('ep').insertAdjacentHTML('beforeend', '<p class="nextep"><a href="part1/" style="color:#2F6FB8">🏮 第1部の道のり（九つの灯り）を見る →</a>　<a href=\"watch/\" style=\"color:#2F6FB8\">今日はだれを見守る？ →</a></p>');
+    document.getElementById('ep').insertAdjacentHTML('beforeend', '<p class="nextep"><a href="part1/" style="color:#2F6FB8">🏮 第1部の道のり（九つの灯り）を見る →</a></p>');
   }
-  // 一生の地図の小さな見本
-  var mini = '';
-  for (var i = 0; i < 9; i++) { var y = 8 + i * 6.4; mini += '<line x1="10" x2="290" y1="' + y + '" y2="' + y + '" stroke="var(--line)" stroke-width="2.4" stroke-linecap="round"/><line x1="10" x2="98" y1="' + y + '" y2="' + y + '" stroke="' + ['#D9707A', '#4FAE84', '#5B8FD6'][i % 3] + '" stroke-width="2.4" stroke-linecap="round"/>'; }
-  document.getElementById('mini').innerHTML = mini + '<line x1="150" x2="150" y1="2" y2="66" stroke="#C9A646" stroke-width="2"/>';
-  document.getElementById('agef').onsubmit = function (e) { e.preventDefault(); var a = Math.max(0, Math.min(80, parseInt(document.getElementById('myage').value, 10) || 40)); try { localStorage.setItem('tri-life-age', a); } catch (x) {} location.href = 'life/'; };
   // ひみつのメモ（いちばん新しい1枚）
   var N = window.TRI_NOTES || [];
   var MM = window.TRI_MEMO || {};
