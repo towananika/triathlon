@@ -28,6 +28,11 @@ dt{color:#7a6f63;font-size:14px;font-weight:700}dd{margin:0}
 .friends{display:flex;flex-wrap:wrap;gap:8px}.friends a{border:1px solid #eadfcd;background:#fff;border-radius:999px;padding:6px 14px;color:#2a2622;text-decoration:none;font-weight:700;font-size:14px}
 .nav{display:flex;justify-content:space-between;gap:10px;margin-top:32px}.nav a{flex:1;text-align:center;border:1px solid #eadfcd;background:#fff;border-radius:999px;padding:10px;color:#2a2622;text-decoration:none;font-weight:700}
 .none{color:#7a6f63}
+.core{background:#fff;border:1px solid #eadfcd;border-left:6px solid var(--c);border-radius:14px;padding:14px 16px}
+.core b{font-family:"Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;font-size:22px}.core small{display:block;color:#7a6f63;font-size:13px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.tags span{background:var(--s);border-radius:999px;padding:3px 12px;font-size:14px}
+.grow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.grow div{background:#fff;border:1px solid #eadfcd;border-radius:14px;padding:10px 14px;font-size:15px}.grow small{display:block;color:#7a6f63;font-size:12px;font-weight:700}
+@media(max-width:480px){.grow{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&display=swap">
 </head>
@@ -35,6 +40,7 @@ dt{color:#7a6f63;font-size:14px;font-weight:700}dd{margin:0}
 <script src="../site-nav.js?v=0.65"></script>
 <main id="main"><p class="none">読みこみ中…</p></main>
 <script src="cast-data.js?v=0.19"></script>
+<script src="persona.js?v=0.68"></script>
 <script src="../places/places.js?v=0.30"></script>
 <script src="../stories/stories.js?v=0.45"></script>
 <script>
@@ -59,6 +65,14 @@ dt{color:#7a6f63;font-size:14px;font-weight:700}dd{margin:0}
   var fr = list.filter(function (x) { return x !== c && (T.rel || '').indexOf(nm(x)) >= 0; });
   var h = '<div class="top"><div class="face">' + face + '</div><div class="txt"><p class="cls">' + esc(c.cls) + '</p><h1>' + esc(name) + '</h1><p class="say">「' + esc(T.say || '') + '」</p></div></div>';
   h += '<h2>プロフィール</h2><dl>' + row('一人称', T.me) + row('外見', look) + row('服', L.wear) + row('好き', T.like) + row('苦手', T.dislike) + row('願い', T.wish) + row('弱いところ', T.weak) + row('関係', T.rel) + '</dl>';
+  var Q = (window.TRI_PERSONA || {})[name];
+  if (Q) {
+    h += '<h2>性格</h2><div class="core"><small>ゆずれないもの（ずっと変わらない）</small><b>' + esc(Q.line) + '</b></div>';
+    h += '<div class="tags">' + Q.tags.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('') + '</div>';
+    h += '<dl>' + row('こわいもの', Q.fear) + row('大事なもの', Q.values) + row('人との距離', Q.people) + row('話し方', Q.speech) + row('つらいとき', Q.stress) + row('ほっとする', Q.calm) + '</dl>';
+    h += '<div class="grow"><div><small>↗ 伸びると</small>' + esc(Q.up) + '</div><div><small>↘ くずれると</small>' + esc(Q.down) + '</div></div>';
+    h += '<p class="none" style="font-size:13px;margin-top:8px">性格は、物語の出来事で少しずつ変わります。芯は変わりません。</p>';
+  }
   if (fr.length) h += '<h2>仲間</h2><div class="friends">' + fr.map(function (x) { return '<a href="c.html?id=' + encodeURIComponent(x.id) + '">' + esc(nm(x)) + '</a>'; }).join('') + '</div>';
   h += '<h2>好きな場所</h2>' + (P ? '<a class="card" href="../places/#' + esc(P.id) + '"><small>' + esc(P.area) + '・' + esc(P.time) + '</small><b>' + esc(P.place) + '</b><p>' + esc(P.say[0]) + '</p></a>' : '<p class="none">まだありません。</p>');
   if (c.s === 1) h += '<h2>暮らした町</h2><a class="card" href="../map/#life=' + encodeURIComponent(name) + '"><small>マップ</small><b>' + esc(name) + 'の一生をマップでたどる →</b></a>';
