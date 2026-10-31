@@ -1,0 +1,139 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>スキルシミュレーター | TRIATHLON</title>
+<style>
+/* 開発用：スキルポイントを振り、専攻2つの組み合わせを試す。数字はこのページだけ */
+:root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mut:#5E6B72;--line:#DCE5E4;--deep:#173A63;--gold:#B08F33;--track:#E6ECEB;--r:#D9707A;--g:#4FAE84;--b:#5B8FD6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mut:#9FB0B4;--line:#2A3A42;--deep:#9CC3EC;--track:#26343B;--gold:#D9BC64;color-scheme:dark}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.7 "Hiragino Sans","Noto Sans JP",system-ui,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-left,0px)) 64px;display:grid;gap:22px}
+p{margin:0}h1{font-size:28px;color:var(--deep);margin:4px 0}h2{font-size:17px;color:var(--deep);margin:0 0 6px}
+.kick{font-size:12px;letter-spacing:.14em;color:var(--gold);font-weight:700}.mut{color:var(--mut);font-size:13px}
+nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:10px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+select,button{font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+button{cursor:pointer}button:hover{border-color:var(--deep)}
+.rgbin{display:grid;grid-template-columns:1.4em 1fr 2.6em;gap:8px;align-items:center;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%}
+.pts{font-size:15px}.pts b{font-size:22px;color:var(--deep);font-variant-numeric:tabular-nums}
+.list{display:grid;gap:6px}
+.sk{display:grid;grid-template-columns:auto 6.5em 1fr auto;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--k);border-radius:10px;padding:8px 10px;font-size:14px}
+.sk.maj{background:color-mix(in srgb,var(--k) 10%,var(--card))}
+.sk label{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--mut);white-space:nowrap}
+.sk .nm b{display:block}.sk .nm small{color:var(--mut);font-size:11px}
+.lv{display:grid;gap:2px}.lv i{display:block;height:7px;border-radius:4px;background:var(--track);position:relative;overflow:hidden}.lv i b{position:absolute;inset:0 auto 0 0;background:var(--k)}
+.lv i u{position:absolute;inset:0 auto 0 0;background:var(--k);opacity:.35}
+.lv span{font-size:11px;color:var(--mut)}
+.pm{display:flex;gap:4px}.pm button{padding:2px 9px;font-weight:700}
+@media(max-width:560px){.sk{grid-template-columns:auto 1fr auto}.sk .lv{grid-column:1/-1;order:9}}
+.res{border-top:4px solid var(--gold)}
+.res .t{font-size:22px;font-weight:800;color:var(--deep)}
+.res ul{margin:0;padding-left:1.2em}
+</style></head><body>
+<div class="wrap">
+<header><p class="kick">TRIATHLON · 開発 · ゲーム紹介</p><h1>スキルシミュレーター</h1>
+<nav class="dv"><a href="./">← 開発トップ</a> · <a href="skill.html">スキル</a> · <a href="stat.html">ステータス</a></nav></header>
+
+<p class="mut">年ごとにもらえるスキルポイントを振って技を伸ばす。専攻を2つ選ぶと、その技は1.5倍伸び、組み合わせで「その人らしさ」が決まる。色（ステータス）が高い技ほど、1ポイントでよく伸びる。</p>
+
+<section class="box">
+<h2>1. だれで試す？</h2>
+<div class="row"><select id="who"></select><button id="rand" type="button">ランダムな色で生まれる</button></div>
+<div id="rgb"></div>
+<p class="mut" id="inh"></p>
+</section>
+
+<section class="box">
+<h2>2. 年齢とポイント</h2>
+<div class="rgbin" style="grid-template-columns:4em 1fr 3em"><span>年齢</span><input id="age" type="range" min="12" max="30" value="18"><span id="agev"></span></div>
+<p class="pts">使えるポイント <b id="left"></b> / <span id="total"></span>　<span class="mut">（12歳から毎年10ポイント）</span></p>
+<div class="row"><button id="auto" type="button">専攻に自動で振る</button><button id="reset" type="button">振りなおす</button></div>
+</section>
+
+<section class="box">
+<h2>3. 技にポイントを振る（専攻は2つまで）</h2>
+<div class="list" id="list"></div>
+</section>
+
+<section class="box res" id="res"></section>
+<p class="mut">公開の画面ではこの数字は見せず、「様子」の一行だけを出す。計算：1ポイントの伸び＝（40＋60×色÷255）÷100、専攻は×1.5、上限100。家から継いだ技は「代×8」から始まる。</p>
+</div>
+<script src="../watch/skills.js?v=0.64"></script>
+<script>
+(function(){
+'use strict';
+function $(i){return document.getElementById(i)}
+function e(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+// 12系統。w＝効く色 [r,g,b] の重み
+var SK=[
+ {n:'体',ex:'運動・力仕事',w:[1,0,0],job:'運動選手、川守隊'},
+ {n:'移動',ex:'運転・自転車・船',w:[1,0,0],job:'渡し舟の船頭、郵便配達'},
+ {n:'世話',ex:'看護・子育て・動物',w:[0,1,0],job:'看護師、保育士'},
+ {n:'土地',ex:'畑・海・山の知恵',w:[0,1,0],job:'農家、森番、漁師'},
+ {n:'人',ex:'聞く・教える・交渉',w:[0,1,0],job:'先生、相談員'},
+ {n:'数と理',ex:'勉強・プログラム',w:[0,0,1],job:'研究者、技師'},
+ {n:'言葉',ex:'語学・文章',w:[0,0,1],job:'記者、通訳、作家'},
+ {n:'心',ex:'我慢・切り替え',w:[0,0,1],job:'（どの道でも支えになる）'},
+ {n:'手',ex:'料理・工作・機械',w:[.5,0,.5],job:'料理人、大工、整備士'},
+ {n:'芸',ex:'音楽・絵',w:[0,.5,.5],job:'絵かき、楽士'},
+ {n:'商い',ex:'お金・売り買い',w:[.5,.5,0],job:'商人、帳場'},
+ {n:'仮想',ex:'仮名世界の操作',w:[1/3,1/3,1/3],job:'仮名世界の冒険者'}];
+var COL=['var(--r)','var(--g)','var(--b)'],CN=['レッド','グリーン','ブルー'];
+// 色の組み合わせごとの型
+var TYPE={'00':['突破する人','体ごとぶつかって道をひらく'],'11':['守り手','人と命のそばにいる'],'22':['考える人','静かに深く考えぬく'],
+ '01':['現場のまとめ役','動きながら人をまとめる'],'02':['職人','手と頭で形をつくる'],'12':['癒やし手','知ることで人を助ける']};
+// とくべつな組み合わせ（系統名の組）
+var PAIR={'体|世話':'救助の人（川守隊の救助班に向く）','移動|土地':'旅する案内人','数と理|言葉':'学者','人|言葉':'語り部・先生','手|商い':'店を持つ職人','芸|心':'舞台に立つ人','世話|人':'町の相談役','数と理|手':'技師','移動|商い':'行商人','土地|世話':'森と生きもの番','体|心':'くじけない選手','芸|言葉':'物語を書く人','仮想|数と理':'仮名世界の攻略者'};
+var STG=[[0,'まだ知らない'],[1,'覚えたて'],[20,'慣れてきた'],[40,'身についた'],[60,'頼られる'],[80,'その人の技'],[100,'一族の技にとどく']];
+var T=window.TRI_SKILLS||{},names=Object.keys(T);
+// 継いだ技の系統（skills.js の2列目）を12系統の名前に合わせる
+var st={c:[128,128,128],base:{},pts:{},maj:[]};
+function key(){return SK.map(function(s){return s.n})}
+function rate(i){var s=SK[i],c=st.c[0]*s.w[0]+st.c[1]*s.w[1]+st.c[2]*s.w[2];return (40+60*c/255)/100*(st.maj.indexOf(i)>=0?1.5:1)}
+function lv(i){return Math.min(100,Math.round((st.base[i]||0)+(st.pts[i]||0)*rate(i)))}
+function stage(v){var r=STG[0][1];STG.forEach(function(x){if(v>=x[0])r=x[1]});return r}
+function total(){return (+$('age').value-12)*10}
+function used(){var u=0;for(var k in st.pts)u+=st.pts[k];return u}
+function load(n){st.pts={};st.base={};st.maj=[];
+ if(n&&T[n]){st.c=T[n].c.slice();T[n].k.forEach(function(k){var i=key().indexOf(k[1]);if(i>=0)st.base[i]=(st.base[i]||0)+k[2]*8});
+  $('inh').innerHTML='家から継いだ技：'+T[n].k.map(function(k){return e(k[0])+'（'+e(k[1])+'・'+k[2]+'代）'}).join('、');}
+ else $('inh').textContent='家から継いだ技：なし（ためしに生まれた子）';
+ draw()}
+function draw(){drawRGB();rest()}
+function drawRGB(){
+ $('rgb').innerHTML=st.c.map(function(v,i){return '<div class="rgbin"><span style="color:'+COL[i]+';font-weight:800">'+'RGB'[i]+'</span><input type="range" min="0" max="255" value="'+v+'" data-c="'+i+'" aria-label="'+CN[i]+'"><span>'+v+'</span></div>'}).join('')}
+function rest(){
+ $('agev').textContent=$('age').value+'歳';$('total').textContent=total();
+ var t=total(),u=used();if(u>t){trim(t);u=used()}
+ $('left').textContent=t-u;
+ $('list').innerHTML=SK.map(function(s,i){var k=COL[s.w.indexOf(Math.max.apply(null,s.w))],v=lv(i),b=Math.min(100,st.base[i]||0),m=st.maj.indexOf(i)>=0;
+  return '<div class="sk'+(m?' maj':'')+'" style="--k:'+k+'"><label><input type="checkbox" data-maj="'+i+'"'+(m?' checked':'')+'>専攻</label><div class="nm"><b>'+e(s.n)+'</b><small>'+e(s.ex)+'</small></div>'+
+  '<div class="lv"><i><u style="width:'+b+'%"></u><b style="width:'+v+'%"></b></i><span>'+v+'・'+stage(v)+'　（'+(st.pts[i]||0)+'pt・1ptで+'+rate(i).toFixed(2)+'）</span></div>'+
+  '<div class="pm"><button type="button" data-d="-1" data-i="'+i+'" aria-label="'+e(s.n)+'を下げる">−</button><button type="button" data-d="1" data-i="'+i+'" aria-label="'+e(s.n)+'を上げる">＋</button><button type="button" data-d="5" data-i="'+i+'">+5</button></div></div>'}).join('');
+ result()}
+function trim(t){var ks=Object.keys(st.pts);while(used()>t&&ks.length){var k=ks[ks.length-1];st.pts[k]--;if(st.pts[k]<=0){delete st.pts[k];ks.pop()}}}
+function top(i){return SK[i].w.indexOf(Math.max.apply(null,SK[i].w))}
+function result(){
+ var r=$('res');
+ if(st.maj.length<2){r.innerHTML='<h2>4. 専攻の組み合わせ</h2><p class="mut">専攻を2つ選ぶと、その人の型が出ます。</p>';return}
+ var a=st.maj[0],b=st.maj[1],ca=top(a),cb=top(b),tk=[Math.min(ca,cb),Math.max(ca,cb)].join(''),ty=TYPE[tk];
+ var pk=[SK[a].n,SK[b].n],sp=PAIR[pk.join('|')]||PAIR[pk.slice().reverse().join('|')];
+ var fit=[a,b].map(function(i){var c=st.c[top(i)];return SK[i].n+'：'+(c>=140?'色に合う（よく伸びる）':'色に合わない（伸びは遅いが、ずれが物語になる）')});
+ var best=SK.map(function(s,i){return [i,lv(i)]}).sort(function(x,y){return y[1]-x[1]}).slice(0,3);
+ r.innerHTML='<h2>4. 専攻の組み合わせ</h2><p class="mut">'+e(SK[a].n)+' × '+e(SK[b].n)+'（'+CN[ca]+' × '+CN[cb]+'）</p>'+
+ '<p class="t">'+e(sp||ty[0])+'</p><p>'+e(ty[1])+'</p>'+
+ '<ul>'+fit.map(function(x){return '<li>'+e(x)+'</li>'}).join('')+'<li>向く仕事：'+e(SK[a].job)+' ／ '+e(SK[b].job)+'</li>'+
+ '<li>いま強い技：'+best.map(function(x){return e(SK[x[0]].n)+'（'+stage(x[1])+'）'}).join('、')+'</li></ul>'}
+$('who').innerHTML=names.map(function(n){return '<option>'+e(n)+'</option>'}).join('')+'<option value="">（ためしに生まれた子）</option>';
+$('who').onchange=function(){load(this.value)};
+$('rand').onclick=function(){$('who').value='';st.c=[0,0,0].map(function(){return Math.floor(Math.random()*256)});var c=st.c;load('');st.c=c;draw()};
+$('age').oninput=rest;
+$('reset').onclick=function(){st.pts={};draw()};
+$('auto').onclick=function(){if(st.maj.length<1)return;st.pts={};var t=total(),n=st.maj.length;st.maj.forEach(function(i,k){st.pts[i]=Math.floor(t/n)+(k<t%n?1:0)});draw()};
+document.addEventListener('input',function(ev){var c=ev.target.dataset.c;if(c!=null){st.c[+c]=+ev.target.value;ev.target.nextElementSibling.textContent=ev.target.value;rest()}});
+document.addEventListener('change',function(ev){var m=ev.target.dataset.maj;if(m==null)return;m=+m;var j=st.maj.indexOf(m);
+ if(ev.target.checked){if(st.maj.length>=2)st.maj.shift();st.maj.push(m)}else if(j>=0)st.maj.splice(j,1);draw()});
+document.addEventListener('click',function(ev){var b=ev.target.closest('button[data-d]');if(!b)return;var i=+b.dataset.i,d=+b.dataset.d,left=total()-used();
+ if(d>0)d=Math.min(d,left);var v=Math.max(0,(st.pts[i]||0)+d);if(v)st.pts[i]=v;else delete st.pts[i];draw()});
+load(names[0]);
+})();
+</script></body></html>
