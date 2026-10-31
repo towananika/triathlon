@@ -27,25 +27,18 @@ th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);verti
 .bar{display:grid;grid-template-columns:1.2em 1fr 2.2em;gap:6px;align-items:center;font-variant-numeric:tabular-nums}
 .bar i{height:6px;border-radius:3px;background:var(--track);position:relative;overflow:hidden}.bar i b{position:absolute;inset:0 auto 0 0}
 .sk span{color:var(--mut)}.no{display:flex;flex-wrap:wrap;gap:6px}.no span{border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:13px;color:var(--mut);text-decoration:line-through}
+.rgb{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rgb>div{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--k);border-radius:12px;padding:12px;font-size:13px;display:grid;gap:6px;align-content:start}
+.rgb b{font-size:16px;color:var(--k)}.rgb small{color:var(--mut)}
+.rgb dl{margin:0;display:grid;grid-template-columns:4.5em 1fr;gap:2px 6px}.rgb dt{color:var(--mut)}.rgb dd{margin:0}
+.rgb ul{margin:4px 0 0;padding:8px 0 0;border-top:1px dashed var(--line);list-style:none;display:grid;gap:3px}.rgb li span{color:var(--mut)}
+@media(max-width:620px){.rgb{grid-template-columns:1fr}}
 </style></head><body>
 <div class="wrap">
 <header><p class="kick">TRIATHLON · 開発 · ゲーム紹介</p><h1>スキルとステータス</h1>
 <nav class="dv"><a href="./">← 開発トップ</a> · <a href="char.html">キャラ開発</a> · <a href="../watch/">見守る（公開）</a></nav></header>
 
-<p class="one">人は死に、物は壊れる。<br>代をこえて残るのは<b>スキル（技）</b>だけ。<br><b>ステータス（色）</b>は、その人だけのもの。</p>
-
-<section><h2>ステータス＝三つの色</h2>
-<div class="tri">
-<div style="border-top-color:var(--r)"><b>レッド</b>体と熱。体・移動の技が伸びやすい</div>
-<div style="border-top-color:var(--g)"><b>グリーン</b>命とつながり。世話・土地・人の技</div>
-<div style="border-top-color:var(--b)"><b>ブルー</b>知と静けさ。数と理・言葉・心の技</div>
-</div>
-<div class="box">
-<p>・それぞれ 0〜255。<b>生まれたときにランダム</b>で決まり、子には継がれない。</p>
-<p>・二色の技もある：手（レッド＋ブルー）、芸（グリーン＋ブルー）、商い（レッド＋グリーン）。</p>
-<p>・伸びやすさ ＝ 40 ＋ 60 ×（色 ÷ 255）。色が高い技ほど、一生のうちによく伸びる。</p>
-<p class="mut">公開の画面には数字を出さない。「手になじんでいる／まだなじまない」の一言だけ（色140以上でなじむ）。</p>
-</div></section>
+<p class="one">このゲームの主役は<b>スキル（技）</b>。<br>人は死に、物は壊れても、技だけは代をこえて残る。<br>色（ステータス）は、その技がどれだけ伸びやすいかを決めるだけ。</p>
 
 <section><h2>スキル＝継がれる唯一のもの</h2>
 <div class="box">
@@ -63,6 +56,34 @@ th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);verti
 <tr><td>その人の技</td><td>だれにもまねできない味になる</td></tr>
 <tr><td>一族の技</td><td>「〇〇家の味」と町で呼ばれる</td></tr></table>
 </section>
+
+<section><h2>色ごとのスキル</h2>
+<p class="mut">技はレッド・グリーン・ブルーのどれかに属する。九人が家から継いだ技も、色ごとに並べた。</p>
+<div class="rgb">
+<div style="--k:var(--r)"><b>レッドの技</b><small>体と熱。動く・ぶつかる・運ぶ</small>
+<dl><dt>系統</dt><dd>体、移動</dd><dt>トライア</dt><dd>運動、力仕事、運転、自転車、船</dd><dt>仮名世界</dt><dd>前に出る、一撃に賭ける、速射</dd></dl><ul data-c="r"></ul></div>
+<div style="--k:var(--g)"><b>グリーンの技</b><small>命とつながり。育てる・守る・聞く</small>
+<dl><dt>系統</dt><dd>世話、土地、人</dd><dt>トライア</dt><dd>看護、子育て、動物、畑・海・山の知恵、聞く、教える</dd><dt>仮名世界</dt><dd>かばう、癒やす、風を読む</dd></dl><ul data-c="g"></ul></div>
+<div style="--k:var(--b)"><b>ブルーの技</b><small>知と静けさ。考える・書く・待つ</small>
+<dl><dt>系統</dt><dd>数と理、言葉、心</dd><dt>トライア</dt><dd>勉強、プログラム、語学、文章、我慢、切り替え</dd><dt>仮名世界</dt><dd>待つ、霧を晴らす、詠唱を短くする</dd></dl><ul data-c="b"></ul></div>
+</div>
+<p class="mut">二色の技：手（レッド＋ブルー：料理・工作・機械）、芸（グリーン＋ブルー：音楽・絵）、商い（レッド＋グリーン：お金・売り買い）。三色：仮想（ゲームの操作）。</p>
+</section>
+
+<section><h2>ステータス＝三つの色（伸びやすさ）</h2>
+<div class="tri">
+<div style="border-top-color:var(--r)"><b>レッド</b>体と熱。体・移動の技が伸びやすい</div>
+<div style="border-top-color:var(--g)"><b>グリーン</b>命とつながり。世話・土地・人の技</div>
+<div style="border-top-color:var(--b)"><b>ブルー</b>知と静けさ。数と理・言葉・心の技</div>
+</div>
+<div class="box">
+<p>・それぞれ 0〜255。<b>生まれたときにランダム</b>で決まり、子には継がれない。</p>
+<p>・二色の技もある：手（レッド＋ブルー）、芸（グリーン＋ブルー）、商い（レッド＋グリーン）。</p>
+<p>・伸びやすさ ＝ 40 ＋ 60 ×（色 ÷ 255）。色が高い技ほど、一生のうちによく伸びる。</p>
+<p class="mut">公開の画面には数字を出さない。「手になじんでいる／まだなじまない」の一言だけ（色140以上でなじむ）。</p>
+</div></section>
+
+
 
 <section><h2>プレイヤーがすること</h2>
 <p class="mut">キャラは自分で決めて動く。プレイヤーは見守り、技の育て方を少しだけ自分なりに決める。</p>
@@ -89,5 +110,6 @@ var S=window.TRI_SKILLS||{},C={r:0,g:1,b:2},L=['R','G','B'],V=['var(--r)','var(-
 document.getElementById('ppl').innerHTML=Object.keys(S).map(function(n){var o=S[n];
 return '<div class="p"><h3>'+e(n)+'</h3>'+o.c.map(function(v,i){return '<div class="bar"><span>'+L[i]+'</span><i><b style="width:'+(v/2.55)+'%;background:'+V[i]+'"></b></i><span>'+v+'</span></div>'}).join('')+
 o.k.map(function(k){var fit=o.c[C[k[3]]]>=140;return '<p class="sk">'+e(k[0])+' <span>'+e(k[1])+'・'+k[2]+'代・'+(fit?'なじむ':'なじまない')+'</span></p>'}).join('')+'</div>'}).join('');
+document.querySelectorAll('.rgb ul').forEach(function(u){var c=u.dataset.c,h=[];Object.keys(S).forEach(function(n){S[n].k.forEach(function(k){if(k[3]===c){var fit=S[n].c[C[c]]>=140;h.push('<li>'+e(k[0])+' <span>'+e(n)+'・'+k[2]+'代・'+(fit?'なじむ':'なじまない')+'</span></li>')}})});u.innerHTML='<li><span>九人が継いだ技</span></li>'+h.join('')});
 })();
 </script></body></html>
