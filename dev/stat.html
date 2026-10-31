@@ -33,6 +33,7 @@ th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);verti
 .rgb dl{margin:0;display:grid;grid-template-columns:4.5em 1fr;gap:2px 6px}.rgb dt{color:var(--mut)}.rgb dd{margin:0}
 .rgb ul{margin:4px 0 0;padding:8px 0 0;border-top:1px dashed var(--line);list-style:none;display:grid;gap:3px}.rgb li span{color:var(--mut)}
 @media(max-width:620px){.rgb{grid-template-columns:1fr}}
+table.nine{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}table.nine th,table.nine td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}table.nine th{color:var(--mut);font-weight:600}
 </style></head><body>
 <div class="wrap">
 <header><p class="kick">TRIATHLON · 開発 · ゲーム紹介</p><h1>ステータス</h1>
@@ -51,6 +52,20 @@ th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);verti
 <p>・二色の技もある：手（レッド＋ブルー）、芸（グリーン＋ブルー）、商い（レッド＋グリーン）。</p>
 <p>・伸びやすさ ＝ 40 ＋ 60 ×（色 ÷ 255）。色が高い技ほど、一生のうちによく伸びる。</p>
 <p class="mut">公開の画面には数字を出さない。「手になじんでいる／まだなじまない」の一言だけ（色140以上でなじむ）。</p>
+</div></section>
+
+<section><h2>RGBの9ステータス（2026-10-05 決定）</h2>
+<p class="mut">三つの色は、それぞれ3つのステータスでできている。色の値は3つの平均。おもに仮名世界（ゆめ）での戦いに効く。</p>
+<table class="nine"><tr><th>色</th><th>ステータス</th><th>向く職業</th></tr>
+<tr><td style="color:var(--r);font-weight:800">R レッド</td><td>ATK 攻撃力・DEF 防御力・HP 体力</td><td>戦士</td></tr>
+<tr><td style="color:var(--g);font-weight:800">G グリーン</td><td>RAN 射程・ATS 攻撃速度・SPD 移動速度</td><td>弓使い</td></tr>
+<tr><td style="color:var(--b);font-weight:800">B ブルー</td><td>MAG 魔力・RES 魔法防御・MP 魔法の力の量</td><td>魔法使い</td></tr></table>
+<div class="box">
+<p>・9つはそれぞれ 0〜255。生まれたときにランダム。親には似ない（継がれるのはスキルだけ）。</p>
+<p>・狩りやボス戦で少しずつ伸びる。年をとるとレッドはゆっくり下がり、グリーンとブルーは残りやすい（仮）。</p>
+<p>・<b>キャラの色＝rgb(R, G, B)</b>。数字は見せないが、色は見える（赤っぽい人、くすんだ緑の人）。</p>
+<p>・一番高い色の職業を選びやすい。気質や、親のアバターへのあこがれでも変わる。</p>
+<p class="mut">略語の読み（RAN＝射程、ATS＝攻撃速度、SPD＝移動速度、RES＝魔法防御）は確認待ち。もと：SPEC.md 5章、ideas/character.md 6章。</p>
 </div></section>
 
 <section><h2>九人の色（第1部）</h2>
