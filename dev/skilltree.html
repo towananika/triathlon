@@ -48,42 +48,29 @@ table.nine{width:100%;border-collapse:collapse;font-size:13px;background:var(--c
 s{text-decoration:none;font-size:11px;font-weight:700;color:#fff;background:var(--k,var(--deep));border-radius:4px;padding:0 5px;margin-left:2px;font-variant-numeric:tabular-nums}
 q{quotes:none;font-size:12px;color:var(--mut)}q::before{content:"Req. "}
 .tree small{display:block;font-size:12px;color:var(--mut)}
+.tree .ja{font-size:12px;color:var(--mut)}s.no{background:var(--track)!important;color:var(--mut)!important}.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:4px;font-size:14px}
 </style></head><body>
 <div class="wrap">
 <header><p class="kick">TRIATHLON · 開発 · 仮名世界</p><h1>スキルツリー（R・G・B）</h1>
 <nav class="dv"><a href="./">← 開発トップ</a> · <a href="skill.html">スキル</a> · <a href="stat.html">ステータス</a> · <a href="skill-sim.html">シミュレーター</a></nav></header>
 <p class="one">仮名世界で戦うための技。<br>General → Option → クラスの順に、<b>Req.（前提の技）</b>を満たすと覚えられる。<br>技ごとに、RGBの9ステータスのどれかが上がる。</p>
 <p class="mut"><s style="text-decoration:none">ATK</s> ＝上がるステータス　<q>PT</q> ＝前提の技（Req.）。2026-10-25 の原案。略語：PT・UBT・LBT・OS・DS・IE/IT・MCT・BU・DU・ST・MS・WH・EM（Elemental Magic）・EMM（Elemental Mix Magic）・MI・AMI・AEM。</p>
-<section class="tree" style="--k:var(--r)"><h2>R レッド</h2><ol>
-<li>General<ol><li>Physical Training <s>HP</s></li><li>Upper Body Training <s>ATK</s> <q>PT</q></li><li>Lower Body Training <s>DEF</s> <q>PT</q></li></ol></li>
-<li>Option<ol><li>Offensive Strategy <s>ATK</s> <q>UBT</q></li><li>Defensive Strategy <s>DEF</s> <q>LBT</q></li><li>Intelligence Education <s>MAG</s></li><li>Mind Control Training <s>RES</s></li></ol></li>
-<li>Fighter<ol><li>Battle Understanding <s>ATK</s> <q>OS</q></li><li>Dodge Understanding <s>SPD</s> <q>DS</q></li></ol></li>
-<li>Warrior<ol><li>Sword Theory <s>RAN</s> <q>MCT</q></li><li>Sword Practice <s>ATS</s> <q>MCT, ST</q><small>技：straight、slice</small></li></ol></li>
-<li>Knight<ol><li>Movement Strategy <s>SPD</s> <q>MCT</q></li><li>Weapon Handling <s>ATS</s> <q>MCT, MS</q></li></ol></li>
-</ol></section><section class="tree" style="--k:var(--g)"><h2>G グリーン</h2><ol>
-<li>General<ol><li>Physical Training <s>HP</s></li><li>Throwing / Shooting <s>RAN</s> <q>PT</q></li></ol></li>
-<li>Option<ol><li>Upper Body Training <s>ATK</s> <q>PT</q></li><li>Lower Body Training <s>DEF</s> <q>PT</q></li><li>Intelligence Training <s>MAG</s></li><li>Mind Control Training <s>RES</s></li></ol></li>
-<li>Ranger<ol><li>Rifle 1 <q>Shooting, UBT</q></li><li>Rifle 2〜4 <q>IT 1〜3, MCT 1〜3</q></li><li>Heavy Rifle 1 <q>Rifle 2</q></li><li>Heavy Rifle 2〜4 <q>IT 1〜3, MCT 1〜3, WH 1〜3</q></li></ol></li>
-<li>Assassin<ol><li>Assassination 1 <s>ATS</s> <q>Throwing, UBT</q></li><li>Assassination 2〜4 <q>IT 1〜3, MCT 1〜3, BU 1〜3</q></li></ol></li>
-<li>Scout<ol><li>Movement Strategy 1 <s>SPD</s> <q>PT</q></li><li>Movement Strategy 2〜4 <q>PT 2〜4</q></li></ol></li>
-</ol></section><section class="tree" style="--k:var(--b)"><h2>B ブルー</h2><ol>
-<li>General<ol><li>Physics <s>HP</s></li><li>Academics <s>MAG</s></li><li>Psycologics <s>RES</s></li></ol></li>
-<li>Elementary Academy（線形魔法）<ol>
-<li>Class 10<ol><li>EM: Water <s>HP</s> <q>Psycologics</q></li><li>EM: Earth <s>DEF</s> <q>EM: Water</q></li></ol></li>
-<li>Class 9<ol><li>Mana Inspiration <s>MP</s></li><li>EMM: Water &amp; Earth</li></ol></li>
-<li>Class 8<ol><li>Advanced Mana Inspiration <s>MP</s></li><li>EM: Wind <s>SPD</s> <q>MI</q></li><li>EMM: Wind &amp; Water<small>高圧・押す・水分</small></li><li>EMM: Wind &amp; Earth<small>counter</small></li></ol></li>
-<li>Class 7<ol><li>EM: Fire <s>MAG</s> <q>AMI</q></li><li>EMM: Fire &amp; Water<small>counter</small></li><li>EMM: Fire &amp; Earth<small>dry（乾燥）</small></li><li>EMM: Fire &amp; Wind<small>低圧・引く</small></li></ol></li>
-<li>Class 6 Elemental Sublet<ol><li>EMM: F&amp;E + Wi&amp;Wa<small>shot</small></li><li>EMM: F&amp;E + F&amp;Wi<small>shot（pull）</small></li></ol></li>
-<li>Class 5 Elemental Mage（AEM 7種）<ol><li>AEM: Water（Ice）</li><li>AEM: Earth（Heal）</li><li>AEM: Earth（Poison） <q>AEM: Earth</q></li><li>AEM: Wind</li><li>AEM: Fire（Flame）</li><li>AEM: Fire（Thunder）</li><li>AEM: Fire（Light） <q>AEM: Thunder</q></li></ol></li>
-<li>Class 4<small>AEM 7種から2種</small></li><li>3rd Class<small>AEM 7種から4種</small></li><li>2nd Class<small>AEM 全7種</small></li><li>1st Class<small>AEM 全7種（2級との差は未定）</small></li>
-</ol></li>
-<li>Mage Academy（回路魔法）<ol>
-<li>Elemental Scholar Class<small>unqualified（意味は未定）</small></li>
-<li>Elemental Mage Class <q>Elemental Mage（Class 5〜1st）</q><small>マナ5,000以上＋消費マナ1,000以上の技</small></li>
-<li>Mage Class（A〜E）<small>マナ10,000以上＋消費マナ2,000以上の技</small></li>
-<li>Arch Mage Class（F〜I）<small>マナ15,000以上＋消費マナ3,000以上の技</small></li></ol></li>
-<li>Cleris Missionary School<ol><li>Grade 1〜13<small>ワンタップで詠唱。伸びやすいが、伸びしろは低め</small></li><li>Engineering ／ Education ／ Humanities（Literature Club）／ Medicine（Medic Club）／ Liberal Arts（Art・Music・Atheletic Club）／ Social Sciences（Volunteer Club）／ Natural Sciences（Culinary Club）</li></ol></li>
-<li>Nacsha Missionary School（Full Open）<ol><li>すべての技を解放できる<small>ランダムな skill-tech が生まれる</small></li><li>1ボタンで詠唱<small>タップ・長押しで変化</small></li><li>10,000回の詠唱で100%の性能</li><li>魔法回路 1〜4<small>100p^1〜4</small></li></ol></li>
-</ol></section>
+<div id="trees"></div>
+<section class="box" id="chk"></section>
 <p class="mut">未定：GのRifle・Heavy Rifleの上がるステータス、2〜4段と前提1〜3の対応、RのIEとGのITの関係、EMの綴りと定義、級の数値。もと：ideas/skilltree_rgb.md</p>
-</div></body></html>
+</div>
+<script src="skilltree.js?v=0.79"></script>
+<script>
+(function(){
+function e(x){return String(x).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var T=window.TRI_TREE,K={R:'var(--r)',G:'var(--g)',B:'var(--b)'},all={},n=0,nost=0,bad=[];
+function walk(list,f){list.forEach(function(it){if(it.items)walk(it.items,f);else f(it)})}
+var ng=0;Object.keys(T).forEach(function(c){T[c].groups.forEach(function(g){walk([g],function(it){all[it.id]=it;n++;if(!it.st)nost++;if(it.guess)ng++})})});
+Object.keys(all).forEach(function(id){(all[id].req||[]).forEach(function(r){if(!all[r])bad.push(id+' → '+r)})});
+function li(it){if(it.items)return '<li>'+e(it.g)+'<ol>'+it.items.map(li).join('')+'</ol></li>';
+ return '<li>'+e(it.en)+(it.ja?' <span class="ja">'+e(it.ja)+'</span>':'')+(it.st?' <s>'+e(it.st)+'</s>':' <s class="no">未定</s>')+(it.req&&it.req.length?' <q>'+it.req.map(function(r){return e((all[r]&&all[r].id.replace(/^G\./,''))||r)}).join(', ')+(it.guess?'（推定）':'')+'</q>':'')+(it.note?'<small>'+e(it.note)+'</small>':'')+'</li>'}
+document.getElementById('trees').innerHTML=Object.keys(T).map(function(c){return '<section class="tree" style="--k:'+K[c]+'"><h2>'+c+' '+e(T[c].name)+'</h2><ol>'+T[c].groups.map(li).join('')+'</ol></section>'}).join('');
+document.getElementById('chk').innerHTML='<h2>データの点検</h2><p>技 '+n+' 個（R・G・B）。上がるステータスが未定：'+nost+' 個。前提を推定したもの：'+ng+' 個（（推定）の印）。</p><p>'+(bad.length?'前提が見つからない：'+bad.map(e).join('、'):'前提の技はすべてデータの中にある。')+'</p><p class="mut">データ：dev/skilltree.js（見た目のツリーは、このデータから作る）</p>';
+})();
+</script>
+</body></html>
