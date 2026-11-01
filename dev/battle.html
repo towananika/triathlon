@@ -1,0 +1,102 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>戦闘シミュレーター | TRIATHLON</title>
+<style>
+/* 開発用：スキルウィンドウで組んだスキルで、2人が自動で戦う（試作）。数値はすべて仮 */
+:root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mut:#5E6B72;--line:#DCE5E4;--deep:#173A63;--gold:#B08F33;--track:#E6ECEB;--r:#D9707A;--g:#4FAE84;--b:#5B8FD6;--win:#F4EFE4;--wline:#DCD3C2;--wcard:#FAF6EE}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mut:#9FB0B4;--line:#2A3A42;--deep:#9CC3EC;--track:#26343B;--gold:#D9BC64;--win:#1B262C;--wline:#34454E;--wcard:#22313A;color-scheme:dark}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.7 "Hiragino Sans","Noto Sans JP",system-ui,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-left,0px)) 64px;display:grid;gap:18px}
+p{margin:0}h1{font-size:28px;color:var(--deep);margin:4px 0}
+.kick{font-size:12px;letter-spacing:.14em;color:var(--gold);font-weight:700}
+nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
+.mut{color:var(--mut);font-size:13px}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start}
+.vs>b{align-self:center;color:var(--gold);font-size:18px}
+.side{background:var(--win);border:2px solid var(--k);border-radius:14px;padding:12px;display:grid;gap:8px;min-width:0}
+.side select{font:inherit;font-size:14px;width:100%;padding:4px 6px;border-radius:8px;border:1px solid var(--wline);background:var(--wcard);color:var(--fg)}
+.side h2{margin:0;font-size:17px;color:var(--k)}
+.st{display:grid;grid-template-columns:repeat(3,1fr);gap:3px 8px;font-size:12px;font-variant-numeric:tabular-nums}
+.st span b{font-weight:700}.wp{font-size:12px;color:var(--mut)}
+.src{font-size:11px;color:var(--mut)}.src a{color:var(--deep)}
+@media(max-width:620px){.vs{grid-template-columns:1fr}.vs>b{justify-self:center}}
+.ctl{display:flex;flex-wrap:wrap;gap:8px}
+.ctl button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:10px;padding:6px 14px;cursor:pointer}
+.ctl button.go{background:var(--deep);color:var(--bg);border-color:var(--deep);font-weight:700}
+.arena{background:var(--win);border:1px solid var(--wline);border-radius:14px;padding:14px;display:grid;gap:10px}
+.hp{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px}
+.hp i{display:block;height:8px;border-radius:4px;background:var(--track);overflow:hidden;margin-top:2px}.hp i b{display:block;height:100%;background:var(--k);transition:width .15s}
+.hp .mp{height:4px}.hp .mp b{background:var(--b)}
+.field{position:relative;height:44px;border-bottom:2px solid var(--wline)}
+.field span{position:absolute;bottom:0;width:30px;height:30px;margin-left:-15px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px;transition:left .1s;background:var(--k)}
+.field span.hit{box-shadow:0 0 0 4px color-mix(in srgb,var(--k) 35%,transparent)}
+.log{height:180px;overflow:auto;font-size:12px;background:var(--wcard);border-radius:8px;padding:8px 10px;font-variant-numeric:tabular-nums}
+.log p{margin:0}.log .w{font-weight:700;color:var(--gold)}
+.res{font-size:14px}
+</style></head><body><div class="wrap">
+<header><p class="kick">TRIATHLON · 開発 · スキル（仮名世界）</p><h1>戦闘シミュレーター</h1>
+<nav class="dv"><a href="./">← 開発トップ</a> · <a href="skillwin.html">スキルウィンドウ</a> · <a href="battle.html">戦闘シミュレーター</a> · <a href="skilltree.html">スキル一覧</a> · <a href="stat.html">ステータス</a></nav></header>
+<p class="mut">スキルウィンドウで組んだスキルのまま、2人が自動で戦う。組んでいないクラスは、SP 20 を上から順に使う「おまかせ」。数値と式はすべて仮。</p>
+<div class="vs"><div class="side" id="A"></div><b>VS</b><div class="side" id="B"></div></div>
+<div class="ctl"><button class="go" id="go">戦う</button><button id="fast">すぐ結果</button><button id="many">100回戦う</button></div>
+<div class="arena" id="arena"><div class="hp" id="hp"></div><div class="field" id="field"></div><div class="res" id="res">「戦う」を押すと始まる。</div><div class="log" id="log"></div></div>
+<p class="mut">しくみ（仮）：離れていれば素早さ（SPD）で近づき、武器の届く距離（RAN）に入ると攻撃。攻撃の間隔は ATS で短くなる。ダメージは ATK（魔法は MAG）から、相手の DEF（魔法は RES）を引いたもの。Bの魔法は MP を使い、尽きると弱い打撃になる。</p>
+</div>
+<script src="skilltree.js?v=0.95"></script>
+<script>
+(function(){
+var T=window.TRI_TREE,COL={R:'var(--r)',G:'var(--g)',B:'var(--b)'};
+var JA={Fighter:'ファイター',Warrior:'ウォリアー',Knight:'ナイト',Ranger:'レンジャー',Assassin:'アサシン',Scout:'スカウト','Elementary Academy':'初等アカデミー','Mage Academy':'魔導アカデミー','Cleris Missionary School':'クレリス宣教学校','Nacsha Missionary School':'ナクシャ宣教学校'};
+// 武器（仮）。t＝武器のタイプ（RAN・ATS の種類と合わせる）、mag＝魔法で攻撃
+var WP={Fighter:{n:'拳',t:'拳',atk:0,reach:1},Warrior:{n:'剣',t:'剣',atk:6,reach:2,ats:-2},Knight:{n:'槍と重い鎧',t:'槍',atk:5,reach:2.5,ats:-2,def:6,spd:-4},
+ Ranger:{n:'ライフル',t:'銃',atk:5,reach:8,ats:-1},Assassin:{n:'短剣',t:'短剣',atk:3,reach:1,ats:3},Scout:{n:'投げナイフ',t:'投てき',atk:2,reach:5,spd:2},
+ 'Elementary Academy':{n:'杖（線形魔法）',t:'魔法',atk:4,reach:6,mag:1},'Mage Academy':{n:'杖（回路魔法）',t:'魔法',atk:6,reach:6,mag:1,ats:-1},'Cleris Missionary School':{n:'聖印',t:'魔法',atk:3,reach:5,mag:1,ats:2},'Nacsha Missionary School':{n:'聖印',t:'魔法',atk:3,reach:5,mag:1}};
+function flat(items,out){items.forEach(function(x){if(x.items)flat(x.items,out);else out.push(x)});return out}
+var CL=[];['R','G','B'].forEach(function(c){var gs=T[c].groups,base=[];gs.forEach(function(g){if(g.g==='General'||g.g==='Option')flat(g.items,base)});
+ gs.forEach(function(g){if(g.g==='General'||g.g==='Option')return;var name=g.g.replace(/（.*/,'');CL.push({c:c,name:name,nodes:base.concat(flat(g.items,[]))})})});
+function loadB(){try{return JSON.parse(localStorage.getItem('tri-skillbuild')||'{}')}catch(e){return {}}}
+function auto(k){var lv={},sp=20,max=k.c==='B'?5:4,ids={};k.nodes.forEach(function(x){ids[x.id]=1});
+ var ok=function(x){return (x.req||[]).every(function(r){return !ids[r]||lv[r]>0})};
+ for(var round=0;round<max&&sp>0;round++)k.nodes.forEach(function(x){if(sp>0&&x.st&&ok(x)&&(lv[x.id]||0)<max&&(!x.req2||round===0)){lv[x.id]=(lv[x.id]||0)+1;sp--}});return lv}
+function make(k){var saved=loadB()[k.name],lv=saved&&Object.keys(saved).length?saved:auto(k),w=WP[k.name],s={ATK:10,DEF:10,HP:10,RAN:0,ATS:10,SPD:10,MAG:10,RES:10,MP:0};
+ k.nodes.forEach(function(x){var L=lv[x.id]||0;if(!L||!x.st)return;var ks=x.st.split('/');ks.forEach(function(st){
+  if((st==='RAN'||st==='ATS')&&x.w&&x.w!=='全武器'&&x.w!==w.t)return; // 武器のタイプが違えば効かない
+  s[st]+=L*2/ks.length})});
+ var f={k:k,saved:!!(saved&&Object.keys(saved).length),w:w,s:s,col:COL[k.c],name:JA[k.name]||k.name};
+ f.maxhp=Math.round(40+s.HP*3);f.maxmp=w.mag?Math.round(20+s.MP*3):0;
+ f.pow=(w.mag?s.MAG:s.ATK)+w.atk;f.def=s.DEF+(w.def||0);f.res=s.RES;
+ f.gap=Math.max(5,Math.round(24-(s.ATS+(w.ats||0)*3)*0.6));f.spd=Math.max(0.05,(s.SPD+(w.spd||0))/100);f.reach=w.reach+s.RAN*0.15;return f}
+function side(id,i){var el=document.getElementById(id);el.innerHTML='';var sel=document.createElement('select');
+ CL.forEach(function(k,j){var o=document.createElement('option');o.value=j;o.textContent=k.c+'　'+(JA[k.name]||k.name);sel.appendChild(o)});sel.value=i;el.appendChild(sel);
+ var info=document.createElement('div');el.appendChild(info);
+ function up(){var f=make(CL[sel.value]);el.style.setProperty('--k',f.col);el.f=f;
+  info.innerHTML='<h2>'+f.name+'</h2><p class="wp">武器：'+f.w.n+'</p><div class="st">'+['ATK','DEF','HP','RAN','ATS','SPD','MAG','RES','MP'].map(function(k){return '<span>'+k+' <b>'+Math.round(f.s[k])+'</b></span>'}).join('')+'</div>'+
+   '<p class="src">'+(f.saved?'スキルウィンドウで組んだスキル':'おまかせ（<a href="skillwin.html">スキルウィンドウで組む</a>）')+'</p>'}
+ sel.onchange=up;up();}
+var q=new URLSearchParams(location.search),ai=0;CL.forEach(function(k,j){if(k.name===q.get('a'))ai=j});
+side('A',ai);side('B',ai===1?0:1);
+// 1回の戦い：0.1秒ごとに進める
+function fight(){var A=document.getElementById('A').f,B=document.getElementById('B').f,P=[A,B].map(function(f,i){return {f:f,hp:f.maxhp,mp:f.maxmp,x:i?10:0,g:Math.floor(Math.random()*f.gap)}}),ev=[],t=0;
+ while(t<1200&&P[0].hp>0&&P[1].hp>0){t++;var d=Math.abs(P[1].x-P[0].x);
+  P.forEach(function(p,i){var o=P[1-i],f=p.f;
+   if(d>f.reach){p.x+=(i?-1:1)*Math.min(f.spd,Math.max(0,(d-f.reach)/2+0.01));return}
+   if(++p.g<f.gap)return;p.g=0;var mag=f.w.mag&&p.mp>=5;if(mag)p.mp-=5;
+   var dodge=Math.min(.3,Math.max(.03,(o.f.s.SPD-f.s.SPD)/100+.05));
+   if(Math.random()<dodge){ev.push({t:t,a:i,miss:1});return}
+   var pow=mag?f.pow:Math.round(f.pow*(f.w.mag?.4:1)),dm=Math.max(1,Math.round(pow*1.5-(mag?o.f.res:o.f.def)*.7+Math.random()*4-2));
+   o.hp=Math.max(0,o.hp-dm);ev.push({t:t,a:i,dm:dm,mag:mag})});
+  ev.push({t:t,pos:[P[0].x,P[1].x],hp:[P[0].hp,P[1].hp],mp:[P[0].mp,P[1].mp]});}
+ var win=P[0].hp>P[1].hp?0:P[1].hp>P[0].hp?1:-1;return {P:P,ev:ev,win:win,t:t}}
+var timer=null,el=function(i){return document.getElementById(i)};
+function draw(r,upto){var P=r.P,last=null,lines=[];r.ev.forEach(function(e){if(e.t>upto)return;if(e.pos)last=e;else lines.push(e)});
+ var A=P[0].f,B=P[1].f,hp=last?last.hp:[A.maxhp,B.maxhp],mp=last?last.mp:[A.maxmp,B.maxmp],pos=last?last.pos:[0,10];
+ el('hp').innerHTML=[A,B].map(function(f,i){return '<div style="--k:'+f.col+'">'+f.name+'　HP '+hp[i]+' / '+f.maxhp+'<i><b style="width:'+(hp[i]/f.maxhp*100)+'%"></b></i>'+(f.maxmp?'<i class="mp"><b style="width:'+(mp[i]/f.maxmp*100)+'%"></b></i>':'')+'</div>'}).join('');
+ var hit=lines.length?lines[lines.length-1]:null;
+ el('field').innerHTML=[A,B].map(function(f,i){return '<span class="'+(hit&&hit.t===upto&&hit.a===i?'hit':'')+'" style="--k:'+f.col+';left:'+(5+pos[i]*9)+'%">'+f.name[0]+'</span>'}).join('');
+ el('log').innerHTML=lines.slice(-40).map(function(e){var f=P[e.a].f,o=P[1-e.a].f;return '<p>'+(e.t/10).toFixed(1)+'秒　'+f.name+(e.miss?' の攻撃を '+o.name+' がかわした':(e.mag?' の魔法':' の攻撃')+' → '+o.name+' に '+e.dm)+'</p>'}).join('');el('log').scrollTop=1e6}
+function done(r){el('res').innerHTML=r.win<0?'引き分け（'+(r.t/10).toFixed(1)+'秒）':'<b class="w">'+r.P[r.win].f.name+' の勝ち</b>（'+(r.t/10).toFixed(1)+'秒）'}
+el('go').onclick=function(){clearInterval(timer);var r=fight(),u=0;el('res').textContent='戦っている…';timer=setInterval(function(){u+=2;draw(r,u);if(u>=r.t){clearInterval(timer);draw(r,r.t);done(r)}},50)};
+el('fast').onclick=function(){clearInterval(timer);var r=fight();draw(r,r.t);done(r)};
+el('many').onclick=function(){clearInterval(timer);var w=[0,0,0],r;for(var i=0;i<100;i++){r=fight();w[r.win<0?2:r.win]++}draw(r,r.t);
+ el('res').innerHTML='100回：'+r.P[0].f.name+' <b>'+w[0]+'勝</b>・'+r.P[1].f.name+' <b>'+w[1]+'勝</b>'+(w[2]?'・引き分け '+w[2]:'')};
+['A','B'].forEach(function(id){el(id).addEventListener('change',function(){clearInterval(timer);el('res').textContent='「戦う」を押すと始まる。';el('log').innerHTML='';el('hp').innerHTML='';el('field').innerHTML=''})});
+})();
+</script></body></html>
