@@ -77,28 +77,31 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 </style><script src="return.js?v=20261101" defer></script></head><body><div class="wrap">
 <header><p class="kick">TRIATHLON · 開発 · 戦闘（仮名世界）</p><h1>分隊戦</h1>
 <nav class="dv"><a href="./">← 開発トップ</a> · <a href="squad.html">分隊戦</a> · <a href="battle.html">1対1</a> · <a href="skillwin.html">スキルウィンドウ</a> · <a href="stat.html">ステータス</a></nav></header>
-<p class="mut">5人の分隊どうしが自動で戦う。あなたは班長として、始める前に作戦を選び、戦闘中に1回だけ変えられる。キャラは自分の目で見た敵しかわからず、見たことは無線で少し遅れて仲間に伝わる。相手を押し返し、士気を0にしたら勝ち。数値と式はすべて仮。</p>
+<p class="mut">敵の班長を捕らえたら勝利。60秒で決着しなければ引き分け。数値は試作です。</p>
 <div class="teams"><div class="team" id="tA"></div><div class="team" id="tB"></div></div>
-<div class="ctl"><button class="go" id="go">作戦開始</button><button id="fast">すぐ結果</button><button id="many">100回</button><button id="reroll">敵を入れ替える</button><label class="mut">戦場 <select id="fsz"><option value="s">小（約1分）</option><option value="m">中（約1分半）</option><option value="l" selected>大（約2分）</option><option value="xl">特大（約3分）</option></select></label></div>
+<div class="ctl"><button class="go" id="go">戦闘開始</button><button id="reroll">敵を入れ替える</button></div>
+<details id="advanced"><summary>詳細設定</summary>
+<div class="ctl"><button id="fast">すぐ結果</button><button id="many">100回テスト</button><label class="mut">戦場 <select id="fsz"><option value="s" selected>小</option><option value="m">中</option><option value="l">大</option><option value="xl">特大</option></select></label></div>
 <div class="blk"><div class="mapw"><canvas id="mapc"></canvas><span id="mk"></span></div><div class="mut">戦場＝マップの1升目。地図を押すと、その升目で戦う。<br><b id="bname"></b><br><button id="brand">ほかの升目</button></div></div>
+</details>
 <div class="game" id="game">
-<div class="hud"><div class="mb"><span>味方の士気</span><i><b id="m0"></b></i></div><div class="clk" id="clk">0:00</div><div class="mb en"><span>敵の士気</span><i><b id="m1"></b></i></div></div>
+<div class="hud"><div class="mb"><span>味方班長のHP</span><i><b id="m0"></b></i></div><div class="clk" id="clk">0:00</div><div class="mb en"><span>敵班長のHP</span><i><b id="m1"></b></i></div></div>
 <div class="hud2"><button id="spd">×1</button><span class="mut" id="msg">作戦を選んで作戦開始</span><button id="skip">スキップ</button></div>
 <div class="field" id="field"></div>
 <div class="cards" id="cards"></div>
 <div class="ord" id="ord"><button data-o="sup">制圧前進</button><button data-o="amb">待ち伏せ</button><button data-o="flank">側面から</button></div>
 <div class="over" id="over" hidden><b id="ovt"></b><span id="ovs"></span><button id="again">もう一度</button></div>
 </div>
-<p class="mut" style="font-size:11px">画面の配置だけの仮の表示。丸い顔はキャラの絵（ひびきさんの絵）。絵がないクラスは一文字。絵や演出は、ひびきさんが作るものに差し替える。</p>
 <details><summary class="mut">戦いの記録</summary><div class="res" id="res"></div><div class="log" id="log"></div></details>
-<p class="mut">しくみ（仮）：遮蔽の後ろでは受けるダメージと命中が下がる。撃たれ続けると「制圧」され、動けず攻撃も遅くなる。仲間が倒れたり撃たれたりすると士気が下がり、0で退く。色の相性は R→G→B→R（有利 1.3倍・不利 0.8倍）。戦場は4つの広さ（小・中・大・特大）。広いほど時間の上限が長い（約1分〜3分）。士気が0になれば、それより早く終わる。戦場はマップの升目から選ぶ。どの升目も戦場になり、土地の種類で地形が変わる（畑＝ひらけている、森＝木が多く見通しが悪い、高地＝丘が多い、荒れ地＝岩が多い、開拓地＝壁の跡）。起伏が大きいと丘が高く、海ぞいは端が海。見えない敵は撃てない。遮蔽に隠れて撃っていない敵は見つけにくい。気づかれていない相手には当てやすい。班長が倒れると無線が止まり、声の届く近くの仲間にしか伝わらない。画面は上から見た2Dだが、キャラには高さがある：高台からは遠くまで見え、上から撃つと当てやすい。岩や丘の向こうは見えず、撃てない。作戦は 制圧前進（撃って押さえ、近接が進む）・待ち伏せ（動かず、先に撃つ）・側面から（前列2人が高台へ回り込み、遮蔽の横から撃つ）。ナイトは敵の攻撃を引きつけ、ファイターは敵の後列を狙う。班長の色で、Rなら守り、Gなら命中、Bなら士気が少し強くなる。</p>
+<details><summary>戦闘の詳細</summary><p class="mut">5人から班長を1人選ぶ。班長のHPが0になると捕縛されて敗北。両方の班長が同じ更新内に捕縛されたら引き分け。60秒で捕縛できなければ引き分け。戦闘は自動で進み、作戦変更は任意で1回だけ。遮蔽・視界・高低差は試作中。色だけで決まるダメージ倍率は使わない。詠唱・範囲魔法・回復支援などのクラス固有動作は未実装。</p></details>
 </div>
 <script src="skilltree.js?v=0.99"></script>
+<script src="squad-rules.js?v=20261101"></script>
 <script src="../assets/data/world/land.js?v=0.99"></script>
 <script src="../char/cast-data.js?v=0.69"></script>
 <script>
 (function(){
-var T=window.TRI_TREE,COL={R:'var(--r)',G:'var(--g)',B:'var(--b)'},BEAT={R:'G',G:'B',B:'R'};
+var T=window.TRI_TREE,COL={R:'var(--r)',G:'var(--g)',B:'var(--b)'};
 var JA={Fighter:'ファイター',Warrior:'ウォリアー',Knight:'ナイト',Ranger:'レンジャー',Assassin:'アサシン',Scout:'スカウト','Elementary Academy':'初等アカデミー','Mage Academy':'魔導アカデミー','Cleris Missionary School':'クレリス宣教学校','Nacsha Missionary School':'ナクシャ宣教学校'};
 var WP={Fighter:{t:'拳',atk:0,reach:1},Warrior:{t:'剣',atk:6,reach:2,ats:-2},Knight:{t:'槍',atk:5,reach:2.5,ats:-2,def:6,spd:-4},
  Ranger:{t:'銃',atk:5,reach:9,ats:-1},Assassin:{t:'短剣',atk:3,reach:1,ats:3},Scout:{t:'投てき',atk:2,reach:6,spd:2},
@@ -116,7 +119,7 @@ function auto(k){var lv={},sp=20,max=k.c==='B'?5:4,ids={};k.nodes.forEach(functi
  for(var r=0;r<max&&sp>0;r++)k.nodes.forEach(function(x){if(sp>0&&x.st&&ok(x)&&(lv[x.id]||0)<max&&(!x.req2||r===0)){lv[x.id]=(lv[x.id]||0)+1;sp--}});return lv}
 // ステータス（1対1と同じ式）
 function make(ci,mine){var k=CL[ci],sv=mine&&loadB()[k.name],lv=sv&&Object.keys(sv).length?sv:auto(k),w=WP[k.name],s={ATK:10,DEF:10,HP:10,RAN:0,ATS:10,SPD:10,MAG:10,RES:10,MP:0};
- k.nodes.forEach(function(x){var L=lv[x.id]||0;if(!L||!x.st)return;var ks=x.st.split('/');ks.forEach(function(st){if((st==='RAN'||st==='ATS')&&x.w&&x.w!=='全武器'&&x.w!==w.t)return;s[st]+=L*2/ks.length})});
+ k.nodes.forEach(function(x){var L=lv[x.id]||0;if(!L||!x.st)return;var ks=x.st.split('/');ks.forEach(function(st){if((st==='RAN'||st==='ATS')&&x.w&&x.w!=='全武器'&&x.w!==w.t)return;s[st]+=L/ks.length})});
  return {k:k,c:k.c,w:w,s:s,name:JA[k.name],maxhp:Math.round(40+s.HP*3),pow:(w.mag?s.MAG:s.ATK)+w.atk,def:s.DEF+(w.def||0),res:s.RES,
   gap:Math.max(5,Math.round(24-(s.ATS+(w.ats||0)*3)*0.6)),spd:Math.max(.04,(s.SPD+(w.spd||0))/120),reach:w.reach+s.RAN*0.15}}
 // 編成：前列2・中列2・後列1
@@ -131,8 +134,8 @@ function ui(id){var t=team[id],el=document.getElementById('t'+id);
   el.querySelectorAll('input').forEach(function(r){r.onchange=function(){t.lead=+r.value;stop()}})}}
 rollB();ui('A');ui('B');
 // 戦場：x は 0〜W（横）、y は 0〜100（縦、10で1マス）。画面は2Dだが、キャラにとっては高さのある3D空間
-// 戦場の広さと時間の目安（ウマ娘のレース時間を目安に）：小＝1分10秒、中＝1分35秒、大＝2分、特大＝3分。速く終わることも長引くこともある。上限は目安の1.5倍
-var FIELD={s:{n:'小',w:12,goal:70},m:{n:'中',w:16,goal:95},l:{n:'大',w:20,goal:120},xl:{n:'特大',w:30,goal:180}},W,LIM,COVER,HILLS,ROCKS,YMIN,YMAX,SEE,HPX=3,FK='l';
+// どの広さでも60秒で終了。HP倍率は使わず、まず短い1戦を試す。
+var FIELD={s:{n:'小',w:12,goal:70},m:{n:'中',w:16,goal:95},l:{n:'大',w:20,goal:120},xl:{n:'特大',w:30,goal:180}},W,LIM,COVER,HILLS,ROCKS,YMIN,YMAX,SEE,HPX=1,FK='s';
 // 戦場＝マップの1升目（トライアスロンの土地、約2km四方）。どの升目も戦場になる。土地の種類・起伏・海ぞいで地形が決まり、同じ升目はいつも同じ地形
 var LAND=window.TRI_LAND,LR=LAND?atob(LAND.d):'',KN={1:'畑',2:'森',3:'高地',4:'荒れ地',5:'開拓地'},BLK=null;
 function cell(cx,cy){if(cx<0||cy<0||cx>=LAND.nx||cy>=LAND.ny)return 0;return LR.charCodeAt(cy*LAND.nx+cx)}
@@ -140,14 +143,14 @@ function pickBlock(cx,cy){for(var r=0;r<15;r++)for(var dy=-r;dy<=r;dy++)for(var 
 function randBlock(){for(;;){var cx=Math.floor(Math.random()*LAND.nx),cy=Math.floor(Math.random()*LAND.ny),v=cell(cx,cy);if(v>>4)return {cx:cx,cy:cy,k:v>>4,sh:v&15}}}
 function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function blkName(b){var sl=Math.abs(b.sh-10),sea=!(cell(b.cx,b.cy-1)>>4)||!(cell(b.cx,b.cy+1)>>4);return KN[b.k]+(sl>=3?'・起伏が大きい':sl>=1?'・ゆるい起伏':'・平ら')+(sea?'・海ぞい':'')}
-function setField(k){var f=FIELD[k||FK];FK=k||FK;W=f.w;LIM=f.goal*15;var b=BLK||{cx:0,cy:0,k:1,sh:10},R=rng(b.cx*7919+b.cy*104729+W),sl=Math.abs(b.sh-10);
+function setField(k){var f=FIELD[k||FK];FK=k||FK;W=f.w;LIM=600;var b=BLK||{cx:0,cy:0,k:1,sh:10},R=rng(b.cx*7919+b.cy*104729+W),sl=Math.abs(b.sh-10);
  var rr=function(a,c){return a+R()*(c-a)},mid=function(){return rr(3.6,W-3.6)};
  COVER=[];HILLS=[];ROCKS=[];SEE=1;var step={1:5,2:6,3:5,4:4,5:4}[b.k];for(var c=step;c<=W-3.5;c+=step)COVER.push(c+rr(-0.6,0.6));
  var nh=(b.k===3?2:0)+(sl>=3?1:0)+(b.k===1&&R()<0.5?1:0);for(var i=0;i<nh;i++){var x=mid(),y=rr(0,70),wd=rr(2,4);HILLS.push({x0:x-wd/2,x1:x+wd/2,y0:y,y1:y+rr(20,35),h:1.5+sl*0.5+(b.k===3?1.5:0)})}
  var nr={1:0,2:0,3:2,4:5,5:3}[b.k];for(i=0;i<nr;i++){var x2=mid(),y2=rr(5,85),lg=b.k===5;ROCKS.push({x0:x2-(lg?0.3:0.6),x1:x2+(lg?0.3:0.6),y0:y2,y1:y2+(lg?rr(15,30):rr(8,16)),h:lg?3:4,t:lg?'wall':'rock'})}
  if(b.k===2){SEE=0.7;for(i=0;i<W*1.1;i++){var x3=mid(),y3=rr(2,92);ROCKS.push({x0:x3-0.25,x1:x3+0.25,y0:y3,y1:y3+5,h:8,t:'tree'})}}
- YMIN=4;YMAX=96;if(!(cell(b.cx,b.cy-1)>>4))YMIN=16;if(!(cell(b.cx,b.cy+1)>>4))YMAX=84;}
-BLK=LAND?randBlock():null;setField('l');var sim=null,timer=null,el=function(i){return document.getElementById(i)};
+ YMIN=4;YMAX=96;if(BLK&&!(cell(b.cx,b.cy-1)>>4))YMIN=16;if(BLK&&!(cell(b.cx,b.cy+1)>>4))YMAX=84;}
+BLK=null;setField('s');var sim=null,timer=null,el=function(i){return document.getElementById(i)};
 var PLAN={sup:'制圧前進',amb:'待ち伏せ',flank:'側面から'},PK=['sup','amb','flank'],myPlan='sup';
 function inR(o,x,y){return x>=o.x0&&x<=o.x1&&y>=o.y0&&y<=o.y1}
 function gz(x,y){var h=0;HILLS.forEach(function(o){if(inR(o,x,y)&&o.h>h)h=o.h});return h}
@@ -159,7 +162,7 @@ function los(a,b){var za=eye(a),zb=eye(b),ha=gz(a.x,a.y)||gz(b.x,b.y);for(var i=
  for(var j=0;j<ROCKS.length;j++)if(inR(ROCKS[j],x,y)&&z<ROCKS[j].h)return false;if(!ha&&gz(x,y)>z)return false}return true}
 function setup(){var U=[];['A','B'].forEach(function(id,si){var t=team[id];t.cl.forEach(function(ci,i){var f=make(ci,id==='A'),row=i<2?0:i<4?1:2,y=[18,82,30,70,50][i];
   U.push({id:id+i,i:i,side:si,f:f,lead:t.lead===i,hp:f.maxhp*HPX,x:si?W-row*1.2:row*1.2,y:y,y0:y,g:Math.floor(Math.random()*f.gap),sup:0,cover:false,down:false,kn:{},see:[],fired:-99})})});
- return {U:U,mor:[100,100],t:0,plan:[myPlan,PK[Math.floor(Math.random()*3)]],sw:0,radio:[],hits:[0,0],ev:[],shots:[],end:-1,say:null}}
+ return {U:U,mor:[100,100],t:0,plan:[myPlan,PK[Math.floor(Math.random()*3)]],sw:0,radio:[],hits:[0,0],ev:[],shots:[],end:null,say:null}}
 function leadC(S,side){var u=S.U.filter(function(u){return u.side===side&&u.lead})[0];return u&&!u.down?u.f.c:null}
 function leadUp(S,side){return S.U.some(function(u){return u.side===side&&u.lead&&!u.down})}
 function txt(t,s){var r=[t];r.txt=s;return r}
@@ -198,15 +201,15 @@ function step(S){S.t++;S.shots=[];var U=S.U;if(S.t%2===1)look(S);deliver(S);
   var lc=leadC(S,u.side),hit=0.8-(cov?(hi?0.15:0.3):0)-u.sup*0.3+(lc==='G'?0.06:0)+(hi?0.08:0)+(amb?0.15:0);
   S.shots.push([u,o]);o.sup=Math.min(1,o.sup+(u.f.w.reach>=5?0.22:0.1)*(pl==='sup'?1.5:1));know(S,o,u);S.hits[o.side]++;
   if(Math.random()>hit){S.ev.push([S.t,u,o,0]);return}
-  var aff=BEAT[u.f.c]===o.f.c?1.3:BEAT[o.f.c]===u.f.c?0.8:1,olc=leadC(S,o.side);
+  var aff=1,olc=leadC(S,o.side);
   var dm=Math.max(1,Math.round((u.f.pow*1.5-(u.f.w.mag?o.f.res:o.f.def+(olc==='R'?3:0))*0.7+Math.random()*4-2)*aff*(cov?(hi?0.8:0.6):1)));
   o.hp=Math.max(0,o.hp-dm);var ml=olc==='B'?0.6:1;S.mor[o.side]=Math.max(0,S.mor[o.side]-0.4*ml);
   if(!o.hp){o.down=true;S.mor[o.side]=Math.max(0,S.mor[o.side]-(o.lead?30:18)*ml)}S.ev.push([S.t,u,o,dm,aff,o.down]);});
- if(S.mor[0]<=0||S.mor[1]<=0||S.t>=LIM)S.end=S.mor[0]>S.mor[1]?0:S.mor[1]>S.mor[0]?1:-1;}
+ var end=window.TRI_SQUAD_RULES.outcome(U,S.t,LIM);if(end){S.end=end.winner;S.reason=end.reason;}}
 var px=function(x){return x/W*94+3};
 // 味方が知っている敵だけ描く。古い情報は「？」の影
 function seen(S,o){var b=null;S.U.forEach(function(u){if(u.side||u.down)return;var k=u.kn[o.id];if(k&&(!b||k.t>b.t))b=k});return b}
-function draw(S){var U=S.U,fw=el('field').clientWidth||300,over=S.end!==-1;el('m0').style.width=S.mor[0]+'%';el('m1').style.width=S.mor[1]+'%';var sec=Math.floor(S.t/10);el('clk').textContent=Math.floor(sec/60)+':'+('0'+sec%60).slice(-2);
+function draw(S){var U=S.U,fw=el('field').clientWidth||300,over=S.end!==null;[0,1].forEach(function(side){var lead=U.filter(function(u){return u.side===side&&u.lead})[0];el('m'+side).style.width=(lead?lead.hp/(lead.f.maxhp*HPX)*100:0)+'%';});var sec=Math.floor(S.t/10);el('clk').textContent=Math.floor(sec/60)+':'+('0'+sec%60).slice(-2);
  el('cards').innerHTML=U.filter(function(u){return !u.side}).map(function(u){return '<div class="cd'+(u.down?' down':'')+'" style="--k:'+COL[u.f.c]+'">'+(u.lead?'<span class="lead">班長</span>':'')+'<span class="art'+(PT[u.f.k.name]?' pic '+PT[u.f.k.name]:'')+'">'+(PT[u.f.k.name]?'':u.f.name[0])+'</span><i><b style="width:'+(u.hp/(u.f.maxhp*HPX)*100)+'%"></b></i><span class="stt">'+(u.down?'戦闘不能':u.sup>0.6?'制圧':gz(u.x,u.y)?'高台':u.cover?'遮蔽':u.f.name)+'</span></div>'}).join('');
  var bx=function(o,c,t){return '<span class="'+c+'" style="left:'+px(o.x0)+'%;width:'+(px(o.x1)-px(o.x0))+'%;top:'+o.y0+'%;height:'+(o.y1-o.y0)+'%">'+(t||'')+'</span>'};
  var h=(YMIN>4?'<span class="sea" style="top:0;height:'+(YMIN-4)+'%"></span>':'')+(YMAX<96?'<span class="sea" style="bottom:0;height:'+(96-YMAX)+'%"></span>':'')+HILLS.map(function(o){return bx(o,'hill','高台')}).join('')+ROCKS.map(function(o){return bx(o,'rock '+o.t)}).join('');
@@ -220,19 +223,19 @@ function draw(S){var U=S.U,fw=el('field').clientWidth||300,over=S.end!==-1;el('m
  el('field').innerHTML=h;if(!over&&timer&&S.say&&S.t-S.say.t<25)el('msg').textContent=S.say.txt;else if(!over&&timer)el('msg').textContent=S.sw?'作戦：'+PLAN[S.plan[0]]:'作戦を1回だけ変えられる';
  var nm=function(u){return (u.side?'敵の':'')+u.f.name};
  el('log').innerHTML=S.ev.slice(-30).map(function(e){return '<p>'+(e[0]/10).toFixed(1)+'秒　'+(e.txt?e.txt:nm(e[1])+' → '+nm(e[2])+(e[3]?' '+e[3]+(e[4]>1?'（有利）':e[4]<1?'（不利）':'')+(e[5]?'　戦闘不能':''):'　外れ'+(e[2].cover?'（遮蔽）':'')))+'</p>'}).join('');el('log').scrollTop=1e6;}
-function result(S){var w=S.end;el('res').innerHTML=(w===0?'<b>味方の勝ち</b>　敵が退いた':w===1?'<b>敵の勝ち</b>　味方が退いた':'<b>引き分け</b>')+'（'+(S.t/10).toFixed(1)+'秒・敵の作戦：'+PLAN[S.plan[1]]+'）';
- el('ovt').textContent=w===0?'勝利':w===1?'敗北':'引き分け';el('ovt').className=w===0?'win':'';el('ovs').textContent=(w===0?'敵の分隊が退いた':w===1?'味方の分隊が退いた':'時間切れ')+'　敵の作戦：'+PLAN[S.plan[1]];el('over').hidden=false;el('msg').textContent='';timer=null;ordBtns()}
-function ordBtns(){var live=sim&&sim.end===-1&&timer;document.querySelectorAll('#ord button').forEach(function(b){b.disabled=live?!!sim.sw:false;b.classList.toggle('sel',(live?sim.plan[0]:myPlan)===b.dataset.o)})}
+function result(S){var w=S.end;el('res').innerHTML=(w===0?'<b>味方の勝ち</b>　敵班長を捕縛した':w===1?'<b>敵の勝ち</b>　味方班長が捕らえられた':'<b>引き分け</b>')+'（'+(S.t/10).toFixed(1)+'秒・敵の作戦：'+PLAN[S.plan[1]]+'）';
+ el('ovt').textContent=w===0?'勝利':w===1?'敗北':'引き分け';el('ovt').className=w===0?'win':'';el('ovs').textContent=(w===0?'敵班長を捕縛した':w===1?'味方班長が捕らえられた':S.reason==='double-capture'?'両班長が捕縛された':'60秒で時間切れ')+'　敵の作戦：'+PLAN[S.plan[1]];el('over').hidden=false;el('msg').textContent='';timer=null;ordBtns()}
+function ordBtns(){var live=sim&&sim.end===null&&timer;document.querySelectorAll('#ord button').forEach(function(b){b.disabled=live?!!sim.sw:false;b.classList.toggle('sel',(live?sim.plan[0]:myPlan)===b.dataset.o)})}
 function stop(){clearInterval(timer);timer=null;sim=null;ordBtns();el('over').hidden=true}
-document.querySelectorAll('#ord button').forEach(function(b){b.onclick=function(){if(sim&&sim.end===-1&&timer){if(sim.sw||sim.plan[0]===b.dataset.o)return;sim.plan[0]=b.dataset.o;sim.sw=1;
+document.querySelectorAll('#ord button').forEach(function(b){b.onclick=function(){if(sim&&sim.end===null&&timer){if(sim.sw||sim.plan[0]===b.dataset.o)return;sim.plan[0]=b.dataset.o;sim.sw=1;
   sim.ev.push(txt(sim.t,'班長「作戦変更、'+PLAN[b.dataset.o]+'」'));sim.say={t:sim.t,txt:'班長「作戦変更、'+PLAN[b.dataset.o]+'」'}}else myPlan=b.dataset.o;ordBtns()}});
 var SPD=1;el('spd').onclick=function(){SPD=SPD===1?2:1;el('spd').textContent='×'+SPD};
 function run(){stop();el('over').hidden=true;sim=setup();
- timer=setInterval(function(){for(var i=0;i<SPD&&sim.end===-1;i++)step(sim);draw(sim);if(sim.end!==-1){clearInterval(timer);result(sim)}},100);ordBtns();draw(sim)}
+ timer=setInterval(function(){for(var i=0;i<SPD&&sim.end===null;i++)step(sim);draw(sim);if(sim.end!==null){clearInterval(timer);result(sim)}},100);ordBtns();draw(sim)}
 el('go').onclick=run;el('again').onclick=run;
-el('skip').onclick=function(){if(!sim||sim.end!==-1)return;clearInterval(timer);while(sim.end===-1)step(sim);sim.seen=sim.ev.length;draw(sim);result(sim)};
-el('fast').onclick=function(){stop();sim=setup();while(sim.end===-1)step(sim);sim.seen=sim.ev.length;draw(sim);result(sim)};
-el('many').onclick=function(){stop();var w=[0,0,0],S,ts=[];for(var i=0;i<100;i++){S=setup();while(S.end===-1)step(S);w[S.end<0?2:S.end]++;ts.push(S.t/10)}ts.sort(function(a,b){return a-b});S.seen=S.ev.length;draw(S);el('over').hidden=true;
+el('skip').onclick=function(){if(!sim||sim.end!==null)return;clearInterval(timer);while(sim.end===null)step(sim);sim.seen=sim.ev.length;draw(sim);result(sim)};
+el('fast').onclick=function(){stop();sim=setup();while(sim.end===null)step(sim);sim.seen=sim.ev.length;draw(sim);result(sim)};
+el('many').onclick=function(){stop();var w=[0,0,0],S,ts=[];for(var i=0;i<100;i++){S=setup();while(S.end===null)step(S);w[S.end<0?2:S.end]++;ts.push(S.t/10)}ts.sort(function(a,b){return a-b});S.seen=S.ev.length;draw(S);el('over').hidden=true;
  el('msg').textContent='100回：味方 '+w[0]+'勝';el('res').innerHTML='100回（作戦：'+PLAN[myPlan]+'）：味方 <b>'+w[0]+'勝</b>・敵 '+w[1]+'勝'+(w[2]?'・引き分け '+w[2]:'')+'<br>時間：短い '+Math.round(ts[9])+'秒・ふつう '+Math.round(ts[50])+'秒・長い '+Math.round(ts[90])+'秒'};
 // マップ（升目を選ぶ）：色は土地の種類だけの仮の表示
 function showBlk(){if(!BLK)return;el('bname').textContent=blkName(BLK);var c=el('mapc');el('mk').style.left=(BLK.cx+0.5)/LAND.nx*100+'%';el('mk').style.top=(BLK.cy+0.5)/LAND.ny*100+'%'}
