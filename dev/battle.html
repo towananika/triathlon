@@ -59,7 +59,7 @@ function auto(k){var lv={},sp=20,max=k.c==='B'?5:4,ids={};k.nodes.forEach(functi
 function make(k){var saved=loadB()[k.name],lv=saved&&Object.keys(saved).length?saved:auto(k),w=WP[k.name],s={ATK:10,DEF:10,HP:10,RAN:0,ATS:10,SPD:10,MAG:10,RES:10,MP:0};
  k.nodes.forEach(function(x){var L=lv[x.id]||0;if(!L||!x.st)return;var ks=x.st.split('/');ks.forEach(function(st){
   if((st==='RAN'||st==='ATS')&&x.w&&x.w!=='全武器'&&x.w!==w.t)return; // 武器のタイプが違えば効かない
-  s[st]+=L*2/ks.length})});
+  s[st]+=L/ks.length})});
  var f={k:k,saved:!!(saved&&Object.keys(saved).length),w:w,s:s,col:COL[k.c],name:JA[k.name]||k.name};
  f.maxhp=Math.round(40+s.HP*3);f.maxmp=w.mag?Math.round(20+s.MP*3):0;
  f.pow=(w.mag?s.MAG:s.ATK)+w.atk;f.def=s.DEF+(w.def||0);f.res=s.RES;
