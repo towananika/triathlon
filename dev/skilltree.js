@@ -6,14 +6,14 @@
 // guess: 1 ＝ 前提は原案に書かれておらず、Claude が推定したもの（要確認）。
 // グループは {g:名前, items:[技 または グループ]}。見た目のツリーは、このデータから後で作る。
 window.TRI_TREE = {
- R: {name: 'レッド', groups: [ // 2026-11-01：R共通（General＋Option）の7つは、どれも前提なしで1段目から取れる
+ R: {name: 'レッド', groups: [
   {g: 'General', items: [
    {id: 'PT',  en: 'Physical Training',     ja: '基礎体力訓練',   st: 'HP'},
-   {id: 'UBT', en: 'Upper Body Training',   ja: '上半身強化訓練', st: 'ATK'},
-   {id: 'LBT', en: 'Lower Body Training',   ja: '下半身強化訓練', st: 'DEF'}]},
+   {id: 'UBT', en: 'Upper Body Training',   ja: '上半身強化訓練', st: 'ATK', req: ['PT']},
+   {id: 'LBT', en: 'Lower Body Training',   ja: '下半身強化訓練', st: 'DEF', req: ['PT']}]},
   {g: 'Option', items: [
-   {id: 'OS',  en: 'Offensive Strategy',    ja: '攻撃戦術',     st: 'ATK'},
-   {id: 'DS',  en: 'Defensive Strategy',    ja: '防御戦術',     st: 'DEF'},
+   {id: 'OS',  en: 'Offensive Strategy',    ja: '攻撃戦術',     st: 'ATK', req: ['UBT']},
+   {id: 'DS',  en: 'Defensive Strategy',    ja: '防御戦術',     st: 'DEF', req: ['LBT']},
    {id: 'IE',  en: 'Intelligence Education',ja: '知識教育',     st: 'MAG'},
    {id: 'MCT', en: 'Mind Control Training', ja: '精神統制訓練', st: 'RES'}]},
   {g: 'Fighter', items: [
