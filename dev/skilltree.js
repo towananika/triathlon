@@ -32,7 +32,7 @@ window.TRI_TREE = {
   {g: 'Option', items: [
    {id: 'G.UBT', en: 'Upper Body Training', ja: '上半身強化訓練', st: 'ATK', req: ['G.PT']},
    {id: 'G.LBT', en: 'Lower Body Training', ja: '下半身強化訓練', st: 'DEF', req: ['G.PT']},
-   {id: 'IT',    en: 'Intelligence Training', st: 'MAG', note: 'RのIEと同じかは未定'},
+   {id: 'IT',    en: 'Intelligence Training', ja: '知識訓練', st: 'MAG', note: 'RのIEと同じかは未定'},
    {id: 'G.MCT', en: 'Mind Control Training', ja: '精神統制訓練', st: 'RES'}]},
   {g: 'Ranger', items: [
    {id: 'RIF', en: 'Rifle', ja: 'ライフル', st: 'RAN', w: '銃', stg: 1, req: ['G.SHOOT', 'G.UBT'], req2: ['IT', 'G.MCT'], note: 'Lv2〜4 は IT・MCT も同じ段まで必要'},
@@ -86,6 +86,6 @@ window.TRI_TREE = {
    {id: 'ARC', en: 'Arch Mage Class（F〜I）', ja: '大魔導士クラス（F〜I）', st: 'MP', stg: 1, req: ['MGC'], guess: 1, note: 'マナ15,000以上＋消費マナ3,000以上の技'}]},
   {g: 'Cleris Missionary School', items: [
    {id: 'CLR', en: 'Grade 1〜13', ja: '1〜13学年', st: 'RES', stg: 1, note: 'ワンタップで詠唱。伸びやすいが伸びしろは低め。学部：Engineering／Education／Humanities／Medicine／Liberal Arts／Social Sciences／Natural Sciences'}]},
-  {g: 'Nacsha Missionary School（Full Open）', items: [
+  {g: 'Nacsha Missionary School（全解放）', items: [
    {id: 'NAC', en: 'すべての技を解放できる', st: '', note: 'ランダムな skill-tech、1ボタン詠唱、10,000回で100%、魔法回路1〜4：100p^1〜4'}]}]}
 };
