@@ -60,7 +60,7 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 </style></head><body><div class="wrap">
 <header><p class="kick">TRIATHLON · 開発 · スキル（仮名世界）</p><h1>スキルウィンドウ</h1>
 <nav class="dv"><a href="./">← 開発トップ</a> · <a href="skillwin.html">スキルウィンドウ</a> · <a href="skilltree.html">スキル一覧</a> · <a href="skill.html">継承スキル</a> · <a href="skill-sim.html">継承シミュレーター</a> · <a href="stat.html">ステータス</a> · <a href="char.html">キャラ開発</a></nav></header>
-<ol class="how"><li><b>1</b>クラスを選ぶ</li><li><b>2</b>「ここから」の技に ＋</li><li><b>3</b>線の先の技が開く</li></ol>
+<ol class="how"><li><b>1</b>クラスを選ぶ</li><li><b>2</b>金色の枠の技に ＋</li><li><b>3</b>線の先の技が開く</li></ol>
 <div class="lang" id="lang">表示名：<button data-l="ja">日本語</button><button data-l="en">English</button></div>
 <div class="tabs" id="tabs"></div>
 <div class="win" id="win"></div>
@@ -112,7 +112,7 @@ function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,c
    var ext=(x.req||[]).concat(x.req2||[]).filter(function(r,i,a){return !cur.ids[r]&&a.indexOf(r)===i});
    var sts=x.st?x.st.split('/'):[],k0=sts[0],miss=(x.req||[]).filter(function(r){return cur.ids[r]&&!lv[r]}).map(function(r){return nm(cur.ids[r])});
    var nx=o&&!L&&used()<SP;
-   h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+(nx?' nx':'')+'" data-id="'+esc(x.id)+'">'+(nx?'<span class="here">ここから</span>':'')+
+   h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+(nx?' nx':'')+'" data-id="'+esc(x.id)+'">'+
     '<b>'+esc(nm(x))+'</b>'+
     '<span>'+(sts.length?sts.map(function(k){return '<span class="st" style="--sk:'+SC[k]+'">'+k+(k==='RAN'&&x.w?'・'+x.w:'')+' ＋'+(sts.length>1?'½':'1')+'</span>'}).join(' '):'<span class="st no">未定</span>')+(x.stg?' <i class="gs">（案）</i>':'')+'</span>'+
     (miss.length?'<span class="need">あと：'+esc(miss.join('・'))+'</span>':'')+
