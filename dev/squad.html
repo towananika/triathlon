@@ -1,0 +1,136 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>分隊戦 | TRIATHLON</title>
+<style>
+/* 開発用：5人の分隊どうしの自動戦闘（試作）。遮蔽・制圧射撃・士気・色の相性。数値はすべて仮 */
+:root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mut:#5E6B72;--line:#DCE5E4;--deep:#173A63;--gold:#B08F33;--track:#E6ECEB;--r:#D9707A;--g:#4FAE84;--b:#5B8FD6;--win:#F4EFE4;--wline:#DCD3C2;--wcard:#FAF6EE;--cover:#B9AE98}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mut:#9FB0B4;--line:#2A3A42;--deep:#9CC3EC;--track:#26343B;--gold:#D9BC64;--win:#1B262C;--wline:#34454E;--wcard:#22313A;--cover:#4E5A60;color-scheme:dark}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.7 "Hiragino Sans","Noto Sans JP",system-ui,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-left,0px)) 64px;display:grid;gap:16px}
+p{margin:0}h1{font-size:28px;color:var(--deep);margin:4px 0}h2{font-size:16px;margin:0;color:var(--deep)}
+.kick{font-size:12px;letter-spacing:.14em;color:var(--gold);font-weight:700}
+nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
+.mut{color:var(--mut);font-size:13px}
+.teams{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:620px){.teams{grid-template-columns:1fr}}
+.team{background:var(--win);border:1px solid var(--wline);border-radius:14px;padding:12px;display:grid;gap:6px;min-width:0}
+.row{display:grid;grid-template-columns:3.2em 1fr auto;gap:6px;align-items:center;font-size:13px}
+.row select{font:inherit;font-size:13px;padding:2px 4px;border-radius:6px;border:1px solid var(--wline);background:var(--wcard);color:var(--fg);min-width:0}
+.row label{font-size:11px;color:var(--mut);white-space:nowrap}
+.pos{font-size:11px;color:var(--mut)}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ctl button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:10px;padding:6px 14px;cursor:pointer}
+.ctl button.go{background:var(--deep);color:var(--bg);border-color:var(--deep);font-weight:700}
+.ctl button:disabled{opacity:.4;cursor:default}
+.ctl .sel{background:var(--gold);color:#fff;border-color:var(--gold)}
+.arena{background:var(--win);border:1px solid var(--wline);border-radius:14px;padding:12px;display:grid;gap:10px}
+.mor{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px}
+.mor i{display:block;height:8px;border-radius:4px;background:var(--track);overflow:hidden;margin-top:2px}.mor i b{display:block;height:100%;background:var(--gold);transition:width .2s}
+.field{position:relative;height:170px;border-radius:10px;background:var(--wcard);overflow:hidden}
+.field .cv{position:absolute;bottom:0;top:0;width:3%;background:var(--cover);opacity:.45;border-radius:4px}
+.u{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:700;transition:left .1s,opacity .3s;background:var(--k)}
+.u.en{border-radius:5px}.u.lead{box-shadow:0 0 0 2px var(--gold)}
+.u.sup{outline:2px dashed var(--fg);outline-offset:1px}.u.down{opacity:.25}
+.u small{position:absolute;top:24px;left:50%;transform:translateX(-50%);width:28px;height:3px;background:var(--track);border-radius:2px;overflow:hidden}.u small b{display:block;height:100%;background:var(--k)}
+.shot{position:absolute;height:2px;background:var(--fg);opacity:.35;transform-origin:0 50%;pointer-events:none}
+.log{height:150px;overflow:auto;font-size:12px;background:var(--wcard);border-radius:8px;padding:8px 10px}
+.log p{margin:0}.res{font-size:14px}.res b{color:var(--gold)}
+.key{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--mut)}
+</style></head><body><div class="wrap">
+<header><p class="kick">TRIATHLON · 開発 · 戦闘（仮名世界）</p><h1>分隊戦</h1>
+<nav class="dv"><a href="./">← 開発トップ</a> · <a href="squad.html">分隊戦</a> · <a href="battle.html">1対1</a> · <a href="skillwin.html">スキルウィンドウ</a> · <a href="stat.html">ステータス</a></nav></header>
+<p class="mut">5人の分隊どうしが自動で戦う。あなたは班長として、戦闘中に命令を1つだけ出せる。相手を押し返し、士気を0にしたら勝ち。数値と式はすべて仮。</p>
+<div class="teams"><div class="team" id="tA"></div><div class="team" id="tB"></div></div>
+<div class="ctl"><button class="go" id="go">作戦開始</button><button id="fast">すぐ結果</button><button id="many">100回</button><button id="reroll">敵を入れ替える</button></div>
+<div class="arena">
+<div class="mor" id="mor"></div>
+<p class="mut" style="font-size:11px">下の戦場は、しくみを確かめるための仮の表示（丸と四角だけ）。絵や演出は、ひびきさんが作るものに差し替える。</p>
+<div class="field" id="field"></div>
+<div class="ctl" id="ord"><span class="mut">命令（1回）：</span><button data-o="adv" disabled>前進</button><button data-o="hold" disabled>その場で守る</button><button data-o="focus" disabled>一点に集中</button></div>
+<div class="res" id="res">「作戦開始」を押すと始まる。</div>
+<div class="log" id="log"></div>
+<div class="key"><span>● 味方　■ 敵</span><span>金の輪＝班長</span><span>点線＝制圧されている</span><span>薄い＝戦闘不能</span><span>灰色の柱＝遮蔽</span></div>
+</div>
+<p class="mut">しくみ（仮）：遮蔽の後ろでは受けるダメージと命中が下がる。撃たれ続けると「制圧」され、動けず攻撃も遅くなる。仲間が倒れたり撃たれたりすると士気が下がり、0で退く。色の相性は R→G→B→R（有利 1.3倍・不利 0.8倍）。ナイトは敵の攻撃を引きつけ、ファイターは敵の後列を狙う。班長の色で、Rなら守り、Gなら命中、Bなら士気が少し強くなる。</p>
+</div>
+<script src="skilltree.js?v=0.96"></script>
+<script>
+(function(){
+var T=window.TRI_TREE,COL={R:'var(--r)',G:'var(--g)',B:'var(--b)'},BEAT={R:'G',G:'B',B:'R'};
+var JA={Fighter:'ファイター',Warrior:'ウォリアー',Knight:'ナイト',Ranger:'レンジャー',Assassin:'アサシン',Scout:'スカウト','Elementary Academy':'初等アカデミー','Mage Academy':'魔導アカデミー','Cleris Missionary School':'クレリス宣教学校','Nacsha Missionary School':'ナクシャ宣教学校'};
+var WP={Fighter:{t:'拳',atk:0,reach:1},Warrior:{t:'剣',atk:6,reach:2,ats:-2},Knight:{t:'槍',atk:5,reach:2.5,ats:-2,def:6,spd:-4},
+ Ranger:{t:'銃',atk:5,reach:9,ats:-1},Assassin:{t:'短剣',atk:3,reach:1,ats:3},Scout:{t:'投てき',atk:2,reach:6,spd:2},
+ 'Elementary Academy':{t:'魔法',atk:4,reach:7,mag:1},'Mage Academy':{t:'魔法',atk:6,reach:7,mag:1,ats:-1},'Cleris Missionary School':{t:'魔法',atk:3,reach:6,mag:1,ats:2},'Nacsha Missionary School':{t:'魔法',atk:3,reach:6,mag:1}};
+function flat(items,out){items.forEach(function(x){if(x.items)flat(x.items,out);else out.push(x)});return out}
+var CL=[];['R','G','B'].forEach(function(c){var gs=T[c].groups,base=[];gs.forEach(function(g){if(g.g==='General'||g.g==='Option')flat(g.items,base)});
+ gs.forEach(function(g){if(g.g==='General'||g.g==='Option')return;var name=g.g.replace(/（.*/,'');CL.push({c:c,name:name,nodes:base.concat(flat(g.items,[]))})})});
+function loadB(){try{return JSON.parse(localStorage.getItem('tri-skillbuild')||'{}')}catch(e){return {}}}
+function auto(k){var lv={},sp=20,max=k.c==='B'?5:4,ids={};k.nodes.forEach(function(x){ids[x.id]=1});
+ var ok=function(x){return (x.req||[]).every(function(r){return !ids[r]||lv[r]>0})};
+ for(var r=0;r<max&&sp>0;r++)k.nodes.forEach(function(x){if(sp>0&&x.st&&ok(x)&&(lv[x.id]||0)<max&&(!x.req2||r===0)){lv[x.id]=(lv[x.id]||0)+1;sp--}});return lv}
+// ステータス（1対1と同じ式）
+function make(ci,mine){var k=CL[ci],sv=mine&&loadB()[k.name],lv=sv&&Object.keys(sv).length?sv:auto(k),w=WP[k.name],s={ATK:10,DEF:10,HP:10,RAN:0,ATS:10,SPD:10,MAG:10,RES:10,MP:0};
+ k.nodes.forEach(function(x){var L=lv[x.id]||0;if(!L||!x.st)return;var ks=x.st.split('/');ks.forEach(function(st){if((st==='RAN'||st==='ATS')&&x.w&&x.w!=='全武器'&&x.w!==w.t)return;s[st]+=L*2/ks.length})});
+ return {k:k,c:k.c,w:w,s:s,name:JA[k.name],maxhp:Math.round(40+s.HP*3),pow:(w.mag?s.MAG:s.ATK)+w.atk,def:s.DEF+(w.def||0),res:s.RES,
+  gap:Math.max(5,Math.round(24-(s.ATS+(w.ats||0)*3)*0.6)),spd:Math.max(.04,(s.SPD+(w.spd||0))/120),reach:w.reach+s.RAN*0.15}}
+// 編成：前列2・中列2・後列1
+var POS=['前列','前列','中列','中列','後列'],DEF_A=[2,1,3,4,6],team={A:{cl:DEF_A.slice(),lead:0},B:{cl:[],lead:0}};
+function rollB(){var pick=function(c){var o=CL.map(function(k,i){return i}).filter(function(i){return CL[i].c===c});return o[Math.floor(Math.random()*o.length)]};
+ team.B.cl=[pick('R'),pick('R'),pick('G'),pick('G'),pick('B')];team.B.lead=Math.floor(Math.random()*5);}
+function ui(id){var t=team[id],el=document.getElementById('t'+id);
+ el.innerHTML='<h2>'+(id==='A'?'味方の分隊（あなた）':'敵の分隊')+'</h2>'+t.cl.map(function(ci,i){
+  return '<div class="row"><span class="pos">'+POS[i]+'</span>'+(id==='A'?'<select data-i="'+i+'">'+CL.map(function(k,j){return '<option value="'+j+'"'+(j==ci?' selected':'')+'>'+k.c+'　'+JA[k.name]+'</option>'}).join('')+'</select>':'<span style="color:'+COL[CL[ci].c]+';font-weight:700">'+CL[ci].c+'　'+JA[CL[ci].name]+'</span>')+
+  '<label><input type="radio" name="lead'+id+'" value="'+i+'"'+(t.lead===i?' checked':'')+(id==='A'?'':' disabled')+'> 班長</label></div>'}).join('');
+ if(id==='A'){el.querySelectorAll('select').forEach(function(s){s.onchange=function(){t.cl[+s.dataset.i]=+s.value;stop()}});
+  el.querySelectorAll('input').forEach(function(r){r.onchange=function(){t.lead=+r.value;stop()}})}}
+rollB();ui('A');ui('B');
+// 戦場：x は 0〜20。遮蔽は 4・8・12・16
+var COVER=[4,8,12,16],sim=null,timer=null,el=function(i){return document.getElementById(i)};
+function setup(){var U=[];['A','B'].forEach(function(id,si){var t=team[id];t.cl.forEach(function(ci,i){var f=make(ci,id==='A'),row=i<2?0:i<4?1:2;
+  U.push({id:id+i,side:si,f:f,lead:t.lead===i,hp:f.maxhp,x:si?20-row*1.2:row*1.2,y:[18,82,30,70,50][i],g:Math.floor(Math.random()*f.gap),sup:0,cover:false,down:false})})});
+ return {U:U,mor:[100,100],t:0,order:null,ev:[],shots:[],end:-1}}
+function leadC(S,side){var u=S.U.filter(function(u){return u.side===side&&u.lead})[0];return u&&!u.down?u.f.c:null}
+function step(S){S.t++;S.shots=[];var U=S.U;
+ U.forEach(function(u){if(u.down)return;var foes=U.filter(function(o){return o.side!==u.side&&!o.down});if(!foes.length)return;
+  var dir=u.side?-1:1,near=foes.slice().sort(function(a,b){return Math.abs(a.x-u.x)-Math.abs(b.x-u.x)})[0],d=Math.abs(near.x-u.x);
+  var ord=u.side===0?S.order:null,inR=d<=u.f.reach;
+  u.sup=Math.max(0,u.sup-0.012);
+  // 移動：届かなければ次の遮蔽へ。制圧されていると動けない
+  if(!inR&&u.sup<0.6&&ord!=='hold'){var tx=u.side?Math.max(near.x+u.f.reach*0.9,0):Math.min(near.x-u.f.reach*0.9,20);
+   var cv=COVER.filter(function(c){return (c-u.x)*dir>0.05&&(c-tx)*dir<=0.3}).sort(function(a,b){return (a-b)*dir})[0];var goal=cv!=null?cv:tx;
+   var mv=Math.min(u.f.spd*(ord==='adv'?1.4:1),Math.abs(goal-u.x));u.x+=dir*mv;}
+  u.cover=COVER.some(function(c){return Math.abs(c-u.x)<0.35});
+  if(!inR)return;
+  // 攻撃の相手：ナイトがいれば引きつけられる。ファイターは後列を狙う。命令「集中」なら一番弱った敵
+  var tg=foes.filter(function(o){return Math.abs(o.x-u.x)<=u.f.reach});
+  var kn=tg.filter(function(o){return o.f.k.name==='Knight'});if(kn.length&&u.f.k.name!=='Fighter')tg=kn;
+  if(u.f.k.name==='Fighter'){tg.sort(function(a,b){return (b.x-a.x)*dir})}else if(ord==='focus'){tg.sort(function(a,b){return a.hp-b.hp})}else tg.sort(function(a,b){return Math.abs(a.x-u.x)-Math.abs(b.x-u.x)});
+  var o=tg[0];if(++u.g<u.f.gap*(1+u.sup*0.8))return;u.g=0;
+  var lc=leadC(S,u.side),hit=0.8-(o.cover?0.3:0)-u.sup*0.3+(lc==='G'?0.06:0);
+  S.shots.push([u,o]);o.sup=Math.min(1,o.sup+(u.f.w.reach>=5?0.22:0.1));
+  if(Math.random()>hit){S.ev.push([S.t,u,o,0]);return}
+  var aff=BEAT[u.f.c]===o.f.c?1.3:BEAT[o.f.c]===u.f.c?0.8:1,olc=leadC(S,o.side);
+  var dm=Math.max(1,Math.round((u.f.pow*1.5-(u.f.w.mag?o.f.res:o.f.def+(olc==='R'?3:0))*0.7+Math.random()*4-2)*aff*(o.cover?0.6:1)));
+  o.hp=Math.max(0,o.hp-dm);var ml=olc==='B'?0.6:1;S.mor[o.side]=Math.max(0,S.mor[o.side]-0.8*ml);
+  if(!o.hp){o.down=true;S.mor[o.side]=Math.max(0,S.mor[o.side]-(o.lead?30:18)*ml)}S.ev.push([S.t,u,o,dm,aff,o.down]);});
+ if(S.mor[0]<=0||S.mor[1]<=0||S.t>=1200)S.end=S.mor[0]>S.mor[1]?0:S.mor[1]>S.mor[0]?1:-1;}
+function draw(S){var U=S.U;el('mor').innerHTML=['味方','敵'].map(function(n,i){return '<div>'+n+'の士気 '+Math.round(S.mor[i])+'<i><b style="width:'+S.mor[i]+'%"></b></i></div>'}).join('');
+ var h=COVER.map(function(c){return '<span class="cv" style="left:'+(c/20*94+3-1.5)+'%"></span>'}).join('');
+ S.shots.forEach(function(p){var a=p[0],b=p[1],fw=el('field').clientWidth||300,x1=(a.x/20*94+3)/100*fw,x2=(b.x/20*94+3)/100*fw,y1=a.y/100*170,y2=b.y/100*170,len=Math.hypot(x2-x1,y2-y1),ang=Math.atan2(y2-y1,x2-x1);
+  h+='<span class="shot" style="left:'+x1+'px;top:'+y1+'px;width:'+len+'px;transform:rotate('+ang+'rad)"></span>'});
+ h+=U.map(function(u){return '<span class="u'+(u.side?' en':'')+(u.lead?' lead':'')+(u.sup>0.6&&!u.down?' sup':'')+(u.down?' down':'')+'" style="--k:'+COL[u.f.c]+';left:'+(u.x/20*94+3)+'%;top:'+u.y+'%" title="'+u.f.name+'">'+u.f.name[0]+'<small><b style="width:'+(u.hp/u.f.maxhp*100)+'%"></b></small></span>'}).join('');
+ el('field').innerHTML=h;
+ var nm=function(u){return (u.side?'敵の':'')+u.f.name};
+ el('log').innerHTML=S.ev.slice(-30).map(function(e){return '<p>'+(e[0]/10).toFixed(1)+'秒　'+nm(e[1])+' → '+nm(e[2])+(e[3]?' '+e[3]+(e[4]>1?'（有利）':e[4]<1?'（不利）':'')+(e[5]?'　戦闘不能':''):'　外れ'+(e[2].cover?'（遮蔽）':''))+'</p>'}).join('');el('log').scrollTop=1e6;}
+function result(S){var w=S.end;el('res').innerHTML=(w===0?'<b>味方の勝ち</b>　敵が退いた':w===1?'<b>敵の勝ち</b>　味方が退いた':'<b>引き分け</b>')+'（'+(S.t/10).toFixed(1)+'秒）';ordBtns(false)}
+function ordBtns(on){document.querySelectorAll('#ord button').forEach(function(b){b.disabled=!on||!!(sim&&sim.order);b.classList.toggle('sel',!!(sim&&sim.order===b.dataset.o))})}
+function stop(){clearInterval(timer);timer=null;sim=null;ordBtns(false)}
+document.querySelectorAll('#ord button').forEach(function(b){b.onclick=function(){if(!sim||sim.order||sim.end!==-1)return;sim.order=b.dataset.o;
+ sim.ev.push([sim.t,{side:0,f:{name:'班長'}},{side:1,f:{name:'命令：'+b.textContent}},0]);ordBtns(true)}});
+el('go').onclick=function(){stop();sim=setup();el('res').textContent='作戦中…　命令を1つ出せる';ordBtns(true);
+ timer=setInterval(function(){for(var i=0;i<2&&sim.end===-1;i++)step(sim);draw(sim);if(sim.end!==-1){clearInterval(timer);result(sim)}},50)};
+el('fast').onclick=function(){stop();sim=setup();while(sim.end===-1)step(sim);draw(sim);result(sim)};
+el('many').onclick=function(){stop();var w=[0,0,0],S;for(var i=0;i<100;i++){S=setup();while(S.end===-1)step(S);w[S.end<0?2:S.end]++}draw(S);
+ el('res').innerHTML='100回（命令なし）：味方 <b>'+w[0]+'勝</b>・敵 '+w[1]+'勝'+(w[2]?'・引き分け '+w[2]:'')};
+el('reroll').onclick=function(){stop();rollB();ui('B')};
+sim=setup();draw(sim);sim=null;
+})();
+</script></body></html>
