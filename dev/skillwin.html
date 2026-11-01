@@ -108,8 +108,8 @@ function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,c
    var sts=x.st?x.st.split('/'):[],k0=sts[0],miss=(x.req||[]).filter(function(r){return cur.ids[r]&&!lv[r]}).map(function(r){return nm(cur.ids[r])});
    var nx=o&&!L&&used()<SP;
    h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+(nx?' nx':'')+'" data-id="'+esc(x.id)+'">'+(nx?'<span class="here">ここから</span>':'')+
-    '<div class="hd"><span class="ic" style="--sk:'+(k0?SC[k0]:'#9AA5A8')+'">'+(k0?ICON[k0]:'？')+'</span><b>'+esc(nm(x))+'</b></div>'+
-    '<span class="dsc">'+(sts.length?sts.map(function(k){return WORD[k]}).join('と')+'が上がる':'上がるものは未定')+(x.stg?'<i class="gs">（案）</i>':'')+'</span>'+
+    '<b>'+esc(nm(x))+'</b>'+
+    '<span>'+(sts.length?sts.map(function(k){return '<span class="st" style="--sk:'+SC[k]+'">'+k+' ＋'+(sts.length>1?'½':'1')+'</span>'}).join(' '):'<span class="st no">未定</span>')+(x.stg?' <i class="gs">（案）</i>':'')+'</span>'+
     (miss.length?'<span class="need">あと：'+esc(miss.join('・'))+'</span>':'')+
     (x.req2?'<span class="gs">Lv2からは '+esc(x.req2.map(function(r){return cur.ids[r]?nm(cur.ids[r]):r}).join('・'))+' も必要</span>':'')+
     (ext.length?'<span class="ex">他クラスの技：'+esc(ext.join('・'))+'</span>':'')+
