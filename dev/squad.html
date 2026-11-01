@@ -31,6 +31,37 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 .u.sup{outline:2px dashed var(--fg);outline-offset:1px}.u.down{opacity:.25}
 .u small{position:absolute;top:24px;left:50%;transform:translateX(-50%);width:28px;height:3px;background:var(--track);border-radius:2px;overflow:hidden}.u small b{display:block;height:100%;background:var(--k)}
 .shot{position:absolute;height:2px;background:var(--fg);opacity:.35;transform-origin:0 50%;pointer-events:none}
+.game{position:relative;max-width:440px;width:100%;margin:0 auto;background:var(--win);border:1px solid var(--wline);border-radius:18px;padding:10px;display:grid;gap:8px;box-sizing:border-box;overflow:hidden}
+.hud{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;font-size:11px}
+.mb i{display:block;height:9px;border-radius:5px;background:var(--track);overflow:hidden}.mb i b{display:block;height:100%;background:var(--g);transition:width .2s}
+.mb.en{text-align:right}.mb.en i b{background:var(--r);margin-left:auto}
+.clk{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--deep)}
+.hud2{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.hud2 button,.ord button,.over button{font:inherit;font-weight:700;border:0;border-radius:10px;cursor:pointer}
+.hud2 button{font-size:12px;padding:3px 10px;background:var(--wcard);color:var(--fg);border:1px solid var(--wline)}
+.game .field{height:240px}
+.u{width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:8px;font-size:13px;border:2px solid #fff3}
+.u.en{border-radius:8px;opacity:.95}
+.dmg{position:absolute;font-weight:800;font-size:14px;color:var(--fg);text-shadow:0 1px 0 var(--wcard);pointer-events:none;animation:up .7s ease-out forwards}
+.dmg.big{color:var(--gold);font-size:17px}.dmg.miss{font-size:11px;color:var(--mut)}
+@keyframes up{from{transform:translate(-50%,0);opacity:1}to{transform:translate(-50%,-26px);opacity:0}}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.cd{background:var(--wcard);border:1px solid var(--wline);border-radius:10px;padding:5px;display:grid;gap:3px;justify-items:center;font-size:10px;position:relative;min-width:0}
+.cd .art{width:100%;aspect-ratio:1;border-radius:7px;background-color:color-mix(in srgb,var(--k) 25%,var(--wcard));display:grid;place-items:center;font-size:16px;font-weight:800;color:var(--k)}
+.cd i{display:block;width:100%;height:5px;border-radius:3px;background:var(--track);overflow:hidden}.cd i b{display:block;height:100%;background:var(--k)}
+.cd .lead{position:absolute;top:-7px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;border-radius:6px;padding:0 5px;font-size:9px}
+.cd.down{opacity:.35}.cd .stt{color:var(--mut);height:1.4em;overflow:hidden;white-space:nowrap}
+.ord{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ord button{font-size:15px;padding:11px 0;background:var(--deep);color:var(--bg)}
+.ord button:disabled{opacity:.35;cursor:default}.ord button.sel{background:var(--gold);opacity:1}
+.over{position:absolute;inset:0;background:color-mix(in srgb,var(--win) 88%,transparent);display:grid;place-content:center;justify-items:center;gap:8px;text-align:center}
+.over[hidden]{display:none}.over b{font-size:40px;letter-spacing:.1em;color:var(--deep)}.over b.win{color:var(--gold)}
+.over button{font-size:15px;padding:9px 26px;background:var(--deep);color:var(--bg)}
+.pic{background-size:cover;background-position:center 12%;color:transparent}
+.u.pic{width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;border:3px solid var(--k);box-sizing:border-box}
+.u.pic.en{border-radius:50%;box-shadow:0 0 0 2px var(--r)}
+.u small{top:-9px;width:34px;height:4px}
+.cd .art.pic{border:2px solid var(--k);box-sizing:border-box}
 .log{height:150px;overflow:auto;font-size:12px;background:var(--wcard);border-radius:8px;padding:8px 10px}
 .log p{margin:0}.res{font-size:14px}.res b{color:var(--gold)}
 .key{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--mut)}
@@ -40,18 +71,20 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 <p class="mut">5人の分隊どうしが自動で戦う。あなたは班長として、戦闘中に命令を1つだけ出せる。相手を押し返し、士気を0にしたら勝ち。数値と式はすべて仮。</p>
 <div class="teams"><div class="team" id="tA"></div><div class="team" id="tB"></div></div>
 <div class="ctl"><button class="go" id="go">作戦開始</button><button id="fast">すぐ結果</button><button id="many">100回</button><button id="reroll">敵を入れ替える</button></div>
-<div class="arena">
-<div class="mor" id="mor"></div>
-<p class="mut" style="font-size:11px">下の戦場は、しくみを確かめるための仮の表示（丸と四角だけ）。絵や演出は、ひびきさんが作るものに差し替える。</p>
+<div class="game" id="game">
+<div class="hud"><div class="mb"><span>味方の士気</span><i><b id="m0"></b></i></div><div class="clk" id="clk">0:00</div><div class="mb en"><span>敵の士気</span><i><b id="m1"></b></i></div></div>
+<div class="hud2"><button id="spd">×1</button><span class="mut" id="msg">作戦開始を押す</span><button id="skip">スキップ</button></div>
 <div class="field" id="field"></div>
-<div class="ctl" id="ord"><span class="mut">命令（1回）：</span><button data-o="adv" disabled>前進</button><button data-o="hold" disabled>その場で守る</button><button data-o="focus" disabled>一点に集中</button></div>
-<div class="res" id="res">「作戦開始」を押すと始まる。</div>
-<div class="log" id="log"></div>
-<div class="key"><span>● 味方　■ 敵</span><span>金の輪＝班長</span><span>点線＝制圧されている</span><span>薄い＝戦闘不能</span><span>灰色の柱＝遮蔽</span></div>
+<div class="cards" id="cards"></div>
+<div class="ord" id="ord"><button data-o="adv" disabled>前進</button><button data-o="hold" disabled>守る</button><button data-o="focus" disabled>集中</button></div>
+<div class="over" id="over" hidden><b id="ovt"></b><span id="ovs"></span><button id="again">もう一度</button></div>
 </div>
+<p class="mut" style="font-size:11px">画面の配置だけの仮の表示。丸い顔はキャラの絵（ひびきさんの絵）。絵がないクラスは一文字。絵や演出は、ひびきさんが作るものに差し替える。</p>
+<details><summary class="mut">戦いの記録</summary><div class="res" id="res"></div><div class="log" id="log"></div></details>
 <p class="mut">しくみ（仮）：遮蔽の後ろでは受けるダメージと命中が下がる。撃たれ続けると「制圧」され、動けず攻撃も遅くなる。仲間が倒れたり撃たれたりすると士気が下がり、0で退く。色の相性は R→G→B→R（有利 1.3倍・不利 0.8倍）。ナイトは敵の攻撃を引きつけ、ファイターは敵の後列を狙う。班長の色で、Rなら守り、Gなら命中、Bなら士気が少し強くなる。</p>
 </div>
-<script src="skilltree.js?v=0.96"></script>
+<script src="skilltree.js?v=0.97"></script>
+<script src="../char/cast-data.js?v=0.69"></script>
 <script>
 (function(){
 var T=window.TRI_TREE,COL={R:'var(--r)',G:'var(--g)',B:'var(--b)'},BEAT={R:'G',G:'B',B:'R'};
@@ -60,6 +93,10 @@ var WP={Fighter:{t:'拳',atk:0,reach:1},Warrior:{t:'剣',atk:6,reach:2,ats:-2},K
  Ranger:{t:'銃',atk:5,reach:9,ats:-1},Assassin:{t:'短剣',atk:3,reach:1,ats:3},Scout:{t:'投てき',atk:2,reach:6,spd:2},
  'Elementary Academy':{t:'魔法',atk:4,reach:7,mag:1},'Mage Academy':{t:'魔法',atk:6,reach:7,mag:1,ats:-1},'Cleris Missionary School':{t:'魔法',atk:3,reach:6,mag:1,ats:2},'Nacsha Missionary School':{t:'魔法',atk:3,reach:6,mag:1}};
 function flat(items,out){items.forEach(function(x){if(x.items)flat(x.items,out);else out.push(x)});return out}
+// キャラの絵（ひびきさんの絵）をクラスに当てる：LoLのように、丸い顔アイコンで戦場に出す
+var PTK={fighter:'Fighter',knight:'Knight',warrior:'Warrior',ranger:'Ranger',assassin:'Assassin',scout:'Scout',em:'Elementary Academy',mage:'Mage Academy',cleric:'Cleris Missionary School'},PT={};
+try{var css='';CHARS.forEach(function(c,i){var k=PTK[c.id.replace(/^s\d+-/,'')];if(k&&IMG[c.img]){PT[k]='pt'+i;css+='.pt'+i+'{background-image:url("'+IMG[c.img]+'")}'}});
+ var st=document.createElement('style');st.textContent=css;document.head.appendChild(st)}catch(e){}
 var CL=[];['R','G','B'].forEach(function(c){var gs=T[c].groups,base=[];gs.forEach(function(g){if(g.g==='General'||g.g==='Option')flat(g.items,base)});
  gs.forEach(function(g){if(g.g==='General'||g.g==='Option')return;var name=g.g.replace(/（.*/,'');CL.push({c:c,name:name,nodes:base.concat(flat(g.items,[]))})})});
 function loadB(){try{return JSON.parse(localStorage.getItem('tri-skillbuild')||'{}')}catch(e){return {}}}
@@ -112,25 +149,31 @@ function step(S){S.t++;S.shots=[];var U=S.U;
   o.hp=Math.max(0,o.hp-dm);var ml=olc==='B'?0.6:1;S.mor[o.side]=Math.max(0,S.mor[o.side]-0.8*ml);
   if(!o.hp){o.down=true;S.mor[o.side]=Math.max(0,S.mor[o.side]-(o.lead?30:18)*ml)}S.ev.push([S.t,u,o,dm,aff,o.down]);});
  if(S.mor[0]<=0||S.mor[1]<=0||S.t>=1200)S.end=S.mor[0]>S.mor[1]?0:S.mor[1]>S.mor[0]?1:-1;}
-function draw(S){var U=S.U;el('mor').innerHTML=['味方','敵'].map(function(n,i){return '<div>'+n+'の士気 '+Math.round(S.mor[i])+'<i><b style="width:'+S.mor[i]+'%"></b></i></div>'}).join('');
+function draw(S){var U=S.U;el('m0').style.width=S.mor[0]+'%';el('m1').style.width=S.mor[1]+'%';var sec=Math.floor(S.t/10);el('clk').textContent=Math.floor(sec/60)+':'+('0'+sec%60).slice(-2);
+ el('cards').innerHTML=U.filter(function(u){return !u.side}).map(function(u){return '<div class="cd'+(u.down?' down':'')+'" style="--k:'+COL[u.f.c]+'">'+(u.lead?'<span class="lead">班長</span>':'')+'<span class="art'+(PT[u.f.k.name]?' pic '+PT[u.f.k.name]:'')+'">'+(PT[u.f.k.name]?'':u.f.name[0])+'</span><i><b style="width:'+(u.hp/u.f.maxhp*100)+'%"></b></i><span class="stt">'+(u.down?'戦闘不能':u.sup>0.6?'制圧':u.cover?'遮蔽':u.f.name)+'</span></div>'}).join('');
  var h=COVER.map(function(c){return '<span class="cv" style="left:'+(c/20*94+3-1.5)+'%"></span>'}).join('');
- S.shots.forEach(function(p){var a=p[0],b=p[1],fw=el('field').clientWidth||300,x1=(a.x/20*94+3)/100*fw,x2=(b.x/20*94+3)/100*fw,y1=a.y/100*170,y2=b.y/100*170,len=Math.hypot(x2-x1,y2-y1),ang=Math.atan2(y2-y1,x2-x1);
+ S.shots.forEach(function(p){var a=p[0],b=p[1],fw=el('field').clientWidth||300,x1=(a.x/20*94+3)/100*fw,x2=(b.x/20*94+3)/100*fw,y1=a.y/100*240,y2=b.y/100*240,len=Math.hypot(x2-x1,y2-y1),ang=Math.atan2(y2-y1,x2-x1);
   h+='<span class="shot" style="left:'+x1+'px;top:'+y1+'px;width:'+len+'px;transform:rotate('+ang+'rad)"></span>'});
- h+=U.map(function(u){return '<span class="u'+(u.side?' en':'')+(u.lead?' lead':'')+(u.sup>0.6&&!u.down?' sup':'')+(u.down?' down':'')+'" style="--k:'+COL[u.f.c]+';left:'+(u.x/20*94+3)+'%;top:'+u.y+'%" title="'+u.f.name+'">'+u.f.name[0]+'<small><b style="width:'+(u.hp/u.f.maxhp*100)+'%"></b></small></span>'}).join('');
+ h+=U.map(function(u){var pt=PT[u.f.k.name];return '<span class="u'+(pt?' pic '+pt:'')+(u.side?' en':'')+(u.lead?' lead':'')+(u.sup>0.6&&!u.down?' sup':'')+(u.down?' down':'')+'" style="--k:'+COL[u.f.c]+';left:'+(u.x/20*94+3)+'%;top:'+u.y+'%" title="'+u.f.name+'">'+(pt?'':u.f.name[0])+'<small><b style="width:'+(u.hp/u.f.maxhp*100)+'%"></b></small></span>'}).join('');
+ var fw=el('field').clientWidth||300;(S.ev.slice(S.seen||0)).forEach(function(e){var o=e[2];if(o.x==null)return;h+='<span class="dmg'+(e[3]?(e[4]>1?' big':''):' miss')+'" style="left:'+((o.x/20*94+3)/100*fw)+'px;top:'+(o.y/100*240-28)+'px">'+(e[3]?e[3]:'MISS')+'</span>'});S.seen=S.ev.length;
  el('field').innerHTML=h;
  var nm=function(u){return (u.side?'敵の':'')+u.f.name};
  el('log').innerHTML=S.ev.slice(-30).map(function(e){return '<p>'+(e[0]/10).toFixed(1)+'秒　'+nm(e[1])+' → '+nm(e[2])+(e[3]?' '+e[3]+(e[4]>1?'（有利）':e[4]<1?'（不利）':'')+(e[5]?'　戦闘不能':''):'　外れ'+(e[2].cover?'（遮蔽）':''))+'</p>'}).join('');el('log').scrollTop=1e6;}
-function result(S){var w=S.end;el('res').innerHTML=(w===0?'<b>味方の勝ち</b>　敵が退いた':w===1?'<b>敵の勝ち</b>　味方が退いた':'<b>引き分け</b>')+'（'+(S.t/10).toFixed(1)+'秒）';ordBtns(false)}
+function result(S){var w=S.end;el('res').innerHTML=(w===0?'<b>味方の勝ち</b>　敵が退いた':w===1?'<b>敵の勝ち</b>　味方が退いた':'<b>引き分け</b>')+'（'+(S.t/10).toFixed(1)+'秒）';ordBtns(false);
+ el('ovt').textContent=w===0?'勝利':w===1?'敗北':'引き分け';el('ovt').className=w===0?'win':'';el('ovs').textContent=w===0?'敵の分隊が退いた':w===1?'味方の分隊が退いた':'時間切れ';el('over').hidden=false;el('msg').textContent=''}
 function ordBtns(on){document.querySelectorAll('#ord button').forEach(function(b){b.disabled=!on||!!(sim&&sim.order);b.classList.toggle('sel',!!(sim&&sim.order===b.dataset.o))})}
-function stop(){clearInterval(timer);timer=null;sim=null;ordBtns(false)}
+function stop(){clearInterval(timer);timer=null;sim=null;ordBtns(false);el('over').hidden=true}
 document.querySelectorAll('#ord button').forEach(function(b){b.onclick=function(){if(!sim||sim.order||sim.end!==-1)return;sim.order=b.dataset.o;
  sim.ev.push([sim.t,{side:0,f:{name:'班長'}},{side:1,f:{name:'命令：'+b.textContent}},0]);ordBtns(true)}});
-el('go').onclick=function(){stop();sim=setup();el('res').textContent='作戦中…　命令を1つ出せる';ordBtns(true);
- timer=setInterval(function(){for(var i=0;i<2&&sim.end===-1;i++)step(sim);draw(sim);if(sim.end!==-1){clearInterval(timer);result(sim)}},50)};
-el('fast').onclick=function(){stop();sim=setup();while(sim.end===-1)step(sim);draw(sim);result(sim)};
-el('many').onclick=function(){stop();var w=[0,0,0],S;for(var i=0;i<100;i++){S=setup();while(S.end===-1)step(S);w[S.end<0?2:S.end]++}draw(S);
- el('res').innerHTML='100回（命令なし）：味方 <b>'+w[0]+'勝</b>・敵 '+w[1]+'勝'+(w[2]?'・引き分け '+w[2]:'')};
+var SPD=1;el('spd').onclick=function(){SPD=SPD===1?2:1;el('spd').textContent='×'+SPD};
+function run(){stop();el('over').hidden=true;sim=setup();el('msg').textContent='命令を1つ出せる';ordBtns(true);
+ timer=setInterval(function(){for(var i=0;i<SPD&&sim.end===-1;i++)step(sim);draw(sim);if(sim.end!==-1){clearInterval(timer);result(sim)}},100)}
+el('go').onclick=run;el('again').onclick=run;
+el('skip').onclick=function(){if(!sim||sim.end!==-1)return;clearInterval(timer);while(sim.end===-1)step(sim);sim.seen=sim.ev.length;draw(sim);result(sim)};
+el('fast').onclick=function(){stop();sim=setup();while(sim.end===-1)step(sim);sim.seen=sim.ev.length;draw(sim);result(sim)};
+el('many').onclick=function(){stop();var w=[0,0,0],S;for(var i=0;i<100;i++){S=setup();while(S.end===-1)step(S);w[S.end<0?2:S.end]++}S.seen=S.ev.length;draw(S);el('over').hidden=true;
+ el('msg').textContent='100回：味方 '+w[0]+'勝';el('res').innerHTML='100回（命令なし）：味方 <b>'+w[0]+'勝</b>・敵 '+w[1]+'勝'+(w[2]?'・引き分け '+w[2]:'')};
 el('reroll').onclick=function(){stop();rollB();ui('B')};
-sim=setup();draw(sim);sim=null;
+sim=setup();sim.seen=0;draw(sim);sim=null;
 })();
 </script></body></html>
