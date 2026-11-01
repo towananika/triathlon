@@ -51,14 +51,14 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 <p class="one">クラスを選ぶと、そのクラスで覚えられるスキルの窓が開く。<br>上の段から順に、前提（線でつながった技）を覚えると下の段が開く。</p>
 <div class="tabs" id="tabs"></div>
 <div class="win" id="win"></div>
-<p class="mut">試作。SPは仮に20、1つの技はLv5まで。（推定）＝前提がまだ決まっていない技。<span class="ex">他クラス</span>＝別のクラスの技が前提。データは<a href="skilltree.html">スキル一覧</a>と同じ。</p>
+<p class="mut">試作。SPは仮に20、1つの技の最大Lvは R＝4（決定）、G・B＝5（仮）。（推定）＝前提がまだ決まっていない技。<span class="ex">他クラス</span>＝別のクラスの技が前提。データは<a href="skilltree.html">スキル一覧</a>と同じ。</p>
 </div>
 <script src="skilltree.js?v=0.81"></script>
 <script>
 (function(){
 var T=window.TRI_TREE,COL={R:'var(--r)',G:'var(--g)',B:'var(--b)'};
 var SC={ATK:'var(--r)',DEF:'var(--r)',HP:'var(--r)',RAN:'var(--g)',ATS:'var(--g)',SPD:'var(--g)',MAG:'var(--b)',RES:'var(--b)',MP:'var(--b)'};
-var SP=20,MAX=5,cur=null,lv={};
+var SP=20,MAXC={R:4,G:5,B:5},MAX=5,cur=null,lv={};
 function flat(items,gp,out){items.forEach(function(x){if(x.items)flat(x.items,x.g.replace(/（.*/,''),out);else out.push(Object.assign({gp:gp},x));});return out}
 // クラス一覧：R/G は General+Option+クラス、B は General+学校
 var CL=[];
@@ -72,7 +72,7 @@ var tabs=document.getElementById('tabs'),win=document.getElementById('win');
  CL.forEach(function(k,i){if(k.c!==c)return;var bt=document.createElement('button');bt.textContent=k.name;bt.dataset.i=i;bt.onclick=function(){open(i)};d.appendChild(bt)});
  tabs.appendChild(d);});
 function open(i){cur=CL[i];lv={};tabs.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.i==i)});
- win.style.setProperty('--k',COL[cur.c]);
+ win.style.setProperty('--k',COL[cur.c]);MAX=MAXC[cur.c];
  var ids={};cur.nodes.forEach(function(n){ids[n.id]=n});var dep={};
  function d(n){if(dep[n.id]!=null)return dep[n.id];dep[n.id]=0;var m=-1;(n.req||[]).forEach(function(r){if(ids[r])m=Math.max(m,d(ids[r]))});return dep[n.id]=m+1}
  cur.nodes.forEach(d);cur.ids=ids;cur.dep=dep;render();}
@@ -87,7 +87,7 @@ function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,c
    h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+'" data-id="'+esc(x.id)+'"><span class="gp">'+esc(x.gp)+'</span><b>'+esc(x.en)+'</b>'+(x.ja?'<span class="ja">'+esc(x.ja)+'</span>':'')+
     '<span>'+(x.st?'<span class="st" style="--sk:'+SC[x.st]+'">'+x.st+'</span>':'<span class="st no">未定</span>')+(x.guess?' <span class="gs">（推定）</span>':'')+'</span>'+
     (ext.length?'<span class="ex">他クラス：'+esc(ext.join('・'))+'</span>':'')+
-    '<div class="dots">'+[1,2,3,4,5].map(function(k){return '<i'+(k<=L?' class="f"':'')+'></i>'}).join('')+'</div>'+
+    '<div class="dots">'+Array.from({length:MAX},function(_,i){return i+1}).map(function(k){return '<i'+(k<=L?' class="f"':'')+'></i>'}).join('')+'</div>'+
     '<div class="ctl"><button data-a="-1"'+(L?'':' disabled')+' aria-label="下げる">−</button><span>Lv '+L+'</span><button data-a="1"'+(o&&L<MAX&&used()<SP?'':' disabled')+' aria-label="上げる">＋</button></div></div>';});
   h+='</div>';}
  var tot={};n.forEach(function(x){if(x.st&&lv[x.id])tot[x.st]=(tot[x.st]||0)+lv[x.id]});
