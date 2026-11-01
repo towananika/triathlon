@@ -44,11 +44,13 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 .sum{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-top:1px solid var(--wline);font-size:12px}
 .sum span{background:var(--wcard);border-radius:6px;padding:1px 8px;font-variant-numeric:tabular-nums}
 .mut{color:var(--mut);font-size:13px}
+.lang{font-size:13px;display:flex;gap:6px;align-items:center}.lang button{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:2px 10px;cursor:pointer}.lang button[aria-pressed=true]{background:var(--deep);color:var(--bg);border-color:var(--deep)}
 @media(max-width:520px){.nd{width:calc(50% - 5px)}.tier{gap:8px}}
 </style></head><body><div class="wrap">
 <header><p class="kick">TRIATHLON · 開発 · スキル（仮名世界）</p><h1>スキルウィンドウ</h1>
 <nav class="dv"><a href="./">← 開発トップ</a> · <a href="skillwin.html">スキルウィンドウ</a> · <a href="skilltree.html">スキル一覧</a> · <a href="skill.html">継承スキル</a> · <a href="skill-sim.html">継承シミュレーター</a> · <a href="stat.html">ステータス</a> · <a href="char.html">キャラ開発</a></nav></header>
 <p class="one">クラスを選ぶと、そのクラスで覚えられるスキルの窓が開く。<br>上の段から順に、前提（線でつながった技）を覚えると下の段が開く。</p>
+<div class="lang" id="lang">表示名：<button data-l="ja">日本語</button><button data-l="en">English</button></div>
 <div class="tabs" id="tabs"></div>
 <div class="win" id="win"></div>
 <p class="mut">試作。SPは仮に20、1つの技の最大Lvは R・G＝4、B＝5（仮）。（推定）＝前提がまだ決まっていない技。（案）＝上がるステータスはClaudeの案。ステータスが2つの技は半分ずつ上がる。点線＝Lv2から必要な技。<span class="ex">他クラス</span>＝別のクラスの技が前提。データは<a href="skilltree.html">スキル一覧</a>と同じ。</p>
@@ -67,10 +69,13 @@ var CL=[];
   var nodes=[];base.forEach(function(b){flat(b.items,b.g,nodes)});flat(g.items,g.g.replace(/（.*/,''),nodes);
   CL.push({c:c,name:g.g.replace(/（.*/,''),sub:(g.g.match(/（(.*)）/)||[])[1]||'',nodes:nodes});});});
 var JA={Fighter:'ファイター',Warrior:'ウォリアー',Knight:'ナイト',Ranger:'レンジャー',Assassin:'アサシン',Scout:'スカウト','Elementary Academy':'初等アカデミー','Mage Academy':'魔導アカデミー','Cleris Missionary School':'クレリス宣教学校','Nacsha Missionary School':'ナクシャ宣教学校'};
+// 表示名の言語：保存した設定 → ブラウザの言語（日本語以外は英語）
+var LANG='';try{LANG=localStorage.getItem('tri-lang')||''}catch(e){}if(LANG!=='ja'&&LANG!=='en')LANG=/^ja/i.test(navigator.language||'')?'ja':'en';
+function nm(x){return LANG==='ja'&&x.ja?x.ja:x.en}function cn(k){return LANG==='ja'&&JA[k]?JA[k]:k}
 var tabs=document.getElementById('tabs'),win=document.getElementById('win');
 ['R','G','B'].forEach(function(c){var d=document.createElement('div');d.style.setProperty('--k',COL[c]);
  d.innerHTML='<b style="background:'+COL[c]+'">'+c+'</b>';
- CL.forEach(function(k,i){if(k.c!==c)return;var bt=document.createElement('button');bt.textContent=JA[k.name]||k.name;bt.title=k.name;bt.dataset.i=i;bt.onclick=function(){open(i)};d.appendChild(bt)});
+ CL.forEach(function(k,i){if(k.c!==c)return;var bt=document.createElement('button');bt.textContent=cn(k.name);bt.dataset.i=i;bt.onclick=function(){open(i)};d.appendChild(bt)});
  tabs.appendChild(d);});
 function open(i){cur=CL[i];lv={};tabs.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.i==i)});
  win.style.setProperty('--k',COL[cur.c]);MAX=MAXC[cur.c];
@@ -85,11 +90,11 @@ function ok(n){return (n.req||[]).every(function(r){return !cur.ids[r]||(lv[r]||
 function cap(n){var c=MAX;if(!ok(n))return 0;(n.req2||[]).forEach(function(r){if(cur.ids[r])c=Math.min(c,Math.max(1,(lv[r]||0)+1))});return c}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,cur.dep[x.id])});
- var h='<div class="bar"><h2>'+esc(JA[cur.name]||cur.name)+'<small>'+esc(cur.name+(cur.sub?'・'+cur.sub:''))+'</small>'+'</h2><span class="sp">SP '+(SP-used())+' / '+SP+'</span><button id="rs">リセット</button></div><div class="board"><svg></svg>';
+ var h='<div class="bar"><h2>'+esc(cn(cur.name))+(cur.sub?'<small>'+esc(cur.sub)+'</small>':'')+'</h2><span class="sp">SP '+(SP-used())+' / '+SP+'</span><button id="rs">リセット</button></div><div class="board"><svg></svg>';
  for(var t=0;t<=max;t++){h+='<div class="tier"><span class="tl">'+(cur.lab?cur.lab[t]:(t+1)+'段')+'</span>';
   n.forEach(function(x){if(cur.dep[x.id]!==t)return;var L=lv[x.id]||0,o=ok(x);
    var ext=(x.req||[]).concat(x.req2||[]).filter(function(r,i,a){return !cur.ids[r]&&a.indexOf(r)===i});
-   h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+'" data-id="'+esc(x.id)+'"><span class="gp">'+esc(x.gp)+'</span><b>'+esc(x.en)+'</b>'+(x.ja?'<span class="ja">'+esc(x.ja)+'</span>':'')+
+   h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+'" data-id="'+esc(x.id)+'"><span class="gp">'+esc(x.gp)+'</span><b>'+esc(nm(x))+'</b>'+
     '<span>'+(x.st?x.st.split('/').map(function(k){return '<span class="st" style="--sk:'+SC[k]+'">'+k+'</span>'}).join(' '):'<span class="st no">未定</span>')+(x.stg?' <span class="gs">（案）</span>':'')+(x.guess?' <span class="gs">（推定）</span>':'')+(x.req2?'<span class="gs" style="display:block">Lv2〜：'+esc(x.req2.map(function(r){return r.replace(/^G\./,'')}).join('・'))+'も同じ段まで</span>':'')+'</span>'+
     (ext.length?'<span class="ex">他クラス：'+esc(ext.join('・'))+'</span>':'')+
     '<div class="dots">'+Array.from({length:MAX},function(_,i){return i+1}).map(function(k){return '<i'+(k<=L?' class="f"':'')+'></i>'}).join('')+'</div>'+
@@ -110,6 +115,10 @@ function lines(){var bd=win.querySelector('.board');if(!bd)return;var sv=bd.quer
   p+='<path'+(lv[r]?' class="on"':'')+(dsh?' stroke-dasharray="4 4"':'')+' d="M'+x1+' '+y1+' C'+x1+' '+m+' '+x2+' '+m+' '+x2+' '+y2+'"/>';});});
  sv.innerHTML=p;}
 addEventListener('resize',function(){if(cur)lines()});
-open(0);
+function setLang(l){LANG=l;try{localStorage.setItem('tri-lang',l)}catch(e){}
+ document.querySelectorAll('#lang button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===l)});
+ tabs.querySelectorAll('button').forEach(function(b){b.textContent=cn(CL[b.dataset.i].name)});if(cur)render();}
+document.querySelectorAll('#lang button').forEach(function(b){b.onclick=function(){setLang(b.dataset.l)}});
+open(0);setLang(LANG);
 })();
 </script></body></html>
