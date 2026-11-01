@@ -21,6 +21,8 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 .bar small{opacity:.8;font-weight:400;margin-left:6px}
 .sp{font-variant-numeric:tabular-nums;background:var(--wcard);border:1px solid var(--wline);border-radius:8px;padding:2px 10px;white-space:nowrap}
 .bar button{font:inherit;font-size:12px;background:transparent;color:var(--wfg);border:1px solid var(--wline);border-radius:6px;padding:2px 8px;cursor:pointer}
+.bar{position:relative}.tip{cursor:help}
+.tip:hover::after,.tip:focus::after{content:attr(data-tip);position:absolute;left:12px;right:12px;top:100%;z-index:5;margin-top:4px;background:var(--fg);color:var(--bg);font-size:12px;font-weight:400;line-height:1.6;border-radius:8px;padding:8px 10px;box-shadow:0 4px 14px rgba(0,0,0,.15)}
 .board{position:relative;padding:14px 12px 16px}
 .board svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .board path{fill:none;stroke:var(--wline);stroke-width:2}
@@ -60,13 +62,13 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 </style></head><body><div class="wrap">
 <header><p class="kick">TRIATHLON · 開発 · スキル（仮名世界）</p><h1>スキルウィンドウ</h1>
 <nav class="dv"><a href="./">← 開発トップ</a> · <a href="skillwin.html">スキルウィンドウ</a> · <a href="skilltree.html">スキル一覧</a> · <a href="skill.html">継承スキル</a> · <a href="skill-sim.html">継承シミュレーター</a> · <a href="stat.html">ステータス</a> · <a href="char.html">キャラ開発</a></nav></header>
-<ol class="how"><li><b>1</b>クラスを選ぶ</li><li><b>2</b>「ここから」の技に ＋</li><li><b>3</b>線の先の技が開く</li></ol>
+<ol class="how"><li><b>1</b>クラスを選ぶ</li><li><b>2</b>金色の枠の技に ＋</li><li><b>3</b>線の先の技が開く</li></ol>
 <div class="lang" id="lang">表示名：<button data-l="ja">日本語</button><button data-l="en">English</button></div>
 <div class="tabs" id="tabs"></div>
 <div class="win" id="win"></div>
 <p class="mut">試作。SPは仮に20、1つの技の最大Lvは R・G＝4、B＝5（仮）。（推定）＝前提がまだ決まっていない技。（案）＝上がるステータスはClaudeの案。ステータスが2つの技は半分ずつ上がる。点線＝Lv2から必要な技。RAN（射程）は武器のタイプごとに分かれる（RAN・剣、RAN・銃など）。<span class="ex">他クラス</span>＝別のクラスの技が前提。データは<a href="skilltree.html">スキル一覧</a>と同じ。</p>
 </div>
-<script src="skilltree.js?v=0.93"></script>
+<script src="skilltree.js?v=0.94"></script>
 <script>
 (function(){
 var T=window.TRI_TREE,COL={R:'var(--r)',G:'var(--g)',B:'var(--b)'};
@@ -88,10 +90,12 @@ function nm(x){return LANG==='ja'&&x.ja?x.ja:x.en}function cn(k){return LANG==='
 var ALL={};['R','G','B'].forEach(function(c){T[c].groups.forEach(function(g){flat(g.items,'',[]).forEach(function(x){ALL[x.id]=x})})});
 function rn(r){return cur.ids[r]?nm(cur.ids[r]):ALL[r]?nm(ALL[r]):r}
 var GPJ={General:'共通',Option:'選択'};
+// クラスの戦い方（2026-11-01 ひびき）
+var ABOUT={Fighter:'武器を使わず、筋力（ATK）で戦う近接クラス。ATKを大きく上げられ、武器がなくても拳で戦える。',Warrior:'武器で戦う近接クラス。筋力が少なくても武器の攻撃力で補える。武器の長さで少しだけ遠くまで届く。重い武器や長い武器は次の攻撃まで時間がかかる（ATSが下がる）ので、剣術理論と剣術実習で補う。',Knight:'重い武装で守る近接クラス。重い鎧で素早さ（SPD）が下がるので、移動戦術を学んで補う。武器術で、剣だけでなくすべての武器を学ぶ。'};
 var tabs=document.getElementById('tabs'),win=document.getElementById('win');
 ['R','G','B'].forEach(function(c){var d=document.createElement('div');d.style.setProperty('--k',COL[c]);
  d.innerHTML='<b style="background:'+COL[c]+'">'+c+'</b><span class="lvl">'+{R:'やさしい',G:'ふつう',B:'長い道のり'}[c]+'</span>';
- CL.forEach(function(k,i){if(k.c!==c)return;var bt=document.createElement('button');bt.textContent=cn(k.name);bt.dataset.i=i;bt.onclick=function(){open(i)};d.appendChild(bt)});
+ CL.forEach(function(k,i){if(k.c!==c)return;var bt=document.createElement('button');bt.textContent=cn(k.name);if(ABOUT[k.name])bt.title=ABOUT[k.name];bt.dataset.i=i;bt.onclick=function(){open(i)};d.appendChild(bt)});
  tabs.appendChild(d);});
 function open(i){cur=CL[i];lv={};tabs.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.i==i)});
  win.style.setProperty('--k',COL[cur.c]);MAX=MAXC[cur.c];
@@ -106,21 +110,21 @@ function ok(n){return (n.req||[]).every(function(r){return !cur.ids[r]||(lv[r]||
 function cap(n){var c=MAX;if(!ok(n))return 0;(n.req2||[]).forEach(function(r){if(cur.ids[r])c=Math.min(c,Math.max(1,(lv[r]||0)+1))});return c}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,cur.dep[x.id])});
- var h='<div class="bar"><h2>'+esc(cn(cur.name))+(cur.sub?'<small>'+esc(cur.sub)+'</small>':'')+'</h2><span class="sp">SP '+(SP-used())+' / '+SP+'</span><button id="rs">リセット</button></div><div class="board"><svg></svg>';
+ var h='<div class="bar"><h2'+(ABOUT[cur.name]?' class="tip" tabindex="0" data-tip="'+esc(ABOUT[cur.name])+'"':'')+'>'+esc(cn(cur.name))+(cur.sub?'<small>'+esc(cur.sub)+'</small>':'')+'</h2><span class="sp">SP '+(SP-used())+' / '+SP+'</span><button id="rs">リセット</button></div><div class="board"><svg></svg>';
  for(var t=0;t<=max;t++){h+='<div class="tier"><span class="tl">'+(cur.lab?(LANG==='ja'&&GPJ[cur.lab[t]]||cur.lab[t]):(t+1)+'段')+'</span>';
   n.forEach(function(x){if(cur.dep[x.id]!==t)return;var L=lv[x.id]||0,o=ok(x);
    var ext=(x.req||[]).concat(x.req2||[]).filter(function(r,i,a){return !cur.ids[r]&&a.indexOf(r)===i});
    var sts=x.st?x.st.split('/'):[],k0=sts[0],miss=(x.req||[]).filter(function(r){return cur.ids[r]&&!lv[r]}).map(function(r){return nm(cur.ids[r])});
    var nx=o&&!L&&used()<SP;
-   h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+(nx?' nx':'')+'" data-id="'+esc(x.id)+'">'+(nx?'<span class="here">ここから</span>':'')+
+   h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+(nx?' nx':'')+'" data-id="'+esc(x.id)+'">'+
     '<b>'+esc(nm(x))+'</b>'+
-    '<span>'+(sts.length?sts.map(function(k){return '<span class="st" style="--sk:'+SC[k]+'">'+k+(k==='RAN'&&x.w?'・'+x.w:'')+' ＋'+(sts.length>1?'½':'1')+'</span>'}).join(' '):'<span class="st no">未定</span>')+(x.stg?' <i class="gs">（案）</i>':'')+'</span>'+
-    (miss.length?'<span class="need">あと：'+esc(miss.join('・'))+'</span>':'')+
+    '<span>'+(sts.length?sts.map(function(k){return '<span class="st" style="--sk:'+SC[k]+'">'+k+((k==='RAN'||k==='ATS')&&x.w?'・'+x.w:'')+' ＋'+(sts.length>1?'½':'1')+'</span>'}).join(' '):'<span class="st no">未定</span>')+(x.stg?' <i class="gs">（案）</i>':'')+'</span>'+
+    
     (x.req2?'<span class="gs">Lv2からは '+esc(x.req2.map(rn).join('・'))+' も必要</span>':'')+
     (ext.length?'<span class="ex">他クラスの技：'+esc(ext.map(rn).join('・'))+'</span>':'')+
     '<div class="ctl"><button data-a="-1"'+(L?'':' disabled')+' aria-label="下げる">−</button><span class="dots">'+Array.from({length:MAX},function(_,i){return '<i'+(i<L?' class="f"':'')+'></i>'}).join('')+'</span><button data-a="1"'+(L<cap(x)&&used()<SP?'':' disabled')+' aria-label="上げる">＋</button></div></div>';});
   h+='</div>';}
- var tot={};n.forEach(function(x){if(!x.st||!lv[x.id])return;var ks=x.st.split('/');ks.forEach(function(k){if(k==='RAN'&&x.w)k='RAN・'+x.w;tot[k]=(tot[k]||0)+lv[x.id]/ks.length})});
+ var tot={};n.forEach(function(x){if(!x.st||!lv[x.id])return;var ks=x.st.split('/');ks.forEach(function(k){if((k==='RAN'||k==='ATS')&&x.w)k=k+'・'+x.w;tot[k]=(tot[k]||0)+lv[x.id]/ks.length})});
  h+='</div><div class="sum">上がるステータス：'+(Object.keys(tot).length?Object.keys(tot).map(function(k){return '<span>'+k+' +'+(+tot[k].toFixed(1))+'</span>'}).join(''):'<span>まだなし</span>')+'</div>';
  win.innerHTML=h;
  document.getElementById('rs').onclick=function(){lv={};render()};
