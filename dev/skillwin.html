@@ -44,12 +44,22 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 .sum{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-top:1px solid var(--wline);font-size:12px}
 .sum span{background:var(--wcard);border-radius:6px;padding:1px 8px;font-variant-numeric:tabular-nums}
 .mut{color:var(--mut);font-size:13px}
+.how{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.how li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;font-size:14px;display:flex;gap:8px;align-items:center}
+.how b{flex:none;width:1.7em;height:1.7em;border-radius:50%;background:var(--gold);color:#fff;display:grid;place-items:center;font-size:13px}
+@media(max-width:520px){.how{grid-template-columns:1fr}}
+.hd{display:flex;gap:7px;align-items:center}
+.ic{flex:none;width:26px;height:26px;border-radius:50%;background:var(--sk);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700}
+.dsc{opacity:.85}.need{font-size:11px;opacity:.75}
+.nd.nx{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in srgb,var(--gold) 35%,transparent)}
+.here{position:absolute;top:-9px;right:8px;background:var(--gold);color:#fff;font-size:10px;font-weight:700;border-radius:999px;padding:0 8px}
+.ctl .dots{display:flex;gap:3px}
 .lang{font-size:13px;display:flex;gap:6px;align-items:center}.lang button{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:2px 10px;cursor:pointer}.lang button[aria-pressed=true]{background:var(--deep);color:var(--bg);border-color:var(--deep)}
 @media(max-width:520px){.nd{width:calc(50% - 5px)}.tier{gap:8px}}
 </style></head><body><div class="wrap">
 <header><p class="kick">TRIATHLON · 開発 · スキル（仮名世界）</p><h1>スキルウィンドウ</h1>
 <nav class="dv"><a href="./">← 開発トップ</a> · <a href="skillwin.html">スキルウィンドウ</a> · <a href="skilltree.html">スキル一覧</a> · <a href="skill.html">継承スキル</a> · <a href="skill-sim.html">継承シミュレーター</a> · <a href="stat.html">ステータス</a> · <a href="char.html">キャラ開発</a></nav></header>
-<p class="one">クラスを選ぶと、そのクラスで覚えられるスキルの窓が開く。<br>上の段から順に、前提（線でつながった技）を覚えると下の段が開く。</p>
+<ol class="how"><li><b>1</b>クラスを選ぶ</li><li><b>2</b>「ここから」の技に ＋</li><li><b>3</b>線の先の技が開く</li></ol>
 <div class="lang" id="lang">表示名：<button data-l="ja">日本語</button><button data-l="en">English</button></div>
 <div class="tabs" id="tabs"></div>
 <div class="win" id="win"></div>
@@ -59,6 +69,7 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 <script>
 (function(){
 var T=window.TRI_TREE,COL={R:'var(--r)',G:'var(--g)',B:'var(--b)'};
+var ICON={ATK:'力',DEF:'守',HP:'命',RAN:'射',ATS:'技',SPD:'速',MAG:'魔',RES:'心',MP:'気'},WORD={ATK:'攻撃力',DEF:'守り',HP:'体力',RAN:'届く距離',ATS:'技の速さ',SPD:'素早さ',MAG:'魔力',RES:'心の強さ',MP:'気力'};
 var SC={ATK:'var(--r)',DEF:'var(--r)',HP:'var(--r)',RAN:'var(--g)',ATS:'var(--g)',SPD:'var(--g)',MAG:'var(--b)',RES:'var(--b)',MP:'var(--b)'};
 var SP=20,MAXC={R:4,G:4,B:5},MAX=5,cur=null,lv={};
 function flat(items,gp,out){items.forEach(function(x){if(x.items)flat(x.items,x.g.replace(/（.*/,''),out);else out.push(Object.assign({gp:gp},x));});return out}
@@ -94,11 +105,15 @@ function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,c
  for(var t=0;t<=max;t++){h+='<div class="tier"><span class="tl">'+(cur.lab?cur.lab[t]:(t+1)+'段')+'</span>';
   n.forEach(function(x){if(cur.dep[x.id]!==t)return;var L=lv[x.id]||0,o=ok(x);
    var ext=(x.req||[]).concat(x.req2||[]).filter(function(r,i,a){return !cur.ids[r]&&a.indexOf(r)===i});
-   h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+'" data-id="'+esc(x.id)+'"><span class="gp">'+esc(x.gp)+'</span><b>'+esc(nm(x))+'</b>'+
-    '<span>'+(x.st?x.st.split('/').map(function(k){return '<span class="st" style="--sk:'+SC[k]+'">'+k+'</span>'}).join(' '):'<span class="st no">未定</span>')+(x.stg?' <span class="gs">（案）</span>':'')+(x.guess?' <span class="gs">（推定）</span>':'')+(x.req2?'<span class="gs" style="display:block">Lv2〜：'+esc(x.req2.map(function(r){return r.replace(/^G\./,'')}).join('・'))+'も同じ段まで</span>':'')+'</span>'+
-    (ext.length?'<span class="ex">他クラス：'+esc(ext.join('・'))+'</span>':'')+
-    '<div class="dots">'+Array.from({length:MAX},function(_,i){return i+1}).map(function(k){return '<i'+(k<=L?' class="f"':'')+'></i>'}).join('')+'</div>'+
-    '<div class="ctl"><button data-a="-1"'+(L?'':' disabled')+' aria-label="下げる">−</button><span>Lv '+L+'</span><button data-a="1"'+(L<cap(x)&&used()<SP?'':' disabled')+' aria-label="上げる">＋</button></div></div>';});
+   var sts=x.st?x.st.split('/'):[],k0=sts[0],miss=(x.req||[]).filter(function(r){return cur.ids[r]&&!lv[r]}).map(function(r){return nm(cur.ids[r])});
+   var nx=o&&!L&&used()<SP;
+   h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+(nx?' nx':'')+'" data-id="'+esc(x.id)+'">'+(nx?'<span class="here">ここから</span>':'')+
+    '<div class="hd"><span class="ic" style="--sk:'+(k0?SC[k0]:'#9AA5A8')+'">'+(k0?ICON[k0]:'？')+'</span><b>'+esc(nm(x))+'</b></div>'+
+    '<span class="dsc">'+(sts.length?sts.map(function(k){return WORD[k]}).join('と')+'が上がる':'上がるものは未定')+(x.stg?'<i class="gs">（案）</i>':'')+'</span>'+
+    (miss.length?'<span class="need">あと：'+esc(miss.join('・'))+'</span>':'')+
+    (x.req2?'<span class="gs">Lv2からは '+esc(x.req2.map(function(r){return cur.ids[r]?nm(cur.ids[r]):r}).join('・'))+' も必要</span>':'')+
+    (ext.length?'<span class="ex">他クラスの技：'+esc(ext.join('・'))+'</span>':'')+
+    '<div class="ctl"><button data-a="-1"'+(L?'':' disabled')+' aria-label="下げる">−</button><span class="dots">'+Array.from({length:MAX},function(_,i){return '<i'+(i<L?' class="f"':'')+'></i>'}).join('')+'</span><button data-a="1"'+(L<cap(x)&&used()<SP?'':' disabled')+' aria-label="上げる">＋</button></div></div>';});
   h+='</div>';}
  var tot={};n.forEach(function(x){if(!x.st||!lv[x.id])return;var ks=x.st.split('/');ks.forEach(function(k){tot[k]=(tot[k]||0)+lv[x.id]/ks.length})});
  h+='</div><div class="sum">上がるステータス：'+(Object.keys(tot).length?Object.keys(tot).map(function(k){return '<span>'+k+' +'+(+tot[k].toFixed(1))+'</span>'}).join(''):'<span>まだなし</span>')+'</div>';
