@@ -115,7 +115,7 @@ function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,c
    h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+(nx?' nx':'')+'" data-id="'+esc(x.id)+'">'+
     '<b>'+esc(nm(x))+'</b>'+
     '<span>'+(sts.length?sts.map(function(k){return '<span class="st" style="--sk:'+SC[k]+'">'+k+(k==='RAN'&&x.w?'・'+x.w:'')+' ＋'+(sts.length>1?'½':'1')+'</span>'}).join(' '):'<span class="st no">未定</span>')+(x.stg?' <i class="gs">（案）</i>':'')+'</span>'+
-    (miss.length?'<span class="need">あと：'+esc(miss.join('・'))+'</span>':'')+
+    
     (x.req2?'<span class="gs">Lv2からは '+esc(x.req2.map(rn).join('・'))+' も必要</span>':'')+
     (ext.length?'<span class="ex">他クラスの技：'+esc(ext.map(rn).join('・'))+'</span>':'')+
     '<div class="ctl"><button data-a="-1"'+(L?'':' disabled')+' aria-label="下げる">−</button><span class="dots">'+Array.from({length:MAX},function(_,i){return '<i'+(i<L?' class="f"':'')+'></i>'}).join('')+'</span><button data-a="1"'+(L<cap(x)&&used()<SP?'':' disabled')+' aria-label="上げる">＋</button></div></div>';});
