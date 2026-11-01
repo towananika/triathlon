@@ -66,7 +66,7 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 <div class="win" id="win"></div>
 <p class="mut">試作。SPは仮に20、1つの技の最大Lvは R・G＝4、B＝5（仮）。（推定）＝前提がまだ決まっていない技。（案）＝上がるステータスはClaudeの案。ステータスが2つの技は半分ずつ上がる。点線＝Lv2から必要な技。RAN（射程）は武器のタイプごとに分かれる（RAN・剣、RAN・銃など）。<span class="ex">他クラス</span>＝別のクラスの技が前提。データは<a href="skilltree.html">スキル一覧</a>と同じ。</p>
 </div>
-<script src="skilltree.js?v=0.90"></script>
+<script src="skilltree.js?v=0.91"></script>
 <script>
 (function(){
 var T=window.TRI_TREE,COL={R:'var(--r)',G:'var(--g)',B:'var(--b)'};
@@ -84,6 +84,10 @@ var JA={Fighter:'ファイター',Warrior:'ウォリアー',Knight:'ナイト',R
 // 表示名の言語：保存した設定 → ブラウザの言語（日本語以外は英語）
 var LANG='';try{LANG=localStorage.getItem('tri-lang')||''}catch(e){}if(LANG!=='ja'&&LANG!=='en')LANG=/^ja/i.test(navigator.language||'')?'ja':'en';
 function nm(x){return LANG==='ja'&&x.ja?x.ja:x.en}function cn(k){return LANG==='ja'&&JA[k]?JA[k]:k}
+// 全色の技（他クラスの技名を出すため）
+var ALL={};['R','G','B'].forEach(function(c){T[c].groups.forEach(function(g){flat(g.items,'',[]).forEach(function(x){ALL[x.id]=x})})});
+function rn(r){return cur.ids[r]?nm(cur.ids[r]):ALL[r]?nm(ALL[r]):r}
+var GPJ={General:'共通',Option:'選択'};
 var tabs=document.getElementById('tabs'),win=document.getElementById('win');
 ['R','G','B'].forEach(function(c){var d=document.createElement('div');d.style.setProperty('--k',COL[c]);
  d.innerHTML='<b style="background:'+COL[c]+'">'+c+'</b><span class="lvl">'+{R:'やさしい',G:'ふつう',B:'長い道のり'}[c]+'</span>';
@@ -103,7 +107,7 @@ function cap(n){var c=MAX;if(!ok(n))return 0;(n.req2||[]).forEach(function(r){if
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,cur.dep[x.id])});
  var h='<div class="bar"><h2>'+esc(cn(cur.name))+(cur.sub?'<small>'+esc(cur.sub)+'</small>':'')+'</h2><span class="sp">SP '+(SP-used())+' / '+SP+'</span><button id="rs">リセット</button></div><div class="board"><svg></svg>';
- for(var t=0;t<=max;t++){h+='<div class="tier"><span class="tl">'+(cur.lab?cur.lab[t]:(t+1)+'段')+'</span>';
+ for(var t=0;t<=max;t++){h+='<div class="tier"><span class="tl">'+(cur.lab?(LANG==='ja'&&GPJ[cur.lab[t]]||cur.lab[t]):(t+1)+'段')+'</span>';
   n.forEach(function(x){if(cur.dep[x.id]!==t)return;var L=lv[x.id]||0,o=ok(x);
    var ext=(x.req||[]).concat(x.req2||[]).filter(function(r,i,a){return !cur.ids[r]&&a.indexOf(r)===i});
    var sts=x.st?x.st.split('/'):[],k0=sts[0],miss=(x.req||[]).filter(function(r){return cur.ids[r]&&!lv[r]}).map(function(r){return nm(cur.ids[r])});
@@ -112,8 +116,8 @@ function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,c
     '<b>'+esc(nm(x))+'</b>'+
     '<span>'+(sts.length?sts.map(function(k){return '<span class="st" style="--sk:'+SC[k]+'">'+k+(k==='RAN'&&x.w?'・'+x.w:'')+' ＋'+(sts.length>1?'½':'1')+'</span>'}).join(' '):'<span class="st no">未定</span>')+(x.stg?' <i class="gs">（案）</i>':'')+'</span>'+
     (miss.length?'<span class="need">あと：'+esc(miss.join('・'))+'</span>':'')+
-    (x.req2?'<span class="gs">Lv2からは '+esc(x.req2.map(function(r){return cur.ids[r]?nm(cur.ids[r]):r}).join('・'))+' も必要</span>':'')+
-    (ext.length?'<span class="ex">他クラスの技：'+esc(ext.join('・'))+'</span>':'')+
+    (x.req2?'<span class="gs">Lv2からは '+esc(x.req2.map(rn).join('・'))+' も必要</span>':'')+
+    (ext.length?'<span class="ex">他クラスの技：'+esc(ext.map(rn).join('・'))+'</span>':'')+
     '<div class="ctl"><button data-a="-1"'+(L?'':' disabled')+' aria-label="下げる">−</button><span class="dots">'+Array.from({length:MAX},function(_,i){return '<i'+(i<L?' class="f"':'')+'></i>'}).join('')+'</span><button data-a="1"'+(L<cap(x)&&used()<SP?'':' disabled')+' aria-label="上げる">＋</button></div></div>';});
   h+='</div>';}
  var tot={};n.forEach(function(x){if(!x.st||!lv[x.id])return;var ks=x.st.split('/');ks.forEach(function(k){if(k==='RAN'&&x.w)k='RAN・'+x.w;tot[k]=(tot[k]||0)+lv[x.id]/ks.length})});
