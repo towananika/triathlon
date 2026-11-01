@@ -26,7 +26,7 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 .board path.on{stroke:var(--k)}
 .tier{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:22px}
 .tier:last-child{margin-bottom:0}
-.tl{position:absolute;left:0;top:-2px;font-size:10px;opacity:.5;letter-spacing:.1em}
+.tl{flex-basis:100%;font-size:10px;opacity:.5;letter-spacing:.1em}
 .nd{box-sizing:border-box;width:150px;background:var(--wcard);border:1px solid var(--wline);border-radius:10px;padding:8px 9px;display:grid;gap:4px;font-size:12px;position:relative}
 .nd.lock>*{opacity:.45}
 .nd.lv{border-color:var(--k);box-shadow:0 0 0 1px var(--k) inset}
@@ -51,9 +51,9 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 <p class="one">クラスを選ぶと、そのクラスで覚えられるスキルの窓が開く。<br>上の段から順に、前提（線でつながった技）を覚えると下の段が開く。</p>
 <div class="tabs" id="tabs"></div>
 <div class="win" id="win"></div>
-<p class="mut">試作。SPは仮に20、1つの技の最大Lvは R・G＝4、B＝5（仮）。（推定）＝前提がまだ決まっていない技。<span class="ex">他クラス</span>＝別のクラスの技が前提。データは<a href="skilltree.html">スキル一覧</a>と同じ。</p>
+<p class="mut">試作。SPは仮に20、1つの技の最大Lvは R・G＝4、B＝5（仮）。（推定）＝前提がまだ決まっていない技。（案）＝上がるステータスはClaudeの案。ステータスが2つの技は半分ずつ上がる。点線＝Lv2から必要な技。<span class="ex">他クラス</span>＝別のクラスの技が前提。データは<a href="skilltree.html">スキル一覧</a>と同じ。</p>
 </div>
-<script src="skilltree.js?v=0.82"></script>
+<script src="skilltree.js?v=0.83"></script>
 <script>
 (function(){
 var T=window.TRI_TREE,COL={R:'var(--r)',G:'var(--g)',B:'var(--b)'};
@@ -76,34 +76,38 @@ function open(i){cur=CL[i];lv={};tabs.querySelectorAll('button').forEach(functio
  win.style.setProperty('--k',COL[cur.c]);MAX=MAXC[cur.c];
  var ids={};cur.nodes.forEach(function(n){ids[n.id]=n});var dep={};
  function d(n){if(dep[n.id]!=null)return dep[n.id];dep[n.id]=0;var m=-1;(n.req||[]).forEach(function(r){if(ids[r])m=Math.max(m,d(ids[r]))});return dep[n.id]=m+1}
- cur.nodes.forEach(d);cur.ids=ids;cur.dep=dep;render();}
+ cur.nodes.forEach(d);cur.ids=ids;cur.dep=dep;cur.lab=null;
+ if(cur.name==='Elementary Academy'){var ord=[];cur.nodes.forEach(function(x){if(ord.indexOf(x.gp)<0)ord.push(x.gp)});cur.nodes.forEach(function(x){dep[x.id]=ord.indexOf(x.gp)});cur.lab=ord.map(function(g){return g.replace(/^Class 4〜1st.*/,'4〜1級').replace(/^Class (\d+).*/,'$1級')})}
+ render();}
 function used(){var s=0;for(var k in lv)s+=lv[k];return s}
 function ok(n){return (n.req||[]).every(function(r){return !cur.ids[r]||(lv[r]||0)>0})}
+// Lv2 以上：req2 の技が今の Lv 以上あること
+function cap(n){var c=MAX;if(!ok(n))return 0;(n.req2||[]).forEach(function(r){if(cur.ids[r])c=Math.min(c,Math.max(1,(lv[r]||0)+1))});return c}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,cur.dep[x.id])});
  var h='<div class="bar"><h2>'+esc(JA[cur.name]||cur.name)+'<small>'+esc(cur.name+(cur.sub?'・'+cur.sub:''))+'</small>'+'</h2><span class="sp">SP '+(SP-used())+' / '+SP+'</span><button id="rs">リセット</button></div><div class="board"><svg></svg>';
- for(var t=0;t<=max;t++){h+='<div class="tier"><span class="tl">'+(t+1)+'段</span>';
+ for(var t=0;t<=max;t++){h+='<div class="tier"><span class="tl">'+(cur.lab?cur.lab[t]:(t+1)+'段')+'</span>';
   n.forEach(function(x){if(cur.dep[x.id]!==t)return;var L=lv[x.id]||0,o=ok(x);
-   var ext=(x.req||[]).filter(function(r){return !cur.ids[r]});
+   var ext=(x.req||[]).concat(x.req2||[]).filter(function(r,i,a){return !cur.ids[r]&&a.indexOf(r)===i});
    h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+'" data-id="'+esc(x.id)+'"><span class="gp">'+esc(x.gp)+'</span><b>'+esc(x.en)+'</b>'+(x.ja?'<span class="ja">'+esc(x.ja)+'</span>':'')+
-    '<span>'+(x.st?'<span class="st" style="--sk:'+SC[x.st]+'">'+x.st+'</span>':'<span class="st no">未定</span>')+(x.guess?' <span class="gs">（推定）</span>':'')+'</span>'+
+    '<span>'+(x.st?x.st.split('/').map(function(k){return '<span class="st" style="--sk:'+SC[k]+'">'+k+'</span>'}).join(' '):'<span class="st no">未定</span>')+(x.stg?' <span class="gs">（案）</span>':'')+(x.guess?' <span class="gs">（推定）</span>':'')+(x.req2?'<span class="gs" style="display:block">Lv2〜：'+esc(x.req2.map(function(r){return r.replace(/^G\./,'')}).join('・'))+'も同じ段まで</span>':'')+'</span>'+
     (ext.length?'<span class="ex">他クラス：'+esc(ext.join('・'))+'</span>':'')+
     '<div class="dots">'+Array.from({length:MAX},function(_,i){return i+1}).map(function(k){return '<i'+(k<=L?' class="f"':'')+'></i>'}).join('')+'</div>'+
-    '<div class="ctl"><button data-a="-1"'+(L?'':' disabled')+' aria-label="下げる">−</button><span>Lv '+L+'</span><button data-a="1"'+(o&&L<MAX&&used()<SP?'':' disabled')+' aria-label="上げる">＋</button></div></div>';});
+    '<div class="ctl"><button data-a="-1"'+(L?'':' disabled')+' aria-label="下げる">−</button><span>Lv '+L+'</span><button data-a="1"'+(L<cap(x)&&used()<SP?'':' disabled')+' aria-label="上げる">＋</button></div></div>';});
   h+='</div>';}
- var tot={};n.forEach(function(x){if(x.st&&lv[x.id])tot[x.st]=(tot[x.st]||0)+lv[x.id]});
- h+='</div><div class="sum">上がるステータス：'+(Object.keys(tot).length?Object.keys(tot).map(function(k){return '<span>'+k+' +'+tot[k]+'</span>'}).join(''):'<span>まだなし</span>')+'</div>';
+ var tot={};n.forEach(function(x){if(!x.st||!lv[x.id])return;var ks=x.st.split('/');ks.forEach(function(k){tot[k]=(tot[k]||0)+lv[x.id]/ks.length})});
+ h+='</div><div class="sum">上がるステータス：'+(Object.keys(tot).length?Object.keys(tot).map(function(k){return '<span>'+k+' +'+(+tot[k].toFixed(1))+'</span>'}).join(''):'<span>まだなし</span>')+'</div>';
  win.innerHTML=h;
  document.getElementById('rs').onclick=function(){lv={};render()};
  win.querySelectorAll('.ctl button').forEach(function(b){b.onclick=function(){var id=b.closest('.nd').dataset.id;lv[id]=(lv[id]||0)+(+b.dataset.a);
-  if(!lv[id]){delete lv[id];var ch=true;while(ch){ch=false;cur.nodes.forEach(function(x){if(lv[x.id]&&!ok(x)){delete lv[x.id];ch=true}})}}render()}});
+  if(!lv[id])delete lv[id];var ch=true;while(ch){ch=false;cur.nodes.forEach(function(x){var L=lv[x.id]||0,c=cap(x);if(L>c){if(c)lv[x.id]=c;else delete lv[x.id];ch=true}})}render()}});
  lines();}
 function lines(){var bd=win.querySelector('.board');if(!bd)return;var sv=bd.querySelector('svg'),R=bd.getBoundingClientRect(),p='';
  sv.setAttribute('viewBox','0 0 '+R.width+' '+R.height);
- cur.nodes.forEach(function(x){(x.req||[]).forEach(function(r){if(!cur.ids[r])return;
+ cur.nodes.forEach(function(x){(x.req||[]).concat((x.req2||[]).filter(function(r){return (x.req||[]).indexOf(r)<0}).map(function(r){return '~'+r})).forEach(function(r){var dsh=r[0]==='~';r=r.replace('~','');if(!cur.ids[r])return;
   var a=bd.querySelector('[data-id="'+CSS.escape(r)+'"]').getBoundingClientRect(),b=bd.querySelector('[data-id="'+CSS.escape(x.id)+'"]').getBoundingClientRect();
   var x1=a.left+a.width/2-R.left,y1=a.bottom-R.top,x2=b.left+b.width/2-R.left,y2=b.top-R.top,m=(y1+y2)/2;
-  p+='<path'+(lv[r]?' class="on"':'')+' d="M'+x1+' '+y1+' C'+x1+' '+m+' '+x2+' '+m+' '+x2+' '+y2+'"/>';});});
+  p+='<path'+(lv[r]?' class="on"':'')+(dsh?' stroke-dasharray="4 4"':'')+' d="M'+x1+' '+y1+' C'+x1+' '+m+' '+x2+' '+m+' '+x2+' '+y2+'"/>';});});
  sv.innerHTML=p;}
 addEventListener('resize',function(){if(cur)lines()});
 open(0);
