@@ -19,6 +19,7 @@
   var MORE = admin ? [['dev/', '🛠️', '開発版'], ['guide.html', '📘', '設定資料（世界ガイド）'], ['settings/', '📋', '設定リスト'], ['guide.html#simulation', '🏡', '暮らしの試作'], ['news/rules.html', '📏', 'アップデートの基準']]
     : [['watch/', '🕯️', '見守る'], ['part1/', '🏮', '第1部の道のり'], ['kakera/', '✨', '光のかけら'], ['daily/', '🍚', 'ごはんとおやすみの話'], ['album/', '📷', '思い出のアルバム'], ['share/', '📣', 'SNS用カード'], ['sim/', '🌏', '今日の世界'], ['places/', '📷', '好きな場所'], ['saga/', '🗺️', '物語のあらすじ（4世代）'], ['news/rules.html', '📏', 'アップデートの基準']];
   var path = location.pathname.replace(/index\.html$/, ''), rootPath = new URL(root).pathname;
+  var inDevelopment = path.indexOf(rootPath + 'dev/') === 0 || (path === rootPath + 'play/' && new URLSearchParams(location.search).has('dev'));
   function cur(p) {
     if (p.indexOf('#') >= 0) return false;
     var full = new URL(root + p).pathname;
@@ -86,23 +87,29 @@
   // ログイン（Google）。右上のボタンは、ログイン中なら顔写真と名前に変わる
   var entry = document.createElement('a'); entry.className = 'tri-login tri-btn'; entry.href = root + 'login/'; entry.textContent = 'ログイン';
   bar.querySelector('.tri-act').insertBefore(entry, bar.querySelector('.tri-act').firstChild);
-  // ログイン中は、プロフィールの左に「開発版」（開発ページは誰でも見られる資料なので、守りは不要）
-  var devIn = document.createElement('a'); devIn.className = 'tri-devin'; devIn.href = root + 'dev/'; devIn.textContent = '開発版'; devIn.hidden = true;
+  // Mode navigation does not grant access; protected data still uses its existing authorization.
+  var devIn = document.createElement('a'); devIn.className = 'tri-devin tri-mode-switch'; devIn.href = inDevelopment ? root : root + 'dev/'; devIn.textContent = inDevelopment ? '公式版' : '開発版'; devIn.hidden = !inDevelopment;
+  devIn.setAttribute('aria-label', inDevelopment ? '公式版へ切り替える' : '開発版へ切り替える');
   bar.querySelector('.tri-act').insertBefore(devIn, entry);
   var dvs = document.createElement('style'); dvs.textContent = '.tri-devin{background:#2b2f36;color:#ffd76a;font-size:12px;font-weight:800;letter-spacing:.08em;border-radius:6px;padding:5px 10px;text-decoration:none;white-space:nowrap;align-self:center}.tri-devin[hidden]{display:none}'; document.head.appendChild(dvs);
   function showUser(u) {
     entry.textContent = '';
-    devIn.hidden = !u;
-    if (!u) { entry.textContent = 'ログイン'; entry.classList.remove('in'); return; }
+    devIn.hidden = !inDevelopment && !u;
+    if (!u) { entry.textContent = 'ログイン'; entry.classList.remove('in'); entry.removeAttribute('aria-label'); return; }
     entry.classList.add('in');
     if (u.photo) { var im = document.createElement('img'); im.src = u.photo; im.alt = ''; im.referrerPolicy = 'no-referrer'; entry.appendChild(im); }
-    var nm = document.createElement('span'); nm.textContent = u.name.split(' ')[0]; entry.appendChild(nm);
-    entry.setAttribute('aria-label', u.name + '（ログイン中）');
+    var name = u.name || 'プロフィール';
+    var nm = document.createElement('span'); nm.textContent = name.split(' ')[0]; entry.appendChild(nm);
+    entry.setAttribute('aria-label', name + '（ログイン中）');
   }
   document.addEventListener('tri-user', function (e) { showUser(e.detail); });
   if (!document.querySelector('script[src*="login/auth.js"],script[src^="auth.js"]')) { var au = document.createElement('script'); au.type = 'module'; au.src = root + 'login/auth.js?v=0.28'; document.head.appendChild(au); }
   var topStyle = document.createElement('link'); topStyle.rel = 'stylesheet'; topStyle.href = root + 'back-to-top.css'; document.head.appendChild(topStyle);
   var topScript = document.createElement('script'); topScript.src = root + 'back-to-top.js'; document.body.appendChild(topScript);
+  var themeScript = document.createElement('script'); themeScript.src = root + 'site-theme.js?v=1.01'; document.head.appendChild(themeScript);
+  if (path === rootPath) {
+    var homeScript = document.createElement('script'); homeScript.src = root + 'home-showcase.js?v=1.01'; document.head.appendChild(homeScript);
+  }
   document.addEventListener('click', function (e) {
     var m = bar.querySelector('.tri-menu');
     if (m.open && (!m.contains(e.target) || e.target.closest('.tri-more a'))) m.open = false;
