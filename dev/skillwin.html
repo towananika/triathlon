@@ -90,7 +90,7 @@ var ALL={};['R','G','B'].forEach(function(c){T[c].groups.forEach(function(g){fla
 function rn(r){return cur.ids[r]?nm(cur.ids[r]):ALL[r]?nm(ALL[r]):r}
 var GPJ={General:'共通',Option:'選択'};
 // クラスの戦い方（2026-11-01 ひびき）
-var ABOUT={Fighter:'武器を使わず、筋力（ATK）で戦う近接クラス。ATKを大きく上げられ、武器がなくても拳で戦える。',Warrior:'武器で戦う近接クラス。筋力が少なくても武器の攻撃力で補える。武器の長さで少しだけ遠くまで届く。重い武器や長い武器は次の攻撃まで時間がかかる（ATSが下がる）ので、剣術理論と剣術実習で補う。'};
+var ABOUT={Fighter:'武器を使わず、筋力（ATK）で戦う近接クラス。ATKを大きく上げられ、武器がなくても拳で戦える。',Warrior:'武器で戦う近接クラス。筋力が少なくても武器の攻撃力で補える。武器の長さで少しだけ遠くまで届く。重い武器や長い武器は次の攻撃まで時間がかかる（ATSが下がる）ので、剣術理論と剣術実習で補う。',Knight:'重い武装で守る近接クラス。重い鎧で素早さ（SPD）が下がるので、移動戦術を学んで補う。'};
 var tabs=document.getElementById('tabs'),win=document.getElementById('win');
 ['R','G','B'].forEach(function(c){var d=document.createElement('div');d.style.setProperty('--k',COL[c]);
  d.innerHTML='<b style="background:'+COL[c]+'">'+c+'</b><span class="lvl">'+{R:'やさしい',G:'ふつう',B:'長い道のり'}[c]+'</span>';
