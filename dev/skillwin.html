@@ -45,6 +45,7 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 .ex{font-size:10px;color:var(--ex)}
 .gs{font-size:10px;opacity:.6}
 .sum{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-top:1px solid var(--wline);font-size:12px}
+.sum .fight{order:2;margin-left:auto;color:var(--deep);font-weight:700;text-decoration:none}
 .sum span{background:var(--wcard);border-radius:6px;padding:1px 8px;font-variant-numeric:tabular-nums}
 .mut{color:var(--mut);font-size:13px}
 .how{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -61,7 +62,7 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 @media(max-width:520px){.nd{width:calc(50% - 5px)}.tier{gap:8px}}
 </style></head><body><div class="wrap">
 <header><p class="kick">TRIATHLON · 開発 · スキル（仮名世界）</p><h1>スキルウィンドウ</h1>
-<nav class="dv"><a href="./">← 開発トップ</a> · <a href="skillwin.html">スキルウィンドウ</a> · <a href="skilltree.html">スキル一覧</a> · <a href="skill.html">継承スキル</a> · <a href="skill-sim.html">継承シミュレーター</a> · <a href="stat.html">ステータス</a> · <a href="char.html">キャラ開発</a></nav></header>
+<nav class="dv"><a href="./">← 開発トップ</a> · <a href="skillwin.html">スキルウィンドウ</a> · <a href="battle.html">戦闘シミュレーター</a> · <a href="skilltree.html">スキル一覧</a> · <a href="skill.html">継承スキル</a> · <a href="skill-sim.html">継承シミュレーター</a> · <a href="stat.html">ステータス</a> · <a href="char.html">キャラ開発</a></nav></header>
 <ol class="how"><li><b>1</b>クラスを選ぶ</li><li><b>2</b>金色の枠の技に ＋</li><li><b>3</b>線の先の技が開く</li></ol>
 <div class="lang" id="lang">表示名：<button data-l="ja">日本語</button><button data-l="en">English</button></div>
 <div class="tabs" id="tabs"></div>
@@ -97,7 +98,10 @@ var tabs=document.getElementById('tabs'),win=document.getElementById('win');
  d.innerHTML='<b style="background:'+COL[c]+'">'+c+'</b><span class="lvl">'+{R:'やさしい',G:'ふつう',B:'長い道のり'}[c]+'</span>';
  CL.forEach(function(k,i){if(k.c!==c)return;var bt=document.createElement('button');bt.textContent=cn(k.name);if(ABOUT[k.name])bt.title=ABOUT[k.name];bt.dataset.i=i;bt.onclick=function(){open(i)};d.appendChild(bt)});
  tabs.appendChild(d);});
-function open(i){cur=CL[i];lv={};tabs.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.i==i)});
+// 組んだスキルはクラスごとに保存し、戦闘シミュレーターで使う（表示の好みと同じく、この端末だけ）
+function loadB(){try{return JSON.parse(localStorage.getItem('tri-skillbuild')||'{}')}catch(e){return {}}}
+function saveB(){var b=loadB();b[cur.name]=lv;try{localStorage.setItem('tri-skillbuild',JSON.stringify(b))}catch(e){}}
+function open(i){cur=CL[i];lv=loadB()[CL[i].name]||{};tabs.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.i==i)});
  win.style.setProperty('--k',COL[cur.c]);MAX=MAXC[cur.c];
  var ids={};cur.nodes.forEach(function(n){ids[n.id]=n});var dep={};
  function d(n){if(dep[n.id]!=null)return dep[n.id];dep[n.id]=0;var m=-1;(n.req||[]).forEach(function(r){if(ids[r])m=Math.max(m,d(ids[r]))});return dep[n.id]=m+1}
@@ -109,7 +113,7 @@ function ok(n){return (n.req||[]).every(function(r){return !cur.ids[r]||(lv[r]||
 // Lv2 以上：req2 の技が今の Lv 以上あること
 function cap(n){var c=MAX;if(!ok(n))return 0;(n.req2||[]).forEach(function(r){if(cur.ids[r])c=Math.min(c,Math.max(1,(lv[r]||0)+1))});return c}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,cur.dep[x.id])});
+function render(){if(cur)saveB();var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,cur.dep[x.id])});
  var h='<div class="bar"><h2'+(ABOUT[cur.name]?' class="tip" tabindex="0" data-tip="'+esc(ABOUT[cur.name])+'"':'')+'>'+esc(cn(cur.name))+(cur.sub?'<small>'+esc(cur.sub)+'</small>':'')+'</h2><span class="sp">SP '+(SP-used())+' / '+SP+'</span><button id="rs">リセット</button></div><div class="board"><svg></svg>';
  for(var t=0;t<=max;t++){h+='<div class="tier"><span class="tl">'+(cur.lab?(LANG==='ja'&&GPJ[cur.lab[t]]||cur.lab[t]):(t+1)+'段')+'</span>';
   n.forEach(function(x){if(cur.dep[x.id]!==t)return;var L=lv[x.id]||0,o=ok(x);
@@ -125,7 +129,7 @@ function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,c
     '<div class="ctl"><button data-a="-1"'+(L?'':' disabled')+' aria-label="下げる">−</button><span class="dots">'+Array.from({length:MAX},function(_,i){return '<i'+(i<L?' class="f"':'')+'></i>'}).join('')+'</span><button data-a="1"'+(L<cap(x)&&used()<SP?'':' disabled')+' aria-label="上げる">＋</button></div></div>';});
   h+='</div>';}
  var tot={};n.forEach(function(x){if(!x.st||!lv[x.id])return;var ks=x.st.split('/');ks.forEach(function(k){if((k==='RAN'||k==='ATS')&&x.w)k=k+'・'+x.w;tot[k]=(tot[k]||0)+lv[x.id]/ks.length})});
- h+='</div><div class="sum">上がるステータス：'+(Object.keys(tot).length?Object.keys(tot).map(function(k){return '<span>'+k+' +'+(+tot[k].toFixed(1))+'</span>'}).join(''):'<span>まだなし</span>')+'</div>';
+ h+='</div><div class="sum"><a class="fight" href="battle.html?a='+encodeURIComponent(cur.name)+'">このスキルで戦う →</a>上がるステータス：'+(Object.keys(tot).length?Object.keys(tot).map(function(k){return '<span>'+k+' +'+(+tot[k].toFixed(1))+'</span>'}).join(''):'<span>まだなし</span>')+'</div>';
  win.innerHTML=h;
  document.getElementById('rs').onclick=function(){lv={};render()};
  win.querySelectorAll('.ctl button').forEach(function(b){b.onclick=function(){var id=b.closest('.nd').dataset.id;lv[id]=(lv[id]||0)+(+b.dataset.a);
