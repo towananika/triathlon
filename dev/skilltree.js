@@ -1,7 +1,7 @@
 // 仮名世界のスキルツリー（データ）。2026-10-25 ひびきの原案（ideas/skilltree_rgb.md）。
 // 1つの技＝{id, en, ja, st:上がるステータス, req:[前提の技のid], note}。st が空なら「未定」。
 // st に / がある技は、2つのステータスが半分ずつ上がる。stg: 1 ＝ ステータスは Claude の案（要確認）。
-// w ＝ RAN（射程）がどの武器のタイプの射程か。RAN は武器のタイプごとに分かれる（剣・投てき・銃・魔法…）。
+// w ＝ RAN（射程）や ATS（攻撃速度）が、どの武器のタイプに効くか（剣術実習は剣だけ、武器術はすべての武器）。RAN は武器のタイプごとに分かれる（剣・投てき・銃・魔法…）。
 // req2 ＝ Lv2 以上に上げるとき、同じ段（Lv−1）まで必要な技。
 // guess: 1 ＝ 前提は原案に書かれておらず、Claude が推定したもの（要確認）。
 // グループは {g:名前, items:[技 または グループ]}。見た目のツリーは、このデータから後で作る。
@@ -21,10 +21,10 @@ window.TRI_TREE = {
    {id: 'DU', en: 'Dodge Understanding',  ja: '回避理解', st: 'SPD', req: ['DS']}]},
   {g: 'Warrior', items: [
    {id: 'ST', en: 'Sword Theory',   ja: '剣術理論', st: 'RAN', w: '剣', req: ['MCT']},
-   {id: 'SP', en: 'Sword Practice', ja: '剣術実習', st: 'ATS', req: ['MCT', 'ST'], note: '技：straight、slice'}]},
+   {id: 'SP', en: 'Sword Practice', ja: '剣術実習', st: 'ATS', w: '剣', req: ['MCT', 'ST'], note: '技：straight、slice'}]},
   {g: 'Knight', items: [
    {id: 'MS', en: 'Movement Strategy', ja: '移動戦術',   st: 'SPD', req: ['MCT']},
-   {id: 'WH', en: 'Weapon Handling',   ja: '武器術', st: 'ATS', req: ['MCT', 'MS']}]}]},
+   {id: 'WH', en: 'Weapon Handling',   ja: '武器術', st: 'ATS', w: '全武器', req: ['MCT', 'MS']}]}]},
  G: {name: 'グリーン', groups: [
   {g: 'General', items: [
    {id: 'G.PT', en: 'Physical Training', ja: '基礎体力訓練', st: 'HP'},

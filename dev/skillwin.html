@@ -90,7 +90,7 @@ var ALL={};['R','G','B'].forEach(function(c){T[c].groups.forEach(function(g){fla
 function rn(r){return cur.ids[r]?nm(cur.ids[r]):ALL[r]?nm(ALL[r]):r}
 var GPJ={General:'共通',Option:'選択'};
 // クラスの戦い方（2026-11-01 ひびき）
-var ABOUT={Fighter:'武器を使わず、筋力（ATK）で戦う近接クラス。ATKを大きく上げられ、武器がなくても拳で戦える。',Warrior:'武器で戦う近接クラス。筋力が少なくても武器の攻撃力で補える。武器の長さで少しだけ遠くまで届く。重い武器や長い武器は次の攻撃まで時間がかかる（ATSが下がる）ので、剣術理論と剣術実習で補う。',Knight:'重い武装で守る近接クラス。重い鎧で素早さ（SPD）が下がるので、移動戦術を学んで補う。'};
+var ABOUT={Fighter:'武器を使わず、筋力（ATK）で戦う近接クラス。ATKを大きく上げられ、武器がなくても拳で戦える。',Warrior:'武器で戦う近接クラス。筋力が少なくても武器の攻撃力で補える。武器の長さで少しだけ遠くまで届く。重い武器や長い武器は次の攻撃まで時間がかかる（ATSが下がる）ので、剣術理論と剣術実習で補う。',Knight:'重い武装で守る近接クラス。重い鎧で素早さ（SPD）が下がるので、移動戦術を学んで補う。武器術で、剣だけでなくすべての武器を学ぶ。'};
 var tabs=document.getElementById('tabs'),win=document.getElementById('win');
 ['R','G','B'].forEach(function(c){var d=document.createElement('div');d.style.setProperty('--k',COL[c]);
  d.innerHTML='<b style="background:'+COL[c]+'">'+c+'</b><span class="lvl">'+{R:'やさしい',G:'ふつう',B:'長い道のり'}[c]+'</span>';
@@ -117,13 +117,13 @@ function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,c
    var nx=o&&!L&&used()<SP;
    h+='<div class="nd'+(o?'':' lock')+(L?' lv':'')+(nx?' nx':'')+'" data-id="'+esc(x.id)+'">'+
     '<b>'+esc(nm(x))+'</b>'+
-    '<span>'+(sts.length?sts.map(function(k){return '<span class="st" style="--sk:'+SC[k]+'">'+k+(k==='RAN'&&x.w?'・'+x.w:'')+' ＋'+(sts.length>1?'½':'1')+'</span>'}).join(' '):'<span class="st no">未定</span>')+(x.stg?' <i class="gs">（案）</i>':'')+'</span>'+
+    '<span>'+(sts.length?sts.map(function(k){return '<span class="st" style="--sk:'+SC[k]+'">'+k+((k==='RAN'||k==='ATS')&&x.w?'・'+x.w:'')+' ＋'+(sts.length>1?'½':'1')+'</span>'}).join(' '):'<span class="st no">未定</span>')+(x.stg?' <i class="gs">（案）</i>':'')+'</span>'+
     
     (x.req2?'<span class="gs">Lv2からは '+esc(x.req2.map(rn).join('・'))+' も必要</span>':'')+
     (ext.length?'<span class="ex">他クラスの技：'+esc(ext.map(rn).join('・'))+'</span>':'')+
     '<div class="ctl"><button data-a="-1"'+(L?'':' disabled')+' aria-label="下げる">−</button><span class="dots">'+Array.from({length:MAX},function(_,i){return '<i'+(i<L?' class="f"':'')+'></i>'}).join('')+'</span><button data-a="1"'+(L<cap(x)&&used()<SP?'':' disabled')+' aria-label="上げる">＋</button></div></div>';});
   h+='</div>';}
- var tot={};n.forEach(function(x){if(!x.st||!lv[x.id])return;var ks=x.st.split('/');ks.forEach(function(k){if(k==='RAN'&&x.w)k='RAN・'+x.w;tot[k]=(tot[k]||0)+lv[x.id]/ks.length})});
+ var tot={};n.forEach(function(x){if(!x.st||!lv[x.id])return;var ks=x.st.split('/');ks.forEach(function(k){if((k==='RAN'||k==='ATS')&&x.w)k=k+'・'+x.w;tot[k]=(tot[k]||0)+lv[x.id]/ks.length})});
  h+='</div><div class="sum">上がるステータス：'+(Object.keys(tot).length?Object.keys(tot).map(function(k){return '<span>'+k+' +'+(+tot[k].toFixed(1))+'</span>'}).join(''):'<span>まだなし</span>')+'</div>';
  win.innerHTML=h;
  document.getElementById('rs').onclick=function(){lv={};render()};
