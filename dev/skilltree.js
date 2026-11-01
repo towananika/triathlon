@@ -1,6 +1,7 @@
 // 仮名世界のスキルツリー（データ）。2026-10-25 ひびきの原案（ideas/skilltree_rgb.md）。
 // 1つの技＝{id, en, ja, st:上がるステータス, req:[前提の技のid], note}。st が空なら「未定」。
 // st に / がある技は、2つのステータスが半分ずつ上がる。stg: 1 ＝ ステータスは Claude の案（要確認）。
+// w ＝ RAN（射程）がどの武器のタイプの射程か。RAN は武器のタイプごとに分かれる（剣・投てき・銃・魔法…）。
 // req2 ＝ Lv2 以上に上げるとき、同じ段（Lv−1）まで必要な技。
 // guess: 1 ＝ 前提は原案に書かれておらず、Claude が推定したもの（要確認）。
 // グループは {g:名前, items:[技 または グループ]}。見た目のツリーは、このデータから後で作る。
@@ -19,7 +20,7 @@ window.TRI_TREE = {
    {id: 'BU', en: 'Battle Understanding', ja: '戦闘理解', st: 'ATK', req: ['OS']},
    {id: 'DU', en: 'Dodge Understanding',  ja: '回避理解', st: 'SPD', req: ['DS']}]},
   {g: 'Warrior', items: [
-   {id: 'ST', en: 'Sword Theory',   ja: '剣術理論', st: 'RAN', req: ['MCT']},
+   {id: 'ST', en: 'Sword Theory',   ja: '剣術理論', st: 'RAN', w: '剣', req: ['MCT']},
    {id: 'SP', en: 'Sword Practice', ja: '剣術実習', st: 'ATS', req: ['MCT', 'ST'], note: '技：straight、slice'}]},
   {g: 'Knight', items: [
    {id: 'MS', en: 'Movement Strategy', ja: '移動戦術',   st: 'SPD', req: ['MCT']},
@@ -27,14 +28,14 @@ window.TRI_TREE = {
  G: {name: 'グリーン', groups: [
   {g: 'General', items: [
    {id: 'G.PT', en: 'Physical Training', ja: '基礎体力訓練', st: 'HP'},
-   {id: 'G.SHOOT', en: 'Throwing / Shooting', ja: '投てき・射撃', st: 'RAN', req: ['G.PT']}]},
+   {id: 'G.SHOOT', en: 'Throwing / Shooting', ja: '投てき・射撃', st: 'RAN', w: '投てき', req: ['G.PT']}]},
   {g: 'Option', items: [
    {id: 'G.UBT', en: 'Upper Body Training', ja: '上半身強化訓練', st: 'ATK', req: ['G.PT']},
    {id: 'G.LBT', en: 'Lower Body Training', ja: '下半身強化訓練', st: 'DEF', req: ['G.PT']},
    {id: 'IT',    en: 'Intelligence Training', st: 'MAG', note: 'RのIEと同じかは未定'},
    {id: 'G.MCT', en: 'Mind Control Training', ja: '精神統制訓練', st: 'RES'}]},
   {g: 'Ranger', items: [
-   {id: 'RIF', en: 'Rifle', ja: 'ライフル', st: 'RAN', stg: 1, req: ['G.SHOOT', 'G.UBT'], req2: ['IT', 'G.MCT'], note: 'Lv2〜4 は IT・MCT も同じ段まで必要'},
+   {id: 'RIF', en: 'Rifle', ja: 'ライフル', st: 'RAN', w: '銃', stg: 1, req: ['G.SHOOT', 'G.UBT'], req2: ['IT', 'G.MCT'], note: 'Lv2〜4 は IT・MCT も同じ段まで必要'},
    {id: 'HRF', en: 'Heavy Rifle', ja: '重ライフル', st: 'ATK', stg: 1, req: ['RIF'], req2: ['IT', 'G.MCT', 'WH'], note: 'Lv2〜4 は IT・MCT・WH も同じ段まで必要'}]},
   {g: 'Assassin', items: [
    {id: 'ASN', en: 'Assassination', ja: '暗殺術', st: 'ATS', req: ['G.SHOOT', 'G.UBT'], req2: ['IT', 'G.MCT', 'BU'], note: 'Lv2〜4 は IT・MCT・BU（ファイターの技）も必要'}]},
