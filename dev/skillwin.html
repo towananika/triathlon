@@ -21,6 +21,7 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 .bar small{opacity:.8;font-weight:400;margin-left:6px}
 .sp{font-variant-numeric:tabular-nums;background:var(--wcard);border:1px solid var(--wline);border-radius:8px;padding:2px 10px;white-space:nowrap}
 .bar button{font:inherit;font-size:12px;background:transparent;color:var(--wfg);border:1px solid var(--wline);border-radius:6px;padding:2px 8px;cursor:pointer}
+.about{margin:0;padding:10px 14px;font-size:13px;border-bottom:1px solid var(--wline)}
 .board{position:relative;padding:14px 12px 16px}
 .board svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .board path{fill:none;stroke:var(--wline);stroke-width:2}
@@ -88,6 +89,8 @@ function nm(x){return LANG==='ja'&&x.ja?x.ja:x.en}function cn(k){return LANG==='
 var ALL={};['R','G','B'].forEach(function(c){T[c].groups.forEach(function(g){flat(g.items,'',[]).forEach(function(x){ALL[x.id]=x})})});
 function rn(r){return cur.ids[r]?nm(cur.ids[r]):ALL[r]?nm(ALL[r]):r}
 var GPJ={General:'共通',Option:'選択'};
+// クラスの戦い方（2026-11-01 ひびき）
+var ABOUT={Fighter:'武器を使わず、筋力（ATK）で戦う近接クラス。ATKを大きく上げられ、武器がなくても拳で戦える。',Warrior:'武器で戦う近接クラス。筋力が少なくても武器の攻撃力で補える。武器の長さで少しだけ遠くまで届く。重い武器や長い武器は次の攻撃まで時間がかかる（ATSが下がる）ので、剣術理論と剣術実習で補う。'};
 var tabs=document.getElementById('tabs'),win=document.getElementById('win');
 ['R','G','B'].forEach(function(c){var d=document.createElement('div');d.style.setProperty('--k',COL[c]);
  d.innerHTML='<b style="background:'+COL[c]+'">'+c+'</b><span class="lvl">'+{R:'やさしい',G:'ふつう',B:'長い道のり'}[c]+'</span>';
@@ -106,7 +109,7 @@ function ok(n){return (n.req||[]).every(function(r){return !cur.ids[r]||(lv[r]||
 function cap(n){var c=MAX;if(!ok(n))return 0;(n.req2||[]).forEach(function(r){if(cur.ids[r])c=Math.min(c,Math.max(1,(lv[r]||0)+1))});return c}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function render(){var n=cur.nodes,max=0;n.forEach(function(x){max=Math.max(max,cur.dep[x.id])});
- var h='<div class="bar"><h2>'+esc(cn(cur.name))+(cur.sub?'<small>'+esc(cur.sub)+'</small>':'')+'</h2><span class="sp">SP '+(SP-used())+' / '+SP+'</span><button id="rs">リセット</button></div><div class="board"><svg></svg>';
+ var h='<div class="bar"><h2>'+esc(cn(cur.name))+(cur.sub?'<small>'+esc(cur.sub)+'</small>':'')+'</h2><span class="sp">SP '+(SP-used())+' / '+SP+'</span><button id="rs">リセット</button></div>'+(ABOUT[cur.name]?'<p class="about">'+esc(ABOUT[cur.name])+'</p>':'')+'<div class="board"><svg></svg>';
  for(var t=0;t<=max;t++){h+='<div class="tier"><span class="tl">'+(cur.lab?(LANG==='ja'&&GPJ[cur.lab[t]]||cur.lab[t]):(t+1)+'段')+'</span>';
   n.forEach(function(x){if(cur.dep[x.id]!==t)return;var L=lv[x.id]||0,o=ok(x);
    var ext=(x.req||[]).concat(x.req2||[]).filter(function(r,i,a){return !cur.ids[r]&&a.indexOf(r)===i});
