@@ -1,0 +1,27 @@
+.official-home{--home-content:1160px}
+.official-home .hero{min-height:0;height:680px;height:min(680px,calc(100svh - 142px));max-height:780px;background-position:center 51%;background-color:#467e99;align-items:end}
+.official-home .hero::before{background:linear-gradient(0deg,rgba(17,37,43,.86),rgba(17,37,43,.22) 46%,transparent 75%)}
+.official-home .hero-in{max-width:var(--home-content);gap:8px;padding:38px 32px;color:#fff}
+.official-home .logo{font-size:72px;letter-spacing:0;text-shadow:0 2px 16px #203c4b55;overflow-wrap:anywhere}
+.official-home .tagline{font-size:26px;letter-spacing:0}
+.official-home .hero-lead{font-size:16px;max-width:30em;line-height:1.8}
+.official-home .badge{border:0;background:none;border-radius:0;padding:0;font-size:12px;color:#e4ffff}
+.official-home .btn{border-radius:6px;min-height:46px;font-size:14px;background:#fff;color:#223c44}
+.official-home .btn.primary{background:#d3f3ed;color:#204a49}
+.official-home .sec{max-width:var(--home-content);padding:44px 32px 0;width:100%}
+.official-home .sec h2{font-size:26px;letter-spacing:0}
+.official-home .nine{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;overflow:visible;padding:0}
+.official-home .nine a{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:2px;justify-items:start;text-align:left;border:0;border-bottom:2px solid var(--c);border-radius:6px;background:var(--card);padding:0 18px 16px;min-width:0;overflow:hidden}
+.official-home .nine :is(img,.ini){width:100%;height:330px;aspect-ratio:auto;object-fit:contain;object-position:bottom;margin-bottom:12px;background:color-mix(in srgb,var(--c) 8%,var(--card));border-radius:0}
+.official-home .nine b{font-size:21px}.official-home .nine small{font-size:12px;color:var(--sub)}
+.official-home .character-voice{font-size:14px;line-height:1.7;margin:10px 0 0;overflow-wrap:anywhere;min-height:3.4em}
+.official-home .ep a{border:0;border-left:3px solid var(--teal);border-radius:0;padding:18px 22px;background:var(--card)}
+.official-home .box{border-radius:6px}.official-home .city{background:var(--card);color:var(--ink);border:0;border-top:2px solid var(--line);border-radius:0;padding:20px 0}.official-home .city .tag{color:var(--sub)}
+.official-home .city.c1{border-top-color:#4fae84}.official-home .city.c2{border-top-color:#5b8fd6}.official-home .city.c3{border-top-color:#bca56d}
+.official-home .home-roadmap{margin-top:48px;padding:32px;background:var(--mist);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.roadmap-inner{max-width:1096px;margin:auto;display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:center}.roadmap-inner h2{font-size:26px;line-height:1.5;margin:4px 0 10px;letter-spacing:0}.roadmap-inner p{font-size:14px;margin:8px 0}.development-status{font-size:12px;font-weight:700;border-left:3px solid var(--teal);padding-left:8px}
+.home-credits{max-width:var(--home-content);margin:32px auto 0;padding:0 32px}.home-credits>summary{cursor:pointer;font-size:14px;min-height:44px;display:flex;align-items:center;gap:12px}.home-credits>summary::before{content:'+'}.home-credits[open]>summary::before{content:'−'}.home-credits .sec{padding:16px 0}.home-credits .team div{border-radius:6px}
+@media(min-width:1500px){.official-home .hero-in{max-width:1400px;padding-left:70px}}
+@media(max-width:800px){.official-home .logo{font-size:56px}.official-home .sec{padding:32px 20px 0}.official-home .nine{gap:12px}.official-home .nine :is(img,.ini){height:260px}.official-home .nine a{padding:0 12px 12px}.official-home .character-voice{font-size:13px}.roadmap-inner{gap:24px}}
+@media(max-width:600px){.official-home .hero{height:calc(100svh - 158px);min-height:490px;max-height:680px;background-position:63% center}.official-home .hero-in{padding:24px 20px;gap:7px}.official-home .logo{font-size:42px}.official-home .tagline{font-size:22px}.official-home .hero-lead{font-size:14px}.official-home .cta{gap:8px}.official-home .btn{padding:0 14px;font-size:13px}.official-home .sec{padding:28px 16px 0}.official-home .sec h2{font-size:22px}.official-home .sec-head{align-items:center;flex-wrap:wrap;gap:0 12px}.official-home .nine{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 10px}.official-home .nine :is(img,.ini){height:245px}.official-home .nine b{font-size:19px}.official-home .character-voice{font-size:12px;min-height:3.4em}.official-home .home-roadmap{padding:26px 16px;margin-top:32px}.roadmap-inner{grid-template-columns:1fr;gap:12px}.roadmap-inner h2{font-size:22px}.home-credits{padding:0 16px}}
+@media(max-width:360px){.official-home .logo{font-size:36px}.official-home .hero{min-height:470px}.official-home .nine :is(img,.ini){height:210px}}
