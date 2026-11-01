@@ -1,8 +1,8 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>スキルウィンドウ | TRIATHLON</title>
 <style>
 /* 開発用：クラスごとのスキルウィンドウ（試作）。データは skilltree.js */
-:root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mut:#5E6B72;--line:#DCE5E4;--deep:#173A63;--gold:#B08F33;--track:#E6ECEB;--r:#D9707A;--g:#4FAE84;--b:#5B8FD6;--win:#1E2A33;--wfg:#E8EEF0;--wline:#3A4A55;--wcard:#27353F}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mut:#9FB0B4;--line:#2A3A42;--deep:#9CC3EC;--track:#26343B;--gold:#D9BC64;--win:#0E161B;--wcard:#1A262E;color-scheme:dark}}
+:root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mut:#5E6B72;--line:#DCE5E4;--deep:#173A63;--gold:#B08F33;--track:#E6ECEB;--r:#D9707A;--g:#4FAE84;--b:#5B8FD6;--win:#FFFFFF;--wfg:#26323A;--wline:#D3DDDC;--wcard:#F5F8F7;--ex:#A06F12}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mut:#9FB0B4;--line:#2A3A42;--deep:#9CC3EC;--track:#26343B;--gold:#D9BC64;--win:#1B262C;--wfg:#E3EBEA;--wline:#34454E;--wcard:#22313A;--ex:#F0C674;color-scheme:dark}}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.7 "Hiragino Sans","Noto Sans JP",system-ui,sans-serif}
 .wrap{max-width:860px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-left,0px)) 64px;display:grid;gap:22px}
 p{margin:0}h1{font-size:28px;color:var(--deep);margin:4px 0}
@@ -14,11 +14,11 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 .tabs b{width:1.6em;height:1.6em;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:12px}
 .tabs button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:4px 12px;cursor:pointer}
 .tabs button[aria-pressed=true]{background:var(--k);border-color:var(--k);color:#fff;font-weight:700}
-.win{background:var(--win);color:var(--wfg);border-radius:14px;border:2px solid var(--k);box-shadow:0 6px 24px rgba(0,0,0,.18);overflow:hidden}
-.bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(90deg,var(--k),transparent 80%);font-size:14px}
+.win{background:var(--win);color:var(--wfg);border-radius:14px;border:2px solid var(--k);box-shadow:0 4px 18px rgba(23,58,99,.08);overflow:hidden}
+.bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(90deg,color-mix(in srgb,var(--k) 30%,transparent),transparent 85%);font-size:14px}
 .bar h2{margin:0;font-size:17px;flex:1;min-width:0}
 .bar small{opacity:.8;font-weight:400;margin-left:6px}
-.sp{font-variant-numeric:tabular-nums;background:rgba(0,0,0,.35);border-radius:8px;padding:2px 10px;white-space:nowrap}
+.sp{font-variant-numeric:tabular-nums;background:var(--wcard);border:1px solid var(--wline);border-radius:8px;padding:2px 10px;white-space:nowrap}
 .bar button{font:inherit;font-size:12px;background:transparent;color:var(--wfg);border:1px solid var(--wline);border-radius:6px;padding:2px 8px;cursor:pointer}
 .board{position:relative;padding:14px 12px 16px}
 .board svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
@@ -29,7 +29,7 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 .tl{flex-basis:100%;font-size:10px;opacity:.5;letter-spacing:.1em}
 .nd{box-sizing:border-box;width:150px;background:var(--wcard);border:1px solid var(--wline);border-radius:10px;padding:8px 9px;display:grid;gap:4px;font-size:12px;position:relative}
 .nd.lock>*{opacity:.45}
-.nd.lv{border-color:var(--k);box-shadow:0 0 0 1px var(--k) inset}
+.nd.lv{border-color:var(--k);box-shadow:0 0 0 1px var(--k) inset;background:color-mix(in srgb,var(--k) 8%,var(--wcard))}
 .nd .gp{font-size:10px;opacity:.6;letter-spacing:.06em}
 .nd b{font-size:13px;line-height:1.35}
 .nd .ja{opacity:.75}
@@ -39,7 +39,7 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 .ctl{display:flex;justify-content:space-between;align-items:center}
 .ctl button{width:26px;height:22px;font:inherit;font-size:14px;line-height:1;background:transparent;color:var(--wfg);border:1px solid var(--wline);border-radius:5px;cursor:pointer}
 .ctl button:disabled{opacity:.3;cursor:default}
-.ex{font-size:10px;color:#F0C674}
+.ex{font-size:10px;color:var(--ex)}
 .gs{font-size:10px;opacity:.6}
 .sum{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-top:1px solid var(--wline);font-size:12px}
 .sum span{background:var(--wcard);border-radius:6px;padding:1px 8px;font-variant-numeric:tabular-nums}
