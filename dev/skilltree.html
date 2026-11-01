@@ -59,18 +59,18 @@ q{quotes:none;font-size:12px;color:var(--mut)}q::before{content:"Req. "}
 <section class="box" id="chk"></section>
 <p class="mut">未定：GのRifle・Heavy Rifleの上がるステータス、2〜4段と前提1〜3の対応、RのIEとGのITの関係、EMの綴りと定義、級の数値。もと：ideas/skilltree_rgb.md</p>
 </div>
-<script src="skilltree.js?v=0.82"></script>
+<script src="skilltree.js?v=0.83"></script>
 <script>
 (function(){
 function e(x){return String(x).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 var T=window.TRI_TREE,K={R:'var(--r)',G:'var(--g)',B:'var(--b)'},all={},n=0,nost=0,bad=[];
 function walk(list,f){list.forEach(function(it){if(it.items)walk(it.items,f);else f(it)})}
-var ng=0;Object.keys(T).forEach(function(c){T[c].groups.forEach(function(g){walk([g],function(it){all[it.id]=it;n++;if(!it.st)nost++;if(it.guess)ng++})})});
+var ng=0,nsg=0;Object.keys(T).forEach(function(c){T[c].groups.forEach(function(g){walk([g],function(it){all[it.id]=it;n++;if(!it.st)nost++;if(it.guess)ng++;if(it.stg)nsg++})})});
 Object.keys(all).forEach(function(id){(all[id].req||[]).forEach(function(r){if(!all[r])bad.push(id+' → '+r)})});
 function li(it){if(it.items)return '<li>'+e(it.g)+'<ol>'+it.items.map(li).join('')+'</ol></li>';
- return '<li>'+e(it.en)+(it.ja?' <span class="ja">'+e(it.ja)+'</span>':'')+(it.st?' <s>'+e(it.st)+'</s>':' <s class="no">未定</s>')+(it.req&&it.req.length?' <q>'+it.req.map(function(r){return e((all[r]&&all[r].id.replace(/^G\./,''))||r)}).join(', ')+(it.guess?'（推定）':'')+'</q>':'')+(it.note?'<small>'+e(it.note)+'</small>':'')+'</li>'}
+ return '<li>'+e(it.en)+(it.ja?' <span class="ja">'+e(it.ja)+'</span>':'')+(it.st?' <s>'+e(it.st)+'</s>':' <s class="no">未定</s>')+(it.stg?'（案）':'')+(it.req&&it.req.length?' <q>'+it.req.map(function(r){return e((all[r]&&all[r].id.replace(/^G\./,''))||r)}).join(', ')+(it.guess?'（推定）':'')+'</q>':'')+(it.req2?' <q>Lv2〜：'+it.req2.map(function(r){return e(r.replace(/^G\./,''))}).join(', ')+'</q>':'')+(it.note?'<small>'+e(it.note)+'</small>':'')+'</li>'}
 document.getElementById('trees').innerHTML=Object.keys(T).map(function(c){return '<section class="tree" style="--k:'+K[c]+'"><h2>'+c+' '+e(T[c].name)+'</h2><ol>'+T[c].groups.map(li).join('')+'</ol></section>'}).join('');
-document.getElementById('chk').innerHTML='<h2>データの点検</h2><p>技 '+n+' 個（R・G・B）。上がるステータスが未定：'+nost+' 個。前提を推定したもの：'+ng+' 個（（推定）の印）。</p><p>'+(bad.length?'前提が見つからない：'+bad.map(e).join('、'):'前提の技はすべてデータの中にある。')+'</p><p class="mut">データ：dev/skilltree.js（見た目のツリーは、このデータから作る）</p>';
+document.getElementById('chk').innerHTML='<h2>データの点検</h2><p>技 '+n+' 個（R・G・B）。上がるステータスが未定：'+nost+' 個、Claudeの案：'+nsg+' 個（（案）の印）。前提を推定したもの：'+ng+' 個（（推定）の印）。</p><p>'+(bad.length?'前提が見つからない：'+bad.map(e).join('、'):'前提の技はすべてデータの中にある。')+'</p><p class="mut">データ：dev/skilltree.js（見た目のツリーは、このデータから作る）</p>';
 })();
 </script>
 </body></html>

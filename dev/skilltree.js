@@ -1,5 +1,7 @@
 // 仮名世界のスキルツリー（データ）。2026-10-25 ひびきの原案（ideas/skilltree_rgb.md）。
 // 1つの技＝{id, en, ja, st:上がるステータス, req:[前提の技のid], note}。st が空なら「未定」。
+// st に / がある技は、2つのステータスが半分ずつ上がる。stg: 1 ＝ ステータスは Claude の案（要確認）。
+// req2 ＝ Lv2 以上に上げるとき、同じ段（Lv−1）まで必要な技。
 // guess: 1 ＝ 前提は原案に書かれておらず、Claude が推定したもの（要確認）。
 // グループは {g:名前, items:[技 または グループ]}。見た目のツリーは、このデータから後で作る。
 window.TRI_TREE = {
@@ -32,16 +34,12 @@ window.TRI_TREE = {
    {id: 'IT',    en: 'Intelligence Training', st: 'MAG', note: 'RのIEと同じかは未定'},
    {id: 'G.MCT', en: 'Mind Control Training', ja: '精神統制訓練', st: 'RES'}]},
   {g: 'Ranger', items: [
-   {id: 'RIF1', en: 'Rifle 1', ja: 'ライフル1', st: '', req: ['G.SHOOT', 'G.UBT']},
-   {id: 'RIF2', en: 'Rifle 2〜4', ja: 'ライフル2〜4', st: '', req: ['IT', 'G.MCT'], note: '前提も 1〜3 段'},
-   {id: 'HRF1', en: 'Heavy Rifle 1', ja: '重ライフル1', st: '', req: ['RIF2']},
-   {id: 'HRF2', en: 'Heavy Rifle 2〜4', ja: '重ライフル2〜4', st: '', req: ['IT', 'G.MCT', 'WH'], note: '前提も 1〜3 段'}]},
+   {id: 'RIF', en: 'Rifle', ja: 'ライフル', st: 'RAN', stg: 1, req: ['G.SHOOT', 'G.UBT'], req2: ['IT', 'G.MCT'], note: 'Lv2〜4 は IT・MCT も同じ段まで必要'},
+   {id: 'HRF', en: 'Heavy Rifle', ja: '重ライフル', st: 'ATK', stg: 1, req: ['RIF'], req2: ['IT', 'G.MCT', 'WH'], note: 'Lv2〜4 は IT・MCT・WH も同じ段まで必要'}]},
   {g: 'Assassin', items: [
-   {id: 'ASN1', en: 'Assassination 1', ja: '暗殺術1', st: 'ATS', req: ['G.SHOOT', 'G.UBT'], note: '原案は Throwing＋UBT'},
-   {id: 'ASN2', en: 'Assassination 2〜4', ja: '暗殺術2〜4', st: '', req: ['IT', 'G.MCT', 'BU'], note: 'BU は Fighter の技'}]},
+   {id: 'ASN', en: 'Assassination', ja: '暗殺術', st: 'ATS', req: ['G.SHOOT', 'G.UBT'], req2: ['IT', 'G.MCT', 'BU'], note: 'Lv2〜4 は IT・MCT・BU（ファイターの技）も必要'}]},
   {g: 'Scout', items: [
-   {id: 'MVS1', en: 'Movement Strategy 1', ja: '移動戦術1', st: 'SPD', req: ['G.PT']},
-   {id: 'MVS2', en: 'Movement Strategy 2〜4', ja: '移動戦術2〜4', st: '', req: ['G.PT'], note: 'PT 2〜4 が前提'}]}]},
+   {id: 'MVS', en: 'Movement Strategy', ja: '移動戦術', st: 'SPD', req: ['G.PT'], req2: ['G.PT'], note: 'Lv2〜4 は PT も同じ段まで必要'}]}]},
  B: {name: 'ブルー', groups: [
   {g: 'General', items: [
    {id: 'PHY', en: 'Physics', ja: '物理学', st: 'HP'},
@@ -53,40 +51,40 @@ window.TRI_TREE = {
     {id: 'EM.EA', en: 'EM: Earth', ja: '元素魔法：土', st: 'DEF', req: ['EM.WA']}]},
    {g: 'Class 9', items: [
     {id: 'MI', en: 'Mana Inspiration', ja: 'マナ感知', st: 'MP'},
-    {id: 'EMM.WAEA', en: 'EMM: Water & Earth', ja: '混合魔法：水と土', st: '', req: ['EM.WA', 'EM.EA'], guess: 1}]},
+    {id: 'EMM.WAEA', en: 'EMM: Water & Earth', ja: '混合魔法：水と土', st: 'HP/DEF', stg: 1, req: ['EM.WA', 'EM.EA'], guess: 1}]},
    {g: 'Class 8', items: [
     {id: 'AMI', en: 'Advanced Mana Inspiration', ja: '上級マナ感知', st: 'MP', req: ['MI'], guess: 1},
     {id: 'EM.WI', en: 'EM: Wind', ja: '元素魔法：風', st: 'SPD', req: ['MI']},
-    {id: 'EMM.WIWA', en: 'EMM: Wind & Water', ja: '混合魔法：風と水', st: '', req: ['EM.WI', 'EM.WA'], guess: 1, note: '高圧・押す・水分'},
-    {id: 'EMM.WIEA', en: 'EMM: Wind & Earth', ja: '混合魔法：風と土', st: '', req: ['EM.WI', 'EM.EA'], guess: 1, note: 'counter'}]},
+    {id: 'EMM.WIWA', en: 'EMM: Wind & Water', ja: '混合魔法：風と水', st: 'SPD/HP', stg: 1, req: ['EM.WI', 'EM.WA'], guess: 1, note: '高圧・押す・水分'},
+    {id: 'EMM.WIEA', en: 'EMM: Wind & Earth', ja: '混合魔法：風と土', st: 'SPD/DEF', stg: 1, req: ['EM.WI', 'EM.EA'], guess: 1, note: 'counter'}]},
    {g: 'Class 7', items: [
     {id: 'EM.FI', en: 'EM: Fire', ja: '元素魔法：火', st: 'MAG', req: ['AMI']},
-    {id: 'EMM.FIWA', en: 'EMM: Fire & Water', ja: '混合魔法：火と水', st: '', req: ['EM.FI', 'EM.WA'], guess: 1, note: 'counter'},
-    {id: 'EMM.FIEA', en: 'EMM: Fire & Earth', ja: '混合魔法：火と土', st: '', req: ['EM.FI', 'EM.EA'], guess: 1, note: 'dry（乾燥）'},
-    {id: 'EMM.FIWI', en: 'EMM: Fire & Wind', ja: '混合魔法：火と風', st: '', req: ['EM.FI', 'EM.WI'], guess: 1, note: '低圧・引く'}]},
+    {id: 'EMM.FIWA', en: 'EMM: Fire & Water', ja: '混合魔法：火と水', st: 'MAG/HP', stg: 1, req: ['EM.FI', 'EM.WA'], guess: 1, note: 'counter'},
+    {id: 'EMM.FIEA', en: 'EMM: Fire & Earth', ja: '混合魔法：火と土', st: 'MAG/DEF', stg: 1, req: ['EM.FI', 'EM.EA'], guess: 1, note: 'dry（乾燥）'},
+    {id: 'EMM.FIWI', en: 'EMM: Fire & Wind', ja: '混合魔法：火と風', st: 'MAG/SPD', stg: 1, req: ['EM.FI', 'EM.WI'], guess: 1, note: '低圧・引く'}]},
    {g: 'Class 6 Elemental Sublet', items: [
-    {id: 'SHOT', en: 'EMM: F&E + Wi&Wa', ja: '射出（押す）', st: '', req: ['EMM.FIEA', 'EMM.WIWA'], guess: 1, note: 'shot'},
-    {id: 'SHOTP', en: 'EMM: F&E + F&Wi', ja: '射出（引く）', st: '', req: ['EMM.FIEA', 'EMM.FIWI'], guess: 1, note: 'shot（pull）'}]},
+    {id: 'SHOT', en: 'EMM: F&E + Wi&Wa', ja: '射出（押す）', st: 'MAG/SPD', stg: 1, req: ['EMM.FIEA', 'EMM.WIWA'], guess: 1, note: 'shot'},
+    {id: 'SHOTP', en: 'EMM: F&E + F&Wi', ja: '射出（引く）', st: 'MAG/SPD', stg: 1, req: ['EMM.FIEA', 'EMM.FIWI'], guess: 1, note: 'shot（pull）'}]},
    {g: 'Class 5 Elemental Mage（AEM 7種）', items: [
-    {id: 'AEM.ICE', en: 'AEM: Water（Ice）', ja: '上級元素魔法：氷', st: ''},
-    {id: 'AEM.HEAL', en: 'AEM: Earth（Heal）', ja: '上級元素魔法：癒し', st: ''},
-    {id: 'AEM.POI', en: 'AEM: Earth（Poison）', ja: '上級元素魔法：毒', st: '', req: ['AEM.HEAL']},
-    {id: 'AEM.WIND', en: 'AEM: Wind', ja: '上級元素魔法：風', st: ''},
-    {id: 'AEM.FLA', en: 'AEM: Fire（Flame）', ja: '上級元素魔法：炎', st: ''},
-    {id: 'AEM.THU', en: 'AEM: Fire（Thunder）', ja: '上級元素魔法：雷', st: ''},
-    {id: 'AEM.LIG', en: 'AEM: Fire（Light）', ja: '上級元素魔法：光', st: '', req: ['AEM.THU']}]},
+    {id: 'AEM.ICE', en: 'AEM: Water（Ice）', ja: '上級元素魔法：氷', st: 'HP', stg: 1},
+    {id: 'AEM.HEAL', en: 'AEM: Earth（Heal）', ja: '上級元素魔法：癒し', st: 'DEF', stg: 1},
+    {id: 'AEM.POI', en: 'AEM: Earth（Poison）', ja: '上級元素魔法：毒', st: 'DEF', stg: 1, req: ['AEM.HEAL']},
+    {id: 'AEM.WIND', en: 'AEM: Wind', ja: '上級元素魔法：風', st: 'SPD', stg: 1},
+    {id: 'AEM.FLA', en: 'AEM: Fire（Flame）', ja: '上級元素魔法：炎', st: 'MAG', stg: 1},
+    {id: 'AEM.THU', en: 'AEM: Fire（Thunder）', ja: '上級元素魔法：雷', st: 'MAG', stg: 1},
+    {id: 'AEM.LIG', en: 'AEM: Fire（Light）', ja: '上級元素魔法：光', st: 'MAG', stg: 1, req: ['AEM.THU']}]},
    {g: 'Class 4〜1st', items: [
-    {id: 'C4', en: 'Class 4', ja: '4級', st: '', note: 'AEM 7種から2種'},
-    {id: 'C3', en: '3rd Class', ja: '3級', st: '', req: ['C4'], guess: 1, note: 'AEM 7種から4種'},
-    {id: 'C2', en: '2nd Class', ja: '2級', st: '', req: ['C3'], guess: 1, note: 'AEM 全7種'},
-    {id: 'C1', en: '1st Class', ja: '1級', st: '', req: ['C2'], guess: 1, note: 'AEM 全7種（2級との差は未定）'}]}]},
+    {id: 'C4', en: 'Class 4', ja: '4級', st: 'MP', stg: 1, note: 'AEM 7種から2種'},
+    {id: 'C3', en: '3rd Class', ja: '3級', st: 'MP', stg: 1, req: ['C4'], guess: 1, note: 'AEM 7種から4種'},
+    {id: 'C2', en: '2nd Class', ja: '2級', st: 'MP', stg: 1, req: ['C3'], guess: 1, note: 'AEM 全7種'},
+    {id: 'C1', en: '1st Class', ja: '1級', st: 'MP', stg: 1, req: ['C2'], guess: 1, note: 'AEM 全7種（2級との差は未定）'}]}]},
   {g: 'Mage Academy（回路魔法）', items: [
-   {id: 'ESC', en: 'Elemental Scholar Class', ja: '元素学者クラス', st: '', note: 'unqualified（意味は未定）'},
-   {id: 'EMC', en: 'Elemental Mage Class', ja: '元素魔導士クラス', st: '', note: 'Elemental Academy の Class 5〜1st が前提。マナ5,000以上＋消費マナ1,000以上の技'},
-   {id: 'MGC', en: 'Mage Class（A〜E）', ja: '魔導士クラス（A〜E）', st: '', req: ['EMC'], guess: 1, note: 'マナ10,000以上＋消費マナ2,000以上の技'},
-   {id: 'ARC', en: 'Arch Mage Class（F〜I）', ja: '大魔導士クラス（F〜I）', st: '', req: ['MGC'], guess: 1, note: 'マナ15,000以上＋消費マナ3,000以上の技'}]},
+   {id: 'ESC', en: 'Elemental Scholar Class', ja: '元素学者クラス', st: 'MAG', stg: 1, note: 'unqualified（意味は未定）'},
+   {id: 'EMC', en: 'Elemental Mage Class', ja: '元素魔導士クラス', st: 'MP', stg: 1, note: 'Elemental Academy の Class 5〜1st が前提。マナ5,000以上＋消費マナ1,000以上の技'},
+   {id: 'MGC', en: 'Mage Class（A〜E）', ja: '魔導士クラス（A〜E）', st: 'MP', stg: 1, req: ['EMC'], guess: 1, note: 'マナ10,000以上＋消費マナ2,000以上の技'},
+   {id: 'ARC', en: 'Arch Mage Class（F〜I）', ja: '大魔導士クラス（F〜I）', st: 'MP', stg: 1, req: ['MGC'], guess: 1, note: 'マナ15,000以上＋消費マナ3,000以上の技'}]},
   {g: 'Cleris Missionary School', items: [
-   {id: 'CLR', en: 'Grade 1〜13', ja: '1〜13学年', st: '', note: 'ワンタップで詠唱。伸びやすいが伸びしろは低め。学部：Engineering／Education／Humanities／Medicine／Liberal Arts／Social Sciences／Natural Sciences'}]},
+   {id: 'CLR', en: 'Grade 1〜13', ja: '1〜13学年', st: 'RES', stg: 1, note: 'ワンタップで詠唱。伸びやすいが伸びしろは低め。学部：Engineering／Education／Humanities／Medicine／Liberal Arts／Social Sciences／Natural Sciences'}]},
   {g: 'Nacsha Missionary School（Full Open）', items: [
    {id: 'NAC', en: 'すべての技を解放できる', st: '', note: 'ランダムな skill-tech、1ボタン詠唱、10,000回で100%、魔法回路1〜4：100p^1〜4'}]}]}
 };
