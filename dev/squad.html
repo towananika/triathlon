@@ -68,13 +68,19 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 .rock{position:absolute;background:var(--cover);border-radius:6px;opacity:.9}
 .u.ghost{background:transparent;border:2px dashed var(--r);color:var(--r);opacity:.6}
 #msg{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.hud2 button{flex-shrink:0}
+.sea{position:absolute;left:0;right:0;background:color-mix(in srgb,var(--b) 30%,transparent)}
+.rock.tree{background:color-mix(in srgb,var(--g) 55%,var(--cover));border-radius:40%}.rock.wall{opacity:.75}
+.blk{display:grid;grid-template-columns:minmax(0,180px) 1fr;gap:12px;align-items:start}.mapw{position:relative}#mapc{width:100%;image-rendering:pixelated;border-radius:8px;cursor:crosshair;display:block}
+#mk{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border:2px solid var(--gold);border-radius:50%;pointer-events:none}
+.blk button{font:inherit;font-size:13px;margin-top:6px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:4px 10px;cursor:pointer}
 .key{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--mut)}
 </style></head><body><div class="wrap">
 <header><p class="kick">TRIATHLON · 開発 · 戦闘（仮名世界）</p><h1>分隊戦</h1>
 <nav class="dv"><a href="./">← 開発トップ</a> · <a href="squad.html">分隊戦</a> · <a href="battle.html">1対1</a> · <a href="skillwin.html">スキルウィンドウ</a> · <a href="stat.html">ステータス</a></nav></header>
 <p class="mut">5人の分隊どうしが自動で戦う。あなたは班長として、始める前に作戦を選び、戦闘中に1回だけ変えられる。キャラは自分の目で見た敵しかわからず、見たことは無線で少し遅れて仲間に伝わる。相手を押し返し、士気を0にしたら勝ち。数値と式はすべて仮。</p>
 <div class="teams"><div class="team" id="tA"></div><div class="team" id="tB"></div></div>
-<div class="ctl"><button class="go" id="go">作戦開始</button><button id="fast">すぐ結果</button><button id="many">100回</button><button id="reroll">敵を入れ替える</button></div>
+<div class="ctl"><button class="go" id="go">作戦開始</button><button id="fast">すぐ結果</button><button id="many">100回</button><button id="reroll">敵を入れ替える</button><label class="mut">戦場 <select id="fsz"><option value="s">小（約1分）</option><option value="m">中（約1分半）</option><option value="l" selected>大（約2分）</option><option value="xl">特大（約3分）</option></select></label></div>
+<div class="blk"><div class="mapw"><canvas id="mapc"></canvas><span id="mk"></span></div><div class="mut">戦場＝マップの1升目。地図を押すと、その升目で戦う。<br><b id="bname"></b><br><button id="brand">ほかの升目</button></div></div>
 <div class="game" id="game">
 <div class="hud"><div class="mb"><span>味方の士気</span><i><b id="m0"></b></i></div><div class="clk" id="clk">0:00</div><div class="mb en"><span>敵の士気</span><i><b id="m1"></b></i></div></div>
 <div class="hud2"><button id="spd">×1</button><span class="mut" id="msg">作戦を選んで作戦開始</span><button id="skip">スキップ</button></div>
@@ -85,9 +91,10 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 </div>
 <p class="mut" style="font-size:11px">画面の配置だけの仮の表示。丸い顔はキャラの絵（ひびきさんの絵）。絵がないクラスは一文字。絵や演出は、ひびきさんが作るものに差し替える。</p>
 <details><summary class="mut">戦いの記録</summary><div class="res" id="res"></div><div class="log" id="log"></div></details>
-<p class="mut">しくみ（仮）：遮蔽の後ろでは受けるダメージと命中が下がる。撃たれ続けると「制圧」され、動けず攻撃も遅くなる。仲間が倒れたり撃たれたりすると士気が下がり、0で退く。色の相性は R→G→B→R（有利 1.3倍・不利 0.8倍）。見えない敵は撃てない。遮蔽に隠れて撃っていない敵は見つけにくい。気づかれていない相手には当てやすい。班長が倒れると無線が止まり、声の届く近くの仲間にしか伝わらない。画面は上から見た2Dだが、キャラには高さがある：高台からは遠くまで見え、上から撃つと当てやすい。岩や丘の向こうは見えず、撃てない。作戦は 制圧前進（撃って押さえ、近接が進む）・待ち伏せ（動かず、先に撃つ）・側面から（前列2人が高台へ回り込み、遮蔽の横から撃つ）。ナイトは敵の攻撃を引きつけ、ファイターは敵の後列を狙う。班長の色で、Rなら守り、Gなら命中、Bなら士気が少し強くなる。</p>
+<p class="mut">しくみ（仮）：遮蔽の後ろでは受けるダメージと命中が下がる。撃たれ続けると「制圧」され、動けず攻撃も遅くなる。仲間が倒れたり撃たれたりすると士気が下がり、0で退く。色の相性は R→G→B→R（有利 1.3倍・不利 0.8倍）。戦場は4つの広さ（小・中・大・特大）。広いほど時間の上限が長い（約1分〜3分）。士気が0になれば、それより早く終わる。戦場はマップの升目から選ぶ。どの升目も戦場になり、土地の種類で地形が変わる（畑＝ひらけている、森＝木が多く見通しが悪い、高地＝丘が多い、荒れ地＝岩が多い、開拓地＝壁の跡）。起伏が大きいと丘が高く、海ぞいは端が海。見えない敵は撃てない。遮蔽に隠れて撃っていない敵は見つけにくい。気づかれていない相手には当てやすい。班長が倒れると無線が止まり、声の届く近くの仲間にしか伝わらない。画面は上から見た2Dだが、キャラには高さがある：高台からは遠くまで見え、上から撃つと当てやすい。岩や丘の向こうは見えず、撃てない。作戦は 制圧前進（撃って押さえ、近接が進む）・待ち伏せ（動かず、先に撃つ）・側面から（前列2人が高台へ回り込み、遮蔽の横から撃つ）。ナイトは敵の攻撃を引きつけ、ファイターは敵の後列を狙う。班長の色で、Rなら守り、Gなら命中、Bなら士気が少し強くなる。</p>
 </div>
-<script src="skilltree.js?v=0.98"></script>
+<script src="skilltree.js?v=0.99"></script>
+<script src="../assets/data/world/land.js?v=0.99"></script>
 <script src="../char/cast-data.js?v=0.69"></script>
 <script>
 (function(){
@@ -123,18 +130,35 @@ function ui(id){var t=team[id],el=document.getElementById('t'+id);
  if(id==='A'){el.querySelectorAll('select').forEach(function(s){s.onchange=function(){t.cl[+s.dataset.i]=+s.value;stop()}});
   el.querySelectorAll('input').forEach(function(r){r.onchange=function(){t.lead=+r.value;stop()}})}}
 rollB();ui('A');ui('B');
-// 戦場：x は 0〜20（横）、y は 0〜100（縦、10で1マス）。画面は2Dだが、キャラにとっては高さのある3D空間
-var COVER=[4,8,12,16],HILL={x0:8.5,x1:11.5,y0:0,y1:30,h:3},ROCK={x0:9.4,x1:10.6,y0:42,y1:60,h:4},sim=null,timer=null,el=function(i){return document.getElementById(i)};
+// 戦場：x は 0〜W（横）、y は 0〜100（縦、10で1マス）。画面は2Dだが、キャラにとっては高さのある3D空間
+// 戦場の広さと時間の目安（ウマ娘のレース時間を目安に）：小＝1分10秒、中＝1分35秒、大＝2分、特大＝3分。速く終わることも長引くこともある。上限は目安の1.5倍
+var FIELD={s:{n:'小',w:12,goal:70},m:{n:'中',w:16,goal:95},l:{n:'大',w:20,goal:120},xl:{n:'特大',w:30,goal:180}},W,LIM,COVER,HILLS,ROCKS,YMIN,YMAX,SEE,HPX=3,FK='l';
+// 戦場＝マップの1升目（トライアスロンの土地、約2km四方）。どの升目も戦場になる。土地の種類・起伏・海ぞいで地形が決まり、同じ升目はいつも同じ地形
+var LAND=window.TRI_LAND,LR=LAND?atob(LAND.d):'',KN={1:'畑',2:'森',3:'高地',4:'荒れ地',5:'開拓地'},BLK=null;
+function cell(cx,cy){if(cx<0||cy<0||cx>=LAND.nx||cy>=LAND.ny)return 0;return LR.charCodeAt(cy*LAND.nx+cx)}
+function pickBlock(cx,cy){for(var r=0;r<15;r++)for(var dy=-r;dy<=r;dy++)for(var dx=-r;dx<=r;dx++){var v=cell(cx+dx,cy+dy);if(v>>4)return {cx:cx+dx,cy:cy+dy,k:v>>4,sh:v&15}}return null}
+function randBlock(){for(;;){var cx=Math.floor(Math.random()*LAND.nx),cy=Math.floor(Math.random()*LAND.ny),v=cell(cx,cy);if(v>>4)return {cx:cx,cy:cy,k:v>>4,sh:v&15}}}
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function blkName(b){var sl=Math.abs(b.sh-10),sea=!(cell(b.cx,b.cy-1)>>4)||!(cell(b.cx,b.cy+1)>>4);return KN[b.k]+(sl>=3?'・起伏が大きい':sl>=1?'・ゆるい起伏':'・平ら')+(sea?'・海ぞい':'')}
+function setField(k){var f=FIELD[k||FK];FK=k||FK;W=f.w;LIM=f.goal*15;var b=BLK||{cx:0,cy:0,k:1,sh:10},R=rng(b.cx*7919+b.cy*104729+W),sl=Math.abs(b.sh-10);
+ var rr=function(a,c){return a+R()*(c-a)},mid=function(){return rr(3.6,W-3.6)};
+ COVER=[];HILLS=[];ROCKS=[];SEE=1;var step={1:5,2:6,3:5,4:4,5:4}[b.k];for(var c=step;c<=W-3.5;c+=step)COVER.push(c+rr(-0.6,0.6));
+ var nh=(b.k===3?2:0)+(sl>=3?1:0)+(b.k===1&&R()<0.5?1:0);for(var i=0;i<nh;i++){var x=mid(),y=rr(0,70),wd=rr(2,4);HILLS.push({x0:x-wd/2,x1:x+wd/2,y0:y,y1:y+rr(20,35),h:1.5+sl*0.5+(b.k===3?1.5:0)})}
+ var nr={1:0,2:0,3:2,4:5,5:3}[b.k];for(i=0;i<nr;i++){var x2=mid(),y2=rr(5,85),lg=b.k===5;ROCKS.push({x0:x2-(lg?0.3:0.6),x1:x2+(lg?0.3:0.6),y0:y2,y1:y2+(lg?rr(15,30):rr(8,16)),h:lg?3:4,t:lg?'wall':'rock'})}
+ if(b.k===2){SEE=0.7;for(i=0;i<W*1.1;i++){var x3=mid(),y3=rr(2,92);ROCKS.push({x0:x3-0.25,x1:x3+0.25,y0:y3,y1:y3+5,h:8,t:'tree'})}}
+ YMIN=4;YMAX=96;if(!(cell(b.cx,b.cy-1)>>4))YMIN=16;if(!(cell(b.cx,b.cy+1)>>4))YMAX=84;}
+BLK=LAND?randBlock():null;setField('l');var sim=null,timer=null,el=function(i){return document.getElementById(i)};
 var PLAN={sup:'制圧前進',amb:'待ち伏せ',flank:'側面から'},PK=['sup','amb','flank'],myPlan='sup';
 function inR(o,x,y){return x>=o.x0&&x<=o.x1&&y>=o.y0&&y<=o.y1}
-function gz(x,y){return inR(HILL,x,y)?HILL.h:0}
+function gz(x,y){var h=0;HILLS.forEach(function(o){if(inR(o,x,y)&&o.h>h)h=o.h});return h}
+function blocked(x,y){return ROCKS.some(function(o){return inR(o,x,y)})}
 function eye(u){return gz(u.x,u.y)+(u.cover?1:1.6)}
 function dist(a,b){return Math.hypot(a.x-b.x,(a.y-b.y)/10)}
 // 視線：岩と丘は目の高さより高ければ見えない（高台からは見下ろせる）
 function los(a,b){var za=eye(a),zb=eye(b),ha=gz(a.x,a.y)||gz(b.x,b.y);for(var i=1;i<12;i++){var t=i/12,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t,z=za+(zb-za)*t;
- if(inR(ROCK,x,y)&&z<ROCK.h)return false;if(!ha&&inR(HILL,x,y)&&z<HILL.h)return false}return true}
+ for(var j=0;j<ROCKS.length;j++)if(inR(ROCKS[j],x,y)&&z<ROCKS[j].h)return false;if(!ha&&gz(x,y)>z)return false}return true}
 function setup(){var U=[];['A','B'].forEach(function(id,si){var t=team[id];t.cl.forEach(function(ci,i){var f=make(ci,id==='A'),row=i<2?0:i<4?1:2,y=[18,82,30,70,50][i];
-  U.push({id:id+i,i:i,side:si,f:f,lead:t.lead===i,hp:f.maxhp,x:si?20-row*1.2:row*1.2,y:y,y0:y,g:Math.floor(Math.random()*f.gap),sup:0,cover:false,down:false,kn:{},see:[],fired:-99})})});
+  U.push({id:id+i,i:i,side:si,f:f,lead:t.lead===i,hp:f.maxhp*HPX,x:si?W-row*1.2:row*1.2,y:y,y0:y,g:Math.floor(Math.random()*f.gap),sup:0,cover:false,down:false,kn:{},see:[],fired:-99})})});
  return {U:U,mor:[100,100],t:0,plan:[myPlan,PK[Math.floor(Math.random()*3)]],sw:0,radio:[],hits:[0,0],ev:[],shots:[],end:-1,say:null}}
 function leadC(S,side){var u=S.U.filter(function(u){return u.side===side&&u.lead})[0];return u&&!u.down?u.f.c:null}
 function leadUp(S,side){return S.U.some(function(u){return u.side===side&&u.lead&&!u.down})}
@@ -146,7 +170,7 @@ function deliver(S){S.radio=S.radio.filter(function(m){if(m.at>S.t)return true;v
  S.U.forEach(function(v){if(v.side!==f.side||v.down||v===f||(!up&&dist(v,f)>6))return;var k=v.kn[m.o.id];if(!k||k.t<m.t)v.kn[m.o.id]={x:m.x,y:m.y,t:m.t,down:m.down}});
  if(m.nw&&!f.side){S.say={t:S.t,txt:(up?'無線　':'声　')+f.f.name+'「敵の'+m.o.f.name+'を見つけた」'};S.ev.push(txt(S.t,S.say.txt))}return false})}
 function look(S){S.U.forEach(function(u){if(u.down)return;u.see=[];var hi=gz(u.x,u.y)>0;
- S.U.forEach(function(o){if(o.side===u.side)return;var d=dist(u,o),rg=(u.f.k.name==='Scout'?13:10)+(hi?3:0);
+ S.U.forEach(function(o){if(o.side===u.side)return;var d=dist(u,o),rg=((u.f.k.name==='Scout'?13:10)+(hi?3:0))*SEE;
   if(!o.down&&o.cover&&S.t-o.fired>15)rg*=0.45;
   if(d<=rg&&los(u,o)){if(!o.down)u.see.push(o);know(S,u,o)}})})}
 function step(S){S.t++;S.shots=[];var U=S.U;if(S.t%2===1)look(S);deliver(S);
@@ -154,15 +178,15 @@ function step(S){S.t++;S.shots=[];var U=S.U;if(S.t%2===1)look(S);deliver(S);
   var dir=u.side?-1:1;u.sup=Math.max(0,u.sup-0.012);
   var near=Object.keys(u.kn).map(function(id){return u.kn[id]}).filter(function(k){return !k.down&&S.t-k.t<200}).sort(function(a,b){return dist(u,a)-dist(u,b)})[0];
   var tg=u.see.filter(function(o){return !o.down&&dist(u,o)<=u.f.reach});
-  var flk=pl==='flank'&&u.i<2,base=pl==='sup'&&u.f.reach>=5&&u.see.length;
+  var flk=pl==='flank'&&u.i<2,base=pl==='sup'&&u.f.reach>=5&&u.see.some(function(o){return !o.down&&dist(u,o)<=u.f.reach*1.2});
   // 移動：作戦・制圧・見えている敵で決まる。知らない敵には向かえない
   if(!(u.sup>=0.6||pl==='amb'||tg.length||base)){var sp=u.f.spd*(near?1:0.6)*(flk?1.15:1),ox=u.x,oy=u.y;
-   var tx=near?(u.side?near.x+u.f.reach*0.8:near.x-u.f.reach*0.8):(u.side?0:20);
+   var tx=near?(u.side?near.x+u.f.reach*0.8:near.x-u.f.reach*0.8):(u.side?0:W);
    var ty=flk&&(!near||Math.abs(near.x-u.x)>3)?15:near&&(u.f.reach<4||dist(u,near)<=u.f.reach)?near.y:u.y0;
    if((tx-u.x)*dir>0){var cv=COVER.filter(function(c){return (c-u.x)*dir>0.05&&(c-tx)*dir<=0.3}).sort(function(a,b){return (a-b)*dir})[0];var gx=cv!=null&&!flk?cv:tx;u.x+=dir*Math.min(sp,Math.abs(gx-u.x))}
    var dy=ty-u.y;u.y+=Math.sign(dy)*Math.min(Math.abs(dy),sp*10);
-   if(inR(ROCK,u.x,u.y)){u.x=ox;u.y=oy+(oy<51?-1:1)*sp*10}
-   u.x=Math.max(0,Math.min(20,u.x));u.y=Math.max(4,Math.min(96,u.y))}
+   if(blocked(u.x,u.y)){u.x=ox;u.y=oy+(oy<51?-1:1)*sp*10;if(blocked(u.x,u.y))u.y=oy}
+   u.x=Math.max(0,Math.min(W,u.x));u.y=Math.max(YMIN,Math.min(YMAX,u.y))}
   u.cover=COVER.some(function(c){return Math.abs(c-u.x)<0.35});
   if(!tg.length)return;
   // 攻撃の相手：ナイトがいれば引きつけられる。ファイターは後列を狙う。ほかは近い敵
@@ -176,21 +200,22 @@ function step(S){S.t++;S.shots=[];var U=S.U;if(S.t%2===1)look(S);deliver(S);
   if(Math.random()>hit){S.ev.push([S.t,u,o,0]);return}
   var aff=BEAT[u.f.c]===o.f.c?1.3:BEAT[o.f.c]===u.f.c?0.8:1,olc=leadC(S,o.side);
   var dm=Math.max(1,Math.round((u.f.pow*1.5-(u.f.w.mag?o.f.res:o.f.def+(olc==='R'?3:0))*0.7+Math.random()*4-2)*aff*(cov?(hi?0.8:0.6):1)));
-  o.hp=Math.max(0,o.hp-dm);var ml=olc==='B'?0.6:1;S.mor[o.side]=Math.max(0,S.mor[o.side]-0.8*ml);
+  o.hp=Math.max(0,o.hp-dm);var ml=olc==='B'?0.6:1;S.mor[o.side]=Math.max(0,S.mor[o.side]-0.4*ml);
   if(!o.hp){o.down=true;S.mor[o.side]=Math.max(0,S.mor[o.side]-(o.lead?30:18)*ml)}S.ev.push([S.t,u,o,dm,aff,o.down]);});
- if(S.mor[0]<=0||S.mor[1]<=0||S.t>=1200)S.end=S.mor[0]>S.mor[1]?0:S.mor[1]>S.mor[0]?1:-1;}
-var px=function(x){return x/20*94+3};
+ if(S.mor[0]<=0||S.mor[1]<=0||S.t>=LIM)S.end=S.mor[0]>S.mor[1]?0:S.mor[1]>S.mor[0]?1:-1;}
+var px=function(x){return x/W*94+3};
 // 味方が知っている敵だけ描く。古い情報は「？」の影
 function seen(S,o){var b=null;S.U.forEach(function(u){if(u.side||u.down)return;var k=u.kn[o.id];if(k&&(!b||k.t>b.t))b=k});return b}
 function draw(S){var U=S.U,fw=el('field').clientWidth||300,over=S.end!==-1;el('m0').style.width=S.mor[0]+'%';el('m1').style.width=S.mor[1]+'%';var sec=Math.floor(S.t/10);el('clk').textContent=Math.floor(sec/60)+':'+('0'+sec%60).slice(-2);
- el('cards').innerHTML=U.filter(function(u){return !u.side}).map(function(u){return '<div class="cd'+(u.down?' down':'')+'" style="--k:'+COL[u.f.c]+'">'+(u.lead?'<span class="lead">班長</span>':'')+'<span class="art'+(PT[u.f.k.name]?' pic '+PT[u.f.k.name]:'')+'">'+(PT[u.f.k.name]?'':u.f.name[0])+'</span><i><b style="width:'+(u.hp/u.f.maxhp*100)+'%"></b></i><span class="stt">'+(u.down?'戦闘不能':u.sup>0.6?'制圧':gz(u.x,u.y)?'高台':u.cover?'遮蔽':u.f.name)+'</span></div>'}).join('');
- var h='<span class="hill" style="left:'+px(HILL.x0)+'%;width:'+(px(HILL.x1)-px(HILL.x0))+'%;top:'+HILL.y0+'%;height:'+(HILL.y1-HILL.y0)+'%">高台</span><span class="rock" style="left:'+px(ROCK.x0)+'%;width:'+(px(ROCK.x1)-px(ROCK.x0))+'%;top:'+ROCK.y0+'%;height:'+(ROCK.y1-ROCK.y0)+'%"></span>';
+ el('cards').innerHTML=U.filter(function(u){return !u.side}).map(function(u){return '<div class="cd'+(u.down?' down':'')+'" style="--k:'+COL[u.f.c]+'">'+(u.lead?'<span class="lead">班長</span>':'')+'<span class="art'+(PT[u.f.k.name]?' pic '+PT[u.f.k.name]:'')+'">'+(PT[u.f.k.name]?'':u.f.name[0])+'</span><i><b style="width:'+(u.hp/(u.f.maxhp*HPX)*100)+'%"></b></i><span class="stt">'+(u.down?'戦闘不能':u.sup>0.6?'制圧':gz(u.x,u.y)?'高台':u.cover?'遮蔽':u.f.name)+'</span></div>'}).join('');
+ var bx=function(o,c,t){return '<span class="'+c+'" style="left:'+px(o.x0)+'%;width:'+(px(o.x1)-px(o.x0))+'%;top:'+o.y0+'%;height:'+(o.y1-o.y0)+'%">'+(t||'')+'</span>'};
+ var h=(YMIN>4?'<span class="sea" style="top:0;height:'+(YMIN-4)+'%"></span>':'')+(YMAX<96?'<span class="sea" style="bottom:0;height:'+(96-YMAX)+'%"></span>':'')+HILLS.map(function(o){return bx(o,'hill','高台')}).join('')+ROCKS.map(function(o){return bx(o,'rock '+o.t)}).join('');
  h+=COVER.map(function(c){return '<span class="cv" style="left:'+(px(c)-1.5)+'%"></span>'}).join('');
  S.shots.forEach(function(p){var a=p[0],b=p[1],x1=px(a.x)/100*fw,x2=px(b.x)/100*fw,y1=a.y/100*240,y2=b.y/100*240,len=Math.hypot(x2-x1,y2-y1),ang=Math.atan2(y2-y1,x2-x1);
   h+='<span class="shot" style="left:'+x1+'px;top:'+y1+'px;width:'+len+'px;transform:rotate('+ang+'rad)"></span>'});
  h+=U.map(function(u){var pt=PT[u.f.k.name],x=u.x,y=u.y,gh=false;
   if(u.side&&!over){var k=seen(S,u);if(!k||S.t-k.t>150)return '';if(S.t-k.t>3){gh=true;x=k.x;y=k.y}}
-  return '<span class="u'+(pt&&!gh?' pic '+pt:'')+(u.side?' en':'')+(gh?' ghost':'')+(u.lead?' lead':'')+(u.sup>0.6&&!u.down&&!gh?' sup':'')+(u.down?' down':'')+'" style="--k:'+COL[u.f.c]+';left:'+px(x)+'%;top:'+y+'%" title="'+u.f.name+'">'+(gh?'?':pt?'':u.f.name[0])+(gh?'':'<small><b style="width:'+(u.hp/u.f.maxhp*100)+'%"></b></small>')+'</span>'}).join('');
+  return '<span class="u'+(pt&&!gh?' pic '+pt:'')+(u.side?' en':'')+(gh?' ghost':'')+(u.lead?' lead':'')+(u.sup>0.6&&!u.down&&!gh?' sup':'')+(u.down?' down':'')+'" style="--k:'+COL[u.f.c]+';left:'+px(x)+'%;top:'+y+'%" title="'+u.f.name+'">'+(gh?'?':pt?'':u.f.name[0])+(gh?'':'<small><b style="width:'+(u.hp/(u.f.maxhp*HPX)*100)+'%"></b></small>')+'</span>'}).join('');
  (S.ev.slice(S.seen||0)).forEach(function(e){var o=e[2];if(!o||o.x==null||e.txt)return;if(o.side&&!over&&!(seen(S,o)&&S.t-seen(S,o).t<=3))return;h+='<span class="dmg'+(e[3]?(e[4]>1?' big':''):' miss')+'" style="left:'+(px(o.x)/100*fw)+'px;top:'+(o.y/100*240-28)+'px">'+(e[3]?e[3]:'MISS')+'</span>'});S.seen=S.ev.length;
  el('field').innerHTML=h;if(!over&&timer&&S.say&&S.t-S.say.t<25)el('msg').textContent=S.say.txt;else if(!over&&timer)el('msg').textContent=S.sw?'作戦：'+PLAN[S.plan[0]]:'作戦を1回だけ変えられる';
  var nm=function(u){return (u.side?'敵の':'')+u.f.name};
@@ -207,8 +232,16 @@ function run(){stop();el('over').hidden=true;sim=setup();
 el('go').onclick=run;el('again').onclick=run;
 el('skip').onclick=function(){if(!sim||sim.end!==-1)return;clearInterval(timer);while(sim.end===-1)step(sim);sim.seen=sim.ev.length;draw(sim);result(sim)};
 el('fast').onclick=function(){stop();sim=setup();while(sim.end===-1)step(sim);sim.seen=sim.ev.length;draw(sim);result(sim)};
-el('many').onclick=function(){stop();var w=[0,0,0],S;for(var i=0;i<100;i++){S=setup();while(S.end===-1)step(S);w[S.end<0?2:S.end]++}S.seen=S.ev.length;draw(S);el('over').hidden=true;
- el('msg').textContent='100回：味方 '+w[0]+'勝';el('res').innerHTML='100回（作戦：'+PLAN[myPlan]+'）：味方 <b>'+w[0]+'勝</b>・敵 '+w[1]+'勝'+(w[2]?'・引き分け '+w[2]:'')};
+el('many').onclick=function(){stop();var w=[0,0,0],S,ts=[];for(var i=0;i<100;i++){S=setup();while(S.end===-1)step(S);w[S.end<0?2:S.end]++;ts.push(S.t/10)}ts.sort(function(a,b){return a-b});S.seen=S.ev.length;draw(S);el('over').hidden=true;
+ el('msg').textContent='100回：味方 '+w[0]+'勝';el('res').innerHTML='100回（作戦：'+PLAN[myPlan]+'）：味方 <b>'+w[0]+'勝</b>・敵 '+w[1]+'勝'+(w[2]?'・引き分け '+w[2]:'')+'<br>時間：短い '+Math.round(ts[9])+'秒・ふつう '+Math.round(ts[50])+'秒・長い '+Math.round(ts[90])+'秒'};
+// マップ（升目を選ぶ）：色は土地の種類だけの仮の表示
+function showBlk(){if(!BLK)return;el('bname').textContent=blkName(BLK);var c=el('mapc');el('mk').style.left=(BLK.cx+0.5)/LAND.nx*100+'%';el('mk').style.top=(BLK.cy+0.5)/LAND.ny*100+'%'}
+function useBlk(b){if(!b)return;BLK=b;stop();setField();sim=setup();sim.seen=0;draw(sim);sim=null;showBlk()}
+if(LAND){var mc=el('mapc');mc.width=LAND.nx;mc.height=LAND.ny;var cx2=mc.getContext('2d'),im=cx2.createImageData(LAND.nx,LAND.ny),PAL=[[200,214,222],[226,221,180],[150,190,150],[190,175,150],[205,195,175],[215,200,200]];
+ for(var q=0;q<LAND.nx*LAND.ny;q++){var v=LR.charCodeAt(q),pc=PAL[v>>4],sd=(v>>4)?((v&15)-10)*6:0;im.data[q*4]=pc[0]+sd;im.data[q*4+1]=pc[1]+sd;im.data[q*4+2]=pc[2]+sd;im.data[q*4+3]=255}cx2.putImageData(im,0,0);
+ mc.onclick=function(e){var r=mc.getBoundingClientRect();useBlk(pickBlock(Math.floor((e.clientX-r.left)/r.width*LAND.nx),Math.floor((e.clientY-r.top)/r.height*LAND.ny)))};
+ el('brand').onclick=function(){useBlk(randBlock())};showBlk()}
+el('fsz').onchange=function(){stop();setField(this.value);sim=setup();sim.seen=0;draw(sim);sim=null};
 el('reroll').onclick=function(){stop();rollB();ui('B')};
 sim=setup();sim.seen=0;draw(sim);sim=null;ordBtns();
 })();
