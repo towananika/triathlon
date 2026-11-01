@@ -24,7 +24,7 @@ window.TRI_TREE = {
    {id: 'SP', en: 'Sword Practice', ja: '剣術実習', st: 'ATS', req: ['MCT', 'ST'], note: '技：straight、slice'}]},
   {g: 'Knight', items: [
    {id: 'MS', en: 'Movement Strategy', ja: '移動戦術',   st: 'SPD', req: ['MCT']},
-   {id: 'WH', en: 'Weapon Handling',   ja: '武器操作術', st: 'ATS', req: ['MCT', 'MS']}]}]},
+   {id: 'WH', en: 'Weapon Handling',   ja: '武器術', st: 'ATS', req: ['MCT', 'MS']}]}]},
  G: {name: 'グリーン', groups: [
   {g: 'General', items: [
    {id: 'G.PT', en: 'Physical Training', ja: '基礎体力訓練', st: 'HP'},
