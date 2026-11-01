@@ -12,6 +12,7 @@ nav.dv{font-size:13px}nav.dv a{color:var(--deep)}
 .tabs{display:grid;gap:8px}
 .tabs div{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .tabs b{width:1.6em;height:1.6em;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:12px}
+.tabs .lvl{font-size:11px;color:var(--mut);min-width:5.5em}
 .tabs button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:4px 12px;cursor:pointer}
 .tabs button[aria-pressed=true]{background:var(--k);border-color:var(--k);color:#fff;font-weight:700}
 .win{background:var(--win);color:var(--wfg);border-radius:14px;border:2px solid var(--k);box-shadow:0 4px 18px rgba(23,58,99,.08);overflow:hidden}
@@ -85,7 +86,7 @@ var LANG='';try{LANG=localStorage.getItem('tri-lang')||''}catch(e){}if(LANG!=='j
 function nm(x){return LANG==='ja'&&x.ja?x.ja:x.en}function cn(k){return LANG==='ja'&&JA[k]?JA[k]:k}
 var tabs=document.getElementById('tabs'),win=document.getElementById('win');
 ['R','G','B'].forEach(function(c){var d=document.createElement('div');d.style.setProperty('--k',COL[c]);
- d.innerHTML='<b style="background:'+COL[c]+'">'+c+'</b>';
+ d.innerHTML='<b style="background:'+COL[c]+'">'+c+'</b><span class="lvl">'+{R:'やさしい',G:'ふつう',B:'長い道のり'}[c]+'</span>';
  CL.forEach(function(k,i){if(k.c!==c)return;var bt=document.createElement('button');bt.textContent=cn(k.name);bt.dataset.i=i;bt.onclick=function(){open(i)};d.appendChild(bt)});
  tabs.appendChild(d);});
 function open(i){cur=CL[i];lv={};tabs.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.i==i)});
