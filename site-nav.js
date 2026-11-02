@@ -27,7 +27,7 @@
   }
   function link(it, cls) { return '<a class="' + cls + '" href="' + root + it[0] + '"' + (cur(it[0]) ? ' aria-current="page"' : '') + '><span aria-hidden="true">' + it[1] + '</span>' + it[2] + '</a>'; }
   var fl = document.createElement('link'); fl.rel = 'stylesheet'; fl.href = FONT_CSS; document.head.appendChild(fl);
-  var css = 'html:not(.tri-admin) .dev-only{display:none!important}html.tri-admin .pub-only{display:none!important}:root{--tri-logo:' + FONT_LOGO + ';--tri-head:' + FONT_HEAD + '}' +
+  var css = 'html [data-tri-admin-only][hidden]{display:none!important}html:not(.tri-admin) .dev-only{display:none!important}html.tri-admin .pub-only{display:none!important}:root{--tri-logo:' + FONT_LOGO + ';--tri-head:' + FONT_HEAD + '}' +
     'h1,h2{font-family:var(--tri-head);letter-spacing:.03em}.kick{font-family:var(--tri-logo);font-weight:500;letter-spacing:.28em;text-transform:uppercase}' +
     '.tri-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;padding:8px 16px;background:#fff;border-bottom:1px solid #cbdedf;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;position:sticky;top:0;z-index:60}' +
     '.tri-brand{color:#163744;text-decoration:none;font-family:var(--tri-logo);font-weight:700;letter-spacing:.22em;font-size:19px;line-height:1;padding:8px 0}' +
@@ -76,11 +76,12 @@
     var ver = document.getElementById('ver'), old = document.querySelector('.foot');
     var foot = document.createElement('footer');
     foot.className = 'tri-foot';
-    function fl(t, a) { return '<div><b>' + t + '</b>' + a.map(function (it) { return '<a href="' + root + it[0] + '">' + it[1] + '</a>'; }).join('') + '</div>'; }
+    function fl(t, a) { return '<div><b>' + t + '</b>' + a.map(function (it) { return '<a href="' + root + it[0] + '"' + (it[0] === 'dev/' ? ' data-tri-admin-only hidden' : '') + '>' + it[1] + '</a>'; }).join('') + '</div>'; }
     foot.innerHTML = '<div class="tri-fcols">' + fl('作品', [['stories/', '物語（連載）'], ['saga/', '物語のあらすじ'], ['char/', 'キャラクター']]) + fl('世界', [['map/', 'マップ'], ['sim/', '今日の世界'], ['places/', '好きな場所'], ['notes/?door=1', 'まなびやの扉']]) +
-      fl('サポート', [['news/', 'お知らせ'], ['news/rules.html', 'アップデートの基準'], ['login/', 'ログイン'], ['dev/', '開発ページ']]) + '</div>' +
+      fl('サポート', [['news/', 'お知らせ'], ['news/rules.html', 'アップデートの基準'], ['login/', 'ログイン'], ['dev/', '開発版']]) + '</div>' +
       '<div class="tri-fbase"><span class="logo">TRIATHLON</span><span class="tri-studio">© 2026 ' + STUDIO + '<small>（仮）</small><em>Est. 2026.10.25 · Nisui</em></span><span>物語と世界を少しずつ公開しています。画像は検討中のイメージです。' + (ver ? ' · ' + ver.textContent : '') + '</span></div>';
     if (old) old.replaceWith(foot); else document.body.appendChild(foot);
+    showAdmin(window.TRI_IS_ADMIN === true);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addFoot); else addFoot();
   document.body.appendChild(bottom);
@@ -88,13 +89,14 @@
   var entry = document.createElement('a'); entry.className = 'tri-login tri-btn'; entry.href = root + 'login/'; entry.textContent = 'ログイン';
   bar.querySelector('.tri-act').insertBefore(entry, bar.querySelector('.tri-act').firstChild);
   // Mode navigation does not grant access; protected data still uses its existing authorization.
-  var devIn = document.createElement('a'); devIn.className = 'tri-devin tri-mode-switch'; devIn.href = inDevelopment ? root : root + 'dev/'; devIn.textContent = inDevelopment ? '公式版' : '開発版'; devIn.hidden = !inDevelopment;
+  var devIn = document.createElement('a'); devIn.className = 'tri-devin tri-mode-switch'; devIn.href = inDevelopment ? root : root + 'dev/'; devIn.textContent = inDevelopment ? '公式版' : '開発版'; devIn.hidden = true;
+  devIn.setAttribute('data-tri-admin-only', '');
   devIn.setAttribute('aria-label', inDevelopment ? '公式版へ切り替える' : '開発版へ切り替える');
   bar.querySelector('.tri-act').insertBefore(devIn, entry);
   var dvs = document.createElement('style'); dvs.textContent = '.tri-devin{background:#2b2f36;color:#ffd76a;font-size:12px;font-weight:800;letter-spacing:.08em;border-radius:6px;padding:5px 10px;text-decoration:none;white-space:nowrap;align-self:center}.tri-devin[hidden]{display:none}'; document.head.appendChild(dvs);
   function showUser(u) {
     entry.textContent = '';
-    devIn.hidden = !inDevelopment && !u;
+    showAdmin(false);
     if (!u) { entry.textContent = 'ログイン'; entry.classList.remove('in'); entry.removeAttribute('aria-label'); return; }
     entry.classList.add('in');
     if (u.photo) { var im = document.createElement('img'); im.src = u.photo; im.alt = ''; im.referrerPolicy = 'no-referrer'; entry.appendChild(im); }
@@ -102,13 +104,19 @@
     var nm = document.createElement('span'); nm.textContent = name.split(' ')[0]; entry.appendChild(nm);
     entry.setAttribute('aria-label', name + '（ログイン中）');
   }
+  function showAdmin(allowed) {
+    document.querySelectorAll('[data-tri-admin-only]').forEach(function (element) { element.hidden = !allowed; });
+  }
+  document.addEventListener('tri-admin-status', function (e) { showAdmin(e.detail === true); });
   document.addEventListener('tri-user', function (e) { showUser(e.detail); });
+  if (window.TRI_USER !== undefined) showUser(window.TRI_USER);
+  var adminScript = document.createElement('script'); adminScript.src = root + 'login/admin-status.js?v=0.101-fix'; document.head.appendChild(adminScript);
   if (!document.querySelector('script[src*="login/auth.js"],script[src^="auth.js"]')) { var au = document.createElement('script'); au.type = 'module'; au.src = root + 'login/auth.js?v=0.28'; document.head.appendChild(au); }
   var topStyle = document.createElement('link'); topStyle.rel = 'stylesheet'; topStyle.href = root + 'back-to-top.css'; document.head.appendChild(topStyle);
   var topScript = document.createElement('script'); topScript.src = root + 'back-to-top.js'; document.body.appendChild(topScript);
-  var themeScript = document.createElement('script'); themeScript.src = root + 'site-theme.js?v=1.01'; document.head.appendChild(themeScript);
+  var themeScript = document.createElement('script'); themeScript.src = root + 'site-theme.js?v=0.101-fix'; document.head.appendChild(themeScript);
   if (path === rootPath) {
-    var homeScript = document.createElement('script'); homeScript.src = root + 'home-showcase.js?v=1.01'; document.head.appendChild(homeScript);
+    var homeScript = document.createElement('script'); homeScript.src = root + 'home-showcase.js?v=0.101-fix'; document.head.appendChild(homeScript);
   }
   document.addEventListener('click', function (e) {
     var m = bar.querySelector('.tri-menu');

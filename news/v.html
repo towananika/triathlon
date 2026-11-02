@@ -13,12 +13,18 @@
 <p class="crumb"><a href="./">← お知らせ一覧</a></p>
 </main>
 <footer><a href="./">お知らせ一覧</a> / <a href="rules.html">アップデートの基準</a> / <a href="../">TRIATHLON トップ</a></footer>
-<script src="news.js?v=1.00"></script>
+<script src="news.js?v=0.101-fix"></script>
 <script>
 (function () {
   'use strict';
   var CAT = {update:'アップデート', info:'お知らせ', fix:'修正'}, KIND = {new:'追加', change:'変更', fix:'修正', doc:'記録'};
   var list = window.TRI_NEWS || [], id = new URLSearchParams(location.search).get('id'), box = document.getElementById('post');
+  var renamed = {'v1.00':'v0.100', 'v1.01':'v0.101'};
+  if (renamed[id]) {
+    id = renamed[id];
+    var canonical = new URL(location.href); canonical.searchParams.set('id', id);
+    history.replaceState(null, '', canonical.href);
+  }
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   var i = list.findIndex(function(n){ return n.id === id; });
   if (!id && list.length) i = 0;

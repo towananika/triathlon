@@ -4,13 +4,19 @@
   if (!script) return;
   var home = new URL('../', script.src).href;
   if (!document.querySelector('script[src*="site-nav.js"]')) {
-    var theme = document.createElement('script'); theme.src = new URL('site-theme.js?v=1.01', home).href; document.head.appendChild(theme);
+    var theme = document.createElement('script'); theme.src = new URL('site-theme.js?v=0.101-fix', home).href; document.head.appendChild(theme);
+    var status = document.createElement('script'); status.src = new URL('login/admin-status.js?v=0.101-fix', home).href; document.head.appendChild(status);
+    if (!document.querySelector('script[src*="login/auth.js"],script[src^="auth.js"]')) {
+      var auth = document.createElement('script'); auth.type = 'module'; auth.src = new URL('login/auth.js?v=0.28', home).href; document.head.appendChild(auth);
+    }
   }
   function mount() {
     if (document.querySelector('.tri-mode-switch')) return;
     if (document.getElementById('dev-return')) return;
     var nav = document.createElement('nav');
     nav.id = 'dev-return';
+    nav.hidden = window.TRI_IS_ADMIN !== true;
+    document.addEventListener('tri-admin-status', function (event) { nav.hidden = event.detail !== true; });
     nav.setAttribute('aria-label', '公式版へ切り替える');
     var link = document.createElement('a');
     link.href = home;
