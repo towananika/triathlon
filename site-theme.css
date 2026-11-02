@@ -10,12 +10,17 @@ html[data-tri-mode] .tri-brand,html[data-tri-mode] .tri-top a,html[data-tri-mode
 html[data-tri-mode] .tri-top a:hover,html[data-tri-mode] .tri-more a:hover{background:var(--tri-tint)}
 html[data-tri-mode] .tri-top a[aria-current=page],html[data-tri-mode] .tri-bottom a[aria-current=page]{color:var(--tri-active);box-shadow:inset 0 -3px 0 var(--tri-active)}
 html[data-tri-mode] .tri-more a[aria-current=page]{color:var(--tri-active);background:var(--tri-tint)}
-.tri-theme-toggle{display:grid;place-items:center;flex:0 0 40px;width:40px;height:40px;padding:0;border:1px solid var(--tri-border);border-radius:6px;background:var(--tri-surface);color:var(--tri-text);font:24px/1 system-ui,sans-serif;cursor:pointer}
+.tri-theme-toggle{position:relative;display:grid;place-items:center;flex:0 0 40px;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--tri-muted);cursor:pointer}
+.tri-theme-toggle svg{width:19px;height:19px;display:block;pointer-events:none}
+.tri-theme-toggle:hover{background:var(--tri-tint);color:var(--tri-text)}
+.tri-theme-toggle:after{content:attr(data-tooltip);position:absolute;top:calc(100% + 8px);right:0;white-space:nowrap;padding:5px 9px;border-radius:4px;background:var(--tri-text);color:var(--tri-surface);font:12px/1.5 system-ui,sans-serif;opacity:0;pointer-events:none;visibility:hidden}
+.tri-theme-toggle:hover:after,.tri-theme-toggle:focus-visible:after{opacity:1;visibility:visible}
 .tri-theme-toggle:focus-visible{outline:3px solid var(--tri-active);outline-offset:3px}
 html[data-tri-mode] .tri-btn{border-radius:6px;background:var(--tri-surface);color:var(--tri-text);border-color:var(--tri-border)}
 html[data-tri-mode] .tri-btn.play{background:var(--tri-tint);color:var(--tri-text)}
 html[data-tri-mode] .tri-mode-switch{border:1px solid var(--tri-border);border-radius:6px;background:var(--tri-tint);color:var(--tri-text);font-size:12px;padding:8px;min-height:40px;display:inline-flex;align-items:center;justify-content:center}
 html[data-tri-mode] .tri-mode-switch[hidden]{display:none}
+html [data-tri-admin-only][hidden],#dev-return[hidden]{display:none!important}
 html[data-tri-mode] .tri-foot{background:var(--tri-surface);color:var(--tri-muted);border-top:1px solid var(--tri-border)}
 html[data-tri-mode] .tri-foot :is(a,b,.logo,.tri-studio){color:var(--tri-text)}
 html[data-tri-theme=dark] :is(.latest,.list,.post,.block,.rule,.cast-item,.gate-msg,.links a,.tiles a,.form,.fontcard),html[data-tri-mode=development] :is(.box,.gate-msg,.links a,.tiles a,.form,.fontcard){background:var(--tri-surface);color:var(--tri-text);border-color:var(--tri-border)}
