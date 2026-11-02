@@ -8,9 +8,9 @@
     var main = document.querySelector('main'), hero = document.querySelector('.hero');
     if (!main || !hero) return;
     main.classList.add('official-home');
-    var version = document.getElementById('ver'); if (version) version.textContent = 'v0.101';
+    var version = document.getElementById('ver'); if (version) version.textContent = 'v0.101.1';
     var footerText = document.querySelector('.tri-fbase>span:last-child');
-    if (footerText) footerText.textContent = '物語と世界を少しずつ公開しています。ゲーム本体は企画・試作中です。 · v0.101';
+    if (footerText) footerText.textContent = '物語と世界を少しずつ公開しています。ゲーム本体は企画・試作中です。 · v0.101.1';
     var badge = hero.querySelector('.badge'); if (badge) badge.textContent = '物語と世界を育てるゲーム · 開発中';
     var lead = hero.querySelector('.hero-lead'); if (lead) lead.textContent = '出会い、迷い、それぞれの明日へ。同じ町で生きる九人の物語。';
     var secondary = hero.querySelector('.cta a:nth-child(2)');

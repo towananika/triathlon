@@ -29,7 +29,7 @@
 </section>
 </main>
 <footer><a href="../">TRIATHLON トップ</a> / <a href="rules.html">アップデートの基準</a></footer>
-<script src="news.js?v=0.101-fix"></script>
+<script src="news.js?v=0.101.1"></script>
 <script src="../sim/development.js?v=0.55"></script>
 <script src="../sim/checkpoint.js?v=0.55"></script>
 <script src="../sim/world-sim.js?v=0.55"></script>
@@ -44,7 +44,7 @@
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function url(n){ return 'v.html?id=' + encodeURIComponent(n.id); }
   function meta(n, isNew){
-    return '<p class="meta"><span class="cat c-' + n.cat + '">' + CAT[n.cat] + '</span>' + (n.ver ? '<span class="ver">' + esc(n.ver) + '</span>' : '') + window.triNewsTimes(n) + (isNew ? '<span class="new">NEW</span>' : '') + '</p>';
+    return '<p class="meta"><span class="cat c-' + n.cat + '">' + CAT[n.cat] + '</span>' + (n.ver ? '<span class="ver">' + esc(n.ver) + '</span>' : '') + window.triNewsScale(n) + window.triNewsTimes(n) + (isNew ? '<span class="new">NEW</span>' : '') + '</p>';
   }
   function render(){
     var filtered = list.filter(function(n){ return !filter || n.cat === filter; });
