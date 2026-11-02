@@ -13,7 +13,7 @@
 <p class="crumb"><a href="./">← お知らせ一覧</a></p>
 </main>
 <footer><a href="./">お知らせ一覧</a> / <a href="rules.html">アップデートの基準</a> / <a href="../">TRIATHLON トップ</a></footer>
-<script src="news.js?v=0.101-fix"></script>
+<script src="news.js?v=0.101.1"></script>
 <script>
 (function () {
   'use strict';
@@ -31,8 +31,9 @@
   var n = list[i];
   if (!n) { box.insertAdjacentHTML('beforeend', '<section class="post"><h1>この版のページは見つかりませんでした</h1><p class="lead">お知らせ一覧から選んでください。</p></section>'); return; }
   document.title = (n.ver ? n.ver + ' ' : '') + n.title + ' | TRIATHLON';
-  var h = '<article class="post"><p class="meta"><span class="cat c-' + n.cat + '">' + CAT[n.cat] + '</span>' + (n.ver ? '<span class="ver">' + esc(n.ver) + '</span>' : '') + window.triNewsTimes(n) + (i === 0 ? '<span class="new">NEW</span>' : '') + '</p><h1>' + esc(n.title) + '</h1><p class="lead">' + esc(n.lead) + '</p>' + window.triNewsWhen(n) + '</article>';
+  var h = '<article class="post"><p class="meta"><span class="cat c-' + n.cat + '">' + CAT[n.cat] + '</span>' + (n.ver ? '<span class="ver">' + esc(n.ver) + '</span>' : '') + window.triNewsScale(n) + window.triNewsTimes(n) + (i === 0 ? '<span class="new">NEW</span>' : '') + '</p><h1>' + esc(n.title) + '</h1><p class="lead">' + esc(n.lead) + '</p>' + window.triNewsWhen(n) + '</article>';
   if (n.changes && n.changes.length) h += '<section class="block"><h2>変わったところ</h2><ul class="chg">' + n.changes.map(function(c){ return '<li><em class="k-' + c[0] + '">' + KIND[c[0]] + '</em><span>' + esc(c[1]) + '</span></li>'; }).join('') + '</ul></section>';
+  if (n.scaleReason) h += '<section class="block"><h2>更新区分の理由</h2><p>' + esc(n.scaleReason) + '</p></section>';
   if (n.check && n.check.length) h += '<section class="block"><h2>確認してほしいところ</h2><ul class="chk">' + n.check.map(function(c){ return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></section>';
   if (n.links && n.links.length) h += '<section class="block"><h2>変わったページへ</h2><ul class="links">' + n.links.map(function(l){
     return '<li><a href="' + esc('../' + l[2]) + '"' + (/\.md$/.test(l[2]) ? ' download' : '') + '><em class="k-' + l[0] + '">' + KIND[l[0]] + '</em><span>' + esc(l[1]) + (l[3] ? '<small>' + esc(l[3]) + '</small>' : '') + '</span><i aria-hidden="true">→</i></a></li>';

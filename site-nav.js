@@ -116,7 +116,7 @@
   var topScript = document.createElement('script'); topScript.src = root + 'back-to-top.js'; document.body.appendChild(topScript);
   var themeScript = document.createElement('script'); themeScript.src = root + 'site-theme.js?v=0.101-fix'; document.head.appendChild(themeScript);
   if (path === rootPath) {
-    var homeScript = document.createElement('script'); homeScript.src = root + 'home-showcase.js?v=0.101-fix'; document.head.appendChild(homeScript);
+    var homeScript = document.createElement('script'); homeScript.src = root + 'home-showcase.js?v=0.101.1'; document.head.appendChild(homeScript);
   }
   document.addEventListener('click', function (e) {
     var m = bar.querySelector('.tri-menu');
