@@ -3,21 +3,43 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="TRIATHLONの開発ロードマップ。物語・ビジュアル・自動戦闘から、共有する街へ。">
+<meta name="description" content="TRIATHLONの開発ロードマップ。今できていること、次に作るもの、これから進む順番。">
 <title>開発ロードマップ | TRIATHLON</title>
-<link rel="stylesheet" href="roadmap.css?v=0.101.2">
+<link rel="stylesheet" href="roadmap.css?v=0.101.3">
 </head>
 <body>
 <script src="../site-nav.js?v=0.101-fix"></script>
 <main>
   <header class="roadmap-head">
-    <p class="eyebrow">TRIATHLON / ROADMAP</p>
     <h1>開発ロードマップ</h1>
-    <p class="intro">また会いたくなる人と、帰りたくなる世界を。</p>
-    <p class="status"><span>企画・試作中</span><time datetime="2026-11-02">2026年11月2日 更新</time></p>
-    <p class="note">2026年11月2日時点の制作計画です。期間はこの時点からの目安で、完成日・正式サービス・オンライン機能の提供を約束するものではありません。検証結果に応じて順番と範囲を見直します。</p>
+    <p class="intro">いまは、絵と物語を整える段階です。</p>
+    <p class="status"><span>企画・試作中</span><time datetime="2026-11-03">2026年11月3日 更新</time></p>
   </header>
-  <nav class="roadmap-jump" aria-label="ロードマップの項目"><a href="#tasks">現在のタスク</a><a href="#workflow">制作の進め方</a><a href="#long-term">長期計画</a></nav>
+  <section class="next-action" aria-labelledby="next-title">
+    <p class="eyebrow">次に作るもの</p>
+    <h2 id="next-title">市場の裏路地の背景を、<span class="keep-together">1枚。</span></h2>
+    <p>美しい光と、働く人の暮らしが感じられる街へ。</p>
+    <p class="next-status">まだ未制作です。見本を確認してから、次の場所へ進みます。</p>
+  </section>
+  <section class="overview" aria-labelledby="overview-title">
+    <h2 id="overview-title">これから進む順番</h2>
+    <ol class="simple-stages">
+      <li class="is-current" aria-current="step"><div class="step-marker" aria-hidden="true">1</div><div><p class="step-label">いま / 企画・試作中</p><h3>見て楽しめる世界をつくる</h3><p>背景3地点と、三人の日常の短編を整える。採用したものをサイトへ。</p></div></li>
+      <li><div class="step-marker" aria-hidden="true">2</div><div><p class="step-label">次に / 計画</p><h3>短く遊べる体験につなぐ</h3><p>キャラを選び、探索・自動戦闘をして帰る。一巡できる小さな体験へ。</p></div></li>
+      <li><div class="step-marker" aria-hidden="true">3</div><div><p class="step-label">その先 / 構想</p><h3>暮らしと、共有する街へ</h3><p>人物との再会、部屋づくり、街への参加。小さく試して少しずつ広げる。</p></div></li>
+    </ol>
+    <p class="note">完成日は未定です。前の段階を確かめてから、次へ進みます。</p>
+  </section>
+  <section class="ready" aria-labelledby="ready-title">
+    <h2 id="ready-title">いま見られるもの・できていること</h2>
+    <dl class="ready-list"><dt>公開中</dt><dd><a href="../char/">キャラ紹介</a><a href="../stories/">物語</a><a href="../map/">マップ</a></dd><dt>制作の準備</dt><dd>背景12場面の案を整理済み。電停の背景見本1枚は好評価ですが、未公開です。</dd></dl>
+    <p class="note">サイトの公開と、ゲーム本体の完成は別です。</p>
+  </section>
+  <details class="production-details" id="production-details">
+    <summary>詳しい計画・制作資料</summary>
+    <div class="production-body">
+    <p class="note">以下は2026年11月2日に整理した詳細計画です。期間はその時点からの目安で、提供時期の約束ではありません。上の順番を優先し、検証結果に応じて見直します。</p>
+    <nav class="roadmap-jump" aria-label="制作資料の項目"><a href="#tasks">制作タスク</a><a href="#workflow">制作の進め方</a><a href="#long-term">長期構想</a></nav>
   <section class="current-focus" aria-labelledby="focus-title">
     <p class="eyebrow">現在の重点 / BG-01</p><h2 id="focus-title">暮らしの異なる、三つの背景</h2>
     <p>市場の裏路地 → 朝の渡し場 → 図書館。背景の制作をまとめて進め、各画像の確認は一枚ずつ行います。人物・物語・サイトの作業は別タスクに分けます。</p>
@@ -25,13 +47,13 @@
     <p class="note">見本への好評価と、正史・地図・サイトへの採用は別です。生成済みだけで完成や公開とは扱いません。</p>
   </section>
   <section id="tasks" class="task-section" aria-labelledby="tasks-title">
-    <h2 id="tasks-title">タスクと完了条件</h2>
+    <h2 id="tasks-title">制作タスクと完了条件</h2>
     <p class="note">各項目を開くと、成果物・完了条件・依存関係を確認できます。数値の進捗率は、測れる基準がないため表示しません。</p>
     <ol class="task-list">
       <li id="plan-01"><details><summary><span class="task-id">PLAN-01</span><span class="task-name">世界観と場所の設計</span><span class="task-state">企画保存済み</span></summary><div class="detail-body">
         <dl><dt>成果物</dt><dd>人と行き交う場所・誰かと暮らす場所・自分に戻れる場所の3群、計12場面の企画。各場所を人物の日常と結び付けます。</dd><dt>完了条件</dt><dd>誰が何のために使うか、自然と街の関係、そこで生まれる気持ちが説明できること。既存の場所と新しい提案を区別すること。</dd><dt>残る確認</dt><dd>本編の年代、地図上の位置、学校・交通との接続。クラスと国籍、二水の地区と国家を同一視しません。</dd><dt>次への引き渡し</dt><dd>背景を描くための仕様は整理済み。未確定の地理や歴史は、見本の設定で上書きしません。</dd></dl>
       </div></details></li>
-      <li id="bg-01"><details open><summary><span class="task-id">BG-01</span><span class="task-name">日常背景3地点</span><span class="task-state">次の制作</span></summary><div class="detail-body">
+      <li id="bg-01"><details><summary><span class="task-id">BG-01</span><span class="task-name">日常背景3地点</span><span class="task-state">次の制作</span></summary><div class="detail-body">
         <ol class="asset-list"><li><strong>市場の裏路地・昼</strong><span>未制作。軒の影、洗濯物、台車、片付けの痕跡。買う人だけでなく、働く人の時間を感じられる場所。</span></li><li><strong>朝の渡し場</strong><span>未制作。朝もや、水位の跡、桟橋と対岸の距離。移動と朝の光を描きます。</span></li><li><strong>図書館の天窓・夜</strong><span>未制作。使い込まれた机、本、空と読書灯。静かな室内と一人の時間を描きます。</span></li></ol>
         <dl><dt>成果物</dt><dd>人物なしの背景3枚と、構図・光源・人物を置ける位置の制作メモ。</dd><dt>完了条件</dt><dd>現実感と作画が合うこと。建物・移動経路・遠近・光が自然で、3地点の用途と雰囲気が異なること。ユーザー確認を経て採否を記録します。</dd><dt>作らないもの</dt><dd>全12地点、全季節・全天気差分、追加人物、動画を一括で作りません。生成画像を交通・建築の工学的な検証済み資料とも扱いません。</dd><dt>次への引き渡し</dt><dd>採用背景だけを人物の姿勢・影合わせに渡します。修正が必要なら、その一枚の修正を先にします。</dd></dl>
       </div></details></li>
@@ -119,7 +141,31 @@
       </div></details>
     </li>
   </ol>
-  <section class="next-step"><h2>次の一件</h2><p>市場の裏路地を人物なしで一枚作り、街の生活感・光と影・人物を置ける余地を確認する。確認後、朝の渡し場と図書館へ進みます。</p><div><a href="#bg-01">背景タスクを見る →</a><a href="../news/">更新履歴を見る →</a></div></section>
+    </div>
+  </details>
+  <p class="history-link"><a href="../news/">更新履歴を見る</a></p>
 </main>
+<script>
+(function () {
+  // Older links still reveal their target inside the folded production notes.
+  function revealTarget() {
+    var id;
+    try { id = decodeURIComponent(location.hash.slice(1)); } catch (_) { return; }
+    if (!id) return;
+    var target = document.getElementById(id);
+    if (!target) return;
+    var parent = target.parentElement;
+    while (parent) {
+      if (parent.tagName === 'DETAILS') parent.open = true;
+      parent = parent.parentElement;
+    }
+    var detail = target.querySelector('details');
+    if (detail) detail.open = true;
+    requestAnimationFrame(function () { target.scrollIntoView({block: 'start'}); });
+  }
+  window.addEventListener('hashchange', revealTarget);
+  revealTarget();
+})();
+</script>
 </body>
 </html>
