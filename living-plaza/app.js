@@ -11,22 +11,24 @@
     { name:'シオン', image:'knight-average-20261031.png', lines:{ bench:'待ち合わせにも使えそうですね。少し座ってみましょう。', flowers:'花があると、いつもの道が少し違って見えますね。', light:'この明かりなら、帰り道を落ち着いて歩けそうです。' }, idle:'広場から見える景色を、少し眺めていきましょう。' },
     { name:'ツバサ', image:'portraits-20261101/warrior.png', lines:{ bench:'ここなら、静かに考えごとができそう。', flowers:'この色、好きかも。明日も見に来ようかな。', light:'夜の広場も、やさしい雰囲気になったね。' }, idle:'今日はここで、少し休んでいこうかな。' }
   ];
-  var state = { day:1, selected:null, history:[] };
+  var periods = ['朝', '昼', '夕方'];
+  var activities = ['朝の散歩の途中、広場に立ち寄った。', '昼休みに広場を訪れた。', '帰り道に広場へやってきた。'];
+  var state = { day:1, phase:0, selected:null, history:[] };
   try {
     var saved = JSON.parse(localStorage.getItem(key) || 'null');
-    if (saved && Number.isInteger(saved.day) && saved.day > 0 && (saved.selected === null || options.some(function(o){return o.id === saved.selected;})) && Array.isArray(saved.history)) state = { day:saved.day, selected:saved.selected, history:saved.history.filter(function(x){return x && typeof x.day === 'number' && typeof x.person === 'string' && typeof x.place === 'string';}).slice(-7) };
+    if (saved && Number.isInteger(saved.day) && saved.day > 0 && (saved.selected === null || options.some(function(o){return o.id === saved.selected;})) && Array.isArray(saved.history)) state = { day:saved.day, phase:Number.isInteger(saved.phase) && saved.phase >= 0 && saved.phase < 3 ? saved.phase : 0, selected:saved.selected, history:saved.history.filter(function(x){return x && typeof x.day === 'number' && typeof x.person === 'string' && typeof x.place === 'string';}).slice(-7) };
   } catch(e) {}
   var $ = function(id){return document.getElementById(id);};
   function save(){try{localStorage.setItem(key,JSON.stringify(state));}catch(e){$('storage-status').textContent='この端末に保存できませんでした。';}}
   var storageStatus=document.createElement('p');storageStatus.id='storage-status';storageStatus.className='foot';storageStatus.setAttribute('role','status');document.querySelector('.panel').appendChild(storageStatus);
   function render(){
-    var person=people[(state.day-1)%people.length], selected=options.find(function(o){return o.id===state.selected;});
-    $('day').textContent=state.day+'日目';$('speaker').textContent=person.name;$('portrait').src='https://towananika.github.io/triathlon/assets/characters/'+person.image;$('portrait').alt=person.name;$('message').textContent=selected?person.lines[selected.id]:person.idle;
+    var person=people[(state.day-1+state.phase)%people.length], selected=options.find(function(o){return o.id===state.selected;});
+    $('day').textContent=state.day+'日目・'+periods[state.phase];$('speaker').textContent=person.name;$('portrait').src='https://towananika.github.io/triathlon/assets/characters/'+person.image;$('portrait').alt=person.name;$('message').textContent=activities[state.phase]+' '+(selected?person.lines[selected.id]:person.idle);$('next').textContent=state.phase===2?'翌朝へ':'時間を進める';
     $('scene-label').textContent=selected?selected.name:'まだ、何も選んでいない';$('marker').hidden=!selected;$('marker').textContent=selected?selected.mark:'';
     var choices=$('choices');choices.replaceChildren();options.forEach(function(option){var button=document.createElement('button');button.type='button';button.textContent=option.name;button.setAttribute('aria-pressed',String(state.selected===option.id));button.addEventListener('click',function(){state.selected=option.id;save();render();});choices.appendChild(button);});
     var history=$('history');history.replaceChildren();if(!state.history.length){var empty=document.createElement('li');empty.textContent='これから、思い出が増えていきます。';history.appendChild(empty);}else{state.history.slice().reverse().forEach(function(item){var li=document.createElement('li'),title=document.createElement('b');title.textContent=item.day+'日目 '+item.person;li.append(title,document.createTextNode(' · '+item.place));history.appendChild(li);});}
   }
-  $('next').addEventListener('click',function(){var person=people[(state.day-1)%people.length],selected=options.find(function(o){return o.id===state.selected;});state.history.push({day:state.day,person:person.name,place:selected?selected.name:'何も置かずに過ごした'});state.history=state.history.slice(-7);state.day++;save();render();});
-  $('reset').addEventListener('click',function(){if(!confirm('広場の試作の記録を最初から始めますか？'))return;state={day:1,selected:null,history:[]};save();render();});
+  $('next').addEventListener('click',function(){var person=people[(state.day-1+state.phase)%people.length],selected=options.find(function(o){return o.id===state.selected;});state.history.push({day:state.day,person:person.name,place:periods[state.phase]+'・'+(selected?selected.name:'何も置かずに過ごした')});state.history=state.history.slice(-7);state.phase++;if(state.phase===3){state.phase=0;state.day++;}save();render();});
+  $('reset').addEventListener('click',function(){if(!confirm('広場の試作の記録を最初から始めますか？'))return;state={day:1,phase:0,selected:null,history:[]};save();render();});
   render();
 })();
