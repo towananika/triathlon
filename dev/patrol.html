@@ -77,7 +77,7 @@ var FOOD={soup:['あたたかい汁もの（食べ物を使う）','体があた
 var REST={early:['早く寝かせた（休む時間を使う）','7時間以上眠った'],usual:['いつもどおり','いつもの時間に寝た']};
 var EQUIP={s:['シオンの盾のひもを直す（材料を使う）','盾が軽くなる'],a:['アカリのグローブを手入れする（材料を使う）','拳がなじむ'],t:['ツバサの武器を研ぐ（材料を使う）','長い武器の先が安定する'],none:['何も直さない','そのまま行く']};
 var NEED={soup:'f',early:'z',s:'k',a:'k',t:'k'};
-var ADV={high:['高台を先に取って','高い所から全体を見る'],ambush:['岩のかげで待って','動かず、相手が来るのを待つ'],flank:['回りこんで','相手の横から入る']};
+var ADV={high:['高台を先に取って','高い所から全体を見る'],ambush:['岩のかげで待って','動かず、相手が来るのを待つ'],flank:['回りこんで','相手の横から入る'],talk:['相手に話しかけて','戦わずに、まず声をかける']};
 /* 三人の色（既存の定義：watch/skills.js の c ＝ [R,G,B]）。R＝体と熱、G＝見る力・つながり、B＝待つ・静けさ。数字は画面に出さない */
 var COL={a:{r:220,g:140,b:70},t:{r:90,g:170,b:180},s:{r:170,g:110,b:190}};
 var CAP=3,PROD={f:['畑','食べ物'],k:['作業場','手入れの材料'],z:['休み処','ゆっくり休む時間']};
@@ -112,11 +112,22 @@ function run(ch){
  var plan=follow?ch.adv:'advance';
  var intro=follow?'ツバサは助言を聞いて、従うことにした。':'ツバサは助言を聞いて少し考えたが、自分の判断で前に進むことにした。';
  var t1;
+ if(plan==='talk'){
+  var rel=S.rel||0,pT=(B.high?.35:.2)+.12*rel+.2*COL.t.b/255,tOk=r()<pT,aOk=r()<.55+.4*COL.a.b/255+bond('a')*.08;
+  if(tOk&&aOk){
+   st.u.t=[210,170];st.voice=true;st.foes=[[96,98,'v'],[140,86,'v'],[168,124,'v']];
+   snap(1,intro+'ツバサは武器を下げたまま前に出て、相手に声をかけた。');
+   st.arrows=[[[168,124],[150,100],'mvd']];
+   snap(2,'相手は少し迷ってから、武器を下ろして道をあけた。'+(rel>0?'前にも話をした相手だった。':'戦わずにすんだ。'));
+   L.talk=true;
+   return{block:B,steps:steps,res:'話がついた',plan:plan,follow:follow,L:L,broke:false,stopped:false,stopFl:true,inj:false,shield:'',ch:ch,ads:ADV[ch.adv][0],talk:true,rel:rel}}
+  plan='advance';score-=1;L.talkFail=aOk?'相手は聞く耳を持たなかった。':'アカリが待てずに前へ出てしまい、話どころではなくなった。';
+ }
  if(plan==='high'&&B.high){st.u.t=[330,100];st.hillTaken=true;st.voice=true;score+=2;L.high=true;t1='ツバサが、高台を先に取った。上から、岩のかげがよく見える。'}
  else if(plan==='high'){plan='ambush';st.u.t=[226,200];t1='この区画に高台はなかった。ツバサは岩のかげに入って、待つことにした。'}
  else if(plan==='ambush'){st.u.t=[226,200];score+=1;t1='ツバサは岩のかげに入り、動かずに相手が来るのを待った。'}
  else if(plan==='flank'){st.u.t=[226,190];st.u.s=[150,186];score+=1;st.arrows=[[[262,226],[170,190],'mv']];t1='ツバサは班を二つに分けた。シオンは前を支え、残りは岩を回りこむ。'}
- else{st.u.a=[190,196];st.u.t=[226,200];st.u.s=[262,200];t1='班は、まとまって前に進んだ。'}
+ else{st.u.a=[190,196];st.u.t=[226,200];st.u.s=[262,200];t1=(L.talkFail?'話しかけたが、うまくいかなかった。'+L.talkFail+'班は、そのまま構えた。':'班は、まとまって前に進んだ。')}
  snap(1,intro+t1);
  var fa=.18+.6*COL.a.b/255+bond('a')*.12+(cond('a')-.5),broke=false,stopped=false,t2;
  if(plan==='high'||plan==='ambush'){
@@ -161,6 +172,7 @@ var R,cur=0;
 $('go').onclick=function(){
  var ch={prod:val('prod'),block:val('block'),food:val('food'),rest:val('rest'),equip:val('equip'),adv:val('adv')};
  R=run(ch);cur=0;
+ if(R.talk){S.rel=Math.min(3,(S.rel||0)+1);var lo='f';['f','k','z'].forEach(function(k){if(S.stock[k]<S.stock[lo])lo=k});if(S.stock[lo]<CAP){S.stock[lo]++;R.gift=lo}}
  /* 使う（今日の分）→つくる（あすの分）。つくるのは運しだいで、ときどき不作 */
  [ch.food==='soup'?'f':'',ch.rest==='early'?'z':'',ch.equip!=='none'?'k':''].forEach(function(k){if(k)S.stock[k]--});
  var pr=rng(seedOf(ch)^7),ok=pr()>=.2;R.prodOk=ok;R.prodKind=ch.prod;
@@ -176,10 +188,11 @@ $('next').onclick=function(){cur++;show()};
 $('night').onclick=function(){
  $('day').hidden=true;$('evening').hidden=false;$('said').textContent='';$('word').value='';
  var items=[];
+ if(R.talk){items.push(['話がついた','相手は道をあけ、お礼に'+(R.gift?PROD[R.gift][1]+'を少し分けてくれた。':'手を振ってくれた。')+'次に会うとき、相手は少し聞きやすくなる。'])}
  items.push([R.follow?'効いた':'聞き入れず',R.follow?'助言「'+R.ads+'」。ツバサが従った。':'助言「'+R.ads+'」。ツバサは自分の判断で動いた。',R.follow]);
- if(R.L.high)items.push(['効いた','高台を先に取れた。']);
+ if(R.L.high&&!R.talk)items.push(['効いた','高台を先に取れた。']);
  if(R.broke)items.push(['効かなかった','アカリが待てずに前に出た。']);else if(R.stopped)items.push(['効いた','アカリは、名前を呼ばれて止まった。']);
- items.push([R.L.sawA?'声が届かず':'見えた',R.L.sawA?'回りこみを見たのはアカリだけ。':R.L.sawHigh?'高台から回りこみが見えた。':'回りこみは霧で見えなかった。']);
+ if(!R.talk)items.push([R.L.sawA?'声が届かず':'見えた',R.L.sawA?'回りこみを見たのはアカリだけ。':R.L.sawHigh?'高台から回りこみが見えた。':'回りこみは霧で見えなかった。']);
  var PK=PROD[R.prodKind];
  items.push([R.prodOk?(R.prodFull?'あふれた':'できた'):'不作',R.prodOk?(R.prodFull?PK[1]+'はもういっぱいで、これ以上ためておけなかった。':PK[0]+'で'+PK[1]+'ができた。あすから使える。'):PK[0]+'は、今日は思うようにいかなかった。']);
  if(R.shield)items.push(['',R.shield]);
