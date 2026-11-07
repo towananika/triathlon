@@ -38,7 +38,7 @@ svg text{font:12px system-ui,sans-serif}
 <tr><th>配分</th><th>スタット</th></tr>
 <tr><td><b style="color:#c0392b">R</b></td><td>ATK・DEF・HP</td></tr>
 <tr><td><b style="color:#27ae60">G</b></td><td>RAN・ATS・SPD</td></tr>
-<tr><td><b style="color:#2980b9">B</b></td><td>MAG・RES・MP</td></tr>
+<tr><td><b style="color:#2980b9">B</b></td><td>INT（知能・魔力を含む）・RES・MP</td></tr>
 <tr><td><b>W</b></td><td>隠れスタット（今は機能なし）</td></tr>
 </table>
 </div>
@@ -148,7 +148,7 @@ svg text{font:12px system-ui,sans-serif}
 <p style="font-size:13px;margin:0 0 8px"><b>ステップ2：働くAP（色ごと）</b></p>
 <p style="font-size:13px;margin:0 0 12px;color:#58717a">働くR = max(1, R_AP × 発揮率)<br>働くG = max(1, G_AP × 発揮率)<br>働くB = max(1, B_AP × 発揮率)</p>
 <p style="font-size:13px;margin:0 0 8px"><b>ステップ3：戦闘スタット = 働くAP × クラス重み × 変換係数</b></p>
-<p style="font-size:13px;margin:0;color:#58717a">HP・ATK・DEF ← 働くR × クラスのR重み<br>RAN・ATS・SPD ← 働くG × クラスのG重み<br>MAG・RES・MP ← 働くB × クラスのB重み</p>
+<p style="font-size:13px;margin:0;color:#58717a">HP・ATK・DEF ← 働くR × クラスのR重み<br>RAN・ATS・SPD ← 働くG × クラスのG重み<br>INT・RES・MP ← 働くB × クラスのB重み</p>
 </div>
 
 <h2>クラス重み（案）</h2>
