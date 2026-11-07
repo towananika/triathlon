@@ -111,6 +111,12 @@ svg text{font:12px system-ui,sans-serif}
 </table>
 </div>
 
+<h2>1歳ごとの生殖能力（0〜100歳）</h2>
+<details class="card"><summary>表をひらく（ピーク＝100）</summary>
+<div id="fert1" style="max-height:420px;overflow:auto;margin-top:8px"></div></details>
+<script src="fertility.js?v=20261107"></script>
+<script>(function(){var d=window.TRI_FERT;if(!d)return;var r='<table><tr><th>年齢</th><th>女性</th><th>男性</th></tr>';for(var a=0;a<=100;a++)r+='<tr><td>'+a+'歳</td><td>'+d.F[a]+'</td><td>'+d.M[a]+'</td></tr>';document.getElementById('fert1').innerHTML=r+'</table>'})();</script>
+
 <h2>未決定事項</h2>
 <div style="background:#e8f5e9;border:1px solid #81c784;border-radius:10px;padding:12px;margin-bottom:8px">
 <h3 style="margin:0 0 6px;font-size:14px;color:#1b5e20">✅ W → 隠れスタットに決定（2026-11-07）</h3>
