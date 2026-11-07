@@ -30,7 +30,7 @@
 .team{display:grid;gap:10px}.team div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center}
 .team span{grid-row:span 2;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:var(--card)}.team b{font-size:17px}.team p{margin:0;color:var(--sub);font-size:15px}
 @media(min-width:760px){.duo{grid-template-columns:1fr 1fr}.wlinks{grid-template-columns:repeat(3,1fr)}.team{grid-template-columns:repeat(3,1fr)}}
-.nextep{margin:8px 2px 0;font-size:13px;color:#9a7630;font-weight:700}</style>
+.quicklinks{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}.quicklinks a{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--ink);text-decoration:none;font-weight:700}.quicklinks a:hover{border-color:var(--teal)}.quicklinks small{display:block;color:var(--sub);font-size:13px;font-weight:400}.nextep{margin:8px 2px 0;font-size:13px;color:#9a7630;font-weight:700}</style>
 </head>
 <body>
 <script src="site-nav.js?v=0.78"></script>
@@ -48,6 +48,17 @@
 <p class="hero-lead">二つの川が出会う町・二水。9人の一生を、子どものころから年をとるまで、まるごと見守る物語です。</p>
 <div class="cta"><a class="btn primary" id="cta-read" href="stories/v.html?id=1">📖 最新話を読む</a><a class="btn" href="watch/">🕯️ 今日を見守る</a></div>
 </div>
+</section>
+
+<section class="sec" aria-labelledby="start-h">
+<div class="sec-head"><div><p class="kick" aria-hidden="true">Explore</p><h2 id="start-h">どこから始める？</h2></div></div>
+<nav class="quicklinks" aria-label="主なメニュー">
+<a href="stories/">物語を読む<small>連載を最初から楽しむ</small></a>
+<a href="char/">キャラクター<small>二水の9人を知る</small></a>
+<a href="map/">世界を見る<small>町や国を地図で見る</small></a>
+<a href="planning/">企画・開発<small>管理者向けの資料と試作</small></a>
+<a href="admin/">会員管理<small>管理者向けの会員一覧</small></a>
+</nav>
 </section>
 
 <section class="sec" aria-labelledby="ep-h">
@@ -82,7 +93,6 @@
 <a class="box" href="map/"><b>🌐 マップ</b><p>本物の地形の上に、3つの国と開拓地。</p></a>
 <a class="box" href="sim/"><b>🌏 今日の世界</b><p>今日の天気と、9人がいまどこにいるか。</p></a>
 <a class="box" href="places/" id="fav"><b>📷 好きな場所</b><p>9人それぞれの、好きな場所。</p></a>
-<a class="box" href="planning/"><b>🛠️ ゲーム企画・開発</b><p>管理者向けの企画と開発資料。</p></a>
 </div>
 </section>
 
