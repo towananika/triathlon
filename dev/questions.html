@@ -38,7 +38,7 @@ function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;
 function done(set){return set.q.filter(function(q){return q.dec||(A[q.id]&&A[q.id].v!=null)}).length}
 function tabs(){$('tabs').innerHTML=Q.map(function(s,i){return '<button class="tab'+(i===cur?' on':'')+'" data-i="'+i+'">'+esc(s.title)+'（'+done(s)+'/'+s.q.length+'）</button>'}).join('');
  document.querySelectorAll('.tab').forEach(function(b){b.onclick=function(){cur=+b.dataset.i;render()}})}
-function render(){tabs();var s=Q[cur];
+function render(){tabs();var s=Q[cur];if(!s){$('qs').innerHTML='<p class="mut">いまは質問はありません。答えはすべて記録ずみです。</p>';return}
  $('qs').innerHTML=s.q.map(function(q,qi){var a=A[q.id]||{};
   if(q.dec)return '<section class="q dec"><span class="n">'+esc(s.title)+' '+(qi+1)+'／'+s.q.length+' · 決定済み</span><h2>'+esc(q.t)+'</h2><p class="ans">'+esc(q.dec)+'</p></section>';
   return '<section class="q"><span class="n">'+esc(s.title)+' '+(qi+1)+'／'+s.q.length+'</span><h2>'+esc(q.t)+'</h2>'+(q.note?'<p class="mut">'+esc(q.note)+'</p>':'')+
