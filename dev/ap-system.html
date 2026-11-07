@@ -1,0 +1,125 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>APシステム設計 | TRIATHLON</title>
+<style>
+:root{--bg:#f5f9f8;--card:#fff;--fg:#163744;--mut:#58717a;--line:#cbdedf;--acc:#007f87;--acc2:#e8f5f5}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.7 "Noto Sans JP",system-ui,sans-serif}
+main{max-width:600px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:16px;margin:24px 0 8px;border-left:3px solid var(--acc);padding-left:8px}
+p,ul{margin:0 0 10px}li{margin-bottom:4px}.mut{color:var(--mut);font-size:13px}
+nav.dv a{color:var(--acc);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat-box{background:var(--acc2);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.stat-box b{display:block;font-size:17px;color:var(--acc)}
+.stat-box small{font-size:12px;color:var(--mut)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--mut);font-weight:600}
+.pending{background:#fffbe6;border:1px solid #f5d44e;border-radius:10px;padding:12px;margin-bottom:8px}
+.pending h3{margin:0 0 6px;font-size:14px;color:#7a6000}
+.opt{margin-bottom:4px;font-size:13px}
+svg text{font:12px system-ui,sans-serif}
+</style>
+<script src="return.js?v=20261101" defer></script></head><body>
+<main>
+<nav class="dv"><a href="./">← 開発トップ</a></nav>
+<h1>APシステム設計</h1>
+<p class="mut">能力ポイント（AP）の配分と生殖能力による発揮率。2026-11-07 設計中。</p>
+
+<h2>基本の仕組み</h2>
+<div class="row3">
+  <div class="stat-box"><b>45 AP</b><small>誕生時（ランダム配分）</small></div>
+  <div class="stat-box"><b>+5 AP</b><small>毎月（本人が配分）</small></div>
+  <div class="stat-box"><b>×発揮率</b><small>生殖能力で決まる</small></div>
+</div>
+
+<div class="card">
+<b>AP累計（例）</b>
+<table>
+<tr><th>年齢</th><th>持っているAP</th><th>メモ</th></tr>
+<tr><td>0歳（誕生）</td><td>45</td><td>RGBW最小6ずつ＋残り21ランダム</td></tr>
+<tr><td>10歳</td><td>645</td><td></td></tr>
+<tr><td>20歳</td><td>1,245</td><td></td></tr>
+<tr><td>30歳</td><td>1,845</td><td></td></tr>
+<tr><td>40歳</td><td>2,445</td><td></td></tr>
+<tr><td>60歳</td><td>3,645</td><td></td></tr>
+</table>
+<p class="mut">働くAP ＝ 持っているAP × 発揮率</p>
+</div>
+
+<h2>生殖能力と年齢（実データ参考）</h2>
+<p class="mut">WHO・各国の生殖統計から算出した概算値。自然妊娠率・精子質・ホルモン水準を総合した指標。</p>
+<svg viewBox="0 0 540 220" width="100%" style="border:1px solid var(--line);border-radius:10px;background:#fff">
+  <!-- grid -->
+  <line x1="50" y1="10" x2="50" y2="180" stroke="#e3eeee" stroke-width="1"/>
+  <line x1="50" y1="180" x2="530" y2="180" stroke="#e3eeee" stroke-width="1"/>
+  <!-- y grid lines -->
+  <line x1="50" y1="55" x2="530" y2="55" stroke="#e3eeee" stroke-width="1" stroke-dasharray="4"/>
+  <line x1="50" y1="97" x2="530" y2="97" stroke="#e3eeee" stroke-width="1" stroke-dasharray="4"/>
+  <line x1="50" y1="140" x2="530" y2="140" stroke="#e3eeee" stroke-width="1" stroke-dasharray="4"/>
+  <!-- y labels -->
+  <text x="44" y="14" text-anchor="end" fill="#58717a">100%</text>
+  <text x="44" y="58" text-anchor="end" fill="#58717a">75%</text>
+  <text x="44" y="100" text-anchor="end" fill="#58717a">50%</text>
+  <text x="44" y="143" text-anchor="end" fill="#58717a">25%</text>
+  <text x="44" y="183" text-anchor="end" fill="#58717a">0%</text>
+  <!-- x labels -->
+  <text x="50" y="195" text-anchor="middle" fill="#58717a">0</text>
+  <text x="124" y="195" text-anchor="middle" fill="#58717a">10</text>
+  <text x="198" y="195" text-anchor="middle" fill="#58717a">20</text>
+  <text x="272" y="195" text-anchor="middle" fill="#58717a">30</text>
+  <text x="346" y="195" text-anchor="middle" fill="#58717a">40</text>
+  <text x="420" y="195" text-anchor="middle" fill="#58717a">50</text>
+  <text x="494" y="195" text-anchor="middle" fill="#58717a">60</text>
+  <text x="290" y="210" text-anchor="middle" fill="#58717a">年齢</text>
+  <!-- Female curve (pink) -->
+  <!-- Data: 0:0 5:0 10:1 12:5 14:20 16:48 18:68 20:82 22:92 24:97 26:94 28:89 30:84 32:75 34:65 36:52 38:40 40:27 42:16 44:9 46:4 48:2 50:0.5 52:0 -->
+  <!-- x = 50 + age*(480/60), y = 180 - val*(170/100) -->
+  <polyline fill="none" stroke="#e05080" stroke-width="2.5"
+    points="50,180 87,180 124,178.3 138.8,171.5 161.6,146 184.4,106.4 198,65.4 213,42.6 228,24.6 243,15.1 251,21.6 265,33.7 272,36.6 280,46 291,54 302,70.6 313,88 324,111.8 335,133 346,154.1 361,172.8 376,176.6 390,179.1 405,179.1"/>
+  <!-- Male curve (blue) -->
+  <!-- Data: 0:0 5:0 10:1 12:3 14:22 16:58 18:77 20:87 22:94 24:98 26:98 28:97 30:96 32:94 34:91 36:87 38:83 40:77 42:71 44:64 46:57 48:51 50:45 52:39 54:34 56:29 58:24 60:20 -->
+  <polyline fill="none" stroke="#2f6fb8" stroke-width="2.5"
+    points="50,180 87,180 124,178.3 138.8,174.9 161.6,142.6 184.4,80.6 198,51 213,32.1 228,18.6 243,13.4 251,13.4 259,14.9 272,16.4 280,19.4 291,24.6 302,29.9 313,35.6 324,42.1 335,48.9 346,56.7 361,65.9 376,76.6 390,87.6 405,97.9 420,107.8 435,116.9 450,126 465,135 480,145 494,154 510,163"/>
+  <!-- Legend -->
+  <line x1="300" y1="22" x2="320" y2="22" stroke="#e05080" stroke-width="2.5"/>
+  <text x="324" y="26" fill="#e05080">女性</text>
+  <line x1="370" y1="22" x2="390" y2="22" stroke="#2f6fb8" stroke-width="2.5"/>
+  <text x="394" y="26" fill="#2f6fb8">男性</text>
+</svg>
+
+<h2>年齢帯ごとの発揮率（概算）</h2>
+<div class="card">
+<table>
+<tr><th>年齢</th><th>女性</th><th>男性</th><th>状態</th></tr>
+<tr><td>0〜11歳</td><td>0〜1%</td><td>0〜1%</td><td>思春期前 — ほぼ働かない</td></tr>
+<tr><td>12〜17歳</td><td>5〜65%</td><td>5〜75%</td><td>思春期 — 急上昇</td></tr>
+<tr><td>18〜24歳</td><td>68〜97%</td><td>77〜98%</td><td>若年 — ほぼ全開</td></tr>
+<tr><td>25〜34歳</td><td>84〜97%</td><td>91〜97%</td><td>壮年前期 — 安定して高い</td></tr>
+<tr><td>35〜44歳</td><td>9〜52%</td><td>64〜87%</td><td>壮年後期 — 女性は急落</td></tr>
+<tr><td>45〜54歳</td><td>0〜4%</td><td>34〜57%</td><td>中年 — 女性ほぼゼロ</td></tr>
+<tr><td>55歳〜</td><td>≒0%</td><td>5〜29%</td><td>熟年 — 男性はなだらか</td></tr>
+</table>
+</div>
+
+<h2>未決定事項</h2>
+<div class="pending">
+<h3>❓ Wは何のスタット？</h3>
+<p class="opt">現在はR（体・HP）／G（技）／B（心・MP）の3軸。WはWhite？Will？</p>
+</div>
+<div class="pending">
+<h3>❓ 生殖能力をどう使う？（A/B/C）</h3>
+<p class="opt">A. そのまま使う — 50代女性はほぼ0。リアルだが厳しい</p>
+<p class="opt">B. 思春期に「目覚め」るきっかけにだけ使い、その後は男女共通の体力曲線</p>
+<p class="opt">C. 最低ライン（例：30%）を置く — 老いても能力がゼロにはならない</p>
+</div>
+<div class="pending">
+<h3>❓ 0〜2歳（自我の前）の配分は？</h3>
+<p class="opt">本人が「思うとおり」に振れない。親の育て方？ランダム継続？</p>
+</div>
+<div class="pending">
+<h3>❓ 生殖能力が低く生まれたキャラは？</h3>
+<p class="opt">誕生時の発揮率が低ければ、一生を通じて能力が低いまま。これは意図した設計？</p>
+</div>
+
+</main>
+</body></html>
