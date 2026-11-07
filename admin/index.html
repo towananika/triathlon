@@ -3,7 +3,7 @@
 <main><h1>管理</h1><p class="sub">サイトの利用者と、管理者どうしのメモ。</p>
 <div id="gate"></div>
 <div id="admin-body" hidden>
-<h2>利用者</h2><div class="box"><table><thead><tr><th>名前</th><th>メール</th><th>方法</th><th>最後に来た日</th></tr></thead><tbody id="users"><tr><td colspan="4">読みこみ中…</td></tr></tbody></table><p class="note" id="ucount"></p></div>
+<h2>会員管理</h2><p class="note">サイトへログインした会員を表示します。Googleログインの会員には管理者権限を設定できます。</p><div class="box"><table><thead><tr><th>名前</th><th>メール</th><th>方法</th><th>最後に来た日</th><th>権限</th></tr></thead><tbody id="users"><tr><td colspan="5">読みこみ中…</td></tr></tbody></table><p class="note" id="ucount"></p></div>
 <h2>管理メモ</h2><div class="box"><textarea id="memo" placeholder="管理者どうしの連絡など"></textarea><div class="row"><button id="save" type="button">保存</button><span class="note" id="saved"></span></div></div>
 <h2>ほかのページ</h2><div class="links"><a href="../dev/">開発ページ<small>開発タスクと開発用の道具</small></a><a href="../news/">お知らせ<small>公開しているアップデート</small></a></div>
 </div></main>
@@ -11,12 +11,35 @@
 window.triAdminReady = function (f) {
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   var VIA = { 'google.com': 'Google', 'password': 'メール' };
-  f.getDocs(f.query(f.collection(f.db, 'users'), f.orderBy('last', 'desc'), f.limit(200))).then(function (s) {
-    var rows = []; s.forEach(function (d) { var u = d.data(), t = u.last && u.last.toDate ? u.last.toDate() : null;
-      rows.push('<tr><td>' + esc(u.name || '（名前なし）') + '</td><td>' + esc(u.email) + '</td><td>' + esc(VIA[u.via] || u.via) + '</td><td>' + (t ? t.getFullYear() + '.' + (t.getMonth() + 1) + '.' + t.getDate() : '') + '</td></tr>'); });
-    document.getElementById('users').innerHTML = rows.join('') || '<tr><td colspan="4">まだいません</td></tr>';
-    document.getElementById('ucount').textContent = rows.length + '人';
-  }).catch(function (e) { document.getElementById('users').innerHTML = '<tr><td colspan="4">読めませんでした（' + esc(e.code) + '）</td></tr>'; });
+  var owner = 'jaykim.can@gmail.com', rowsBox = document.getElementById('users');
+  function loadUsers() {
+    Promise.all([f.getDocs(f.query(f.collection(f.db, 'users'), f.orderBy('last', 'desc'), f.limit(200))), f.getDocs(f.collection(f.db, 'triathlonAdmins'))]).then(function (result) {
+      var admins = new Set(); result[1].forEach(function (d) { admins.add(d.id); });
+      rowsBox.replaceChildren();
+      result[0].forEach(function (d) {
+        var u=d.data(), row=document.createElement('tr'), t=u.last && u.last.toDate ? u.last.toDate() : null;
+        [u.name || '（名前なし）',u.email || '',VIA[u.via] || u.via || '',t ? t.toLocaleDateString('ja-JP') : ''].forEach(function (v) { var td=document.createElement('td'); td.textContent=v; row.appendChild(td); });
+        var td=document.createElement('td');
+        if (u.email === owner) td.textContent='オーナー';
+        else if (u.via !== 'google.com') td.textContent='Googleログインが必要';
+        else {
+          var isAdmin=admins.has(d.id), button=document.createElement('button');
+          button.textContent=isAdmin?'管理者を解除':'管理者に設定'; button.className=isAdmin?'ghost':'';
+          button.onclick=async function () {
+            var action=isAdmin?'管理者権限を解除':'管理者に設定';
+            if (!window.confirm((u.email || u.name)+' を'+action+'しますか？ 管理者は利用者一覧と開発企画を閲覧し、他の管理者も設定できます。')) return;
+            button.disabled=true;
+            try { var ref=f.doc(f.db,'triathlonAdmins',d.id); if(isAdmin) await f.deleteDoc(ref); else await f.setDoc(ref,{email:u.email,grantedBy:window.triUid(),at:f.serverTimestamp()}); loadUsers(); }
+            catch (e) { button.disabled=false; document.getElementById('ucount').textContent='変更できませんでした（'+(e.code || 'error')+'）'; }
+          };
+          td.appendChild(button);
+        }
+        row.appendChild(td); rowsBox.appendChild(row);
+      });
+      document.getElementById('ucount').textContent=result[0].size+'人（一覧にはログイン履歴のある利用者を最大200人表示）';
+    }).catch(function (e) { rowsBox.textContent='利用者または管理者を読み込めませんでした（'+(e.code || 'error')+'）'; });
+  }
+  loadUsers();
   var memo = document.getElementById('memo'), ref = f.doc(f.db, 'admin', 'memo');
   f.getDoc(ref).then(function (d) { if (d.exists()) memo.value = d.data().text || ''; });
   document.getElementById('save').onclick = function () {
@@ -27,3 +50,5 @@ window.triAdminReady = function (f) {
 </script>
 <script src="../login/gate.js?v=0.28"></script>
 </body></html>
+
+
