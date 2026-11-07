@@ -35,11 +35,18 @@ function pickLeader(g){var L=living(g.id).filter(function(p){return p.age>=18*12
 function month(){S.month++;
  if(S.month%120===0)S.ppl=S.ppl.filter(function(p){return p.alive});
  var pop=S.ppl.filter(function(p){return p.alive}).length;[50,100,200,500,1000].forEach(function(n){if(pop>=n&&S.peak<n){S.peak=n;chron('人口が'+n+'人をこえた。')}});
+ /* 季節（春・夏・秋・冬）で畑の実りが変わる。年のはじめに、集まりごとにできごとが起きることがある */
+ var mo=S.month%12,SEA=[.4,.4,1,1,1,1.2,1.2,1.2,1.4,1.4,1.4,.4][mo];
+ if(mo===2)S.grp.forEach(function(g){var P=living(g.id);if(!P.length)return;g.ev=null;var x=r();
+  if(x<.10){g.ev='豊作';chron(g.name+'は豊作の年になった。')}
+  else if(x<.17){g.ev='大雨';g.infra=Math.max(0,g.infra-.15);chron(g.name+'に大雨。水路と道が傷んだ。')}
+  else if(x<.24){g.ev='祭り';g.trust=Math.min(1,g.trust+.2);Object.keys(g.rel).forEach(function(k){g.rel[k]=Math.min(1,g.rel[k]+.15)});chron(g.name+'で祭りがあり、まわりの集まりも招かれた。')}
+  else if(x<.28&&P.length>8){g.ev='病';for(var i=0;i<Math.ceil(P.length*.04);i++)die(P[Math.floor(r()*P.length)],'はやり病で亡くなった');chron(g.name+'で、はやり病が広がった。')}});
  S.grp.forEach(function(g){var P=living(g.id);if(!P.length)return;var prod=0,tl=0;
   P.forEach(function(p){
    if(p.ctrl==='ai')p.focus=aiFocus(p);else if(p.ctrl==='auto'&&r()<.05)p.focus=r()<.5?aiFocus(p):bestFocus(p);
    if(p.age>=36){var k=r()<.6?FS[p.focus]:'RGBW'[Math.floor(r()*4)];p.ap[k]+=5}else p.ap['RGBW'[Math.floor(r()*4)]]+=5;
-   if(p.age>=12*12){if(p.focus==='farm')prod+=stat(p,'R')/18*g.land;else if(p.focus==='explore'){prod+=stat(p,'G')/40;if(r()<.0015)die(p,'遠出の先で戻らなかった')}else if(p.focus==='learn')tl+=stat(p,"B")/300000;else if(p.focus==='mend'){}else{prod+=.3;Object.keys(g.rel).forEach(function(k){g.rel[k]=Math.min(1,g.rel[k]+stat(p,'G')/4000)})}}
+   if(p.age>=12*12){if(p.focus==='farm')prod+=stat(p,'R')/15*g.land*SEA*(g.ev==='豊作'?1.5:1);else if(p.focus==='explore'){prod+=stat(p,'G')/40;if(r()<.0015)die(p,'遠出の先で戻らなかった')}else if(p.focus==='learn')tl+=stat(p,"B")/300000;else if(p.focus==='mend'){}else{prod+=.3;Object.keys(g.rel).forEach(function(k){g.rel[k]=Math.min(1,g.rel[k]+stat(p,'G')/4000)})}}
   });
   g.tech+=tl;
   /* 作ったもの（水路と道）は古びる。手入れの人手は、畑や学びと取り合いになる。古い見張りは誤報が増え、知らせが信じられなくなる */

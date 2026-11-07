@@ -23,18 +23,21 @@ ol.log{margin:0;padding-left:18px;max-height:300px;overflow:auto;font-size:13px}
 </style>
 <script src="return.js?v=20261107n" defer></script>
 <script src="fertility.js?v=20261107"></script>
-<script src="civ-sim.js?v=20261107b"></script>
+<script src="civ-sim.js?v=20261107c"></script>
 </head><body><div class="wrap">
 <nav><a href="./">← 開発トップ</a></nav>
 <h1>文明シミュ（試作）</h1>
 <p class="mut">24人から始まり、生まれ・年をとり・組み・村や町になります。キャラは「自動」「ユーザー」「AI」のどれかが動かします。声をかけると、聞くかどうかは本人しだい。</p>
+<div class="box" id="guide" hidden><h2>はじめての人へ</h2>
+<ol style="margin:0;padding-left:20px;font-size:14px"><li>「1年すすめる」を押すと、人が生まれ、組み、村が育ちます。</li><li>キャラを選んで「動かす人」をユーザーにすると、そのキャラのすることを決められます。AIに任せることもできます。</li><li>声をかけると、聞くかどうかは性格しだい。年表で、村の歩みをふり返れます。</li></ol>
+<div class="row"><button class="btn" id="g-ok">わかった</button></div></div>
 <div class="box"><div class="kpi"><div><b id="k-year"></b><small>年目</small></div><div><b id="k-pop"></b><small>人口</small></div><div><b id="k-grp"></b><small>集まり</small></div><div><b id="k-tech"></b><small>技術</small></div></div>
 <p id="k-stage" class="mut"></p>
 <div class="row"><button class="btn" id="y1">1年すすめる</button><button class="btn sub" id="y10">10年</button><button class="btn sub" id="reset">はじめから</button></div></div>
 <div class="box"><h2>集まり</h2><div class="grp" id="groups"></div></div>
 <div class="box"><h2>キャラ</h2><p class="mut">押すと選べます。色の帯は R・G・B（W は隠れ）。</p><div class="ppl" id="ppl"></div>
 <div id="panel" class="box" hidden></div></div>
-<div class="box"><h2>年表</h2><p class="mut">節目だけを残します。</p><ol class="log" id="chron"></ol></div>
+<div class="box"><h2>年表</h2><p class="mut">節目だけを残します。</p><ol class="log" id="chron"></ol><div class="row"><button class="btn sub" id="ch-copy">年表をコピー</button><span class="mut" id="ch-msg"></span></div></div>
 <div class="box"><h2>マルチの準備</h2><p class="mut">世界は「種」と「行動の記録」だけで決まります。同じ記録を読めば、誰の端末でも同じ世界になります（オンラインはまだ。保存先は後で Firestore に差し替え）。</p><div class="row"><button class="btn sub" id="exp">記録をコピー</button><button class="btn sub" id="chk">検算する</button></div><p class="mut" id="mmsg"></p></div>
 <div class="box"><h2>できごと</h2><ol class="log" id="log" reversed></ol></div>
 </div>
@@ -47,11 +50,12 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(C.S))}catch(e){}}
 function load(){try{var v=JSON.parse(localStorage.getItem(KEY));if(v&&v.ppl&&v.rs!=null&&v.acts){C.S=v;return true}}catch(e){}return false}
 /* AIの判断（きまり）：集まりの困りごとに合わせて動く */
 function year(n){for(var i=0;i<n*12;i++)C.month();save();draw()}
+function copy(t){try{navigator.clipboard.writeText(t)}catch(e){var x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy')}catch(e2){}document.body.removeChild(x)}}
 function act(a){var m=C.act(a);save();return m}
 function bar(p){var t=p.ap.R+p.ap.G+p.ap.B;return '<span class="bar"><i style="width:'+(p.ap.R/t*100)+'%;background:var(--R)"></i><i style="width:'+(p.ap.G/t*100)+'%;background:var(--G)"></i><i style="width:'+(p.ap.B/t*100)+'%;background:var(--B)"></i></span>'}
 function draw(){var A=living();$('k-year').textContent=Math.floor(C.S.month/12)+1;$('k-pop').textContent=A.length;var G=C.S.grp.filter(function(g){return living(g.id).length});$('k-grp').textContent=G.length;
  var tech=G.reduce(function(s,g){return Math.max(s,g.tech)},0);$('k-tech').textContent=tech.toFixed(1);
- var big=G.sort(function(a,b){return living(b.id).length-living(a.id).length})[0];var bn=big?living(big.id).length:0,nx=bn<20?20:bn<80?80:bn<300?300:0,nn={20:'村',80:'町',300:'国'}[nx];$('k-stage').textContent=big?'いちばん大きい集まり：'+big.name+'（'+stage(bn)+'）'+(nx?'　次の節目：'+nn+'まで あと'+(nx-bn)+'人':''):'人がいなくなった。';
+ var big=G.sort(function(a,b){return living(b.id).length-living(a.id).length})[0];var bn=big?living(big.id).length:0,nx=bn<20?20:bn<80?80:bn<300?300:0,nn={20:'村',80:'町',300:'国'}[nx];var SEN=['冬','冬','春','春','春','夏','夏','夏','秋','秋','秋','冬'][C.S.month%12];$('k-stage').textContent='季節：'+SEN+'　'+(big?'いちばん大きい集まり：'+big.name+'（'+stage(bn)+'）'+(nx?'　次の節目：'+nn+'まで あと'+(nx-bn)+'人':''):'人がいなくなった。');
  $('chron').innerHTML=C.S.chron.slice(-12).reverse().map(function(t){return '<li>'+t+'</li>'}).join('');
  $('groups').innerHTML=G.map(function(g){var P=living(g.id),L=C.S.ppl.filter(function(p){return p.id===g.leader})[0];return '<div><span><b>'+g.name+'</b>　'+stage(P.length)+'・'+P.length+'人</span><span class="mut">水路と道 '+Math.round(g.infra*100)+'%　長 '+(L?L.name:'なし')+'（'+RULE[g.rule]+'）　食 '+Math.max(0,Math.round(g.food))+'</span></div>'}).join('');
  var L=A.filter(function(p){return p.ctrl!=='auto'}).concat(A.filter(function(p){return p.ctrl==='auto'&&p.age>=12*12}).sort(function(a,b){return b.age-a.age})).slice(0,40);
@@ -63,12 +67,16 @@ function panel(){var p=C.S.ppl.filter(function(x){return x.id===C.S.sel&&x.alive
  el.innerHTML='<h2>'+p.name+'（'+(p.sex==='F'?'女':'男')+' '+Math.floor(p.age/12)+'歳）</h2><p class="mut">性格：'+p.trait+'。いま：'+FOCUS[p.focus]+'。子ども '+p.kids+'人。</p>'+
  '<div class="row">動かす人 '+sel('c-ctrl',{auto:'自動（本人）',user:'ユーザー',ai:'AI'},p.ctrl)+'</div>'+
  (p.ctrl==='user'?'<div class="row">すること '+sel('c-focus',FOCUS,p.focus)+'</div>':'')+
- '<div class="row">'+sel('c-voice',FOCUS,p.focus)+'<button class="btn sub" id="c-say">と声をかける</button></div><p class="mut" id="c-msg"></p>';
+ '<div class="row">'+sel('c-voice',FOCUS,p.focus)+'<button class="btn sub" id="c-say">と声をかける</button></div><div class="row"><button class="btn sub" id="c-card">一生カードをコピー</button></div><p class="mut" id="c-msg"></p>';
  $('c-ctrl').onchange=function(){var m=act({t:'ctrl',pid:p.id,v:this.value});draw();if(m)$('c-msg').textContent=m};
  if($('c-focus'))$('c-focus').onchange=function(){act({t:'focus',pid:p.id,v:this.value});draw()};
+ $('c-card').onclick=function(){var g=group(p.g),mine=C.S.log.filter(function(t){return t.indexOf(p.name)>=0}).slice(-6);var t='【'+p.name+'の一生】\n'+(p.sex==='F'?'女':'男')+'・'+Math.floor(p.age/12)+'歳・'+p.trait+'\n'+g.name+'（'+stage(living(g.id).length)+'）で暮らす。子ども'+p.kids+'人。\n'+mine.join('\n')+'\n― トライアスロン 文明シミュ';copy(t);$('c-msg').textContent='一生カードをコピーしました。'};
  $('c-say').onclick=function(){$('c-msg').textContent=act({t:'voice',pid:p.id,v:$('c-voice').value});setTimeout(draw,900)}}
 $('exp').onclick=function(){var t=JSON.stringify({seed:C.S.seed,month:C.S.month,acts:C.S.acts});try{navigator.clipboard.writeText(t)}catch(e){}$('mmsg').textContent='行動 '+C.S.acts.length+'件の記録をコピーしました（'+t.length+'文字）。'};
 $('chk').onclick=function(){$('mmsg').textContent=C.verify()?'検算OK：記録だけから同じ世界になりました。':'検算NG：記録から同じ世界になりませんでした。'};
+$('ch-copy').onclick=function(){copy('【'+((C.S.grp[0]||{}).name||'')+'の年表】\n'+C.S.chron.join('\n')+'\n― トライアスロン 文明シミュ');$('ch-msg').textContent='コピーしました。'};
+try{if(!localStorage.getItem('tri-civ-guide'))$('guide').hidden=false}catch(e){}
+$('g-ok').onclick=function(){$('guide').hidden=true;try{localStorage.setItem('tri-civ-guide','1')}catch(e){}};
 $('y1').onclick=function(){year(1)};$('y10').onclick=function(){year(10)};$('reset').onclick=function(){C.init(Date.now()%100000);save();draw()};
 if(!load()){C.init(20261107);save()}draw();
 window.TRI_CIV={S:function(){return C.S},year:year,act:act,replay:C.replay,verify:C.verify};
