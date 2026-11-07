@@ -25,11 +25,11 @@ input[type=text]{font:inherit;border:1px solid var(--line);border-radius:12px;pa
 <div id="qs" style="display:grid;gap:14px"></div>
 <div class="row"><button class="btn" id="copy">答えをコピー</button><span class="mut" id="msg"></span></div>
 </div>
-<script src="questions.js?v=3"></script>
+<script src="questions.js?v=4"></script>
 <script>
 (function(){
 'use strict';
-var KEY='tri-questions-v1',Q=window.TRI_QUESTIONS||[],cur=0,A={};
+var KEY='tri-questions-v1',Q=window.TRI_QUESTIONS||[],cur=0,A={};Q.forEach(function(s,i){if(s.id&&location.hash==='#'+s.id)cur=i});
 try{A=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(A))}catch(e){}}
 function $(i){return document.getElementById(i)}
