@@ -85,7 +85,15 @@ window.TRI_TREE = {
    {id: 'MGC', en: 'Mage Class（A〜E）', ja: '魔導士クラス（A〜E）', st: 'MP', stg: 1, req: ['EMC'], guess: 1, note: 'マナ10,000以上＋消費マナ2,000以上の技'},
    {id: 'ARC', en: 'Arch Mage Class（F〜I）', ja: '大魔導士クラス（F〜I）', st: 'MP', stg: 1, req: ['MGC'], guess: 1, note: 'マナ15,000以上＋消費マナ3,000以上の技'}]},
   {g: 'Cleris Missionary School', items: [
-   {id: 'CLR', en: 'Grade 1〜13', ja: '1〜13学年', st: 'RES', stg: 1, note: 'ワンタップで詠唱。伸びやすいが伸びしろは低め。学部：Engineering／Education／Humanities／Medicine／Liberal Arts／Social Sciences／Natural Sciences'}]},
+   {id: 'CLR', en: 'Grade 1〜13', ja: '1〜13学年', st: 'RES', stg: 1, note: 'ワンタップで詠唱。伸びやすいが伸びしろは低め。学部：Engineering／Education／Humanities／Medicine／Liberal Arts／Social Sciences／Natural Sciences'},
+   // 2026-11-07 ひびき指定：クレリス宣教学校にサポート系魔法使いのスキルを追加。個々の技・前提・ステータスは Claude の案（要確認）
+   {g: 'Support Magic（サポート系）', items: [
+    {id: 'CL.FORM',  en: 'Standard Circle',      ja: '定型魔法陣', st: 'MP',  stg: 1, guess: 1, req: ['CLR'], note: '用意された円形術式を選び、短い定型手順で発動する。サポート系の土台'},
+    {id: 'CL.HEAL',  en: 'Healing Prayer',       ja: '治癒祈祷',   st: 'MAG', stg: 1, guess: 1, req: ['CL.FORM'], note: '味方のHPを回復する'},
+    {id: 'CL.GUARD', en: 'Guard Prayer',         ja: '守護祈祷',   st: 'RES', stg: 1, guess: 1, req: ['CL.FORM'], note: '味方の守りを一時的に上げる。無敵にはしない'},
+    {id: 'CL.SWIFT', en: 'Swift Prayer',         ja: '加速祈祷',   st: 'SPD', stg: 1, guess: 1, req: ['CL.FORM'], note: '味方の速さを一時的に上げる'},
+    {id: 'CL.PURE',  en: 'Purification Prayer',  ja: '浄化祈祷',   st: 'RES', stg: 1, guess: 1, req: ['CL.HEAL'], note: '習得済みの術式で解ける状態異常を取り除く。万能の解除にはしない'},
+    {id: 'CL.KEEP',  en: 'Support Sustain',      ja: '支援維持',   st: 'MP',  stg: 1, guess: 1, req: ['CL.GUARD', 'CL.SWIFT'], note: '支援の術式を長く保つ。同時に保てる数は未定'}]}]},
   {g: 'Nacsha Missionary School（全解放）', items: [
    {id: 'NAC', en: 'すべての技を解放できる', st: '', note: 'ランダムな skill-tech、1ボタン詠唱、10,000回で100%、魔法回路1〜4：100p^1〜4'}]}]}
 };
