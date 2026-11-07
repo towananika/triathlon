@@ -4,7 +4,7 @@
   if (!script) return;
   var home = new URL('../', script.src).href;
   if (!document.querySelector('script[src*="site-nav.js"]')) {
-    var theme = document.createElement('script'); theme.src = new URL('site-theme.js?v=0.101-fix', home).href; document.head.appendChild(theme);
+    var theme = document.createElement('script'); theme.src = new URL('site-theme.js?v=20261107n', home).href; document.head.appendChild(theme);
     var status = document.createElement('script'); status.src = new URL('login/admin-status.js?v=0.101-fix', home).href; document.head.appendChild(status);
     if (!document.querySelector('script[src*="login/auth.js"],script[src^="auth.js"]')) {
       var auth = document.createElement('script'); auth.type = 'module'; auth.src = new URL('login/auth.js?v=0.28', home).href; document.head.appendChild(auth);

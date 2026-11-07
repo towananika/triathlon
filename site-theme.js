@@ -8,7 +8,7 @@
   var key = 'tri-official-theme-v1';
   var html = document.documentElement;
   var sheet = document.createElement('link');
-  sheet.rel = 'stylesheet'; sheet.href = new URL('site-theme.css?v=0.101-fix', root).href;
+  sheet.rel = 'stylesheet'; sheet.href = new URL('site-theme.css?v=20261107n', root).href;
   document.head.appendChild(sheet);
   function read() {
     try { return localStorage.getItem(key) === 'dark' ? 'dark' : 'light'; }

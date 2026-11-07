@@ -114,7 +114,7 @@
   if (!document.querySelector('script[src*="login/auth.js"],script[src^="auth.js"]')) { var au = document.createElement('script'); au.type = 'module'; au.src = root + 'login/auth.js?v=0.28'; document.head.appendChild(au); }
   var topStyle = document.createElement('link'); topStyle.rel = 'stylesheet'; topStyle.href = root + 'back-to-top.css'; document.head.appendChild(topStyle);
   var topScript = document.createElement('script'); topScript.src = root + 'back-to-top.js'; document.body.appendChild(topScript);
-  var themeScript = document.createElement('script'); themeScript.src = root + 'site-theme.js?v=0.101-fix'; document.head.appendChild(themeScript);
+  var themeScript = document.createElement('script'); themeScript.src = root + 'site-theme.js?v=20261107n'; document.head.appendChild(themeScript);
   if (path === rootPath) {
     var homeScript = document.createElement('script'); homeScript.src = root + 'home-showcase.js?v=0.101.1-display'; document.head.appendChild(homeScript);
   }
