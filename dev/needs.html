@@ -18,7 +18,7 @@ h1{font-size:22px;margin:0}h2{font-size:16px;margin:0}p{margin:0}.mut{color:var(
 </head><body><div class="wrap">
 <nav><a href="./">← 開発トップ</a></nav>
 <h1>ゲーム企画に必要なこと</h1>
-<p class="mut">緑＝決まった　黄＝保留（今は考えない）　赤＝足りない。赤は質問ページで答えると埋まります。</p>
+<p class="mut">緑＝決まった　青＝これから作る　黄＝保留（今は考えない）　赤＝足りない。赤は質問ページで答えると埋まります。</p>
 <div class="meter" id="meter"></div><div class="leg" id="leg"></div>
 <a class="go" href="questions.html#g" id="go">足りないことを埋める</a>
 <div id="list" style="display:grid;gap:12px"></div>
@@ -59,12 +59,22 @@ var D=[
   ['ok','地図と時間','升目の地図。留守中は戻ったときに追いつく'],
   ['ok','オンライン','無料のみ。保存は声だけ'],
   ['ok','色','白黒を使わない自然系の色'],
-  ['ok','物語の終わり','固定しない。世代が引き継ぐ']]]
+  ['ok','物語の終わり','固定しない。世代が引き継ぐ']]],
+ ['人気ゲームの要素（11/7 適用）',[
+  ['ok','愛着のわくキャラ','名前・性格（8種）・記憶。性格で声の聞きやすさが変わる'],
+  ['ok','毎回ちがう物語','きまりの積み重ねから、できごとが自然に生まれる'],
+  ['ok','次の目標が見える','「町まで あと○人」のように、次の節目を出す'],
+  ['ok','ふり返れる記録','節目だけの年表'],
+  ['ok','選択に重み','準備は数に限りがある。声は聞かれないこともある'],
+  ['todo','仲間と遊べる','準備済み：世界＝種＋行動の記録で同じ結果（検算つき）。オンラインはこれから'],
+  ['todo','見せたくなる瞬間','年表や一生をカードにして共有'],
+  ['todo','最初の5分でわかる','はじめての人への案内'],
+  ['todo','新しさが続く','季節・できごと・週ごとの物語']]]
 ];
-var C={ok:'var(--ok)',hold:'var(--hold)',miss:'var(--miss)'},N={ok:0,hold:0,miss:0},all=0;
+var C={ok:'var(--ok)',hold:'var(--hold)',miss:'var(--miss)',todo:'var(--B)'},N={ok:0,hold:0,miss:0,todo:0},all=0;
 D.forEach(function(s){s[1].forEach(function(i){N[i[0]]++;all++})});
-document.getElementById('meter').innerHTML=['ok','hold','miss'].map(function(k){return '<i style="width:'+(N[k]/all*100)+'%;background:'+C[k]+'"></i>'}).join('');
-document.getElementById('leg').innerHTML='<span style="--c:var(--ok)">決まった '+N.ok+'</span><span style="--c:var(--hold)">保留 '+N.hold+'</span><span style="--c:var(--miss)">足りない '+N.miss+'</span>';
+document.getElementById('meter').innerHTML=['ok','todo','hold','miss'].map(function(k){return '<i style="width:'+(N[k]/all*100)+'%;background:'+C[k]+'"></i>'}).join('');
+document.getElementById('leg').innerHTML='<span style="--c:var(--ok)">決まった '+N.ok+'</span><span style="--c:var(--B)">これから作る '+N.todo+'</span><span style="--c:var(--hold)">保留 '+N.hold+'</span><span style="--c:var(--miss)">足りない '+N.miss+'</span>';
 if(!N.miss)document.getElementById('go').hidden=true;
 document.getElementById('list').innerHTML=D.map(function(s){return '<div class="box"><h2>'+s[0]+'</h2>'+s[1].map(function(i){return '<div class="it" style="--c:'+C[i[0]]+'"><span class="dot"></span><b>'+i[1]+(i[3]?'　<a href="questions.html#g">質問 '+i[3]+'</a>':'')+'</b><small>'+i[2]+'</small></div>'}).join('')+'</div>'}).join('');
 })();
