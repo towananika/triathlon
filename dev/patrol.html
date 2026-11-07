@@ -28,6 +28,7 @@ ol.st{list-style:none;margin:0;padding:0;display:grid;gap:8px}ol.st li{display:f
 blockquote{margin:0;padding-left:12px;border-left:3px solid var(--line)}
 input[type=text],select{font:inherit;border:1px solid var(--line);border-radius:12px;padding:8px 12px;background:var(--bg);color:var(--fg);min-width:0}input[type=text]{flex:1}
 [hidden]{display:none!important}
+.story{margin:0;padding:10px 12px;border-left:3px solid var(--line);background:var(--card);border-radius:8px;line-height:1.9}
 </style>
 <script src="return.js?v=20261101" defer></script></head><body>
 <div class="wrap">
@@ -48,6 +49,7 @@ input[type=text],select{font:inherit;border:1px solid var(--line);border-radius:
 
 <section id="day" class="box" hidden>
 <h2 id="place"></h2><p class="mut" id="sum"></p>
+<p class="story" id="pre"></p>
 <svg class="map" id="map" viewBox="0 0 460 300" role="img" aria-label="見回りの地図"></svg>
 <div class="key"><span><svg viewBox="0 0 30 22"><use href="#s-land" class="fr" transform="translate(15 11) scale(.7)"/></svg>味方</span><span><svg viewBox="0 0 30 22"><use href="#s-land" class="fo" transform="translate(15 11) scale(.7)"/></svg>相手</span><span><svg viewBox="0 0 30 22"><use href="#s-site" class="ps" transform="translate(15 11) scale(.7)"/></svg>今日手をかける所</span><span><svg viewBox="0 0 30 22"><use href="#s-land" class="un" transform="translate(15 11) scale(.7)"/></svg>見えない相手</span></div>
 <p class="mut">丸い番号の順に、文章を読みながら地図を見ます。</p>
@@ -56,6 +58,7 @@ input[type=text],select{font:inherit;border:1px solid var(--line);border-radius:
 </section>
 
 <section id="evening" class="box" hidden>
+<p class="story" id="post"></p>
 <h2>夜の記録</h2><div id="rec" class="opts" style="gap:12px"></div>
 <div><h2>覚えたこと</h2><div id="learn" style="display:grid;gap:6px"></div></div>
 <div><h2>一言ねぎらう</h2><p class="mut">この一言は、その人の記憶に残ります。次の日、その人はあなたの声を少し聞きやすくなります。</p>
@@ -179,7 +182,28 @@ $('go').onclick=function(){
  if(ok&&S.stock[ch.prod]<CAP)S.stock[ch.prod]++;else if(ok)R.prodFull=true;
  save();
  $('morning').hidden=true;$('day').hidden=false;$('evening').hidden=true;
- $('place').textContent=R.block.name;$('sum').textContent=R.block.note+'。';$('night').hidden=true;$('next').hidden=false;$('steps').innerHTML='';show();window.scrollTo(0,0)};
+ $('place').textContent=R.block.name;$('sum').textContent=R.block.note+'。';$('pre').textContent=preStory(R.ch,R.block);$('night').hidden=true;$('next').hidden=false;$('steps').innerHTML='';show();window.scrollTo(0,0)};
+/* 物語の文（戦いの前後）。しくみには触れない。別の乱数を使う */
+function pick(r,a){return a[Math.floor(r()*a.length)]}
+function preStory(ch,B){var r=rng(seedOf(ch)^101),o=[];
+ o.push(pick(r,['朝、川の音がいつもより近く聞こえた。','まだ霧の残る朝だった。','渡し場の鐘が、二つ鳴った。']));
+ o.push(ch.food==='soup'?'鍋の汁を、アカリが二杯おかわりした。':ch.food==='bread'?'三人はパンをかじりながら、靴ひもを結んだ。':'朝ごはんは抜き。ツバサが「帰ったら食べよう」と言った。');
+ if(ch.rest==='early')o.push('よく眠った顔が三つ並んでいる。');
+ if(ch.equip!=='none')o.push(ch.equip==='s'?'シオンは直った盾のひもを、何度も引いて確かめた。':ch.equip==='a'?'アカリはグローブを握っては開き、にっと笑った。':'ツバサは研いだ刃先を光にかざした。');
+ var m=S.mem.length?S.mem[S.mem.length-1]:null;
+ if(m&&m.day===S.day-1)o.push(NAME[m.who]+'は、きのうの「'+m.text+'」を、まだ覚えているようだった。');
+ o.push(B.high?'行き先は川ぞいの草地。高台が見える。':'行き先は岩場の道。先が見えない。');
+ return o.join('')}
+function postStory(R){var r=rng(seedOf(R.ch)^202),o=[];
+ if(R.talk)o.push('帰り道、さっきの相手が遠くで手を上げた。ツバサも、少しだけ手を上げ返した。');
+ else if(R.res==='相手を引かせた')o.push('帰り道、アカリはずっとしゃべっていた。シオンは黙って、ときどきうなずいた。');
+ else if(R.res==='こちらが退いた')o.push('帰り道は、誰もあまり話さなかった。川の音だけが大きかった。');
+ else o.push('帰り道、三人の影が長くのびていた。');
+ if(R.broke)o.push('アカリは小さく「ごめん」と言った。ツバサは「次は呼ぶから」とだけ返した。');
+ else if(R.stopped)o.push('「呼ばれたから止まれた」とアカリが言った。');
+ if(R.inj)o.push('シオンが、ツバサの腕に布を巻いてやった。');
+ o.push(pick(r,['渡し場の灯が、ひとつずつともりはじめた。','夕飯のにおいが、町の方からしてきた。','空に、最初の星が出ていた。']));
+ return o.join('')}
 function show(){
  var s=R.steps[cur];$('map').innerHTML=map(s.st,R.block,s.n);
  var li=document.createElement('li');li.innerHTML='<span class="nd">'+s.n+'</span><span>'+s.text+'</span>';$('steps').appendChild(li);
@@ -197,7 +221,7 @@ $('night').onclick=function(){
  items.push([R.prodOk?(R.prodFull?'あふれた':'できた'):'不作',R.prodOk?(R.prodFull?PK[1]+'はもういっぱいで、これ以上ためておけなかった。':PK[0]+'で'+PK[1]+'ができた。あすから使える。'):PK[0]+'は、今日は思うようにいかなかった。']);
  if(R.shield)items.push(['',R.shield]);
  if(R.inj)items.push(['','ツバサの腕に小さな傷。明日は休ませる。']);
- $('rec').innerHTML='<div><b>'+R.block.name+'</b><br><span class="mut">結果：'+R.res+'。味方は全員戻った。</span></div>'+items.map(function(i){return '<div>'+(i[0]?'<span class="tag'+(i[0]==='効いた'||i[0]==='見えた'?' ok':'')+'">'+i[0]+'</span>':'')+i[1]+'</div>'}).join('');
+ $('post').textContent=postStory(R);$('rec').innerHTML='<div><b>'+R.block.name+'</b><br><span class="mut">結果：'+R.res+'。味方は全員戻った。</span></div>'+items.map(function(i){return '<div>'+(i[0]?'<span class="tag'+(i[0]==='効いた'||i[0]==='見えた'?' ok':'')+'">'+i[0]+'</span>':'')+i[1]+'</div>'}).join('');
  var l=[];
  l.push(['a',R.broke?'前に出る前に、まず声をかける':R.L.sawA?'見えたことは、声で伝えないと、誰にも伝わらない':'待つ間に、周りをよく見る']);
  l.push(['t',R.follow?'助言を聞いて、自分で確かめてから動くと迷わない':'自分の判断は、先に伝えておく']);
