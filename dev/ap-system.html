@@ -107,8 +107,8 @@ svg text{font:12px system-ui,sans-serif}
 <p style="font-size:13px;margin:0">Wはプレイヤーや他キャラには見えない隠れスタット。誕生時に45APをRGBWに配分するが、WはUI上には表示されない。ゲームの挙動（判定・乱数・特殊発動など）に裏で影響する設計。</p>
 </div>
 <div style="background:#e8f5e9;border:1px solid #81c784;border-radius:10px;padding:12px;margin-bottom:8px">
-<h3 style="margin:0 0 6px;font-size:14px;color:#1b5e20">✅ 生殖能力の使い方 → C に決定（2026-11-07）</h3>
-<p style="font-size:13px;margin:0"><b>最低ラインを個人ごとに15〜25%でランダムに設定。</b>誕生時に決まり、一生変わらない。どの年齢・性別でも、その個人のラインを下回らない。50代の女性も15〜25%は必ず働く。<br><span style="color:#58717a">計算式（案）：発揮率 = 最低ライン + (1 − 最低ライン) × 生殖能力の曲線 × 個人誤差</span></p>
+<h3 style="margin:0 0 6px;font-size:14px;color:#1b5e20">✅ 発揮率の計算 → 生殖能力に完全比例（2026-11-07 更新）</h3>
+<p style="font-size:13px;margin:0"><b>発揮率 = 生殖能力の曲線（0〜100%）そのまま。</b>生殖能力が0ならAP発揮率も0。ただし<b>各スタットの実値は最小1</b>を保つ（APが働かなくてもスタットはゼロにならない）。<br><span style="color:#58717a">計算式：働くAP ＝ 持っているAP × 生殖能力の曲線 × 個人誤差。各スタット実値 ＝ max(1, 算出値)</span></p>
 </div>
 <div style="background:#e8f5e9;border:1px solid #81c784;border-radius:10px;padding:12px;margin-bottom:8px">
 <h3 style="margin:0 0 6px;font-size:14px;color:#1b5e20">✅ 0〜2歳のAP配分 → ランダム（2026-11-07）</h3>
