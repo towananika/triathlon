@@ -16,6 +16,7 @@ h1{font-size:24px;margin:0}h2{font-size:16px;margin:0}p{margin:0}.mut{color:var(
 input[type=text]{font:inherit;border:1px solid var(--line);border-radius:12px;padding:8px 12px;background:var(--bg);color:var(--fg);width:100%}
 .btn{font:inherit;font-weight:700;border:0;border-radius:999px;padding:10px 22px;background:var(--accent);color:var(--ainK);cursor:pointer}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.q.dec{opacity:.92}.q.dec .ans{margin:.4em 0 0;padding:.6em .8em;border-left:4px solid var(--fg);background:rgba(127,127,127,.1);border-radius:6px}
 </style>
 <script src="return.js?v=20261101" defer></script></head><body>
 <div class="wrap">
@@ -34,18 +35,19 @@ try{A=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(A))}catch(e){}}
 function $(i){return document.getElementById(i)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function done(set){return set.q.filter(function(q){return A[q.id]&&A[q.id].v!=null}).length}
+function done(set){return set.q.filter(function(q){return q.dec||(A[q.id]&&A[q.id].v!=null)}).length}
 function tabs(){$('tabs').innerHTML=Q.map(function(s,i){return '<button class="tab'+(i===cur?' on':'')+'" data-i="'+i+'">'+esc(s.title)+'（'+done(s)+'/'+s.q.length+'）</button>'}).join('');
  document.querySelectorAll('.tab').forEach(function(b){b.onclick=function(){cur=+b.dataset.i;render()}})}
 function render(){tabs();var s=Q[cur];
  $('qs').innerHTML=s.q.map(function(q,qi){var a=A[q.id]||{};
+  if(q.dec)return '<section class="q dec"><span class="n">'+esc(s.title)+' '+(qi+1)+'／'+s.q.length+' · 決定済み</span><h2>'+esc(q.t)+'</h2><p class="ans">'+esc(q.dec)+'</p></section>';
   return '<section class="q"><span class="n">'+esc(s.title)+' '+(qi+1)+'／'+s.q.length+'</span><h2>'+esc(q.t)+'</h2>'+(q.note?'<p class="mut">'+esc(q.note)+'</p>':'')+
   '<div class="opts">'+q.o.map(function(o,oi){return '<label><input type="radio" name="'+q.id+'" value="'+oi+'"'+(a.v===oi?' checked':'')+'><span><b>'+esc(o[0])+'</b>'+(o[1]?'<small>'+esc(o[1])+'</small>':'')+'</span></label>'}).join('')+
   '<label><input type="radio" name="'+q.id+'" value="-1"'+(a.v===-1?' checked':'')+'><span><b>その他・ひとこと</b></span></label></div>'+
   '<input type="text" data-q="'+q.id+'" maxlength="200" placeholder="ひとこと（あれば）" value="'+esc(a.c||'')+'"></section>'}).join('');
  document.querySelectorAll('#qs input[type=radio]').forEach(function(r){r.onchange=function(){var id=r.name;A[id]=A[id]||{};A[id].v=+r.value;save();tabs()}});
  document.querySelectorAll('#qs input[type=text]').forEach(function(t){t.oninput=function(){var id=t.dataset.q;A[id]=A[id]||{};A[id].c=t.value;save()}})}
-function text(){var out=['【ゲームの質問・答え】'];Q.forEach(function(s){s.q.forEach(function(q,i){var a=A[q.id];if(!a||(a.v==null&&!a.c))return;var o=a.v>=0&&a.v!=null?q.o[a.v][0]:(a.v===-1?'その他':'');out.push(q.id+' '+q.t+' → '+o+(a.c?'（'+a.c+'）':''))})});return out.join('\n')}
+function text(){var out=['【ゲームの質問・答え】'];Q.forEach(function(s){s.q.forEach(function(q,i){var a=A[q.id];if(q.dec)return;if(!a||(a.v==null&&!a.c))return;var o=a.v>=0&&a.v!=null?q.o[a.v][0]:(a.v===-1?'その他':'');out.push(q.id+' '+q.t+' → '+o+(a.c?'（'+a.c+'）':''))})});return out.join('\n')}
 $('copy').onclick=function(){var t=text();function ok(){$('msg').textContent='コピーしました。チャットに貼ってください。'}
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,function(){fallback(t)});else fallback(t)};
 function fallback(t){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');$('msg').textContent='コピーしました。チャットに貼ってください。'}catch(e){$('msg').textContent='コピーできませんでした。'}document.body.removeChild(ta)}
