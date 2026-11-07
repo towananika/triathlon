@@ -18,7 +18,7 @@ svg.map{display:block;width:100%;height:auto;border:1px solid var(--line);border
 .river{fill:var(--mist)}.hill{fill:none;stroke:var(--line);stroke-width:2}.hillf{fill:var(--mist);opacity:.6}.rock{fill:var(--line)}.fogb{fill:var(--mist);opacity:.75}
 .lab{fill:var(--mut);font-size:12px}.tl{fill:var(--fg);font-size:12px;font-weight:700;paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round}
 .fr{fill:var(--accent);stroke:var(--ainK);stroke-width:1.5}.fo{fill:var(--card);stroke:var(--foe);stroke-width:3}.un{fill:var(--card);stroke:var(--foe);stroke-width:2;stroke-dasharray:4 3}.ne{fill:var(--line);stroke:var(--mut);stroke-width:1.5}
-.frl{fill:none;stroke:var(--fg);stroke-width:1.5}.ini{fill:var(--ainK);font-size:13px;font-weight:700;text-anchor:middle}.q{fill:var(--foe);font-size:16px;font-weight:700;text-anchor:middle}
+.ps{fill:var(--mist);stroke:var(--accent);stroke-width:3}.frl{fill:none;stroke:var(--fg);stroke-width:1.5}.ini{fill:var(--ainK);font-size:13px;font-weight:700;text-anchor:middle}.q{fill:var(--foe);font-size:16px;font-weight:700;text-anchor:middle}
 .voice{fill:none;stroke:var(--mut);stroke-width:1.5;stroke-dasharray:5 5}.sight{stroke:var(--fg);stroke-width:1.5}.sdot{fill:var(--fg)}.mv{fill:none;stroke:var(--fg);stroke-width:3.5}.mvd{fill:none;stroke:var(--mut);stroke-width:2.5;stroke-dasharray:5 4}.ah{fill:var(--fg)}
 .n{fill:var(--fg)}.nt{fill:var(--bg);font-size:12px;font-weight:700;text-anchor:middle}
 .key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px}.key span{display:inline-flex;align-items:center;gap:6px}.key svg{width:30px;height:22px}
@@ -36,18 +36,20 @@ input[type=text],select{font:inherit;border:1px solid var(--line);border-radius:
 
 <section id="morning" class="box">
 <h2 id="dayh">朝</h2><p class="mut" id="memo"></p>
-<div><h2>1 どこを見回る？</h2><div class="opts" id="o-block"></div></div>
-<div><h2>2 朝ごはん</h2><div class="opts" id="o-food"></div></div>
-<div><h2>3 昨夜の眠り</h2><div class="opts" id="o-rest"></div></div>
-<div><h2>4 直しておくもの</h2><div class="opts" id="o-equip"></div></div>
-<div><h2>5 声を、ひとつ届ける</h2><p class="mut">班長のツバサに伝えます。従うかどうかは、ツバサしだいです。</p><div class="opts" id="o-adv"></div></div>
+<p class="mut" id="stock"></p>
+<div><h2>1 今日、手をかけるところ</h2><p class="mut">町の人が畑・作業場・休み処のどれかに力を入れます。できたものは、あすから使えます。</p><div class="opts" id="o-prod"></div></div>
+<div><h2>2 どこを見回る？</h2><div class="opts" id="o-block"></div></div>
+<div><h2>3 朝ごはん</h2><div class="opts" id="o-food"></div></div>
+<div><h2>4 昨夜の眠り</h2><div class="opts" id="o-rest"></div></div>
+<div><h2>5 直しておくもの</h2><div class="opts" id="o-equip"></div></div>
+<div><h2>6 声を、ひとつ届ける</h2><p class="mut">班長のツバサに伝えます。従うかどうかは、ツバサしだいです。</p><div class="opts" id="o-adv"></div></div>
 <div class="row"><button class="btn" id="go">出発する</button></div>
 </section>
 
 <section id="day" class="box" hidden>
 <h2 id="place"></h2><p class="mut" id="sum"></p>
 <svg class="map" id="map" viewBox="0 0 460 300" role="img" aria-label="見回りの地図"></svg>
-<div class="key"><span><svg viewBox="0 0 30 22"><use href="#s-land" class="fr" transform="translate(15 11) scale(.7)"/></svg>味方</span><span><svg viewBox="0 0 30 22"><use href="#s-land" class="fo" transform="translate(15 11) scale(.7)"/></svg>相手</span><span><svg viewBox="0 0 30 22"><use href="#s-land" class="un" transform="translate(15 11) scale(.7)"/></svg>見えない相手</span></div>
+<div class="key"><span><svg viewBox="0 0 30 22"><use href="#s-land" class="fr" transform="translate(15 11) scale(.7)"/></svg>味方</span><span><svg viewBox="0 0 30 22"><use href="#s-land" class="fo" transform="translate(15 11) scale(.7)"/></svg>相手</span><span><svg viewBox="0 0 30 22"><use href="#s-site" class="ps" transform="translate(15 11) scale(.7)"/></svg>今日手をかける所</span><span><svg viewBox="0 0 30 22"><use href="#s-land" class="un" transform="translate(15 11) scale(.7)"/></svg>見えない相手</span></div>
 <p class="mut">丸い番号の順に、文章を読みながら地図を見ます。</p>
 <ol class="st" id="steps"></ol>
 <div class="row"><button class="btn" id="next">次へ</button><button class="btn sub" id="night" hidden>夜の記録へ</button></div>
@@ -62,7 +64,7 @@ input[type=text],select{font:inherit;border:1px solid var(--line);border-radius:
 </section>
 </div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<rect id="s-land" x="-17" y="-12" width="34" height="24" rx="4"/><circle id="s-sea" r="14"/>
+<rect id="s-land" x="-17" y="-12" width="34" height="24" rx="4"/><circle id="s-sea" r="14"/><rect id="s-site" x="-17" y="-12" width="34" height="24" rx="4"/>
 <marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
 </defs></svg>
 <script>
@@ -71,19 +73,29 @@ input[type=text],select{font:inherit;border:1px solid var(--line);border-radius:
 var KEY='tri-patrol-v1',$=function(i){return document.getElementById(i)};
 var NAME={a:'アカリ',t:'ツバサ',s:'シオン'};
 var BLOCKS={A:{name:'渡し場の北・川ぞい草地',high:true,fog:.15,note:'高台がある。見通しがよい'},B:{name:'岩場の道',high:false,fog:.5,note:'高台はない。岩が多く、見通しが悪い'}};
-var FOOD={soup:['あたたかい汁もの','体があたたまる'],bread:['軽いパン','すぐ動ける'],skip:['食べない','時間をかせぐ']};
-var REST={early:['早く寝かせた','7時間以上眠った'],usual:['いつもどおり','いつもの時間に寝た']};
-var EQUIP={s:['シオンの盾のひもを直す','盾が軽くなる'],a:['アカリのグローブを手入れする','拳がなじむ'],t:['ツバサの武器を研ぐ','長い武器の先が安定する']};
+var FOOD={soup:['あたたかい汁もの（食べ物を使う）','体があたたまる'],bread:['軽いパン','すぐ動ける'],skip:['食べない','時間をかせぐ']};
+var REST={early:['早く寝かせた（休む時間を使う）','7時間以上眠った'],usual:['いつもどおり','いつもの時間に寝た']};
+var EQUIP={s:['シオンの盾のひもを直す（材料を使う）','盾が軽くなる'],a:['アカリのグローブを手入れする（材料を使う）','拳がなじむ'],t:['ツバサの武器を研ぐ（材料を使う）','長い武器の先が安定する'],none:['何も直さない','そのまま行く']};
+var NEED={soup:'f',early:'z',s:'k',a:'k',t:'k'};
 var ADV={high:['高台を先に取って','高い所から全体を見る'],ambush:['岩のかげで待って','動かず、相手が来るのを待つ'],flank:['回りこんで','相手の横から入る']};
+/* 三人の色（既存の定義：watch/skills.js の c ＝ [R,G,B]）。R＝体と熱、G＝見る力・つながり、B＝待つ・静けさ。数字は画面に出さない */
+var COL={a:{r:220,g:140,b:70},t:{r:90,g:170,b:180},s:{r:170,g:110,b:190}};
+var CAP=3,PROD={f:['畑','食べ物'],k:['作業場','手入れの材料'],z:['休み処','ゆっくり休む時間']};
 var S=load();
-function load(){try{var v=JSON.parse(localStorage.getItem(KEY));if(v&&v.day)return v}catch(e){}return{day:1,mem:[]}}
+function load(){try{var v=JSON.parse(localStorage.getItem(KEY));if(v&&v.day){if(!v.stock)v.stock={f:1,k:1,z:1};return v}}catch(e){}return{day:1,mem:[],stock:{f:1,k:1,z:1}}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function radio(id,name,obj,def){$(id).innerHTML=Object.keys(obj).map(function(k,i){var o=obj[k];return '<label><input type="radio" name="'+name+'" value="'+k+'"'+((k===def||(!def&&i===0))?' checked':'')+'><span><b>'+(o.name||o[0])+'</b><small>'+(o.note||o[1])+'</small></span></label>'}).join('')}
+function off(k){return NEED[k]&&S.stock[NEED[k]]<1}
+function radio(id,name,obj,def){var ks=Object.keys(obj),pick=(def&&!off(def))?def:ks.filter(function(k){return !off(k)})[0];
+ $(id).innerHTML=ks.map(function(k){var o=obj[k],d=off(k);return '<label'+(d?' style="opacity:.5"':'')+'><input type="radio" name="'+name+'" value="'+k+'"'+(k===pick?' checked':'')+(d?' disabled':'')+'><span><b>'+(o.name||o[0])+'</b><small>'+(d?'いまは足りない':(o.note||o[1]))+'</small></span></label>'}).join('')}
+function dots(n){var s='';for(var i=0;i<CAP;i++)s+=i<n?'●':'○';return s}
+function stockText(){return Object.keys(PROD).map(function(k){return PROD[k][1]+' '+dots(S.stock[k])}).join('　')}
 function val(n){return document.querySelector('input[name='+n+']:checked').value}
 function bond(c){return Math.min(3,S.mem.filter(function(m){return m.who===c}).length)}
 function init(){
  $('dayh').textContent='朝（'+S.day+'日め）';
  var last=S.mem[S.mem.length-1];$('memo').textContent=last?'昨日の一言：'+NAME[last.who]+'に「'+last.text+'」':'今日が最初の見回りです。';
+ $('stock').textContent='ざいこ：'+stockText();
+ radio('o-prod','prod',{f:{name:'畑に手をかける',note:'食べ物がふえる（あすから使える）'},k:{name:'作業場に手をかける',note:'手入れの材料がふえる（あすから使える）'},z:{name:'休み処に手をかける',note:'ゆっくり休む時間がふえる（あすから使える）'}},'f');
  radio('o-block','block',BLOCKS,'A');radio('o-food','food',FOOD);radio('o-rest','rest',REST);radio('o-equip','equip',EQUIP);radio('o-adv','adv',ADV);
  $('morning').hidden=false;$('day').hidden=true;$('evening').hidden=true;
 }
@@ -96,7 +108,7 @@ function run(ch){
  var st={u:{a:[190,226],t:[226,230],s:[262,226]},foes:[[96,108,'v'],[150,98,'v'],[180,144,'v']],fl:null,lines:[],arrows:[],hillTaken:false,voice:false};
  function snap(n,text,pos){steps.push({n:n,text:text,st:JSON.parse(JSON.stringify(st))})}
  var score=0;
- var follow=r()<.65+bond('t')*.1;
+ var follow=r()<.35+.45*COL.t.b/255+bond('t')*.1;
  var plan=follow?ch.adv:'advance';
  var intro=follow?'ツバサは助言を聞いて、従うことにした。':'ツバサは助言を聞いて少し考えたが、自分の判断で前に進むことにした。';
  var t1;
@@ -106,7 +118,7 @@ function run(ch){
  else if(plan==='flank'){st.u.t=[226,190];st.u.s=[150,186];score+=1;st.arrows=[[[262,226],[170,190],'mv']];t1='ツバサは班を二つに分けた。シオンは前を支え、残りは岩を回りこむ。'}
  else{st.u.a=[190,196];st.u.t=[226,200];st.u.s=[262,200];t1='班は、まとまって前に進んだ。'}
  snap(1,intro+t1);
- var fa=.35+bond('a')*.12+(cond('a')-.5),broke=false,stopped=false,t2;
+ var fa=.18+.6*COL.a.b/255+bond('a')*.12+(cond('a')-.5),broke=false,stopped=false,t2;
  if(plan==='high'||plan==='ambush'){
   if(r()>=fa){st.u.a=[190,176];st.arrows=[[[190,208],[190,184],'mv']];
    if(r()<.5+bond('a')*.15){stopped=true;L.stopped=true;t2='待つのが苦手なアカリが、先に降りかけた。ツバサが一度だけ名前を呼ぶと、アカリは足を止めた。'}
@@ -116,8 +128,8 @@ function run(ch){
  snap(2,t2);
  var seeFl,flText,stopFl=false;
  if(st.hillTaken&&r()<.85){st.fl='v';st.lines=[[330,100,214,150]];stopFl=r()<.8;L.sawHigh=true;flText=stopFl?'高台のツバサが、右への回りこみに気づいた。声で知らせ、シオンが盾で止めた。':'高台のツバサが回りこみに気づいたが、声が間に合わなかった。'}
- else if(r()<B.fog){st.fl='u';flText='霧と岩で、回りこみに誰も気づかなかった。'}
- else{st.fl='v';st.lines=[[st.u.a[0],st.u.a[1],180,150]];L.sawA=true;stopFl=r()<.4+cond('a')*.5;flText='相手が回りこもうとしたのを、見たのはアカリだけ。声が届かず、アカリは自分の判断で止めに入った。'+(stopFl?'止められた。':'止めきれなかった。')}
+ else if(r()<B.fog*(1.4-.6*(COL.a.g+COL.t.g+COL.s.g)/3/255)){st.fl='u';flText='霧と岩で、回りこみに誰も気づかなかった。'}
+ else{st.fl='v';st.lines=[[st.u.a[0],st.u.a[1],180,150]];L.sawA=true;stopFl=r()<.3+.4*COL.a.r/255+(cond('a')-.5)*.5;flText='相手が回りこもうとしたのを、見たのはアカリだけ。声が届かず、アカリは自分の判断で止めに入った。'+(stopFl?'止められた。':'止めきれなかった。')}
  if(stopFl)score+=1;else score-=1;
  st.foes[2]=[stopFl?190:228,stopFl?150:158,st.fl==='u'?'u':'v'];
  snap(3,flText);
@@ -133,6 +145,7 @@ function map(st,B,upto){
  if(B.high)o+='<ellipse class="hillf" cx="330" cy="100" rx="96" ry="58"/><ellipse class="hill" cx="330" cy="100" rx="96" ry="58"/><ellipse class="hill" cx="330" cy="100" rx="64" ry="38"/><ellipse class="hill" cx="330" cy="100" rx="32" ry="18"/><text class="lab" x="396" y="168">高台</text>';
  else o+='<rect class="rock" x="300" y="70" width="60" height="40" rx="14"/><rect class="rock" x="360" y="120" width="44" height="34" rx="12"/><ellipse class="fogb" cx="150" cy="120" rx="150" ry="46"/>';
  o+='<rect class="rock" x="118" y="124" width="44" height="30" rx="12"/><rect class="rock" x="246" y="170" width="36" height="26" rx="12"/>';
+ if(R&&R.ch)[['f',330,'畑'],['k',374,'作業場'],['z',418,'休み処']].forEach(function(p){var on=R.ch.prod===p[0];o+='<use href="#s-site" class="'+(on?'ps':'ne')+'" transform="translate('+p[1]+' 205)"/><text class="tl" x="'+p[1]+'" y="'+(on?232:228)+'" text-anchor="middle" style="font-size:11px">'+p[2]+'</text>'});
  if(st.voice)o+='<circle class="voice" cx="'+st.u.t[0]+'" cy="'+st.u.t[1]+'" r="70"/>';
  o+='<use href="#s-sea" class="ne" transform="translate(120 262)"/><text class="tl" x="144" y="266">渡し舟</text>';
  st.arrows.forEach(function(a){o+='<path class="'+a[2]+'" d="M'+a[0][0]+' '+a[0][1]+' L'+a[1][0]+' '+a[1][1]+'" marker-end="url(#m)"/>'});
@@ -146,8 +159,13 @@ function map(st,B,upto){
  return o}
 var R,cur=0;
 $('go').onclick=function(){
- var ch={block:val('block'),food:val('food'),rest:val('rest'),equip:val('equip'),adv:val('adv')};
+ var ch={prod:val('prod'),block:val('block'),food:val('food'),rest:val('rest'),equip:val('equip'),adv:val('adv')};
  R=run(ch);cur=0;
+ /* 使う（今日の分）→つくる（あすの分）。つくるのは運しだいで、ときどき不作 */
+ [ch.food==='soup'?'f':'',ch.rest==='early'?'z':'',ch.equip!=='none'?'k':''].forEach(function(k){if(k)S.stock[k]--});
+ var pr=rng(seedOf(ch)^7),ok=pr()>=.2;R.prodOk=ok;R.prodKind=ch.prod;
+ if(ok&&S.stock[ch.prod]<CAP)S.stock[ch.prod]++;else if(ok)R.prodFull=true;
+ save();
  $('morning').hidden=true;$('day').hidden=false;$('evening').hidden=true;
  $('place').textContent=R.block.name;$('sum').textContent=R.block.note+'。';$('night').hidden=true;$('next').hidden=false;$('steps').innerHTML='';show();window.scrollTo(0,0)};
 function show(){
@@ -162,6 +180,8 @@ $('night').onclick=function(){
  if(R.L.high)items.push(['効いた','高台を先に取れた。']);
  if(R.broke)items.push(['効かなかった','アカリが待てずに前に出た。']);else if(R.stopped)items.push(['効いた','アカリは、名前を呼ばれて止まった。']);
  items.push([R.L.sawA?'声が届かず':'見えた',R.L.sawA?'回りこみを見たのはアカリだけ。':R.L.sawHigh?'高台から回りこみが見えた。':'回りこみは霧で見えなかった。']);
+ var PK=PROD[R.prodKind];
+ items.push([R.prodOk?(R.prodFull?'あふれた':'できた'):'不作',R.prodOk?(R.prodFull?PK[1]+'はもういっぱいで、これ以上ためておけなかった。':PK[0]+'で'+PK[1]+'ができた。あすから使える。'):PK[0]+'は、今日は思うようにいかなかった。']);
  if(R.shield)items.push(['',R.shield]);
  if(R.inj)items.push(['','ツバサの腕に小さな傷。明日は休ませる。']);
  $('rec').innerHTML='<div><b>'+R.block.name+'</b><br><span class="mut">結果：'+R.res+'。味方は全員戻った。</span></div>'+items.map(function(i){return '<div>'+(i[0]?'<span class="tag'+(i[0]==='効いた'||i[0]==='見えた'?' ok':'')+'">'+i[0]+'</span>':'')+i[1]+'</div>'}).join('');
@@ -173,5 +193,6 @@ $('night').onclick=function(){
 $('say').onclick=function(){var w=$('word').value.trim();if(!w)return;S.mem.push({who:$('who').value,text:w,day:S.day});save();$('said').textContent=NAME[$('who').value]+'の記憶に残りました：「'+w+'」';$('word').value=''};
 $('nextday').onclick=function(){S.day++;save();init();window.scrollTo(0,0)};
 init();
+window.TRI_PATROL={run:run,S:S};
 })();
 </script></body></html>
