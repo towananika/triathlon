@@ -129,5 +129,43 @@ svg text{font:12px system-ui,sans-serif}
 <p style="font-size:13px;margin:0">W（隠れスタット）は数値として誕生時から存在するが、現時点では何にも効かない。後で機能を足す。</p>
 </div>
 
+<h2>APから戦闘数値へ（式）</h2>
+<div class="card">
+<p style="font-size:13px;margin:0 0 8px"><b>ステップ1：働くAP（色ごと）</b></p>
+<p style="font-size:13px;margin:0 0 12px;color:#58717a">働くR = R_AP × 発揮率（min 1）<br>働くG = G_AP × 発揮率（min 1）<br>働くB = B_AP × 発揮率（min 1）</p>
+<p style="font-size:13px;margin:0 0 8px"><b>ステップ2：戦闘スタット = 働くAP × クラス重み × 変換係数</b></p>
+<p style="font-size:13px;margin:0;color:#58717a">HP・ATK・DEF ← 働くR × クラスのR重み<br>RAN・ATS・SPD ← 働くG × クラスのG重み<br>MAG・RES・MP ← 働くB × クラスのB重み</p>
+</div>
+
+<h2>クラス重み（案）</h2>
+<div class="card">
+<table>
+<tr><th>クラス</th><th style="color:#c0392b">R重み</th><th style="color:#27ae60">G重み</th><th style="color:#2980b9">B重み</th><th>特徴</th></tr>
+<tr><td>ファイター</td><td>0.70</td><td>0.30</td><td>0.00</td><td>打撃・HP重視</td></tr>
+<tr><td>ウォリアー</td><td>0.60</td><td>0.35</td><td>0.05</td><td>攻撃と攻撃速度</td></tr>
+<tr><td>ナイト</td><td>0.65</td><td>0.05</td><td>0.30</td><td>防御・HP・耐性</td></tr>
+<tr><td>レンジャー</td><td>0.20</td><td>0.75</td><td>0.05</td><td>射程・速さ</td></tr>
+<tr><td>アサシン</td><td>0.30</td><td>0.70</td><td>0.00</td><td>攻撃速度・SPD</td></tr>
+<tr><td>スカウト</td><td>0.15</td><td>0.80</td><td>0.05</td><td>移動・射程</td></tr>
+<tr><td>初等アカデミー</td><td>0.05</td><td>0.10</td><td>0.85</td><td>魔法・MP</td></tr>
+<tr><td>魔導アカデミー</td><td>0.00</td><td>0.05</td><td>0.95</td><td>魔法威力最大</td></tr>
+<tr><td>クレリス</td><td>0.05</td><td>0.05</td><td>0.90</td><td>RES・回復</td></tr>
+<tr><td>ナクシャ</td><td>0.05</td><td>0.10</td><td>0.85</td><td>W（隠れ）が後で効く</td></tr>
+</table>
+<p class="mut">数値は仮。バランス試算で調整する。</p>
+</div>
+
+<h2>年齢による変化（例：レンジャー男性）</h2>
+<div class="card">
+<table>
+<tr><th>年齢</th><th>発揮率</th><th>働くG（G_AP=120想定）</th><th>RAN・SPDへの影響</th></tr>
+<tr><td>20歳</td><td>87%</td><td>104</td><td>基準値の100%</td></tr>
+<tr><td>30歳</td><td>96%</td><td>115</td><td>+11%</td></tr>
+<tr><td>45歳</td><td>82%</td><td>98</td><td>−6%</td></tr>
+<tr><td>60歳</td><td>20%</td><td>24（min 1）</td><td>−77%</td></tr>
+</table>
+<p class="mut">60歳のキャラは同じAPを持っていても、戦闘力は20歳の23%程度になる。</p>
+</div>
+
 </main>
 </body></html>
