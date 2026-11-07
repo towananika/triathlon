@@ -1,0 +1,142 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>升目の地図 | TRIATHLON</title>
+<style>
+/* 開発用：升目の地図の上で時間が流れる試作。細かい出来事はチャット欄に文章で出る。数字は出さない */
+:root{--bg:#F3F6F5;--card:#FBFCFC;--fg:#26323A;--mut:#5B6B73;--line:#D5DFDE;--accent:#22AAA6;--ainK:#0F2A2C;--foe:#C4523F;--blue:#2F6FB8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131B20;--card:#1B262C;--fg:#E3EBEA;--mut:#9DB0B3;--line:#2A3A42;--accent:#3CC4BF;--foe:#E8856F;--blue:#6FA3E0;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.8 "Hiragino Sans","Noto Sans JP",system-ui,sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 64px;display:grid;gap:14px}
+h1{font-size:24px;margin:0}h2{font-size:16px;margin:0 0 4px}p{margin:0}.mut{color:var(--mut);font-size:13px}nav.dv a{color:var(--blue);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;display:grid;gap:10px;min-width:0}
+canvas{display:block;width:100%;height:auto;border-radius:12px;image-rendering:pixelated;border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:6px 16px;background:var(--card);color:var(--fg);cursor:pointer}
+.btn.on{background:var(--accent);color:var(--ainK);border-color:var(--accent)}
+select,input[type=text]{font:inherit;border:1px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--bg);color:var(--fg);min-width:0}input[type=text]{flex:1}
+#chat{height:220px;overflow:auto;display:grid;gap:4px;align-content:start;font-size:14px;line-height:1.6}
+#chat div{display:flex;gap:8px}#chat time{flex:none;color:var(--mut);font-size:12px;min-width:74px}
+#chat .me{color:var(--blue)}#chat .ai{color:var(--accent)}#chat .st{color:var(--mut);font-size:12px}
+.key{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--mut)}
+</style>
+<script src="return.js?v=20261101" defer></script></head><body>
+<div class="wrap">
+<nav class="dv"><a href="./">← 開発トップ</a> · <a href="patrol.html">見回り（ボタン版）</a></nav>
+<div><h1>升目の地図</h1><p class="mut">地図の上で時間が流れ、三人が自分で動きます。起きたことはチャット欄に出ます。あなたは、声を届けるだけです。</p></div>
+<section class="box">
+<canvas id="cv" width="400" height="280" aria-label="升目の地図"></canvas>
+<div class="row" id="clock"><b id="now"></b><span class="mut" id="stock"></span></div>
+<div class="row"><button class="btn" data-sp="0">止める</button><button class="btn on" data-sp="1">1倍</button><button class="btn" data-sp="2">2倍</button><button class="btn" data-sp="4">4倍</button></div>
+<div class="key"><span>■ 味方</span><span style="color:var(--foe)">□ 相手</span><span>？見えない相手</span><span>畑 作 休＝手をかける所</span></div>
+</section>
+<section class="box"><h2>声を届ける</h2>
+<div class="row"><select id="adv"><option value="auto">助言なし（まかせる）</option><option value="high">高台を取って</option><option value="ambush">待ち伏せして</option><option value="talk">相手に話しかけて</option></select>
+<select id="foc"><option value="auto">手をかける所：まかせる</option><option value="f">畑に手をかける</option><option value="k">作業場に手をかける</option><option value="z">休み処に手をかける</option></select></div>
+<p class="mut" id="advnote"></p></section>
+<section class="box"><h2>チャット</h2><div id="chat"></div>
+<div class="row"><select id="who"><option value="a">アカリ</option><option value="t">ツバサ</option><option value="s">シオン</option></select><input type="text" id="word" maxlength="40" placeholder="一言ねぎらう（記憶に残ります）"><button class="btn" id="say">送る</button></div>
+<div class="row"><select id="au"><option value="me">人</option><option value="ai">AI</option></select><input type="text" id="op" maxlength="80" placeholder="ゲームへの意見（人もAIも書けます）"><button class="btn" id="opb">意見を出す</button></div></section>
+</div>
+<script>
+(function(){
+'use strict';
+var KEY='tri-world-v1',$=function(i){return document.getElementById(i)};
+var W=20,H=14,C=20,TICK_MIN=10,DAY=144;
+var COL={a:{r:220,g:140,b:70},t:{r:90,g:170,b:180},s:{r:170,g:110,b:190}};
+var NAME={a:'アカリ',t:'ツバサ',s:'シオン'},INI={a:'ア',t:'ツ',s:'シ'};
+var PN={f:'食べ物',k:'手入れの材料',z:'休む時間'},PS={f:'畑',k:'作業場',z:'休み処'},CAP=3;
+/* 地図：g草 r岩 w水 h高台 */
+var MAP=[];for(var y=0;y<H;y++){MAP.push([]);for(var x=0;x<W;x++)MAP[y].push('g')}
+for(var x=0;x<W;x++){MAP[12][x]='w';MAP[13][x]='w'}
+for(var y=2;y<=6;y++)for(var x=13;x<=17;x++)MAP[y][x]=(Math.abs(x-15)+Math.abs(y-4)<=2)?'h':'g';
+[[7,5],[8,5],[7,6],[11,8],[12,8],[3,9],[4,9],[16,8]].forEach(function(p){MAP[p[1]][p[0]]='r'});
+var SITE={f:[14,10],k:[16,10],z:[18,10]},BASE=[9,10],FOE0=[4,4];
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+var S=load(),R=rng(S.seed);
+function load(){try{var v=JSON.parse(localStorage.getItem(KEY));if(v&&v.t!=null)return v}catch(e){}
+ return{t:6*6,seed:20261107,stock:{f:1,k:1,z:1},rel:0,mem:[],prep:0,adv:'auto',foc:'auto',follow:true,resolved:false,foe:[4,4],u:{a:[8,10],t:[9,10],s:[10,10]},last:Date.now(),res:[]}}
+function save(){S.last=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function bond(c){return Math.min(3,S.mem.filter(function(m){return m.who===c}).length)}
+var CH=[];function say(txt,cls,quiet){var d=Math.floor(S.t/DAY)+1,m=(S.t%DAY)*TICK_MIN,hh=Math.floor(m/60),mm=m%60;var line={ts:'第'+d+'日 '+(hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm,txt:txt,cls:cls||''};if(quiet){quiet.push(line);return}CH.push(line);if(CH.length>200)CH.shift();var el=document.createElement('div');el.innerHTML='<time>'+line.ts+'</time><span class="'+line.cls+'"></span>';el.lastChild.textContent=line.txt;$('chat').appendChild(el);$('chat').scrollTop=1e9}
+function hour(){return (S.t%DAY)*TICK_MIN/60}
+function walk(x,y){return x>=0&&y>=0&&x<W&&y<H&&MAP[y][x]!=='w'&&MAP[y][x]!=='r'}
+function step(from,to){/* 幅優先で次の一歩 */
+ if(from[0]===to[0]&&from[1]===to[1])return from;var q=[from],seen={},par={};seen[from]=1;var found=false;
+ while(q.length&&!found){var c=q.shift();[[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){var n=[c[0]+d[0],c[1]+d[1]];if(!walk(n[0],n[1])||seen[n])return;seen[n]=1;par[n]=c;q.push(n);if(n[0]===to[0]&&n[1]===to[1])found=true})}
+ if(!found)return from;var c=to;while(par[c]&&!(par[c][0]===from[0]&&par[c][1]===from[1]))c=par[c];return par[c]?c:from}
+function dist(a,b){return Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])}
+function onHill(p){return MAP[p[1]][p[0]]==='h'}
+function sight(p){var g=(COL.a.g+COL.t.g+COL.s.g)/3;return 4+g/85+(onHill(p)?2:0)}
+function foeVisible(){return ['a','t','s'].some(function(k){return dist(S.u[k],S.foe)<=sight(S.u[k])})}
+/* 一日のきまり：6時に準備、7〜18時に見回り、夜は戻って休む */
+function dawn(quiet){
+ S.resolved=false;S.foe=[3+Math.floor(R()*4),3+Math.floor(R()*3)];
+ var used=0;['f','z','k'].forEach(function(k){if(S.stock[k]>0){S.stock[k]--;used++}});S.prep=used;
+ var pk=S.foc!=='auto'?S.foc:['f','k','z'].reduce(function(a,b){return S.stock[b]<S.stock[a]?b:a});
+ if(R()>=.2){if(S.stock[pk]<CAP){S.stock[pk]++;say(PS[pk]+'で'+PN[pk]+'ができた。',null,quiet)}else say(PN[pk]+'はもういっぱいだった。',null,quiet)}else say(PS[pk]+'は、今日は思うようにいかなかった。',null,quiet);
+ S.site=pk;
+ say('朝。三人が起き出した。準備は'+(used>=3?'しっかりできている。':used>=1?'少しできている。':'できていない。'),null,quiet)}
+function target(k){
+ var h=hour();if(h<7||h>=18)return BASE;
+ var tgt=S.foe;
+ if(k==='t'){if(S.follow&&S.adv==='high')return[15,4];if(S.follow&&S.adv==='ambush')return[8,7];return tgt}
+ var lead=S.u.t;return[lead[0]+(k==='a'?-1:1),lead[1]+1].map(function(v,i){return Math.max(0,Math.min(i?H-3:W-1,v))})}
+function encounter(quiet){
+ S.resolved=true;var tOnHill=onHill(S.u.t),rAvg=(COL.a.r+COL.t.r+COL.s.r)/3/255,adv=S.follow?S.adv:'auto';
+ var aOk=R()<.55+.4*COL.a.b/255+bond('a')*.08;
+ if(adv==='talk'){var pT=(tOnHill?.35:.2)+.12*S.rel+.2*COL.t.b/255;
+  if(R()<pT&&aOk){S.rel=Math.min(3,S.rel+1);var lo=['f','k','z'].reduce(function(a,b){return S.stock[b]<S.stock[a]?b:a});if(S.stock[lo]<CAP)S.stock[lo]++;
+   say('ツバサが前に出て声をかけた。相手は武器を下ろし、道をあけた。お礼に'+PN[lo]+'を少し分けてくれた。','st',quiet);S.res.push('話がついた');return end(quiet)}
+  say('話しかけたが、うまくいかなかった。'+(aOk?'相手は聞く耳を持たなかった。':'アカリが待てずに前へ出てしまった。'),null,quiet)}
+ var p=.28+.17*rAvg+.08*S.prep+(adv==='high'&&tOnHill?.15:0)+(adv==='ambush'?.08:0)-(adv==='talk'?.08:0),x=R();
+ if(x<p){say('戦いになり、こちらが押し返した。相手は引いていった。','st',quiet);S.res.push('押し返した')}
+ else if(x<p+.4){say('戦いになったが決着がつかず、どちらも退いた。','st',quiet);S.res.push('引き分け')}
+ else{say('戦いになり、こちらが退いた。明日は休ませる。','st',quiet);S.res.push('退いた')}
+ end(quiet)}
+function end(quiet){S.foe=[-9,-9]}
+function night(quiet){var r=S.res.length?S.res[S.res.length-1]:'今日は出会いがなかった';say('夜の記録：'+r+'。三人は戻って休んだ。一言ねぎらうと、その人の記憶に残る。','st',quiet);S.res=[]}
+function tick(quiet){
+ var pre=Math.floor(hour());S.t++;var h=hour();
+ if(S.t%DAY===6*6)dawn(quiet);
+ if(Math.floor(h)===20&&pre===19)night(quiet);
+ ['a','t','s'].forEach(function(k){
+  var tg=target(k);
+  if(k==='a'&&hour()>=7&&hour()<18&&S.adv!=='auto'&&S.follow&&!S.resolved&&foeVisible()&&R()<.03*(1-COL.a.b/255)*6){tg=S.foe}
+  S.u[k]=step(S.u[k],tg)});
+ var h2=hour();
+ if(h2>=7&&h2<18&&!S.resolved&&S.foe[0]>=0&&['a','t','s'].some(function(k){return dist(S.u[k],S.foe)<=2}))encounter(quiet)}
+/* 描く */
+var cv=$('cv'),cx=cv.getContext('2d');
+var PAL={light:{g:['#BFD8B4','#B3CFA7'],r:['#8E9AA0','#7F8B91'],w:['#9CCBE0','#8DC0D7'],h:['#D9C9A0','#CDBB8E']},dark:{g:['#2E4A3A','#2A4535'],r:['#4A555B','#424D53'],w:['#24485C','#20425A'],h:['#5A5238','#524A32']}};
+function dk(){return window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches&&document.documentElement.getAttribute('data-theme')!=='light'}
+function draw(){
+ var p=dk()?PAL.dark:PAL.light;
+ for(var y=0;y<H;y++)for(var x=0;x<W;x++){var t=MAP[y][x];cx.fillStyle=p[t][(x+y)%2];cx.fillRect(x*C,y*C,C,C);cx.fillStyle='rgba(255,255,255,.18)';cx.fillRect(x*C,y*C,C,2);cx.fillStyle='rgba(0,0,0,.12)';cx.fillRect(x*C,y*C+C-2,C,2)}
+ cx.font='bold 11px sans-serif';cx.textAlign='center';
+ Object.keys(SITE).forEach(function(k){var s=SITE[k],on=S.site===k;cx.fillStyle=on?'#22AAA6':'rgba(120,130,135,.85)';cx.fillRect(s[0]*C+2,s[1]*C+2,C-4,C-4);cx.fillStyle=on?'#0F2A2C':'#fff';cx.fillText({f:'畑',k:'作',z:'休'}[k],s[0]*C+C/2,s[1]*C+C/2+4)});
+ cx.fillStyle='#173A63';cx.fillRect(BASE[0]*C+2,BASE[1]*C+2,C-4,C-4);cx.fillStyle='#fff';cx.fillText('隊',BASE[0]*C+C/2,BASE[1]*C+C/2+4);
+ if(S.foe[0]>=0){var v=foeVisible();[[0,0],[1,0],[0,1]].forEach(function(o){var fx=(S.foe[0]+o[0])*C+2,fy=(S.foe[1]+o[1])*C+2;if(!walk(S.foe[0]+o[0],S.foe[1]+o[1]))return;cx.lineWidth=2.5;cx.strokeStyle='#C4523F';if(!v)cx.setLineDash([4,3]);cx.strokeRect(fx+1,fy+1,C-6,C-6);cx.setLineDash([]);if(!v){cx.fillStyle='#C4523F';cx.fillText('?',fx+C/2-2,fy+C/2+3)}})}
+ ['a','s','t'].forEach(function(k){var u=S.u[k];cx.fillStyle='#22AAA6';cx.fillRect(u[0]*C+2,u[1]*C+3,C-4,C-6);cx.strokeStyle='#0F2A2C';cx.lineWidth=k==='t'?3:1.5;cx.strokeRect(u[0]*C+2,u[1]*C+3,C-4,C-6);cx.fillStyle='#0F2A2C';cx.fillText(INI[k],u[0]*C+C/2,u[1]*C+C/2+4)});
+ var h=hour(),dark=h<5||h>=20?.5:h<7||h>=18?.25:0;if(dark){cx.fillStyle='rgba(10,20,50,'+dark+')';cx.fillRect(0,0,W*C,H*C)}
+ var d=Math.floor(S.t/DAY)+1,hh=Math.floor(h),mm=Math.floor((h-hh)*60/10)*10;
+ $('now').textContent='第'+d+'日 '+(hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm+(h<7?'（早朝）':h<12?'（朝）':h<18?'（昼）':h<20?'（夕方）':'（夜）');
+ $('stock').textContent='ざいこ：食 '+dots(S.stock.f)+' 材 '+dots(S.stock.k)+' 休 '+dots(S.stock.z)}
+function dots(n){var s='';for(var i=0;i<CAP;i++)s+=i<n?'●':'○';return s}
+/* 時間：1倍で約0.4秒に1目盛り（約1分で1日） */
+var sp=1,acc=0,lastT=performance.now();
+function loop(now){var dt=now-lastT;lastT=now;if(sp>0){acc+=dt*sp;while(acc>=400){acc-=400;tick()}}draw();if(!document.hidden)requestAnimationFrame(loop);else setTimeout(function(){requestAnimationFrame(loop)},1000)}
+document.querySelectorAll('[data-sp]').forEach(function(b){b.onclick=function(){sp=+b.dataset.sp;document.querySelectorAll('[data-sp]').forEach(function(x){x.classList.toggle('on',x===b)})}});
+$('adv').value=S.adv;$('foc').value=S.foc;
+var AN={auto:'まかせる。三人は自分の判断で動きます。',high:'ツバサに「高台を取って」と伝えました。',ambush:'ツバサに「待ち伏せして」と伝えました。',talk:'ツバサに「相手に話しかけて」と伝えました。'};
+$('adv').onchange=function(){S.adv=this.value;S.follow=R()<.35+.45*COL.t.b/255+bond('t')*.1;$('advnote').textContent='';
+ if(S.adv==='auto')say('声は届けなかった。','st');else say(S.follow?'ツバサは助言を聞いて、従うことにした。':'ツバサは助言を聞いて少し考えたが、自分の判断で動くことにした。',null);save()};
+$('foc').onchange=function(){S.foc=this.value;say(S.foc==='auto'?'手をかける所は、町の人にまかせた。':PS[S.foc]+'に手をかけてもらうことにした。','st');save()};
+$('say').onclick=function(){var w=$('word').value.trim();if(!w)return;S.mem.push({who:$('who').value,text:w,t:S.t});say(NAME[$('who').value]+'に「'+w+'」。その人の記憶に残った。','me');$('word').value='';save()};
+$('opb').onclick=function(){var w=$('op').value.trim();if(!w)return;var au=$('au').value;say('【意見・'+(au==='ai'?'AI':'人')+'】'+w,au==='ai'?'ai':'me');try{var L=JSON.parse(localStorage.getItem('tri-opinions')||'[]');L.push({by:au,text:w,at:Date.now()});localStorage.setItem('tri-opinions',JSON.stringify(L.slice(-100)))}catch(e){}$('op').value=''};
+/* 留守のあいだ：戻ったとき、きまりで計算して追いつく（最大2日ぶん） */
+(function(){var el=Math.floor((Date.now()-(S.last||Date.now()))/400);if(el>20){var q=[],n=Math.min(el,DAY*2);for(var i=0;i<n;i++)tick(q);say('留守のあいだに、'+Math.ceil(n/DAY*10)/10+'日ぶんが過ぎた。主なできごと：'+(q.filter(function(l){return l.cls==='st'||/ができた/.test(l.txt)}).slice(-3).map(function(l){return l.txt}).join(' ')||'目立つことはなかった。'),'st')}
+ else say('三人は地図の上で、きまりどおりに動いています。助言は、いつでも届けられます。','st');
+ if(!S.site)S.site='f'})();
+setInterval(save,5000);window.addEventListener('pagehide',save);
+requestAnimationFrame(loop);
+window.TRI_WORLD={tick:tick,S:S};
+})();
+</script></body></html>
