@@ -37,7 +37,7 @@ hill:[
 var S,rs;
 function rnd(){rs=(rs*1664525+1013904223)>>>0;return rs/4294967296}
 function clamp(x){return Math.max(0,x)}
-function init(seed){rs=(seed>>>0)||20261108;S={seed:rs,year:0,pop:24,food:28,trust:5,knowledge:0,infra:0,trade:0,home:'river',chron:['0年　24人が川辺に集まり、小さな火を囲んだ。']};return S}
+function init(seed){rs=(seed>>>0)||20261108;S={seed:rs,year:0,pop:24,food:28,trust:5,knowledge:0,infra:0,trade:0,wood:4,stone:2,ore:0,parts:0,buildings:0,defense:0,home:'river',chron:['0年　24人が川辺に集まり、小さな火を囲んだ。']};return S}
 function apply(e){Object.keys(e).forEach(function(k){S[k]=(S[k]||0)+e[k];if(k!=='trust')S[k]=clamp(S[k])})}
 function advance(){
  S.year++;
@@ -54,5 +54,25 @@ function advance(){
  return S
 }
 function setHome(id){S.home=id;S.chron.push(S.year+'年　拠点を「'+TILES.filter(function(t){return t.id===id})[0].name+'」に移した。')}
-return {tiles:TILES,init:init,advance:advance,setHome:setHome,get S(){return S}};
+function work(kind){
+ var t=TILES.filter(function(x){return x.id===S.home})[0];
+ if(kind==='produce'){
+  if(t.type==='forest'){S.wood+=4;S.food+=1;S.chron.push(S.year+'年　森で木材と薬草を集めた。');}
+  else if(t.type==='river'){S.food+=4;S.chron.push(S.year+'年　川で魚を獲った。');}
+  else if(t.type==='field'){S.food+=5;S.chron.push(S.year+'年　畑をたがやし、食べ物を蓄えた。');}
+  else if(t.type==='hill'){S.stone+=3;S.chron.push(S.year+'年　丘から石を運んだ。');}
+  else {S.ore+=2;S.knowledge+=1;S.chron.push(S.year+'年　廃墟から使える資材を見つけた。');}
+  return;
+ }
+ if(kind==='make'){
+  if(S.wood>=3&&S.stone>=2){S.wood-=3;S.stone-=2;S.buildings++;S.infra+=2;S.trust++;S.chron.push(S.year+'年　木材と石で建物を一つ建てた。');}
+  else if(S.ore>=2){S.ore-=2;S.parts+=2;S.defense++;S.chron.push(S.year+'年　鉱石を加工し、道具と守りの部品を作った。');}
+  else S.chron.push(S.year+'年　作るための資材が足りず、採集へ戻った。');
+  return;
+ }
+ var strength=S.pop+S.defense*5+S.parts*2,enemy=18+Math.floor(rnd()*30);
+ if(strength>=enemy){S.food+=4;S.trade++;S.trust++;S.chron.push(S.year+'年　脅威を退け、安全な道を確保した。');}
+ else {S.trust=Math.max(0,S.trust-1);S.food=Math.max(0,S.food-3);S.chron.push(S.year+'年　戦いを避け、食べ物を失って退いた。');}
+}
+return {tiles:TILES,init:init,advance:advance,setHome:setHome,work:work,get S(){return S}};
 })();
