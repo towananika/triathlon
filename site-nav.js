@@ -1,6 +1,6 @@
 // 全ページ共通の上部バー・下のメニュー・サイトの字。<script src="(相対パス)/site-nav.js"></script> を body の先頭に置く。
 // よくあるゲーム公式サイトの形：左にロゴ、まん中にメニュー、右に「ログイン」と「プレイ」。スマホは右上の ☰ と、指の届く下のタブ。
-// 下のタブはホーム・お知らせ・物語（まん中）・地図・キャラ。ゲームは開発終了（v0.30）。そのほかは ☰ にまとめる。ページの下には共通のフッターを出す。
+// 下のタブはホーム・お知らせ・ゲーム・地図・キャラ。そのほかは ☰ にまとめる。ページの下には共通のフッターを出す。
 // サイトの字（見出しとロゴ）は FONT_* を変えるだけで全ページが変わる。
 (function () {
   'use strict';
@@ -11,8 +11,8 @@
   var FONT_LOGO = '"Montserrat",system-ui,sans-serif', FONT_HEAD = '"Noto Sans JP","Noto Sans SC","Noto Sans TC","Noto Sans KR","Noto Sans",system-ui,sans-serif';
   // 開発元（仮法人）。名前を変えるときはここだけ
   var STUDIO = 'Towa'; // 設立 2026-10-25、所在地はゲーム内の二水（Nisui）
-  var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['stories/', '📖', '物語'], ['char/', '👥', 'キャラ'], ['map/', '🌐', 'マップ']];
-  var TABS = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['stories/', '📖', '物語'], ['map/', '🌐', 'マップ'], ['char/', '👥', 'キャラ']];
+  var MAIN = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['play/day-one/', '🎮', 'ゲーム'], ['char/', '👥', 'キャラ'], ['map/', '🌐', 'マップ']];
+  var TABS = [['', '🏠', 'ホーム'], ['news/', '📰', 'お知らせ'], ['play/day-one/', '🎮', 'ゲーム'], ['map/', '🌐', 'マップ'], ['char/', '👥', 'キャラ']];
   // 公開しているのは今の期だけ（「期」という言葉も出さない）。1〜4期と設定資料は管理者だけに見せる
   var admin = false;
   if (admin) document.documentElement.classList.add('tri-admin');
@@ -56,13 +56,13 @@
   bar.className = 'tri-nav';
   bar.innerHTML = '<a class="tri-brand" href="' + root + '" aria-label="TRIATHLON ホーム">TRIATHLON</a>' + (admin ? '<a class="tri-dev" href="' + root + 'dev/">開発版</a>' : '') +
     '<div class="tri-top" role="navigation" aria-label="おもなページ">' + MAIN.map(function (it) { return link(it, ''); }).join('') + '</div>' +
-    '<div class="tri-act"><a class="tri-btn play" href="' + root + 'stories/">📖 物語を読む</a>' +
+    '<div class="tri-act"><a class="tri-btn play" href="' + root + 'play/day-one/">🎮 ゲームをはじめる</a>' +
     '<details class="tri-menu"><summary aria-label="メニュー">☰</summary><div class="tri-more" role="navigation" aria-label="そのほかのページ">' + MORE.map(function (it) { return link(it, ''); }).join('') + '</div></details></div>';
   var bottom = document.createElement('div');
   bottom.className = 'tri-bottom';
   bottom.setAttribute('role', 'navigation');
   bottom.setAttribute('aria-label', 'おもなページ（下）');
-  bottom.innerHTML = TABS.map(function (it) { return link(it, it[0] === 'stories/' ? 'tab-play' : ''); }).join('');
+  bottom.innerHTML = TABS.map(function (it) { return link(it, it[0] === 'play/day-one/' ? 'tab-play' : ''); }).join('');
   document.body.insertBefore(bar, document.body.firstChild);
   // 町の建物：サイトの仕組みは、二水の町の建物にある（studio/text/world/buildings_v1.md）
   var PLACE = { 'stories': ['📖', '灯台館', '西岸区 岬口路 1', '1000-1101-0001'], 'map': ['🔭', '灯台館の見晴らし台', '西岸区 岬口路 1', '1000-1101-0001'], 'sim': ['🔭', '灯台館の見晴らし台', '西岸区 岬口路 1', '1000-1101-0001'],
@@ -72,7 +72,7 @@
   if (pl) { var pe = document.createElement('p'); pe.className = 'tri-place'; pe.textContent = pl[0] + ' ' + pl[1] + '・' + pl[2] + '・☎ ' + pl[3]; bar.after(pe); }
   // 共通のフッター（ゲーム画面には出さない）
   function addFoot() {
-    if (/\/play\/$/.test(path)) return;
+    if (/\/play(?:\/day-one)?\/$/.test(path)) return;
     var ver = document.getElementById('ver'), old = document.querySelector('.foot');
     var foot = document.createElement('footer');
     foot.className = 'tri-foot';
