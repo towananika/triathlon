@@ -18,3 +18,5 @@ html,body{height:100%;margin:0;overflow:hidden;color:var(--ink);font:15px/1.6 sy
 .choices{display:grid;gap:6px}
 .choices button{font:inherit;font-weight:700;text-align:left;min-height:44px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:0 14px;cursor:pointer}
 button:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+.today{margin:0 0 8px;padding-left:1.2em;font-size:13px}.today li{margin-bottom:4px}
+#room .primary{margin-top:6px}

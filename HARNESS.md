@@ -27,7 +27,7 @@ AIが速く作るためではなく、世界観と体験を壊さずに、小さ
 - 状態：`node play/day-one/engine.test.cjs`
 - スマホ画面（390px、横はみ出し・エラーなし）：`node play/day-one/screen.check.cjs`（PCのEdgeなら `PW_CHANNEL=msedge`、画像の保存先は `SHOT=...`）
 
-- 二水を歩く：`node play/nisui-walk/move.test.cjs`、`node play/nisui-walk/screen.check.cjs`
+- 二水を歩く：`node play/nisui-walk/move.test.cjs`、`node play/nisui-walk/home.test.cjs`、`node play/nisui-walk/screen.check.cjs`
 
 新しい体験を足すときは、同じ2本（状態テスト・画面確認）を対象フォルダに置く。
 

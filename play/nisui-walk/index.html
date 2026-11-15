@@ -3,15 +3,16 @@
 <body>
 <canvas id="view" aria-label="二水の町"></canvas>
 <header class="top"><a href="../../" class="back">← TRIATHLON</a><span id="day"></span></header>
-<section id="intro" class="card intro"><p class="eyebrow">歩く試作 · 二水</p><h1>二水を、歩いてみる。</h1><p>地面をタップすると、そこへ歩きます。住人に近づくと話せます。</p><button class="primary" id="start" type="button">ランダムな人生を受け取る</button><p class="note">記録はこの端末にだけ保存されます（2Dの「二水のはじまり」と同じ人生）。</p></section>
+<section id="intro" class="card intro"><p class="eyebrow">歩く試作 · 二水</p><h1>二水を、歩いてみる。</h1><p>地面をタップすると、そこへ歩きます。住人に近づくと話せます。夜は家に帰って眠ります。</p><button class="primary" id="start" type="button">ランダムな人生を受け取る</button><p class="note">記録はこの端末にだけ保存されます（2Dの「二水のはじまり」と同じ人生）。</p></section>
 <section id="hud" class="hud" hidden>
   <div class="card bar"><b id="who"></b><span id="time"></span></div>
   <button id="talk" class="primary" type="button" hidden></button>
   <p id="done" class="card small" hidden>今日はもう話した。</p>
-  <button id="next" class="primary" type="button" hidden>次の日へ</button>
+  <button id="home" class="primary" type="button" hidden>家に入る</button>
   <p id="log" class="card small"></p>
 </section>
 <section id="dialog" class="card dialog" hidden></section>
+<section id="room" class="card dialog" hidden></section>
 <script src="../day-one/content.js"></script><script src="../day-one/engine.js"></script>
-<script src="move.js"></script><script src="world.js"></script><script src="ui.js"></script>
+<script src="move.js"></script><script src="home.js"></script><script src="world.js"></script><script src="ui.js"></script>
 </body></html>

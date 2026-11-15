@@ -20,13 +20,19 @@ const { pathToFileURL } = require('node:url');
       await page.locator('#talk').click();
       await page.locator('[data-choice="help"]').click();
     }
-    await page.getByRole('button', { name: '次の日へ' }).click();
+    await page.evaluate(() => window.NisuiWalk.go('home'));
+    await page.getByRole('button', { name: '家に入る' }).click();
+    assert.match(await page.locator('#room').textContent(), /今日をふり返る.*朝市/);
+    await page.screenshot({ path: (process.env.SHOT || path.join(os.tmpdir(), 'nisui-walk-390.png')).replace('.png', '-home.png') });
+    await page.getByRole('button', { name: '眠る（次の日へ）' }).click();
+    assert.equal(await page.locator('#room').isVisible(), false);
     await page.evaluate(() => window.NisuiWalk.go('river'));
     await page.locator('#talk').click();
     assert.match(await page.locator('.memory').textContent(), /昨日は助かった/);
     const shot = process.env.SHOT || path.join(os.tmpdir(), 'nisui-walk-390.png');
     await page.screenshot({ path: shot });
     assert.deepEqual(errors, []);
+    assert.match(await page.locator('#day').textContent(), /2日目/);
     console.log('nisui-walk screen: ok');
   } finally { await browser.close(); }
 })().catch((e) => { console.error(e); process.exit(1); });

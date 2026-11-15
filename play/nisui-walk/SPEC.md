@@ -20,6 +20,7 @@
 
 1. 初回に「ランダムな人生を受け取る」が出て、押すと町と自分のキャラが出る。
 2. 歩いて住人の近く（2m以内）に行くと「話す」が出る。遠いと出ない。
-3. 3回話すと、その日の終わりと「次の日へ」が出る。
+3. 家（町の左下）に近づくと「家に入る」。家では今日の記録と足あとの数が出て、3回話し終えていれば「眠る（次の日へ）」で次の日。まだなら「外へ出る」（96-4、96-5）。
+   眠ると、その日の足あとが保存され、次の日に薄く見える。
 4. 2日目に前日の住人へ近づくと、前日への一言が出る。
-5. 歩く計算は `node play/nisui-walk/move.test.cjs`、スマホ画面は `node play/nisui-walk/screen.check.cjs` で検証できる。
+5. 歩く計算は `node play/nisui-walk/move.test.cjs`、家は `node play/nisui-walk/home.test.cjs`、スマホ画面は `node play/nisui-walk/screen.check.cjs` で検証できる。

@@ -3,7 +3,7 @@
   'use strict';
   var M = window.NisuiMove;
   var LOOK = { river: ['#2f6fb8', '≈'], market: ['#d9707a', '●'], library: ['#4fae84', '▤'] };
-  var TREES = [[-8, 6], [8, 6], [-8, 1], [8, 2], [-3, 8.5], [4, 8.5], [-8.5, -8.5], [8.5, -8.5]];
+  var TREES = [[-8.5, 4.5], [8, 6], [-8, 1], [8, 2], [-3, 8.5], [4, 8.5], [-8.5, -8.5], [8.5, -8.5]];
   function create(canvas) {
     var g = canvas.getContext('2d'), W, H, S, OX, OY, ring = null, dpr = 1;
     function resize() {
@@ -14,13 +14,17 @@
     function sx(x) { return OX + x * S; } function sy(z) { return OY + z * S; }
     function rect(x, z, w, d, c) { g.fillStyle = c; g.fillRect(sx(x - w / 2), sy(z - d / 2), w * S, d * S); }
     function dot(x, z, r, c, line) { g.beginPath(); g.arc(sx(x), sy(z), r * S, 0, Math.PI * 2); g.fillStyle = c; g.fill(); if (line) { g.lineWidth = 2; g.strokeStyle = line; g.stroke(); } }
-    function draw(pos, face, near, steps) {
+    function draw(pos, face, near, steps, old, home) {
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
       g.fillStyle = '#dbeeed'; g.fillRect(0, 0, W, H);
       rect(0, 0, 20, 20, '#a9c48f');
       rect(0, -6.5, 20, 2.4, '#7fb3d1');
       rect(0, -2, 14, 2.2, '#e6dcc6'); rect(-3, 1.5, 2.2, 6, '#e6dcc6'); rect(3, 1.5, 2.2, 6, '#e6dcc6'); rect(0, 6, 2.2, 5, '#e6dcc6');
       TREES.forEach(function (t) { dot(t[0], t[1], 0.8, '#6f9a5a'); });
+      var H = window.NisuiHome.HOME;
+      rect(H.x, H.z - 0.6, 2.2, 1.6, '#c9a65a'); g.beginPath(); g.moveTo(sx(H.x - 1.3), sy(H.z - 1.4)); g.lineTo(sx(H.x), sy(H.z - 2.3)); g.lineTo(sx(H.x + 1.3), sy(H.z - 1.4)); g.closePath(); g.fillStyle = '#8a5a3c'; g.fill();
+      if (home) dot(H.x, H.z + 0.5, 0.7, 'rgba(244,199,101,.45)');
+      g.globalAlpha = 0.12; (old || []).forEach(function (p) { dot(p.x, p.z, 0.1, '#5b4a36'); }); g.globalAlpha = 1;
       (steps || []).forEach(function (p, i, a) { g.globalAlpha = 0.15 + 0.35 * i / a.length; dot(p.x, p.z, 0.12, '#5b4a36'); }); g.globalAlpha = 1;
       g.textAlign = 'center'; g.textBaseline = 'middle';
       Object.keys(M.SPOTS).forEach(function (id) {
