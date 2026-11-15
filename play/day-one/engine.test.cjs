@@ -43,4 +43,14 @@ assert.equal(state.finished, false);
 assert.equal(state.visited.length, 0);
 assert.equal(state.journal[0].title, '2日目の朝');
 
+// 2日目：前日の行動に住人が一言だけ反応する（前日だけ・記録と一致）。
+assert.equal(context.TriDayOne.remember(state, 'river'), context.TRI_DAY_ONE.encounters.river.memory.listen);
+state = context.TriDayOne.visit(state, 'river');
+state = context.TriDayOne.choose(state, 'help');
+assert.equal(state.memory.river.choice, 'help');
+assert.equal(state.memory.river.day, 2);
+assert.equal(context.TriDayOne.remember(state, 'river'), '', '同じ日の行動には反応しない');
+// 古い保存（memoryなし）でも壊れない
+assert.equal(context.TriDayOne.remember({ day: 2 }, 'river'), '');
+
 console.log('day-one engine: ok');
