@@ -10,3 +10,4 @@ Pinned distributions were downloaded from jsDelivr npm package mirrors. They are
 `assets/data/land-110m.json` is the unchanged world-atlas land dataset. `assets/data/land-110m.js` wraps the same parsed TopoJSON in `window.triathlonLand` for offline / file-based use.
 
 The 1:110m coastline is a simplified geographic overview, not a cadastral map or an accurate city-site evaluation. Country boundaries, city locations, detailed rivers and elevation are not included. Candidate points are planning references, not canon cities or terrain-derived recommendations.
+- three.js 0.149.0: https://github.com/mrdoob/three.js (MIT; see THREE-LICENSE). Used by play/nisui-3d/.

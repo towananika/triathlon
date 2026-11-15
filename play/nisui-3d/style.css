@@ -1,0 +1,20 @@
+:root{--ink:#163744;--sub:#5b7279;--line:#cfe0df;--card:rgba(255,255,255,.94);--teal:#007f87;--warm:#f4c765}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{height:100%;margin:0;overflow:hidden;color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Noto Sans JP",sans-serif;background:#dbeeed}
+#view{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.top{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 0;font-size:13px;font-weight:700;pointer-events:none}
+.top a{color:var(--ink);text-decoration:none;pointer-events:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:0 6px 18px rgba(22,55,68,.08)}
+.eyebrow{margin:0;color:#2c8585;font-size:11px;font-weight:800;letter-spacing:.08em}
+.intro{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:480px;margin:0 auto}
+.intro h1{margin:2px 0 4px;font-size:22px}.intro p{margin:0 0 10px}.note{font-size:12px;color:var(--sub)}
+.primary{font:inherit;font-weight:800;min-height:48px;border:0;border-radius:14px;padding:0 18px;background:var(--teal);color:#fff;cursor:pointer;width:100%}
+.hud{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:480px;margin:0 auto;display:grid;gap:8px}
+.bar{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.small{margin:0;font-size:13px}
+.dialog{position:fixed;left:16px;right:16px;top:calc(48px + env(safe-area-inset-top,0px));max-width:480px;margin:0 auto}
+.dialog h2{margin:2px 0 6px;font-size:19px}.dialog p{margin:0 0 8px}
+.memory{padding:8px 12px;border-left:4px solid var(--warm);background:#fff8e6;border-radius:10px}
+.choices{display:grid;gap:6px}
+.choices button{font:inherit;font-weight:700;text-align:left;min-height:44px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:0 14px;cursor:pointer}
+button:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
