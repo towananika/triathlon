@@ -15,7 +15,7 @@
   }
   function encounter(s) {
     var place = getPlace(s.currentPlace), e = C.encounters[place.id];
-    return '<section class="card encounter"><p class="eyebrow">' + esc(place.district) + '</p><h2>' + esc(place.name) + '</h2><p>' + esc(place.intro) + '</p><div class="person"><span>●</span><div><b>' + esc(e.name) + '</b><small>あなたの前にいる人</small></div></div><p class="ask">今のあなたは、どうする？</p><div class="choices">' + e.options.map(function (o) { return '<button data-choice="' + o.id + '" type="button">' + esc(o.label) + '<span>→</span></button>'; }).join('') + '</div></section>';
+    return '<section class="card encounter"><p class="eyebrow">' + esc(place.district) + '</p><h2>' + esc(place.name) + '</h2><p>' + esc(place.intro) + '</p><div class="person"><span>●</span><div><b>' + esc(e.name) + '</b><small>あなたの前にいる人</small></div></div>' + (E.remember(s, place.id) ? '<p class="memory">' + esc(E.remember(s, place.id)) + '</p>' : '') + '<p class="ask">今のあなたは、どうする？</p><div class="choices">' + e.options.map(function (o) { return '<button data-choice="' + o.id + '" type="button">' + esc(o.label) + '<span>→</span></button>'; }).join('') + '</div></section>';
   }
   function render(s) {
     if (!s) { intro(); return; }
