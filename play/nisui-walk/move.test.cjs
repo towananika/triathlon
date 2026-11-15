@@ -11,4 +11,4 @@ assert.equal(M.step({ x: 0, z: 0 }, { x: 99, z: 0 }, 100).x, M.LIMIT, '町の外
 assert.equal(M.near(M.SPOTS.river), 'river');
 assert.equal(M.near({ x: M.SPOTS.market.x + 1.5, z: M.SPOTS.market.z }), 'market');
 assert.equal(M.near({ x: 0, z: 0 }), null, '遠いと話せない');
-console.log('nisui-3d move: ok');
+console.log('nisui-walk move: ok');

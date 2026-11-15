@@ -1,4 +1,4 @@
-/* 二水3Dのスマホ画面確認：初回→近づく→3回話す→次の日へ→前日の一言。 */
+/* 二水2Dのスマホ画面確認：初回→近づく→3回話す→次の日へ→前日の一言。 */
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 const path = require('node:path');
@@ -13,19 +13,20 @@ const { pathToFileURL } = require('node:url');
     await page.goto(pathToFileURL(path.join(__dirname, 'index.html')).href);
     await page.getByRole('button', { name: 'ランダムな人生を受け取る' }).click();
     assert.equal(await page.locator('#talk').isVisible(), false, '遠いと話せない');
-    await page.screenshot({ path: (process.env.SHOT || path.join(os.tmpdir(), 'nisui-3d-390.png')).replace('.png', '-town.png') });
+    await page.mouse.click(120, 200); await page.waitForTimeout(1200);
+    await page.screenshot({ path: (process.env.SHOT || path.join(os.tmpdir(), 'nisui-walk-390.png')).replace('.png', '-town.png') });
     for (const id of ['river', 'market', 'library']) {
-      await page.evaluate((x) => window.Nisui3D.go(x), id);
+      await page.evaluate((x) => window.NisuiWalk.go(x), id);
       await page.locator('#talk').click();
       await page.locator('[data-choice="help"]').click();
     }
     await page.getByRole('button', { name: '次の日へ' }).click();
-    await page.evaluate(() => window.Nisui3D.go('river'));
+    await page.evaluate(() => window.NisuiWalk.go('river'));
     await page.locator('#talk').click();
     assert.match(await page.locator('.memory').textContent(), /昨日は助かった/);
-    const shot = process.env.SHOT || path.join(os.tmpdir(), 'nisui-3d-390.png');
+    const shot = process.env.SHOT || path.join(os.tmpdir(), 'nisui-walk-390.png');
     await page.screenshot({ path: shot });
     assert.deepEqual(errors, []);
-    console.log('nisui-3d screen: ok');
+    console.log('nisui-walk screen: ok');
   } finally { await browser.close(); }
 })().catch((e) => { console.error(e); process.exit(1); });
