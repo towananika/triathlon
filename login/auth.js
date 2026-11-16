@@ -55,3 +55,5 @@ onAuthStateChanged(auth, (u) => {
   }, { merge: true })).catch(() => {});
 });
 window.triUid = () => auth.currentUser && auth.currentUser.uid;
+// 本人だと証明する短い札（同期サーバーへ送る。1時間で切れ、そのつど新しくなる）
+window.triToken = () => auth.currentUser ? auth.currentUser.getIdToken() : Promise.resolve(null);
