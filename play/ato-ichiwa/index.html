@@ -1,0 +1,9 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>あと一羽｜ふたりのバランスゲーム</title>
+<link rel="stylesheet" href="./game.css">
+<main><header><div><small>2人協力 · 2分間</small><h1>あと一羽</h1></div><div class="scores"><div><small>残り時間</small><b id="time">2:00</b></div><div><small>チーム得点</small><b id="score">0</b></div></div></header>
+<section><div class="turn" aria-live="polite"><b id="turn">遊び方</b><span id="msg">右へ歩くひよこを、板が傾きすぎない席に座らせよう。</span></div>
+<canvas id="field" width="1000" height="395" aria-label="シーソーと7つの席。点線は水平の目安"></canvas>
+<div class="actions"><button id="action">ふたりで始める</button><button id="bank" hidden></button></div><p id="result" hidden></p></section>
+<footer><strong>1P は A　／　2P は J</strong>　自分のキーで歩き出し、もう一度押すと光った席に座ります。<br>次の一羽を歩かせる前に <strong>Space</strong> で巣へ。3羽なら6点、4羽なら10点。傾きすぎると、板の上の群れが滑り落ちます。</footer></main>
+<script src="./game.js"></script><script src="./board.js"></script></html>
