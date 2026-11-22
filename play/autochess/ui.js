@@ -3,10 +3,19 @@
   'use strict';
   var D = window.TRI_CHESS_DATA, E = window.TriChess, KEY = 'triathlon-autochess-v1', MAX = 5;
   var app = document.getElementById('app');
-  var st = { placement: load(), sel: null, mode: 'setup', result: null, frame: 0, timer: null };
+  var saved = load(), st = { placement: saved.placement, cleared: saved.cleared, region: 0, sel: null, mode: 'setup', result: null, frame: 0, timer: null, copied: false };
+  st.region = Math.min(st.cleared.length, D.regions.length - 1);
+  var URL_PLAY = 'https://towananika.github.io/triathlon/play/autochess/';
 
-  function load() { try { var v = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (_) { return []; } }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(st.placement)); } catch (_) {} }
+  function load() {
+    var v = null; try { v = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (_) {}
+    if (Array.isArray(v)) v = { placement: v };
+    v = v || {};
+    return { placement: Array.isArray(v.placement) ? v.placement : [], cleared: Array.isArray(v.cleared) ? v.cleared : [] };
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ placement: st.placement, cleared: st.cleared })); } catch (_) {} }
+  function region() { return D.regions[st.region]; }
+  function unlocked(i) { return i === 0 || st.cleared.indexOf(D.regions[i - 1].id) >= 0; }
   function piece(id) { return D.pieces.filter(function (p) { return p.id === id; })[0]; }
   function at(x, y) { return st.placement.filter(function (p) { return p.x === x && p.y === y; })[0]; }
   function placed(id) { return st.placement.filter(function (p) { return p.id === id; })[0]; }
@@ -32,8 +41,9 @@
 
   function fight() {
     if (!st.placement.length) return;
-    st.result = E.simulate(E.trialBattle(D, st.placement));
+    st.result = E.simulate(E.trialBattle(D, st.placement, st.region)); st.copied = false;
     st.mode = 'battle'; st.sel = null; st.frame = 0; render();
+    var bd = app.querySelector('.board'); if (bd && bd.scrollIntoView) bd.scrollIntoView({ block: 'center' });
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) { finish(); return; }
     st.timer = setInterval(function () {
@@ -41,7 +51,26 @@
       if (st.frame >= st.result.frames.length - 1) finish(); else render();
     }, 55);
   }
-  function finish() { clearInterval(st.timer); st.frame = st.result.frames.length - 1; st.mode = 'done'; render(); }
+  function finish() {
+    clearInterval(st.timer); st.frame = st.result.frames.length - 1; st.mode = 'done';
+    if (st.result.winner === 0 && st.cleared.indexOf(region().id) < 0) { st.cleared.push(region().id); save(); }
+    render();
+    var r = app.querySelector('.result'); if (r && r.scrollIntoView) r.scrollIntoView({ block: 'center' });
+  }
+  function shareText() {
+    var win = st.result.winner === 0, left = st.result.units.filter(function (u) { return u.side === 0 && u.hp > 0; }).length;
+    var team = st.placement.slice(0, 5).map(function (p) { return piece(p.id).icon; }).join('');
+    var marks = D.regions.map(function (r) { return st.cleared.indexOf(r.id) >= 0 ? '🟩' : '⬜'; }).join('');
+    return 'TRIATHLON 盤 ' + region().name + ' ' + (win ? '勝ち' : '負け') + '\n' + team + (win ? ' ' + left + '人残り ' + st.result.seconds + '秒' : '') + '\n' + marks + '\n' + URL_PLAY;
+  }
+  function share() {
+    var t = shareText();
+    function done() { st.copied = true; render(); }
+    if (navigator.share) { navigator.share({ text: t }).then(done, function () {}); return; }
+    if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, function () { prompt('コピーしてください', t); });
+    else prompt('コピーしてください', t);
+  }
+  function goRegion(i) { if (st.mode === 'battle' || !unlocked(i)) return; st.region = i; st.mode = 'setup'; st.result = null; st.sel = null; render(); }
   function again() { st.mode = 'setup'; st.result = null; render(); }
 
   function unitHtml(u, info, hp, hit) {
@@ -78,12 +107,15 @@
   }
   function render() {
     var h = [];
-    h.push('<section class="card"><p class="eyebrow">試作・1戦だけ</p><h1>' + esc(D.trial.name) + 'を取る</h1><p class="lead">9人から5人まで選んで、手前の4列に並べます。戦いは自動で、数値どおりに決まります。運はありません。</p></section>');
+    h.push('<section class="card"><p class="eyebrow">試作・地域 ' + (st.region + 1) + '/' + D.regions.length + '</p><h1>' + esc(region().name) + 'を取る</h1><p class="lead">9人から5人まで選んで、手前の4列に並べます。戦いは自動で、数値どおりに決まります。運はありません。</p><div class="regions">' + D.regions.map(function (r, i) {
+      var c = st.cleared.indexOf(r.id) >= 0, u = unlocked(i);
+      return '<button class="rg ' + r.color + (i === st.region ? ' on' : '') + '" data-region="' + i + '"' + (u && st.mode !== 'battle' ? '' : ' disabled') + '>' + (c ? '✓ ' : u ? '' : '🔒 ') + esc(r.name) + '</button>';
+    }).join('') + '</div></section>');
     if (st.mode === 'done') {
       var win = st.result.winner === 0, left = st.result.units.filter(function (u) { return u.side === 0 && u.hp > 0; }).length;
-      h.push('<section class="card result ' + (win ? 'win' : 'lose') + '"><h2>' + (win ? '勝ち！' : '負け') + '</h2><p>' + (win ? esc(D.trial.name) + 'を影響下に置きました。' + st.result.seconds + '秒、' + left + '人が残りました。' : '敵の並びが分かりました。並べ方を変えれば、結果も変わります。') + '</p><div class="row"><button class="btn" data-act="again">並べ直してもう一度</button></div></section>');
+      h.push('<section class="card result ' + (win ? 'win' : 'lose') + '"><h2>' + (win ? '勝ち！' : '負け') + '</h2><p>' + (win ? esc(region().name) + 'を影響下に置きました。' + st.result.seconds + '秒、' + left + '人が残りました。' : '敵の並びが分かりました。並べ方を変えれば、結果も変わります。') + '</p><div class="row">' + (win && st.region < D.regions.length - 1 ? '<button class="btn" data-act="next">次の地域へ</button>' : '') + '<button class="btn' + (win && st.region < D.regions.length - 1 ? ' sub' : '') + '" data-act="again">' + (win ? 'もう一度' : '並べ直してもう一度') + '</button></div><div class="row" style="margin-top:8px"><button class="btn sub" style="flex:1" data-act="share">' + (st.copied ? '共有しました ✓' : '結果を共有') + '</button></div>' + (win && st.cleared.length === D.regions.length ? '<p style="margin:10px 0 0">5つの地域をすべて影響下に置きました！</p>' : '') + '</section>');
     }
-    h.push('<section class="card" style="padding:10px">' + boardHtml() + '<div class="mid" style="margin-top:8px"><span>奥：野生の敵 ' + D.trial.enemies.length + '体' + (st.mode === 'setup' ? '（配置は見えない）' : '') + '</span><span>手前：<b>' + st.placement.length + '/' + MAX + '</b>人</span></div></section>');
+    h.push('<section class="card" style="padding:10px">' + boardHtml() + '<div class="mid" style="margin-top:8px"><span>奥：野生の敵 ' + region().enemies.length + '体' + (st.mode === 'setup' ? '（配置は見えない）' : '') + '</span><span>手前：<b>' + st.placement.length + '/' + MAX + '</b>人</span></div></section>');
     if (st.mode === 'setup') {
       h.push('<section class="card"><h2>仲間</h2><div class="bench">' + D.pieces.map(function (q) {
         return '<button class="chip ' + q.color + (st.sel === q.id ? ' on' : '') + (placed(q.id) ? ' placed' : '') + '" data-id="' + q.id + '"><span class="ic">' + q.icon + '</span><b>' + esc(q.name) + '</b><small>' + esc(q.cls) + '</small></button>';
@@ -96,11 +128,13 @@
   }
   app.addEventListener('click', function (e) {
     var c = e.target.closest('.cell'), chip = e.target.closest('.chip'), act = e.target.closest('[data-act]');
+    var rg = e.target.closest('[data-region]');
+    if (rg) { goRegion(+rg.dataset.region); return; }
     if (c) tapCell(+c.dataset.x, +c.dataset.y);
     else if (chip) tapChip(chip.dataset.id);
     else if (act) {
       var a = act.dataset.act;
-      if (a === 'fight') fight(); else if (a === 'skip') finish(); else if (a === 'again') again();
+      if (a === 'fight') fight(); else if (a === 'skip') finish(); else if (a === 'again') again(); else if (a === 'next') goRegion(st.region + 1); else if (a === 'share') share();
       else if (a === 'clear') { st.placement = []; st.sel = null; save(); render(); }
     }
   });

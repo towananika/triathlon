@@ -42,6 +42,17 @@ r1.frames.forEach((f) => {
   assert.equal(new Set(cells).size, cells.length);
 });
 
+// 5つの地域があり、どれも並べ方しだいで勝てる（勝てる配置の例）
+assert.equal(D.regions.length, 5);
+const wins = [
+  good,
+  [{ id: 'akari', x: 4, y: 4 }, { id: 'riku', x: 2, y: 5 }, { id: 'shion', x: 0, y: 7 }, { id: 'seira', x: 7, y: 7 }, { id: 'tsubasa', x: 1, y: 6 }],
+  [{ id: 'akari', x: 2, y: 6 }, { id: 'riku', x: 4, y: 5 }, { id: 'seira', x: 3, y: 7 }, { id: 'shion', x: 7, y: 5 }, { id: 'rui', x: 1, y: 5 }],
+  [{ id: 'akari', x: 3, y: 5 }, { id: 'seira', x: 5, y: 5 }, { id: 'tsubasa', x: 3, y: 4 }, { id: 'riku', x: 7, y: 6 }, { id: 'rui', x: 6, y: 7 }],
+  [{ id: 'kai', x: 7, y: 6 }, { id: 'tsubasa', x: 0, y: 5 }, { id: 'rui', x: 6, y: 6 }, { id: 'seira', x: 2, y: 6 }, { id: 'akari', x: 4, y: 6 }]
+];
+wins.forEach((p, i) => assert.equal(E.simulate(E.trialBattle(D, p, i)).winner, 0, D.regions[i].name));
+
 // 駒がいなければ守る側の勝ち
 assert.equal(E.simulate(E.trialBattle(D, [])).winner, 1);
 

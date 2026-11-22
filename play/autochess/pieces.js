@@ -20,17 +20,24 @@
     wildTypes: {
       boar: { name: 'イノシシ', icon: '🐗', range: 1, hp: 330, atk: 14, def: 30, ats: 0, spd: 2, mag: 0, res: 10 },
       wolf: { name: 'オオカミ', icon: '🐺', range: 1, hp: 150, atk: 17, def: 8, ats: 30, spd: 8, mag: 0, res: 6 },
-      snake: { name: 'ヘビ', icon: '🐍', range: 3, magic: true, hp: 110, atk: 0, def: 6, ats: 0, spd: 1, mag: 19, res: 12 }
+      snake: { name: 'ヘビ', icon: '🐍', range: 3, magic: true, hp: 110, atk: 0, def: 6, ats: 0, spd: 1, mag: 19, res: 12 },
+      bear: { name: 'クマ', icon: '🐻', range: 1, hp: 340, atk: 17, def: 18, ats: 0, spd: 2, mag: 0, res: 12 },
+      eagle: { name: 'ワシ', icon: '🦅', range: 2, hp: 90, atk: 12, def: 4, ats: 40, spd: 12, mag: 0, res: 4 },
+      crab: { name: 'カニ', icon: '🦀', range: 1, hp: 260, atk: 24, def: 60, ats: 0, spd: 1, mag: 0, res: 0 }
     },
-    // 最初の1戦：平原の空き地。配置は戦いが始まるまで見えない
-    trial: {
-      name: '平原の空き地', color: 'G',
-      enemies: [
-        { type: 'boar', x: 2, y: 3 }, { type: 'boar', x: 5, y: 3 },
-        { type: 'wolf', x: 0, y: 2 }, { type: 'wolf', x: 7, y: 2 },
-        { type: 'snake', x: 4, y: 0 }
-      ]
-    }
+    // 地域：順番に攻略する。配置は戦いが始まるまで見えない
+    regions: [
+      { id: 'plain', name: '平原の空き地', color: 'G', enemies: [
+        { type: 'boar', x: 2, y: 3 }, { type: 'boar', x: 5, y: 3 }, { type: 'wolf', x: 0, y: 2 }, { type: 'wolf', x: 7, y: 2 }, { type: 'snake', x: 4, y: 0 } ] },
+      { id: 'hill', name: '山のふもと', color: 'R', enemies: [
+        { type: 'bear', x: 3, y: 3 }, { type: 'boar', x: 4, y: 3 }, { type: 'eagle', x: 0, y: 1 }, { type: 'eagle', x: 7, y: 1 }, { type: 'snake', x: 3, y: 0 } ] },
+      { id: 'coast', name: '海辺の岩場', color: 'B', enemies: [
+        { type: 'crab', x: 1, y: 3 }, { type: 'crab', x: 6, y: 3 }, { type: 'snake', x: 2, y: 0 }, { type: 'snake', x: 5, y: 0 }, { type: 'eagle', x: 4, y: 1 } ] },
+      { id: 'dry', name: '乾いた谷', color: 'G', enemies: [
+        { type: 'wolf', x: 0, y: 3 }, { type: 'wolf', x: 1, y: 3 }, { type: 'wolf', x: 6, y: 3 }, { type: 'wolf', x: 7, y: 3 }, { type: 'bear', x: 3, y: 1 }, { type: 'snake', x: 4, y: 0 } ] },
+      { id: 'ice', name: '氷の峠', color: 'R', enemies: [
+        { type: 'bear', x: 2, y: 3 }, { type: 'boar', x: 5, y: 3 }, { type: 'crab', x: 3, y: 2 }, { type: 'eagle', x: 0, y: 0 }, { type: 'snake', x: 4, y: 0 } ] }
+    ]
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = data;
   else root.TRI_CHESS_DATA = data;

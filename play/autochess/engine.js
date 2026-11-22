@@ -96,15 +96,16 @@
     return { winner: winner, ticks: tick, seconds: Math.round(tick * TICK * 10) / 10, frames: frames, events: events, units: units };
   }
 
-  // 最初の1戦を組み立てる。placement: [{id, x, y}]（自陣は y=4〜7）
-  function trialBattle(data, placement) {
+  // 地域の1戦を組み立てる。placement: [{id, x, y}]（自陣は y=4〜7）
+  function trialBattle(data, placement, regionIndex) {
+    var region = data.regions[regionIndex || 0];
     var units = [];
     placement.slice(0, 5).forEach(function (p) {
       var piece = data.pieces.filter(function (q) { return q.id === p.id; })[0];
       if (!piece || p.y < 4 || p.y > 7 || p.x < 0 || p.x > 7) return;
       units.push(makeUnit('a-' + piece.id, 0, p.x, p.y, statsOf(piece, trialPoints(piece, data.trialPoints), data.base), piece));
     });
-    data.trial.enemies.forEach(function (e, i) {
+    region.enemies.forEach(function (e, i) {
       var w = data.wildTypes[e.type];
       units.push(makeUnit('d-' + i + '-' + e.type, 1, e.x, e.y, w, w));
     });
