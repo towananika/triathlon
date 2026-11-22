@@ -101,12 +101,23 @@
     return { winner: winner, ticks: tick, seconds: Math.round(tick * TICK * 10) / 10, frames: frames, events: events, units: units };
   }
 
-  // 地域の1戦を組み立てる。placement: [{id, x, y}]（自陣は y=4〜7）
+  // 色のボーナス：同じ色の駒が need 体以上いると、その色の駒が強くなる
+  function colorCounts(data, units) {
+    var c = { R: 0, G: 0, B: 0 };
+    units.forEach(function (u) { if (c[u.color] !== undefined) c[u.color] += 1; });
+    return c;
+  }
+  function applyBonus(s, b) {
+    return { hp: Math.floor(s.hp * (100 + (b.hpPct || 0)) / 100), atk: s.atk, def: s.def + (b.def || 0), ats: s.ats + (b.ats || 0), spd: s.spd + (b.spd || 0),
+      mag: Math.floor(s.mag * (100 + (b.magPct || 0)) / 100), res: s.res + (b.res || 0), range: s.range };
+  }
+
+  // 地域の1戦を組み立てる。region：地域の番号、または地域そのもの（今日の地域など）
   // placement: [{id, star, x, y}]（自陣は y=4〜7）。盤に置ける星の合計は data.starCap まで
   // owned（任意）：{駒id: 持っている数}。3つで★2に自動でまとまり、その星の数より多くは出せない
-  function trialBattle(data, placement, regionIndex, owned) {
-    var region = data.regions[regionIndex || 0];
-    var units = [], used = {}, cells = {}, stars = 0;
+  function trialBattle(data, placement, region, owned) {
+    region = typeof region === 'object' && region ? region : data.regions[region || 0];
+    var units = [], used = {}, cells = {}, stars = 0, ok = [];
     placement.forEach(function (p, i) {
       var piece = data.pieces.filter(function (q) { return q.id === p.id; })[0], star = p.star || 1;
       if (!piece || star < 1 || star > 3 || p.y < 4 || p.y > 7 || p.x < 0 || p.x > 7 || cells[p.x + ',' + p.y]) return;
@@ -114,8 +125,14 @@
       var k = p.id + '*' + star; used[k] = (used[k] || 0) + 1;
       if (owned && used[k] > starsOf(owned[p.id] || 0)[star]) return;
       cells[p.x + ',' + p.y] = true; stars += star;
-      var u = makeUnit('a' + i + '-' + piece.id, 0, p.x, p.y, statsOf(piece, trialPoints(piece, data.trialPoints), data.base, star), piece);
-      u.star = star; units.push(u);
+      ok.push({ p: p, i: i, piece: piece, star: star, color: piece.color });
+    });
+    var counts = colorCounts(data, ok), cb = data.colorBonus || {};
+    ok.forEach(function (o) {
+      var s = statsOf(o.piece, trialPoints(o.piece, data.trialPoints), data.base, o.star);
+      if (cb.need && counts[o.color] >= cb.need) s = applyBonus(s, cb[o.color]);
+      var u = makeUnit('a' + o.i + '-' + o.piece.id, 0, o.p.x, o.p.y, s, o.piece);
+      u.star = o.star; u.color = o.color; units.push(u);
     });
     region.enemies.forEach(function (e, i) {
       var w = data.wildTypes[e.type];
@@ -123,8 +140,45 @@
     });
     return units;
   }
+  function bonusColors(data, placement) {
+    var c = { R: 0, G: 0, B: 0 };
+    placement.forEach(function (p) { var q = data.pieces.filter(function (x) { return x.id === p.id; })[0]; if (q) c[q.color] += 1; });
+    return c;
+  }
 
-  var api = { W: W, H: H, MAX_OWN: MAX_OWN, starsOf: starsOf, statsOf: statsOf, trialPoints: trialPoints, damage: damage, attackEvery: attackEvery, moveEvery: moveEvery, simulate: simulate, trialBattle: trialBattle };
+  // 今日の地域：日付から決まる敵の配置。全員が同じ問題に挑む。強すぎ・弱すぎる配置は作り直す
+  function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function hash(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function randomPlacement(data, r) {
+    var ids = data.pieces.map(function (p) { return p.id; }), pl = [], used = {};
+    for (var i = 0; i < data.starCap; i++) {
+      var k = Math.floor(r() * ids.length), id = ids.splice(k, 1)[0], x, y;
+      do { x = Math.floor(r() * 8); y = 4 + Math.floor(r() * 4); } while (used[x + ',' + y]);
+      used[x + ',' + y] = true; pl.push({ id: id, x: x, y: y });
+    }
+    return pl;
+  }
+  function winRate(data, region, tries, r) {
+    var w = 0;
+    for (var i = 0; i < tries; i++) if (simulate(trialBattle(data, randomPlacement(data, r), region)).winner === 0) w += 1;
+    return w / tries;
+  }
+  function dailyRegion(data, dateKey) {
+    var types = Object.keys(data.wildTypes), colors = ['R', 'G', 'B'], base = hash('triathlon-ban-' + dateKey);
+    for (var attempt = 0; attempt < 40; attempt++) {
+      var r = rng(base + attempt * 7919), n = 5 + Math.floor(r() * 2), enemies = [], used = {};
+      for (var i = 0; i < n; i++) {
+        var x, y; do { x = Math.floor(r() * 8); y = Math.floor(r() * 4); } while (used[x + ',' + y]);
+        used[x + ',' + y] = true; enemies.push({ type: types[Math.floor(r() * types.length)], x: x, y: y });
+      }
+      var region = { id: 'daily-' + dateKey, daily: true, date: dateKey, name: '今日の地域', color: colors[Math.floor(r() * 3)], reward: data.pieces[Math.floor(r() * data.pieces.length)].id, enemies: enemies };
+      var wr = winRate(data, region, 80, rng(base ^ 0x9e3779b9));
+      if (wr >= 0.1 && wr <= 0.45) { region.winRate = wr; return region; }
+    }
+    region.winRate = wr; return region;
+  }
+
+  var api = { W: W, H: H, MAX_OWN: MAX_OWN, starsOf: starsOf, bonusColors: bonusColors, dailyRegion: dailyRegion, winRate: winRate, rng: rng, statsOf: statsOf, trialPoints: trialPoints, damage: damage, attackEvery: attackEvery, moveEvery: moveEvery, simulate: simulate, trialBattle: trialBattle };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.TriChess = api;
 })(typeof window !== 'undefined' ? window : globalThis);

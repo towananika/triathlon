@@ -79,6 +79,22 @@ assert.equal(E.trialBattle(D, [{ id: 'akari', x: 0, y: 4 }, { id: 'kai', x: 0, y
 assert.equal(Object.values(D.start).reduce((a, b) => a + b), 9);
 D.regions.forEach((r) => assert.ok(D.pieces.some((p) => p.id === r.reward), r.name));
 
+// 色のボーナス：同じ色が3体そろうと、その色の駒だけ強くなる
+const rrr = [{ id: 'akari', x: 0, y: 4 }, { id: 'shion', x: 1, y: 4 }, { id: 'tsubasa', x: 2, y: 4 }];
+const rr = rrr.slice(0, 2);
+const hp3 = E.trialBattle(D, rrr).find((u) => u.id.endsWith('akari')).hp;
+const hp2 = E.trialBattle(D, rr).find((u) => u.id.endsWith('akari')).hp;
+assert.ok(hp3 > hp2, 'R3体でHPが上がる');
+assert.deepEqual(E.bonusColors(D, rrr), { R: 3, G: 0, B: 0 });
+
+// 今日の地域：同じ日付なら全員同じ配置。勝てる見込みが10〜45%の配置を選ぶ
+const d1 = E.dailyRegion(D, '2026-11-22'), d2 = E.dailyRegion(D, '2026-11-22'), d3 = E.dailyRegion(D, '2026-11-23');
+assert.equal(JSON.stringify(d1), JSON.stringify(d2));
+assert.notEqual(JSON.stringify(d1.enemies), JSON.stringify(d3.enemies));
+assert.ok(d1.winRate >= 0.1 && d1.winRate <= 0.45);
+assert.ok(d1.enemies.every((e) => e.y >= 0 && e.y <= 3 && D.wildTypes[e.type]));
+assert.ok(E.trialBattle(D, good, d1).length > 5, '地域そのものを渡しても戦える');
+
 // 駒がいなければ守る側の勝ち
 assert.equal(E.simulate(E.trialBattle(D, [])).winner, 1);
 

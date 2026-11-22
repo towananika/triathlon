@@ -6,6 +6,13 @@
     base: { hp: 60, atk: 4, def: 4, spd: 1, res: 4 },
     trialPoints: { main: 12, other: 4 },
     starCap: 5, // 盤に置ける星の合計
+    // 同じ色の駒を need 体以上置くと、その色の駒だけ強くなる
+    colorBonus: {
+      need: 3,
+      R: { label: 'HP+25%・DEF+10', hpPct: 25, def: 10 },
+      G: { label: '攻撃速度+40%・移動+2', ats: 40, spd: 2 },
+      B: { label: '魔力+30%・抵抗+10', magPct: 30, res: 10 }
+    },
     pieces: [
       { id: 'akari', name: 'アカリ', cls: 'ファイター', color: 'R', icon: '👊', range: 1, R: [6, 3, 0], G: [3, 1], B: [0, 1] },
       { id: 'shion', name: 'シオン', cls: 'ナイト', color: 'R', icon: '🛡️', range: 1, R: [6, 1, 2], G: [1, 0], B: [0, 2] },

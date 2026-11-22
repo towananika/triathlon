@@ -6,7 +6,7 @@
   var app = document.getElementById('app');
   var saved = load();
   // sel: {chip: 駒id, star} = 盤に置く駒を選択中 / {x, y} = 盤の駒を選択中 / {info: 駒id, star} = 数値だけ表示
-  var st = { placement: saved.placement, cleared: saved.cleared, owned: saved.owned, region: 0, sel: null, mode: 'setup', result: null, frame: 0, timer: null, copied: false, gained: null };
+  var st = { placement: saved.placement, cleared: saved.cleared, owned: saved.owned, seen: saved.seen, day: saved.day, region: 0, sel: null, mode: 'setup', result: null, frame: 0, timer: null, copied: false, gained: null };
   var note = '';
   st.region = Math.min(st.cleared.length, D.regions.length - 1);
   fitPlacement();
@@ -17,11 +17,17 @@
     v = v || {};
     var owned = {}; Object.keys(D.start).forEach(function (k) { owned[k] = D.start[k]; });
     if (v.owned && typeof v.owned === 'object') Object.keys(v.owned).forEach(function (k) { if (owned[k] !== undefined) owned[k] = Math.min(E.MAX_OWN, Math.max(0, v.owned[k] | 0)); });
-    return { placement: Array.isArray(v.placement) ? v.placement : [], cleared: Array.isArray(v.cleared) ? v.cleared : [], owned: owned };
+    return { placement: Array.isArray(v.placement) ? v.placement : [], cleared: Array.isArray(v.cleared) ? v.cleared : [], owned: owned,
+      seen: v.seen && typeof v.seen === 'object' ? v.seen : {}, day: v.day && typeof v.day === 'object' ? v.day : {} };
   }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify({ placement: st.placement, cleared: st.cleared, owned: st.owned })); } catch (_) {} }
-  function region() { return D.regions[st.region]; }
-  function unlocked(i) { return i === 0 || st.cleared.indexOf(D.regions[i - 1].id) >= 0; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ placement: st.placement, cleared: st.cleared, owned: st.owned, seen: st.seen, day: st.day })); } catch (_) {} }
+  // st.region：0〜4 = 地域、-1 = 今日の地域
+  var dailyCache = null;
+  function todayKey() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function daily() { var k = todayKey(); if (!dailyCache || dailyCache.date !== k) dailyCache = E.dailyRegion(D, k); return dailyCache; }
+  function dayLog() { var k = todayKey(); if (st.day.date !== k) st.day = { date: k, tries: 0, winTry: 0 }; return st.day; }
+  function region() { return st.region === -1 ? daily() : D.regions[st.region]; }
+  function unlocked(i) { return i <= 0 || st.cleared.indexOf(D.regions[i - 1].id) >= 0; }
   function piece(id) { return D.pieces.filter(function (p) { return p.id === id; })[0]; }
   function at(x, y) { return st.placement.filter(function (p) { return p.x === x && p.y === y; })[0]; }
   function starOf(p) { return p.star || 1; }
@@ -78,7 +84,9 @@
 
   function fight() {
     if (!st.placement.length) return;
-    st.result = E.simulate(E.trialBattle(D, st.placement, st.region, st.owned)); st.copied = false; st.gained = null;
+    st.result = E.simulate(E.trialBattle(D, st.placement, region(), st.owned));
+    if (region().daily && !dayLog().winTry) dayLog().tries += 1;
+    st.seen[region().id] = true; save(); st.copied = false; st.gained = null;
     st.mode = 'battle'; st.sel = null; st.frame = 0; render();
     var bd = app.querySelector('.board'); if (bd && bd.scrollIntoView) bd.scrollIntoView({ block: 'center' });
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -91,9 +99,11 @@
   function finish() {
     clearInterval(st.timer); st.frame = st.result.frames.length - 1; st.mode = 'done';
     if (st.result.winner === 0) {
-      if (st.cleared.indexOf(region().id) < 0) st.cleared.push(region().id);
+      var firstDaily = region().daily && !dayLog().winTry;
+      if (region().daily) { if (firstDaily) dayLog().winTry = dayLog().tries; }
+      else if (st.cleared.indexOf(region().id) < 0) st.cleared.push(region().id);
       var id = region().reward;
-      if (id) { // 勝つたびに駒が1つ増え、3つで自動で★2、★2が3つで★3。★3があればもう増えない
+      if (id && (!region().daily || firstDaily)) { // 勝つたびに駒が1つ増え、3つで自動で★2、★2が3つで★3。★3があればもう増えない
         if ((st.owned[id] || 0) >= E.MAX_OWN) st.gained = { id: id, max: true };
         else {
           var before = E.starsOf(st.owned[id] || 0);
@@ -118,6 +128,11 @@
   function shareText() {
     var win = st.result.winner === 0;
     var team = st.result.units.filter(function (u) { return u.side === 0; }).map(function (u) { return u.icon + starMark(u.star || 1); }).join('');
+    if (region().daily) {
+      var dl = dayLog(), n = dl.winTry || dl.tries, tries = '';
+      for (var i = 1; i <= n; i++) tries += (dl.winTry && i === dl.winTry) ? '🟩' : '🟥';
+      return 'TRIATHLON 盤 今日の地域 ' + dl.date + '\n' + (dl.winTry ? dl.winTry + '回目で勝ち' : n + '回挑戦中') + ' ' + tries + '\n' + team + '\n' + URL_PLAY;
+    }
     var marks = D.regions.map(function (r) { return st.cleared.indexOf(r.id) >= 0 ? '🟩' : '⬜'; }).join('');
     return 'TRIATHLON 盤 ' + region().name + ' ' + (win ? '勝ち' : '負け') + '\n' + team + (win ? ' ' + survivors() + '人残り ' + st.result.seconds + '秒' : '') + '\n' + marks + '\n' + URL_PLAY;
   }
@@ -146,11 +161,15 @@
         show[k] = { info: { side: u.side, color: q ? q.color : '', name: u.name, icon: u.icon, maxHp: u.maxHp, star: u.star || 1 }, hp: f.hp, id: f.id };
       });
     }
-    var fogText = { '3,1': '見', '4,1': 'え', '3,2': 'な', '4,2': 'い' };
+    var fogText = { '3,1': '見', '4,1': 'え', '3,2': 'な', '4,2': 'い' }, memo = {};
+    if (st.mode === 'setup' && st.seen[region().id]) { // 一度戦った地域は、敵の配置を覚えている
+      fogText = {};
+      region().enemies.forEach(function (e) { memo[e.x + ',' + e.y] = D.wildTypes[e.type].icon; });
+    }
     for (var y = 0; y < 8; y++) for (var x = 0; x < 8; x++) {
       var alt = (x + y) % 2 ? ' alt' : '', fog = st.mode === 'setup' && y < 4, own = st.mode === 'setup' && y >= 4, s = show[x + ',' + y];
       var selected = st.sel && st.sel.x === x && st.sel.y === y, target = own && st.sel && (st.sel.chip || st.sel.x !== undefined) && !selected;
-      cells.push('<button class="cell' + alt + (fog ? ' fog' : '') + (own ? ' own' : '') + (own && s ? ' has' : '') + (target ? ' target' : '') + '" data-x="' + x + '" data-y="' + y + '"' + (own ? '' : ' tabindex="-1"') + ' aria-label="' + (x + 1) + '列' + (y + 1) + '行">' + (fog ? (fogText[x + ',' + y] || '') : '') + (s ? unitHtml(s.info, s.hp, s.id && hits[s.id], selected) : '') + '</button>');
+      cells.push('<button class="cell' + alt + (fog ? ' fog' : '') + (own ? ' own' : '') + (own && s ? ' has' : '') + (target ? ' target' : '') + '" data-x="' + x + '" data-y="' + y + '"' + (own ? '' : ' tabindex="-1"') + ' aria-label="' + (x + 1) + '列' + (y + 1) + '行">' + (fog ? (memo[x + ',' + y] ? '<span class="memo">' + memo[x + ',' + y] + '</span>' : (fogText[x + ',' + y] || '')) : '') + (s ? unitHtml(s.info, s.hp, s.id && hits[s.id], selected) : '') + '</button>');
     }
     return '<div class="board" role="grid">' + cells.join('') + '</div>';
   }
@@ -160,23 +179,30 @@
     if (q.heal) list.push(['回復', Math.floor(s.mag / 2)]);
     return '<p class="hint" style="margin-top:10px"><b>' + q.icon + ' ' + esc(q.name) + ' ★' + star + '</b>（' + esc(q.cls) + '・' + q.color + '）' + ((st.owned[id] || 0) >= E.MAX_OWN ? '★3（最大）' : '★2まであと' + (3 - (st.owned[id] || 0) % 3) + 'つ') + '</p><div class="stats">' + list.map(function (l) { return '<div>' + l[0] + '<b>' + l[1] + '</b></div>'; }).join('') + '</div>';
   }
+  function bonusHtml() {
+    var cb = D.colorBonus, c = E.bonusColors(D, st.mode === 'setup' ? st.placement : st.result.units.filter(function (u) { return u.side === 0; }).map(function (u) { return { id: u.id.slice(u.id.indexOf('-') + 1) }; }));
+    return '<div class="bonus">' + ['R', 'G', 'B'].map(function (k) {
+      var on = c[k] >= cb.need;
+      return '<span class="bn ' + k + (on ? ' on' : '') + '" title="' + esc(cb[k].label) + '"><b>' + k + ' ' + Math.min(c[k], cb.need) + '/' + cb.need + '</b>' + (on ? ' ' + esc(cb[k].label) : '') + '</span>';
+    }).join('') + '</div>';
+  }
   function render() {
     var h = [], rg = region();
-    h.push('<section class="card"><p class="eyebrow">試作・地域 ' + (st.region + 1) + '/' + D.regions.length + '</p><h1>' + esc(rg.name) + 'を取る</h1><p class="lead">持っている駒を手前の4列にドラッグして並べます。盤に置ける星は合計' + CAP + 'つまで。同じ駒が3つそろうと自動で★2、★2が3つで★3（最大）になります。戦いは自動で、数値どおりに決まります。</p><div class="regions">' + D.regions.map(function (r, i) {
+    h.push('<section class="card"><p class="eyebrow">' + (rg.daily ? '今日の地域・' + rg.date + (dayLog().winTry ? '・' + dayLog().winTry + '回目で勝ち' : dayLog().tries ? '・' + dayLog().tries + '回挑戦' : '') : '試作・地域 ' + (st.region + 1) + '/' + D.regions.length) + '</p><h1>' + esc(rg.name) + 'を取る</h1><p class="lead">持っている駒を手前の4列にドラッグして並べます。盤に置ける星は合計' + CAP + 'つまで。同じ駒が3つそろうと自動で★2、★2が3つで★3（最大）になります。戦いは自動で、数値どおりに決まります。</p><div class="regions">' + '<button class="rg day' + (st.region === -1 ? ' on' : '') + '" data-region="-1"' + (st.mode !== 'battle' ? '' : ' disabled') + '>📅 今日' + (dayLog().winTry ? ' ✓' : '') + '</button>' + D.regions.map(function (r, i) {
       var c = st.cleared.indexOf(r.id) >= 0, u = unlocked(i);
       return '<button class="rg ' + r.color + (i === st.region ? ' on' : '') + '" data-region="' + i + '"' + (u && st.mode !== 'battle' ? '' : ' disabled') + '>' + (c ? '✓ ' : u ? '' : '🔒 ') + esc(r.name) + '</button>';
     }).join('') + '</div></section>');
     if (st.mode === 'done') {
-      var win = st.result.winner === 0, hasNext = win && st.region < D.regions.length - 1, gd = st.gained, g = gd && piece(gd.id), gm = '';
+      var win = st.result.winner === 0, hasNext = win && st.region >= 0 && st.region < D.regions.length - 1, gd = st.gained, g = gd && piece(gd.id), gm = '';
       if (g) gm = gd.max ? g.icon + ' ' + esc(g.name) + 'はもう★3なので、これ以上は増えません。' : g.icon + ' <b>' + esc(g.name) + '</b>が1つ増えました' + (gd.up ? '。3つそろって<b>★' + gd.up + '</b>になりました！' : '（★2まであと' + (3 - st.owned[g.id] % 3) + 'つ）');
       h.push('<section class="card result ' + (win ? 'win' : 'lose') + '"><h2>' + (win ? '勝ち！' : '負け') + '</h2><p>' + (win ? esc(rg.name) + 'を影響下に置きました。' + st.result.seconds + '秒、' + survivors() + '人が残りました。' : '敵の並びが分かりました。並べ方を変えれば、結果も変わります。') + '</p>' +
         (gm ? '<p class="gain">' + gm + '</p>' : '') +
         '<div class="row">' + (hasNext ? '<button class="btn" data-act="next">次の地域へ</button>' : '') + '<button class="btn' + (hasNext ? ' sub' : '') + '" data-act="again">' + (win ? 'もう一度' : '並べ直してもう一度') + '</button></div><div class="row" style="margin-top:8px"><button class="btn sub" style="flex:1" data-act="share">' + (st.copied ? '共有しました ✓' : '結果を共有') + '</button></div>' +
         (win && st.cleared.length === D.regions.length ? '<p style="margin:10px 0 0">5つの地域をすべて影響下に置きました！</p>' : '') + '</section>');
     }
-    h.push('<section class="card" style="padding:10px">' + boardHtml() + '<div class="mid" style="margin-top:8px"><span>奥：野生の敵 ' + rg.enemies.length + '体' + (st.mode === 'setup' ? '（配置は見えない）' : '') + '</span><span>星：<b>' + starsUsed() + '/' + CAP + '</b></span></div></section>');
+    h.push('<section class="card" style="padding:10px">' + boardHtml() + '<div class="mid" style="margin-top:8px"><span>奥：野生の敵 ' + rg.enemies.length + '体' + (st.mode === 'setup' ? (st.seen[rg.id] ? '（配置を覚えている）' : '（配置は見えない）') : '') + '</span><span>星：<b>' + starsUsed() + '/' + CAP + '</b></span></div>' + bonusHtml() + '</section>');
     if (st.mode === 'setup') {
-      var rw = rg.reward ? piece(rg.reward) : null, chips = [];
+      var rw = rg.reward && !(rg.daily && dayLog().winTry) ? piece(rg.reward) : null, chips = [];
       D.pieces.forEach(function (q) {
         var have = E.starsOf(st.owned[q.id] || 0);
         [3, 2, 1].forEach(function (star) {
@@ -185,7 +211,7 @@
           chips.push('<button class="chip ' + q.color + (on ? ' on' : '') + (l <= 0 ? ' placed' : '') + '" data-id="' + q.id + '" data-star="' + star + '"><span class="ic">' + q.icon + '</span><b>' + esc(q.name) + '</b><small>' + (star > 1 ? '<span class="cnt">' + starMark(star) + '</span> ' : '') + '残り' + l + '</small></button>');
         });
       });
-      h.push('<section class="card"><h2>持っている駒</h2>' + (rw ? '<p class="hint" style="margin:-2px 0 8px">勝つと ' + rw.icon + ' ' + esc(rw.name) + 'が1つ増えます（3つで★2）。</p>' : '') + (note ? '<p class="warn">' + esc(note) + '</p>' : '') + '<div class="bench">' + chips.join('') + '</div>' +
+      h.push('<section class="card"><h2>持っている駒</h2>' + (rw ? '<p class="hint" style="margin:-2px 0 8px">' + (rg.daily ? '今日初めて勝つと ' : '勝つと ') + rw.icon + ' ' + esc(rw.name) + 'が1つ増えます（3つで★2）。</p>' : '') + (note ? '<p class="warn">' + esc(note) + '</p>' : '') + '<div class="bench">' + chips.join('') + '</div>' +
         (st.sel && (st.sel.chip || st.sel.info) ? statsHtml(st.sel.chip || st.sel.info, st.sel.star) : '<p class="hint" style="margin-top:8px">駒を盤の手前にドラッグして置きます（押してからマスを押しても置けます）。盤の駒はドラッグで移動、盤の外へドラッグすると外せます。</p>') + '</section>');
       h.push('<div class="row"><button class="btn" data-act="fight"' + (st.placement.length ? '' : ' disabled') + '>戦う</button><button class="btn sub" data-act="clear"' + (st.placement.length ? '' : ' disabled') + '>全部外す</button></div>');
     } else if (st.mode === 'battle') {
