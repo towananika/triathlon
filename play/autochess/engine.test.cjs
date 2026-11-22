@@ -31,9 +31,23 @@ assert.equal(r1.winner, 0, '前衛を前、魔法を後ろに置けば勝てる'
 const bad = [{ id: 'rui', x: 0, y: 4 }, { id: 'shizuku', x: 7, y: 4 }, { id: 'riku', x: 3, y: 4 }, { id: 'kai', x: 4, y: 7 }, { id: 'minato', x: 5, y: 7 }];
 assert.equal(E.simulate(E.trialBattle(D, bad)).winner, 1, '打たれ弱い駒を前に並べると負ける');
 
-// 出せるのは5人まで、自陣（y=4〜7）の外には置けない
+// 盤に置ける星の合計は5まで、自陣（y=4〜7）の外には置けない
 const six = D.pieces.slice(0, 6).map((p, i) => ({ id: p.id, x: i, y: 7 }));
 assert.equal(E.trialBattle(D, six).filter((u) => u.side === 0).length, 5);
+const starred = [{ id: 'shion', star: 2, x: 0, y: 4 }, { id: 'akari', star: 2, x: 1, y: 4 }, { id: 'rui', x: 2, y: 4 }, { id: 'kai', x: 3, y: 4 }];
+assert.equal(E.trialBattle(D, starred).filter((u) => u.side === 0).length, 3, '★2+★2+★1で5つ。4体目は入らない');
+
+// 3つで★2、9つで★3に自動でまとまる
+assert.deepEqual(E.starsOf(1), { 1: 1, 2: 0, 3: 0 });
+assert.deepEqual(E.starsOf(3), { 1: 0, 2: 1, 3: 0 });
+assert.deepEqual(E.starsOf(5), { 1: 2, 2: 1, 3: 0 });
+assert.deepEqual(E.starsOf(9), { 1: 0, 2: 0, 3: 1 });
+assert.deepEqual(E.starsOf(12), { 1: 0, 2: 0, 3: 1 }, '★3が最大。それ以上は増えない');
+const s1 = E.statsOf(akari, { R: 10 }, D.base, 1), s2 = E.statsOf(akari, { R: 10 }, D.base, 2);
+assert.ok(s2.hp > s1.hp && s2.atk > s1.atk, '★2は強い');
+// 持っている星の数までしか出せない
+assert.equal(E.trialBattle(D, [{ id: 'shion', star: 2, x: 0, y: 4 }], 0, { shion: 2 }).filter((u) => u.side === 0).length, 0);
+assert.equal(E.trialBattle(D, [{ id: 'shion', star: 2, x: 0, y: 4 }], 0, { shion: 3 }).filter((u) => u.side === 0).length, 1);
 assert.equal(E.trialBattle(D, [{ id: 'akari', x: 0, y: 3 }]).filter((u) => u.side === 0).length, 0);
 
 // 同じマスに2体は立たない
@@ -53,11 +67,11 @@ const wins = [
 ];
 wins.forEach((p, i) => assert.equal(E.simulate(E.trialBattle(D, p, i)).winner, 0, D.regions[i].name));
 
-// 持っている数まで、同じ駒を複数出せる
+// 持っている数まで、同じ駒を複数出せる（★1が2つまで）
 const twoShion = [{ id: 'shion', x: 0, y: 4 }, { id: 'shion', x: 1, y: 4 }, { id: 'shion', x: 2, y: 4 }];
 assert.equal(E.trialBattle(D, twoShion, 0, { shion: 2 }).filter((u) => u.side === 0).length, 2);
-assert.equal(E.trialBattle(D, twoShion, 0, { shion: 3 }).filter((u) => u.side === 0).length, 3);
-const ids = E.trialBattle(D, twoShion, 0, { shion: 3 }).map((u) => u.id);
+assert.equal(E.trialBattle(D, twoShion, 0, { shion: 3 }).filter((u) => u.side === 0).length, 0, '3つ持つと★2にまとまるので★1は残らない');
+const ids = E.trialBattle(D, twoShion, 0, { shion: 5 }).map((u) => u.id);
 assert.equal(new Set(ids).size, ids.length, '同じ駒でも別の個体として戦う');
 // 同じマスには1体だけ
 assert.equal(E.trialBattle(D, [{ id: 'akari', x: 0, y: 4 }, { id: 'kai', x: 0, y: 4 }]).filter((u) => u.side === 0).length, 1);

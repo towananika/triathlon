@@ -5,6 +5,7 @@
     // R・G・B を1ポイント振ったときに上がる量：R=[HP,ATK,DEF] G=[攻撃速度%,移動] B=[魔力,抵抗]
     base: { hp: 60, atk: 4, def: 4, spd: 1, res: 4 },
     trialPoints: { main: 12, other: 4 },
+    starCap: 5, // 盤に置ける星の合計
     pieces: [
       { id: 'akari', name: 'アカリ', cls: 'ファイター', color: 'R', icon: '👊', range: 1, R: [6, 3, 0], G: [3, 1], B: [0, 1] },
       { id: 'shion', name: 'シオン', cls: 'ナイト', color: 'R', icon: '🛡️', range: 1, R: [6, 1, 2], G: [1, 0], B: [0, 2] },
@@ -27,7 +28,7 @@
     },
     // 最初に持っている駒（1人ずつ）。同じ駒を複数持てる
     start: { akari: 1, shion: 1, tsubasa: 1, shizuku: 1, kai: 1, minato: 1, riku: 1, rui: 1, seira: 1 },
-    // 地域：順番に攻略する。初めて勝つと reward の駒が1つ増える。配置は戦いが始まるまで見えない
+    // 地域：順番に攻略する。勝つたびに reward の駒が1つ増える（3つで★2）。配置は戦いが始まるまで見えない
     regions: [
       { id: 'plain', reward: 'tsubasa', name: '平原の空き地', color: 'G', enemies: [
         { type: 'boar', x: 2, y: 3 }, { type: 'boar', x: 5, y: 3 }, { type: 'wolf', x: 0, y: 2 }, { type: 'wolf', x: 7, y: 2 }, { type: 'snake', x: 4, y: 0 } ] },

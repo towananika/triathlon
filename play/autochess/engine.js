@@ -4,12 +4,17 @@
   var W = 8, H = 8, TICK = 0.1, LIMIT = 600; // 0.1秒ごとに進め、最長60秒
 
   // R・G・B のポイントから戦闘用の数値を作る
-  function statsOf(piece, points, base) {
-    var R = points.R || 0, G = points.G || 0, B = points.B || 0;
+  // 星：同じ駒3つで★2、★2が3つで★3。★3が最大で、★3を持つ駒はそれ以上増えない（持てるのは9つ分まで）。
+  // HP・ATK・魔力が倍率で上がる
+  var MAX_OWN = 9;
+  var STAR_MULT = [1, 1, 1.8, 3.2];
+  function starsOf(n) { n = Math.min(MAX_OWN, Math.max(0, n | 0)); return { 1: n % 3, 2: Math.floor((n % 9) / 3), 3: Math.floor(n / 9) }; }
+  function statsOf(piece, points, base, star) {
+    var R = points.R || 0, G = points.G || 0, B = points.B || 0, m = STAR_MULT[star || 1];
     return {
-      hp: base.hp + R * piece.R[0], atk: base.atk + R * piece.R[1], def: base.def + R * piece.R[2],
+      hp: Math.floor((base.hp + R * piece.R[0]) * m), atk: Math.floor((base.atk + R * piece.R[1]) * m), def: base.def + R * piece.R[2],
       ats: G * piece.G[0], spd: base.spd + G * piece.G[1],
-      mag: B * piece.B[0], res: base.res + B * piece.B[1], range: piece.range
+      mag: Math.floor(B * piece.B[0] * m), res: base.res + B * piece.B[1], range: piece.range
     };
   }
   function trialPoints(piece, rule) {
@@ -97,17 +102,20 @@
   }
 
   // 地域の1戦を組み立てる。placement: [{id, x, y}]（自陣は y=4〜7）
-  // owned（任意）：{駒id: 持っている数}。持っている数より多くは出せない
+  // placement: [{id, star, x, y}]（自陣は y=4〜7）。盤に置ける星の合計は data.starCap まで
+  // owned（任意）：{駒id: 持っている数}。3つで★2に自動でまとまり、その星の数より多くは出せない
   function trialBattle(data, placement, regionIndex, owned) {
     var region = data.regions[regionIndex || 0];
-    var units = [], used = {}, cells = {};
-    placement.slice(0, 5).forEach(function (p, i) {
-      var piece = data.pieces.filter(function (q) { return q.id === p.id; })[0];
-      if (!piece || p.y < 4 || p.y > 7 || p.x < 0 || p.x > 7 || cells[p.x + ',' + p.y]) return;
-      used[p.id] = (used[p.id] || 0) + 1;
-      if (owned && used[p.id] > (owned[p.id] || 0)) return;
-      cells[p.x + ',' + p.y] = true;
-      units.push(makeUnit('a' + i + '-' + piece.id, 0, p.x, p.y, statsOf(piece, trialPoints(piece, data.trialPoints), data.base), piece));
+    var units = [], used = {}, cells = {}, stars = 0;
+    placement.forEach(function (p, i) {
+      var piece = data.pieces.filter(function (q) { return q.id === p.id; })[0], star = p.star || 1;
+      if (!piece || star < 1 || star > 3 || p.y < 4 || p.y > 7 || p.x < 0 || p.x > 7 || cells[p.x + ',' + p.y]) return;
+      if (stars + star > data.starCap) return;
+      var k = p.id + '*' + star; used[k] = (used[k] || 0) + 1;
+      if (owned && used[k] > starsOf(owned[p.id] || 0)[star]) return;
+      cells[p.x + ',' + p.y] = true; stars += star;
+      var u = makeUnit('a' + i + '-' + piece.id, 0, p.x, p.y, statsOf(piece, trialPoints(piece, data.trialPoints), data.base, star), piece);
+      u.star = star; units.push(u);
     });
     region.enemies.forEach(function (e, i) {
       var w = data.wildTypes[e.type];
@@ -116,7 +124,7 @@
     return units;
   }
 
-  var api = { W: W, H: H, statsOf: statsOf, trialPoints: trialPoints, damage: damage, attackEvery: attackEvery, moveEvery: moveEvery, simulate: simulate, trialBattle: trialBattle };
+  var api = { W: W, H: H, MAX_OWN: MAX_OWN, starsOf: starsOf, statsOf: statsOf, trialPoints: trialPoints, damage: damage, attackEvery: attackEvery, moveEvery: moveEvery, simulate: simulate, trialBattle: trialBattle };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.TriChess = api;
 })(typeof window !== 'undefined' ? window : globalThis);
