@@ -25,17 +25,19 @@
       eagle: { name: 'ワシ', icon: '🦅', range: 2, hp: 90, atk: 12, def: 4, ats: 40, spd: 12, mag: 0, res: 4 },
       crab: { name: 'カニ', icon: '🦀', range: 1, hp: 260, atk: 24, def: 60, ats: 0, spd: 1, mag: 0, res: 0 }
     },
-    // 地域：順番に攻略する。配置は戦いが始まるまで見えない
+    // 最初に持っている駒（1人ずつ）。同じ駒を複数持てる
+    start: { akari: 1, shion: 1, tsubasa: 1, shizuku: 1, kai: 1, minato: 1, riku: 1, rui: 1, seira: 1 },
+    // 地域：順番に攻略する。初めて勝つと reward の駒が1つ増える。配置は戦いが始まるまで見えない
     regions: [
-      { id: 'plain', name: '平原の空き地', color: 'G', enemies: [
+      { id: 'plain', reward: 'tsubasa', name: '平原の空き地', color: 'G', enemies: [
         { type: 'boar', x: 2, y: 3 }, { type: 'boar', x: 5, y: 3 }, { type: 'wolf', x: 0, y: 2 }, { type: 'wolf', x: 7, y: 2 }, { type: 'snake', x: 4, y: 0 } ] },
-      { id: 'hill', name: '山のふもと', color: 'R', enemies: [
+      { id: 'hill', reward: 'rui', name: '山のふもと', color: 'R', enemies: [
         { type: 'bear', x: 3, y: 3 }, { type: 'boar', x: 4, y: 3 }, { type: 'eagle', x: 0, y: 1 }, { type: 'eagle', x: 7, y: 1 }, { type: 'snake', x: 3, y: 0 } ] },
-      { id: 'coast', name: '海辺の岩場', color: 'B', enemies: [
+      { id: 'coast', reward: 'shion', name: '海辺の岩場', color: 'B', enemies: [
         { type: 'crab', x: 1, y: 3 }, { type: 'crab', x: 6, y: 3 }, { type: 'snake', x: 2, y: 0 }, { type: 'snake', x: 5, y: 0 }, { type: 'eagle', x: 4, y: 1 } ] },
-      { id: 'dry', name: '乾いた谷', color: 'G', enemies: [
+      { id: 'dry', reward: 'seira', name: '乾いた谷', color: 'G', enemies: [
         { type: 'wolf', x: 0, y: 3 }, { type: 'wolf', x: 1, y: 3 }, { type: 'wolf', x: 6, y: 3 }, { type: 'wolf', x: 7, y: 3 }, { type: 'bear', x: 3, y: 1 }, { type: 'snake', x: 4, y: 0 } ] },
-      { id: 'ice', name: '氷の峠', color: 'R', enemies: [
+      { id: 'ice', reward: 'akari', name: '氷の峠', color: 'R', enemies: [
         { type: 'bear', x: 2, y: 3 }, { type: 'boar', x: 5, y: 3 }, { type: 'crab', x: 3, y: 2 }, { type: 'eagle', x: 0, y: 0 }, { type: 'snake', x: 4, y: 0 } ] }
     ]
   };

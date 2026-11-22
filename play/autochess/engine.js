@@ -97,13 +97,17 @@
   }
 
   // 地域の1戦を組み立てる。placement: [{id, x, y}]（自陣は y=4〜7）
-  function trialBattle(data, placement, regionIndex) {
+  // owned（任意）：{駒id: 持っている数}。持っている数より多くは出せない
+  function trialBattle(data, placement, regionIndex, owned) {
     var region = data.regions[regionIndex || 0];
-    var units = [];
-    placement.slice(0, 5).forEach(function (p) {
+    var units = [], used = {}, cells = {};
+    placement.slice(0, 5).forEach(function (p, i) {
       var piece = data.pieces.filter(function (q) { return q.id === p.id; })[0];
-      if (!piece || p.y < 4 || p.y > 7 || p.x < 0 || p.x > 7) return;
-      units.push(makeUnit('a-' + piece.id, 0, p.x, p.y, statsOf(piece, trialPoints(piece, data.trialPoints), data.base), piece));
+      if (!piece || p.y < 4 || p.y > 7 || p.x < 0 || p.x > 7 || cells[p.x + ',' + p.y]) return;
+      used[p.id] = (used[p.id] || 0) + 1;
+      if (owned && used[p.id] > (owned[p.id] || 0)) return;
+      cells[p.x + ',' + p.y] = true;
+      units.push(makeUnit('a' + i + '-' + piece.id, 0, p.x, p.y, statsOf(piece, trialPoints(piece, data.trialPoints), data.base), piece));
     });
     region.enemies.forEach(function (e, i) {
       var w = data.wildTypes[e.type];

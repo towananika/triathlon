@@ -53,6 +53,18 @@ const wins = [
 ];
 wins.forEach((p, i) => assert.equal(E.simulate(E.trialBattle(D, p, i)).winner, 0, D.regions[i].name));
 
+// 持っている数まで、同じ駒を複数出せる
+const twoShion = [{ id: 'shion', x: 0, y: 4 }, { id: 'shion', x: 1, y: 4 }, { id: 'shion', x: 2, y: 4 }];
+assert.equal(E.trialBattle(D, twoShion, 0, { shion: 2 }).filter((u) => u.side === 0).length, 2);
+assert.equal(E.trialBattle(D, twoShion, 0, { shion: 3 }).filter((u) => u.side === 0).length, 3);
+const ids = E.trialBattle(D, twoShion, 0, { shion: 3 }).map((u) => u.id);
+assert.equal(new Set(ids).size, ids.length, '同じ駒でも別の個体として戦う');
+// 同じマスには1体だけ
+assert.equal(E.trialBattle(D, [{ id: 'akari', x: 0, y: 4 }, { id: 'kai', x: 0, y: 4 }]).filter((u) => u.side === 0).length, 1);
+// 最初は9人1人ずつ。地域ごとに初勝利でもらえる駒が決まっている
+assert.equal(Object.values(D.start).reduce((a, b) => a + b), 9);
+D.regions.forEach((r) => assert.ok(D.pieces.some((p) => p.id === r.reward), r.name));
+
 // 駒がいなければ守る側の勝ち
 assert.equal(E.simulate(E.trialBattle(D, [])).winner, 1);
 
