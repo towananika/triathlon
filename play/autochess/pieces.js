@@ -17,11 +17,11 @@
       { id: 'akari', name: 'アカリ', cls: 'ファイター', color: 'R', icon: '👊', range: 1, R: [6, 3, 0], G: [3, 1], B: [0, 1] },
       { id: 'shion', name: 'シオン', cls: 'ナイト', color: 'R', icon: '🛡️', range: 1, R: [6, 1, 2], G: [1, 0], B: [0, 2] },
       { id: 'tsubasa', name: 'ツバサ', cls: 'ウォーリア', color: 'R', icon: '⚔️', range: 1, R: [9, 2, 1], G: [1, 1], B: [0, 1] },
-      { id: 'shizuku', name: 'シズク', cls: 'レンジャー', color: 'G', icon: '🏹', range: 4, R: [3, 2, 0], G: [4, 1], B: [0, 1] },
-      { id: 'kai', name: 'カイ', cls: 'アサシン', color: 'G', icon: '🗡️', range: 1, R: [3, 3, 0], G: [3, 3], B: [0, 0] },
-      { id: 'minato', name: 'ミナト', cls: 'スカウト', color: 'G', icon: '🧭', range: 2, R: [4, 1, 1], G: [2, 4], B: [0, 1] },
+      { id: 'shizuku', name: 'シズク', cls: 'レンジャー', color: 'G', icon: '🏹', range: 4, R: [3, 2, 0], G: [6, 1], B: [0, 1] },
+      { id: 'kai', name: 'カイ', cls: 'アサシン', color: 'G', icon: '🗡️', range: 1, R: [3, 3, 0], G: [5, 3], B: [0, 0] },
+      { id: 'minato', name: 'ミナト', cls: 'スカウト', color: 'G', icon: '🧭', range: 2, R: [4, 1, 1], G: [4, 4], B: [0, 1] },
       { id: 'riku', name: 'リク', cls: 'エレメンタルメージ', color: 'B', icon: '🔥', range: 3, magic: true, R: [3, 0, 0], G: [1, 0], B: [4, 1] },
-      { id: 'rui', name: 'ルイ', cls: 'メージ', color: 'B', icon: '🔮', range: 4, magic: true, R: [2, 0, 0], G: [2, 0], B: [5, 0] },
+      { id: 'rui', name: 'ルイ', cls: 'メージ', color: 'B', icon: '🔮', range: 3, magic: true, R: [2, 0, 0], G: [2, 0], B: [5, 0] },
       { id: 'seira', name: 'セイラ', cls: 'クレリック', color: 'B', icon: '✨', range: 3, magic: true, heal: true, R: [4, 0, 1], G: [1, 0], B: [2, 2] }
     ],
     // 野生の敵は数値を直接持つ

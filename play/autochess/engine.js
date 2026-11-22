@@ -81,6 +81,7 @@
         if (!t) return;
         if (dist(u, t) <= u.range) {
           if (u.atkWait > 0) return;
+          if (u.firstHitSeconds == null) u.firstHitSeconds = tick * TICK;
           hits.push({ u: u, t: t, dmg: u.magic ? damage(u.mag, t.res) : damage(u.atk, t.def) }); u.atkWait = u.atkEvery;
           if (u.heal) { // クレリック：攻撃のたびに、射程内でHPの割合が一番低い味方を魔力の半分だけ回復
             var ally = null;

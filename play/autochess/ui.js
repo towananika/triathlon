@@ -90,9 +90,37 @@
     render();
   }
 
+  var lastFight = null, firstHitLines = [];
+  function compareFirstHits(regionId, units) {
+    var current = units.filter(function (u) { return u.side === 0; }).map(function (u) {
+      var actor = st.result.units.find(function (v) { return v.id === u.id; });
+      return { piece: at(u.x, u.y), x: u.x, y: u.y, star: u.star, time: actor.firstHitSeconds };
+    });
+    firstHitLines = [];
+    if (lastFight && lastFight.region === regionId) current.forEach(function (now) {
+      function sameKind(other) { return other.piece.id === now.piece.id && other.star === now.star; }
+      var old = lastFight.units.find(function (other) { return other.piece === now.piece && sameKind(other); });
+      if (!old && current.filter(sameKind).length === 1) {
+        var candidates = lastFight.units.filter(sameKind);
+        if (candidates.length === 1) old = candidates[0];
+      }
+      if (!old || (old.x === now.x && old.y === now.y)) return;
+      function stamp(time) { return time == null ? '攻撃なし' : time.toFixed(1) + '秒'; }
+      var diff = Math.round((old.time - now.time) * 10);
+      var change = old.time == null || now.time == null ? '' : diff === 0 ? '（同じ）' :
+        '（' + (Math.abs(diff) / 10).toFixed(1) + '秒' + (diff > 0 ? '早い' : '遅い') + '）';
+      var q = piece(now.piece.id);
+      var label = q.icon + ' ' + q.name + (current.filter(sameKind).length > 1 ? '（' + (now.x + 1) + '列' + (now.y + 1) + '行）' : '');
+      firstHitLines.push('<p>' + esc(label) + 'の初撃　前回 ' + stamp(old.time) + ' → 今回 ' + stamp(now.time) + change + '</p>');
+    });
+    lastFight = { region: regionId, units: current };
+  }
   function fight() {
     if (!st.placement.length) return;
-    st.result = region().vs ? E.simulate(E.pvpBattle(D, st.placement, st.vs, st.owned), { timeout: -1 }) : E.simulate(E.trialBattle(D, st.placement, region(), st.owned));
+    var rg = region();
+    var units = rg.vs ? E.pvpBattle(D, st.placement, st.vs, st.owned) : E.trialBattle(D, st.placement, rg, st.owned);
+    st.result = E.simulate(units, rg.vs ? { timeout: -1 } : undefined);
+    compareFirstHits(rg.id, units);
     if (region().daily && !dayLog().winTry) dayLog().tries += 1;
     st.seen[region().id] = true; save(); st.copied = false; st.gained = null;
     st.mode = 'battle'; st.sel = null; st.frame = 0; render();
@@ -215,6 +243,7 @@
       var win = st.result.winner === 0, hasNext = win && st.region >= 0 && st.region < D.regions.length - 1, gd = st.gained, g = gd && piece(gd.id), gm = '';
       if (g) gm = gd.max ? g.icon + ' ' + esc(g.name) + 'はもう★3なので、これ以上は増えません。' : g.icon + ' <b>' + esc(g.name) + '</b>が1つ増えました' + (gd.up ? '。3つそろって<b>★' + gd.up + '</b>になりました！' : '（★2まであと' + (3 - st.owned[g.id] % 3) + 'つ）');
       h.push('<section class="card result ' + (win ? 'win' : 'lose') + '"><h2>' + (win ? '勝ち！' : st.result.winner === -1 ? '引き分け' : '負け') + '</h2><p>' + (rg.vs ? (win ? '挑戦状の相手に勝ちました。' + st.result.seconds + '秒、' + survivors() + '人が残りました。' : st.result.winner === -1 ? '引き分けでした。並べ方を少し変えると決着がつきます。' : '相手の並びが見えました。並べ方を変えて、もう一度挑めます。') : win ? esc(rg.name) + 'を影響下に置きました。' + st.result.seconds + '秒、' + survivors() + '人が残りました。' : '敵の並びが分かりました。並べ方を変えれば、結果も変わります。') + '</p>' +
+        firstHitLines.join('') +
         (gm ? '<p class="gain">' + gm + '</p>' : '') +
         '<div class="row">' + (hasNext ? '<button class="btn" data-act="next">次の地域へ</button>' : '') + '<button class="btn' + (hasNext ? ' sub' : '') + '" data-act="again">' + (win ? 'もう一度' : '並べ直してもう一度') + '</button></div><div class="row" style="margin-top:8px"><button class="btn sub" style="flex:1" data-act="share">' + (st.copied ? '共有しました ✓' : '結果を共有') + '</button></div>' +
         (win && st.cleared.length === D.regions.length ? '<p style="margin:10px 0 0">5つの地域をすべて影響下に置きました！</p>' : '') + '</section>');
