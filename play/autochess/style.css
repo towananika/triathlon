@@ -86,3 +86,13 @@ main>*{min-width:0}
  #app .card:first-child{padding:5px 8px}
  #app h1{font-size:18px}
 }
+@media(min-width:760px){
+ #app[data-mode=setup]{grid-template-columns:minmax(0,2.4fr) minmax(200px,1fr);grid-template-rows:auto auto auto 1fr auto}
+ #app[data-mode=setup]>.arena{grid-row:2/span 3}
+ #app[data-mode=setup]>.roster{grid-column:1;grid-row:5}
+ #app[data-mode=setup]>.row,#app[data-mode=setup]>.instructions{grid-column:2}
+ #app[data-mode=setup] .board{width:min(100%,max(240px,calc(100dvh - 360px)))}
+ #app[data-mode=setup] .bench{grid-template-columns:repeat(9,minmax(0,1fr))}
+ #app[data-mode=setup] .chip{display:flex;flex-direction:column;justify-content:center;min-height:52px;line-height:1.15}
+ #app[data-mode=setup] .chip b{font-size:11px;max-width:100%}
+}
