@@ -95,6 +95,25 @@ assert.ok(d1.winRate >= 0.1 && d1.winRate <= 0.45);
 assert.ok(d1.enemies.every((e) => e.y >= 0 && e.y <= 3 && D.wildTypes[e.type]));
 assert.ok(E.trialBattle(D, good, d1).length > 5, '地域そのものを渡しても戦える');
 
+// 対戦：相手の配置は180度回して奥に置く。どちらの端末で計算しても同じ結果
+const pa = good, pb = bad;
+const v1 = E.simulate(E.pvpBattle(D, pa, pb)), v2 = E.simulate(E.pvpBattle(D, pa, pb));
+assert.equal(JSON.stringify(v1.frames), JSON.stringify(v2.frames));
+assert.ok(E.pvpBattle(D, pa, pb).filter((u) => u.side === 1).every((u) => u.y <= 3));
+assert.equal(E.pvpBattle(D, pa, pb).find((u) => u.id === 'b0-rui').x, 7);
+// 同じ配置どうしなら引き分け（先手・後手の差がない）
+assert.equal(E.simulate(E.pvpBattle(D, good, good), { timeout: -1 }).winner, -1);
+assert.equal(E.simulate(E.pvpBattle(D, bad, bad), { timeout: -1 }).winner, -1);
+// 入れ替えても勝者が入れ替わるだけ
+assert.equal(E.simulate(E.pvpBattle(D, good, bad), { timeout: -1 }).winner, 0);
+assert.equal(E.simulate(E.pvpBattle(D, bad, good), { timeout: -1 }).winner, 1);
+
+// 挑戦状：配置をURL用の数字にして、元に戻せる
+const code = E.encodePlacement(D, [{ id: 'shion', star: 2, x: 2, y: 4 }, { id: 'rui', x: 3, y: 7 }]);
+assert.equal(code, '12247137');
+assert.deepEqual(E.decodePlacement(D, code), [{ id: 'shion', star: 2, x: 2, y: 4 }, { id: 'rui', star: 1, x: 3, y: 7 }]);
+assert.deepEqual(E.decodePlacement(D, '9999<script>'), []);
+
 // 駒がいなければ守る側の勝ち
 assert.equal(E.simulate(E.trialBattle(D, [])).winner, 1);
 

@@ -47,3 +47,4 @@ main>*{min-width:0}
 .bn{font-size:11px;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--sub);background:#fff}
 .bn b{color:var(--c)}.bn.on{background:color-mix(in srgb,var(--c) 12%,white);border-color:var(--c);color:var(--ink)}
 .rg.day{border-color:#f0b429}.rg.day.on{background:#fff3d6}
+.rg.vs{border-color:var(--R)}.rg.vs.on{background:#fde8e8}

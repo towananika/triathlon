@@ -33,6 +33,8 @@
   }
 
   // 一番近い敵。同じ距離なら、縦が近い → 左 → 番号の順で決める
+  // 奥の陣営から見た左右（盤を180度回すと同じ判断になるように）
+  function lx(u, o) { return u.side ? W - 1 - o.x : o.x; }
   function nearest(u, units) {
     var best = null;
     units.forEach(function (o) {
@@ -40,35 +42,37 @@
       if (!best) { best = o; return; }
       var d = dist(u, o), bd = dist(u, best);
       if (d < bd || (d === bd && (Math.abs(o.y - u.y) < Math.abs(best.y - u.y) ||
-        (Math.abs(o.y - u.y) === Math.abs(best.y - u.y) && (o.x < best.x || (o.x === best.x && o.id < best.id)))))) best = o;
+        (Math.abs(o.y - u.y) === Math.abs(best.y - u.y) && (lx(u, o) < lx(u, best) || (o.x === best.x && o.id.slice(1) < best.id.slice(1))))))) best = o;
     });
     return best;
   }
   var STEPS = [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1]];
-  function stepToward(u, t, units) {
+  function stepCell(u, t, units) {
     var best = null, bd = dist(u, t);
     STEPS.forEach(function (s) {
-      var x = u.x + s[0], y = u.y + s[1];
+      var x = u.x + (u.side ? -s[0] : s[0]), y = u.y + (u.side ? -s[1] : s[1]);
       if (x < 0 || y < 0 || x >= W || y >= H) return;
       if (units.some(function (o) { return o.hp > 0 && o.x === x && o.y === y; })) return;
       var d = dist({ x: x, y: y }, t);
       if (d < bd) { bd = d; best = { x: x, y: y }; }
     });
-    if (best) { u.x = best.x; u.y = best.y; return true; }
-    return false;
+    return best;
   }
   function snapshot(units) {
     return units.map(function (u) { return { id: u.id, x: u.x, y: u.y, hp: u.hp }; });
   }
 
   // units: makeUnit の配列。side 0 = 攻める側（手前）、1 = 守る側（奥）
-  function simulate(units) {
+  // opts.timeout：時間切れの勝者（地域戦は守る側=1、対戦は引き分け=-1）
+  function simulate(units, opts) {
     units = units.map(function (u) { return Object.assign({}, u); }).sort(function (a, b) { return a.id < b.id ? -1 : a.id > b.id ? 1 : 0; });
     var frames = [snapshot(units)], events = [], tick = 0, winner = null;
     function alive(side) { return units.some(function (u) { return u.side === side && u.hp > 0; }); }
     while (tick < LIMIT) {
       tick += 1;
       var ev = [];
+      // 1) 攻撃と回復は同時に決める（tickの初めの状態で判断し、まとめて反映）
+      var hits = [], heals = [], movers = [];
       units.forEach(function (u) {
         if (u.hp <= 0) return;
         if (u.atkWait > 0) u.atkWait -= 1;
@@ -77,27 +81,36 @@
         if (!t) return;
         if (dist(u, t) <= u.range) {
           if (u.atkWait > 0) return;
-          var dmg = u.magic ? damage(u.mag, t.res) : damage(u.atk, t.def);
-          t.hp = Math.max(0, t.hp - dmg); u.atkWait = u.atkEvery;
-          ev.push({ type: 'hit', from: u.id, to: t.id, amount: dmg });
-          if (t.hp === 0) ev.push({ type: 'down', id: t.id });
+          hits.push({ u: u, t: t, dmg: u.magic ? damage(u.mag, t.res) : damage(u.atk, t.def) }); u.atkWait = u.atkEvery;
           if (u.heal) { // クレリック：攻撃のたびに、射程内でHPの割合が一番低い味方を魔力の半分だけ回復
             var ally = null;
             units.forEach(function (o) {
               if (o.side !== u.side || o.hp <= 0 || o.hp >= o.maxHp || dist(u, o) > u.range) return;
-              if (!ally || o.hp / o.maxHp < ally.hp / ally.maxHp) ally = o;
+              if (!ally || o.hp / o.maxHp < ally.hp / ally.maxHp || (o.hp / o.maxHp === ally.hp / ally.maxHp && o.id.slice(1) < ally.id.slice(1))) ally = o;
             });
-            if (ally) { var h = Math.min(ally.maxHp - ally.hp, Math.max(1, Math.floor(u.mag / 2))); ally.hp += h; ev.push({ type: 'heal', from: u.id, to: ally.id, amount: h }); }
+            if (ally) heals.push({ u: u, t: ally, amount: Math.max(1, Math.floor(u.mag / 2)) });
           }
-        } else if (u.moveWait === 0) {
-          if (stepToward(u, t, units)) u.moveWait = u.moveEvery;
-        }
+        } else if (u.moveWait === 0) movers.push(u);
+      });
+      hits.forEach(function (h) { h.t.hp = Math.max(0, h.t.hp - h.dmg); ev.push({ type: 'hit', from: h.u.id, to: h.t.id, amount: h.dmg }); });
+      heals.forEach(function (h) { if (h.t.hp <= 0) return; var n = Math.min(h.t.maxHp - h.t.hp, h.amount); h.t.hp += n; ev.push({ type: 'heal', from: h.u.id, to: h.t.id, amount: n }); });
+      hits.forEach(function (h) { if (h.t.hp === 0 && !h.t.downed) { h.t.downed = true; ev.push({ type: 'down', id: h.t.id }); } });
+      // 2) 移動も同時：行き先が重なったマスへは誰も動かない（盤を回しても同じ結果になる）
+      var want = {};
+      movers.forEach(function (u) {
+        if (u.hp <= 0) return;
+        var t = nearest(u, units), c = t && stepCell(u, t, units);
+        if (c) (want[c.x + ',' + c.y] = want[c.x + ',' + c.y] || []).push({ u: u, c: c });
+      });
+      Object.keys(want).forEach(function (k) {
+        if (want[k].length !== 1) return;
+        var m = want[k][0]; m.u.x = m.c.x; m.u.y = m.c.y; m.u.moveWait = m.u.moveEvery;
       });
       frames.push(snapshot(units)); events.push(ev);
       var a = alive(0), d = alive(1);
       if (!a || !d) { winner = a ? 0 : d ? 1 : -1; break; }
     }
-    if (winner === null) winner = 1; // 時間切れは守る側の勝ち
+    if (winner === null) winner = opts && opts.timeout !== undefined ? opts.timeout : 1; // 時間切れは守る側の勝ち
     return { winner: winner, ticks: tick, seconds: Math.round(tick * TICK * 10) / 10, frames: frames, events: events, units: units };
   }
 
@@ -146,6 +159,44 @@
     return c;
   }
 
+  // 対戦：二人とも自分の手前（y=4〜7）に並べる。相手の配置は盤を180度回して奥に置く
+  function buildSide(data, placement, side, owned) {
+    var units = [], used = {}, cells = {}, stars = 0, ok = [];
+    placement.forEach(function (p, i) {
+      var piece = data.pieces.filter(function (q) { return q.id === p.id; })[0], star = p.star || 1;
+      if (!piece || star < 1 || star > 3 || p.y < 4 || p.y > 7 || p.x < 0 || p.x > 7 || cells[p.x + ',' + p.y] || stars + star > data.starCap) return;
+      var k = p.id + '*' + star; used[k] = (used[k] || 0) + 1;
+      if (owned && used[k] > starsOf(owned[p.id] || 0)[star]) return;
+      cells[p.x + ',' + p.y] = true; stars += star; ok.push({ p: p, i: i, piece: piece, star: star, color: piece.color });
+    });
+    var counts = colorCounts(data, ok), cb = data.colorBonus || {};
+    ok.forEach(function (o) {
+      var s = statsOf(o.piece, trialPoints(o.piece, data.trialPoints), data.base, o.star);
+      if (cb.need && counts[o.color] >= cb.need) s = applyBonus(s, cb[o.color]);
+      var x = side ? 7 - o.p.x : o.p.x, y = side ? 7 - o.p.y : o.p.y;
+      var u = makeUnit((side ? 'b' : 'a') + o.i + '-' + o.piece.id, side, x, y, s, o.piece);
+      u.star = o.star; u.color = o.color; units.push(u);
+    });
+    return units;
+  }
+  function pvpBattle(data, placeA, placeB, ownedA) { return buildSide(data, placeA, 0, ownedA).concat(buildSide(data, placeB, 1)); }
+  // 挑戦状のURLに入れる配置の文字列：駒の番号・星・x・y を1体4桁で並べる
+  function encodePlacement(data, placement) {
+    return placement.map(function (p) {
+      var i = data.pieces.map(function (q) { return q.id; }).indexOf(p.id);
+      return i < 0 ? '' : '' + i + (p.star || 1) + p.x + p.y;
+    }).join('');
+  }
+  function decodePlacement(data, code) {
+    var out = [];
+    String(code || '').replace(/[^0-9]/g, '').slice(0, 40).replace(/(\d)(\d)(\d)(\d)/g, function (_, i, star, x, y) {
+      var q = data.pieces[+i];
+      if (q && +star >= 1 && +star <= 3 && +x <= 7 && +y >= 4 && +y <= 7) out.push({ id: q.id, star: +star, x: +x, y: +y });
+      return '';
+    });
+    return out;
+  }
+
   // 今日の地域：日付から決まる敵の配置。全員が同じ問題に挑む。強すぎ・弱すぎる配置は作り直す
   function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   function hash(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -178,7 +229,7 @@
     region.winRate = wr; return region;
   }
 
-  var api = { W: W, H: H, MAX_OWN: MAX_OWN, starsOf: starsOf, bonusColors: bonusColors, dailyRegion: dailyRegion, winRate: winRate, rng: rng, statsOf: statsOf, trialPoints: trialPoints, damage: damage, attackEvery: attackEvery, moveEvery: moveEvery, simulate: simulate, trialBattle: trialBattle };
+  var api = { pvpBattle: pvpBattle, encodePlacement: encodePlacement, decodePlacement: decodePlacement, W: W, H: H, MAX_OWN: MAX_OWN, starsOf: starsOf, bonusColors: bonusColors, dailyRegion: dailyRegion, winRate: winRate, rng: rng, statsOf: statsOf, trialPoints: trialPoints, damage: damage, attackEvery: attackEvery, moveEvery: moveEvery, simulate: simulate, trialBattle: trialBattle };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.TriChess = api;
 })(typeof window !== 'undefined' ? window : globalThis);

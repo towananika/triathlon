@@ -9,6 +9,10 @@
   var st = { placement: saved.placement, cleared: saved.cleared, owned: saved.owned, seen: saved.seen, day: saved.day, region: 0, sel: null, mode: 'setup', result: null, frame: 0, timer: null, copied: false, gained: null };
   var note = '';
   st.region = Math.min(st.cleared.length, D.regions.length - 1);
+  // 挑戦状：URLの ?vs= に相手の配置が入っている
+  var vsCode = (location.search.match(/[?&]vs=([0-9]+)/) || [])[1] || '';
+  st.vs = vsCode ? E.decodePlacement(D, vsCode) : null;
+  if (st.vs && st.vs.length) st.region = -2; else st.vs = null;
   fitPlacement();
 
   function load() {
@@ -20,13 +24,17 @@
     return { placement: Array.isArray(v.placement) ? v.placement : [], cleared: Array.isArray(v.cleared) ? v.cleared : [], owned: owned,
       seen: v.seen && typeof v.seen === 'object' ? v.seen : {}, day: v.day && typeof v.day === 'object' ? v.day : {} };
   }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify({ placement: st.placement, cleared: st.cleared, owned: st.owned, seen: st.seen, day: st.day })); } catch (_) {} }
+  function save() { st.sent = false; try { localStorage.setItem(KEY, JSON.stringify({ placement: st.placement, cleared: st.cleared, owned: st.owned, seen: st.seen, day: st.day })); } catch (_) {} }
   // st.region：0〜4 = 地域、-1 = 今日の地域
   var dailyCache = null;
   function todayKey() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
   function daily() { var k = todayKey(); if (!dailyCache || dailyCache.date !== k) dailyCache = E.dailyRegion(D, k); return dailyCache; }
   function dayLog() { var k = todayKey(); if (st.day.date !== k) st.day = { date: k, tries: 0, winTry: 0 }; return st.day; }
-  function region() { return st.region === -1 ? daily() : D.regions[st.region]; }
+  function region() {
+    if (st.region === -2) return { id: 'vs-' + vsCode, vs: true, name: '挑戦状', color: 'R', enemies: st.vs };
+    return st.region === -1 ? daily() : D.regions[st.region];
+  }
+  function challengeUrl() { return URL_PLAY + '?vs=' + E.encodePlacement(D, st.placement); }
   function unlocked(i) { return i <= 0 || st.cleared.indexOf(D.regions[i - 1].id) >= 0; }
   function piece(id) { return D.pieces.filter(function (p) { return p.id === id; })[0]; }
   function at(x, y) { return st.placement.filter(function (p) { return p.x === x && p.y === y; })[0]; }
@@ -84,7 +92,7 @@
 
   function fight() {
     if (!st.placement.length) return;
-    st.result = E.simulate(E.trialBattle(D, st.placement, region(), st.owned));
+    st.result = region().vs ? E.simulate(E.pvpBattle(D, st.placement, st.vs, st.owned), { timeout: -1 }) : E.simulate(E.trialBattle(D, st.placement, region(), st.owned));
     if (region().daily && !dayLog().winTry) dayLog().tries += 1;
     st.seen[region().id] = true; save(); st.copied = false; st.gained = null;
     st.mode = 'battle'; st.sel = null; st.frame = 0; render();
@@ -98,7 +106,7 @@
   }
   function finish() {
     clearInterval(st.timer); st.frame = st.result.frames.length - 1; st.mode = 'done';
-    if (st.result.winner === 0) {
+    if (st.result.winner === 0 && !region().vs) {
       var firstDaily = region().daily && !dayLog().winTry;
       if (region().daily) { if (firstDaily) dayLog().winTry = dayLog().tries; }
       else if (st.cleared.indexOf(region().id) < 0) st.cleared.push(region().id);
@@ -128,6 +136,10 @@
   function shareText() {
     var win = st.result.winner === 0;
     var team = st.result.units.filter(function (u) { return u.side === 0; }).map(function (u) { return u.icon + starMark(u.star || 1); }).join('');
+    if (region().vs) {
+      var mine = st.placement.map(function (p) { return piece(p.id).icon + starMark(starOf(p)); }).join('');
+      return 'TRIATHLON 盤 挑戦状' + (st.result.winner === 0 ? 'に勝った！' : st.result.winner === 1 ? 'に負けた' : 'は引き分け') + '\n' + mine + '\n今度はこちらからの挑戦状：\n' + challengeUrl();
+    }
     if (region().daily) {
       var dl = dayLog(), n = dl.winTry || dl.tries, tries = '';
       for (var i = 1; i <= n; i++) tries += (dl.winTry && i === dl.winTry) ? '🟩' : '🟥';
@@ -144,6 +156,13 @@
     else window.prompt('コピーしてください', t);
   }
 
+  function sendChallenge() {
+    var t = 'TRIATHLON 盤の挑戦状。この配置に勝てる？（中身は戦うまで見えません）\n' + challengeUrl();
+    function done() { st.sent = true; render(); }
+    if (navigator.share) { navigator.share({ text: t }).then(done, function () {}); return; }
+    if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, function () { window.prompt('コピーしてください', t); });
+    else window.prompt('コピーしてください', t);
+  }
   function unitHtml(info, hp, hit, selected) {
     var cls = 'unit' + (info.side ? ' foe' : ' ' + info.color) + (hp <= 0 ? ' down' : '') + (hit ? ' hit' : '') + (selected ? ' sel' : '');
     return '<span class="' + cls + '" title="' + esc(info.name) + '">' + info.icon + (info.star > 1 ? '<span class="star">' + starMark(info.star) + '</span>' : '') + '<span class="hpbar"><i style="width:' + Math.round(100 * Math.max(0, hp) / info.maxHp) + '%"></i></span></span>';
@@ -162,7 +181,7 @@
       });
     }
     var fogText = { '3,1': '見', '4,1': 'え', '3,2': 'な', '4,2': 'い' }, memo = {};
-    if (st.mode === 'setup' && st.seen[region().id]) { // 一度戦った地域は、敵の配置を覚えている
+    if (st.mode === 'setup' && st.seen[region().id] && !region().vs) { // 一度戦った地域は、敵の配置を覚えている
       fogText = {};
       region().enemies.forEach(function (e) { memo[e.x + ',' + e.y] = D.wildTypes[e.type].icon; });
     }
@@ -188,19 +207,19 @@
   }
   function render() {
     var h = [], rg = region();
-    h.push('<section class="card"><p class="eyebrow">' + (rg.daily ? '今日の地域・' + rg.date + (dayLog().winTry ? '・' + dayLog().winTry + '回目で勝ち' : dayLog().tries ? '・' + dayLog().tries + '回挑戦' : '') : '試作・地域 ' + (st.region + 1) + '/' + D.regions.length) + '</p><h1>' + esc(rg.name) + 'を取る</h1><p class="lead">持っている駒を手前の4列にドラッグして並べます。盤に置ける星は合計' + CAP + 'つまで。同じ駒が3つそろうと自動で★2、★2が3つで★3（最大）になります。戦いは自動で、数値どおりに決まります。</p><div class="regions">' + '<button class="rg day' + (st.region === -1 ? ' on' : '') + '" data-region="-1"' + (st.mode !== 'battle' ? '' : ' disabled') + '>📅 今日' + (dayLog().winTry ? ' ✓' : '') + '</button>' + D.regions.map(function (r, i) {
+    h.push('<section class="card"><p class="eyebrow">' + (rg.vs ? '挑戦状が届きました・相手の配置は見えません' : rg.daily ? '今日の地域・' + rg.date + (dayLog().winTry ? '・' + dayLog().winTry + '回目で勝ち' : dayLog().tries ? '・' + dayLog().tries + '回挑戦' : '') : '試作・地域 ' + (st.region + 1) + '/' + D.regions.length) + '</p><h1>' + (rg.vs ? '挑戦状に勝つ' : esc(rg.name) + 'を取る') + '</h1><p class="lead">持っている駒を手前の4列にドラッグして並べます。盤に置ける星は合計' + CAP + 'つまで。同じ駒が3つそろうと自動で★2、★2が3つで★3（最大）になります。戦いは自動で、数値どおりに決まります。</p><div class="regions">' + (st.vs ? '<button class="rg vs' + (st.region === -2 ? ' on' : '') + '" data-region="-2"' + (st.mode !== 'battle' ? '' : ' disabled') + '>⚔️ 挑戦状</button>' : '') + '<button class="rg day' + (st.region === -1 ? ' on' : '') + '" data-region="-1"' + (st.mode !== 'battle' ? '' : ' disabled') + '>📅 今日' + (dayLog().winTry ? ' ✓' : '') + '</button>' + D.regions.map(function (r, i) {
       var c = st.cleared.indexOf(r.id) >= 0, u = unlocked(i);
       return '<button class="rg ' + r.color + (i === st.region ? ' on' : '') + '" data-region="' + i + '"' + (u && st.mode !== 'battle' ? '' : ' disabled') + '>' + (c ? '✓ ' : u ? '' : '🔒 ') + esc(r.name) + '</button>';
     }).join('') + '</div></section>');
     if (st.mode === 'done') {
       var win = st.result.winner === 0, hasNext = win && st.region >= 0 && st.region < D.regions.length - 1, gd = st.gained, g = gd && piece(gd.id), gm = '';
       if (g) gm = gd.max ? g.icon + ' ' + esc(g.name) + 'はもう★3なので、これ以上は増えません。' : g.icon + ' <b>' + esc(g.name) + '</b>が1つ増えました' + (gd.up ? '。3つそろって<b>★' + gd.up + '</b>になりました！' : '（★2まであと' + (3 - st.owned[g.id] % 3) + 'つ）');
-      h.push('<section class="card result ' + (win ? 'win' : 'lose') + '"><h2>' + (win ? '勝ち！' : '負け') + '</h2><p>' + (win ? esc(rg.name) + 'を影響下に置きました。' + st.result.seconds + '秒、' + survivors() + '人が残りました。' : '敵の並びが分かりました。並べ方を変えれば、結果も変わります。') + '</p>' +
+      h.push('<section class="card result ' + (win ? 'win' : 'lose') + '"><h2>' + (win ? '勝ち！' : st.result.winner === -1 ? '引き分け' : '負け') + '</h2><p>' + (rg.vs ? (win ? '挑戦状の相手に勝ちました。' + st.result.seconds + '秒、' + survivors() + '人が残りました。' : st.result.winner === -1 ? '引き分けでした。並べ方を少し変えると決着がつきます。' : '相手の並びが見えました。並べ方を変えて、もう一度挑めます。') : win ? esc(rg.name) + 'を影響下に置きました。' + st.result.seconds + '秒、' + survivors() + '人が残りました。' : '敵の並びが分かりました。並べ方を変えれば、結果も変わります。') + '</p>' +
         (gm ? '<p class="gain">' + gm + '</p>' : '') +
         '<div class="row">' + (hasNext ? '<button class="btn" data-act="next">次の地域へ</button>' : '') + '<button class="btn' + (hasNext ? ' sub' : '') + '" data-act="again">' + (win ? 'もう一度' : '並べ直してもう一度') + '</button></div><div class="row" style="margin-top:8px"><button class="btn sub" style="flex:1" data-act="share">' + (st.copied ? '共有しました ✓' : '結果を共有') + '</button></div>' +
         (win && st.cleared.length === D.regions.length ? '<p style="margin:10px 0 0">5つの地域をすべて影響下に置きました！</p>' : '') + '</section>');
     }
-    h.push('<section class="card" style="padding:10px">' + boardHtml() + '<div class="mid" style="margin-top:8px"><span>奥：野生の敵 ' + rg.enemies.length + '体' + (st.mode === 'setup' ? (st.seen[rg.id] ? '（配置を覚えている）' : '（配置は見えない）') : '') + '</span><span>星：<b>' + starsUsed() + '/' + CAP + '</b></span></div>' + bonusHtml() + '</section>');
+    h.push('<section class="card" style="padding:10px">' + boardHtml() + '<div class="mid" style="margin-top:8px"><span>' + (rg.vs ? '奥：相手の駒 ' : '奥：野生の敵 ') + rg.enemies.length + '体' + (st.mode === 'setup' ? (st.seen[rg.id] && !rg.vs ? '（配置を覚えている）' : '（配置は見えない）') : '') + '</span><span>星：<b>' + starsUsed() + '/' + CAP + '</b></span></div>' + bonusHtml() + '</section>');
     if (st.mode === 'setup') {
       var rw = rg.reward && !(rg.daily && dayLog().winTry) ? piece(rg.reward) : null, chips = [];
       D.pieces.forEach(function (q) {
@@ -214,6 +233,7 @@
       h.push('<section class="card"><h2>持っている駒</h2>' + (rw ? '<p class="hint" style="margin:-2px 0 8px">' + (rg.daily ? '今日初めて勝つと ' : '勝つと ') + rw.icon + ' ' + esc(rw.name) + 'が1つ増えます（3つで★2）。</p>' : '') + (note ? '<p class="warn">' + esc(note) + '</p>' : '') + '<div class="bench">' + chips.join('') + '</div>' +
         (st.sel && (st.sel.chip || st.sel.info) ? statsHtml(st.sel.chip || st.sel.info, st.sel.star) : '<p class="hint" style="margin-top:8px">駒を盤の手前にドラッグして置きます（押してからマスを押しても置けます）。盤の駒はドラッグで移動、盤の外へドラッグすると外せます。</p>') + '</section>');
       h.push('<div class="row"><button class="btn" data-act="fight"' + (st.placement.length ? '' : ' disabled') + '>戦う</button><button class="btn sub" data-act="clear"' + (st.placement.length ? '' : ' disabled') + '>全部外す</button></div>');
+      h.push('<div class="row" style="margin-top:8px"><button class="btn sub" style="flex:1" data-act="challenge"' + (st.placement.length ? '' : ' disabled') + '>' + (st.sent ? '挑戦状を送りました ✓' : 'この配置で挑戦状を作る') + '</button></div>');
     } else if (st.mode === 'battle') {
       h.push('<div class="row"><button class="btn sub" style="flex:1" data-act="skip">結果まで飛ばす</button></div>');
     }
@@ -263,7 +283,7 @@
     else if (act) {
       var a = act.dataset.act;
       if (a === 'fight') fight(); else if (a === 'skip') finish(); else if (a === 'again') again();
-      else if (a === 'next') goRegion(st.region + 1); else if (a === 'share') share();
+      else if (a === 'next') goRegion(st.region + 1); else if (a === 'share') share(); else if (a === 'challenge') sendChallenge();
       else if (a === 'clear') { st.placement = []; st.sel = null; save(); render(); }
     }
   });
