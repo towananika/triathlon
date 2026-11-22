@@ -96,3 +96,6 @@ main>*{min-width:0}
  #app[data-mode=setup] .chip{display:flex;flex-direction:column;justify-content:center;min-height:52px;line-height:1.15}
  #app[data-mode=setup] .chip b{font-size:11px;max-width:100%}
 }
+@media(min-width:760px) and (max-width:899px){
+ #app[data-mode=setup] .board{width:min(100%,max(170px,calc(100dvh - 422px)))}
+}
