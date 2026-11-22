@@ -53,3 +53,36 @@ main>*{min-width:0}
 .ghost{position:fixed;top:0;left:0;z-index:1000;pointer-events:none;font-size:26px}
 .cell.in-range::after{content:"";position:absolute;inset:0;background:rgba(56,201,175,.24);pointer-events:none}
 .cell.over{outline:3px solid #08776c;outline-offset:-3px}
+
+.cell.spotted{background:#315f50;box-shadow:inset 0 0 0 2px #9adbb4;font-size:clamp(17px,4vw,26px)}
+#app{gap:6px;padding:6px 10px 68px}
+#app .card{padding:8px}
+#app .regions{margin-top:3px}
+#app .rg{padding:3px 8px}
+#app .board{width:min(100%,max(200px,calc(100dvh - 480px)));margin:auto}
+#app .bonus{margin-top:3px}
+#app .chip{min-height:36px;padding:2px 5px;gap:0 4px}
+#app .bench{gap:4px}
+#app .btn{min-height:36px}
+#app .eyebrow{line-height:1.1}
+.instructions{font-size:13px;color:var(--sub)}
+@media(min-width:760px){
+ #app{width:min(100%,960px);grid-template-columns:minmax(300px,1.4fr) minmax(280px,1fr);align-content:start;align-items:start}
+ #app>.card:first-child{grid-column:1/-1}
+ #app>.arena{grid-column:1;grid-row:2/span 6}
+ #app>.arena~*,#app>.result{grid-column:2}
+ #app .board{width:min(100%,max(250px,calc(100dvh - 255px)))}
+ #app .chip{min-height:54px}
+}
+@media(max-width:759px){
+ #app .roster h2{font-size:13px;margin:0 0 3px;line-height:1.2}
+ #app .chip{grid-template-columns:auto 1fr auto;gap:2px;min-height:31px;padding:2px 3px;line-height:1.1}
+ #app .chip .ic{grid-row:auto;font-size:17px}
+ #app .chip b{font-size:12px}
+ #app .chip small{font-size:9px}
+ #app .board{width:min(100%,max(160px,calc(100dvh - 502px)))}
+ #app .mid{margin-top:2px!important}
+ #app .regions{margin:0}
+ #app .card:first-child{padding:5px 8px}
+ #app h1{font-size:18px}
+}

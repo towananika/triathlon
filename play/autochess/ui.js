@@ -195,7 +195,20 @@
     var cls = 'unit' + (info.side ? ' foe' : ' ' + info.color) + (hp <= 0 ? ' down' : '') + (hit ? ' hit' : '') + (selected ? ' sel' : '');
     return '<span class="' + cls + '" title="' + esc(info.name) + '">' + info.icon + (info.star > 1 ? '<span class="star">' + starMark(info.star) + '</span>' : '') + '<span class="hpbar"><i style="width:' + Math.round(100 * Math.max(0, hp) / info.maxHp) + '%"></i></span></span>';
   }
-  function boardHtml() {
+  // 複数のミナトがいても、前列の正面で最も近い敵を1体だけ偵察する。
+  function scoutTarget(rg) {
+    if (st.mode !== 'setup') return null;
+    var columns = st.placement.filter(function (p) { return p.id === 'minato' && p.y === 4; }).map(function (p) { return p.x; });
+    var target = null;
+    rg.enemies.forEach(function (e) {
+      var x = rg.vs ? 7 - e.x : e.x, y = rg.vs ? 7 - e.y : e.y;
+      if (!columns.includes(x) || (target && (target.y > y || (target.y === y && target.x <= x)))) return;
+      var info = rg.vs ? piece(e.id) : D.wildTypes[e.type];
+      target = { x: x, y: y, icon: info.icon, name: info.name };
+    });
+    return target;
+  }
+  function boardHtml(scout) {
     var cells = [], show = {}, hits = {};
     if (st.mode === 'setup') {
       st.placement.forEach(function (p) { var q = piece(p.id); show[p.x + ',' + p.y] = { info: { side: 0, color: q.color, name: q.name, icon: q.icon, maxHp: 1, star: starOf(p) }, hp: 1 }; });
@@ -208,15 +221,16 @@
         show[k] = { info: { side: u.side, color: q ? q.color : '', name: u.name, icon: u.icon, maxHp: u.maxHp, star: u.star || 1 }, hp: f.hp, id: f.id };
       });
     }
-    var fogText = { '3,1': '見', '4,1': 'え', '3,2': 'な', '4,2': 'い' }, memo = {};
+    var fogText = scout ? {} : { '3,1': '見', '4,1': 'え', '3,2': 'な', '4,2': 'い' }, memo = {};
     if (st.mode === 'setup' && st.seen[region().id] && !region().vs) { // 一度戦った地域は、敵の配置を覚えている
       fogText = {};
       region().enemies.forEach(function (e) { memo[e.x + ',' + e.y] = D.wildTypes[e.type].icon; });
     }
     for (var y = 0; y < 8; y++) for (var x = 0; x < 8; x++) {
       var alt = (x + y) % 2 ? ' alt' : '', fog = st.mode === 'setup' && y < 4, own = st.mode === 'setup' && y >= 4, s = show[x + ',' + y];
+      var spotted = scout && scout.x === x && scout.y === y;
       var selected = st.sel && st.sel.x === x && st.sel.y === y, target = own && st.sel && (st.sel.chip || st.sel.x !== undefined) && !selected;
-      cells.push('<button class="cell' + alt + (fog ? ' fog' : '') + (own ? ' own' : '') + (own && s ? ' has' : '') + (target ? ' target' : '') + '" data-x="' + x + '" data-y="' + y + '"' + (own ? '' : ' tabindex="-1"') + ' aria-label="' + (x + 1) + '列' + (y + 1) + '行">' + (fog ? (memo[x + ',' + y] ? '<span class="memo">' + memo[x + ',' + y] + '</span>' : (fogText[x + ',' + y] || '')) : '') + (s ? unitHtml(s.info, s.hp, s.id && hits[s.id], selected) : '') + '</button>');
+      cells.push('<button class="cell' + alt + (fog ? ' fog' : '') + (spotted ? ' spotted' : '') + (own ? ' own' : '') + (own && s ? ' has' : '') + (target ? ' target' : '') + '" data-x="' + x + '" data-y="' + y + '"' + (own ? '' : ' tabindex="-1"') + ' aria-label="' + (x + 1) + '列' + (y + 1) + '行' + (spotted ? ' 偵察：' + esc(scout.name) : '') + '">' + (spotted ? '<span title="偵察：' + esc(scout.name) + '">' + scout.icon + '</span>' : fog ? (memo[x + ',' + y] ? '<span class="memo">' + memo[x + ',' + y] + '</span>' : (fogText[x + ',' + y] || '')) : '') + (s ? unitHtml(s.info, s.hp, s.id && hits[s.id], selected) : '') + '</button>');
     }
     return '<div class="board" role="grid">' + cells.join('') + '</div>';
   }
@@ -234,8 +248,9 @@
     }).join('') + '</div>';
   }
   function render() {
-    var h = [], rg = region();
-    h.push('<section class="card"><p class="eyebrow">' + (rg.vs ? '挑戦状が届きました・相手の配置は見えません' : rg.daily ? '今日の地域・' + rg.date + (dayLog().winTry ? '・' + dayLog().winTry + '回目で勝ち' : dayLog().tries ? '・' + dayLog().tries + '回挑戦' : '') : '試作・地域 ' + (st.region + 1) + '/' + D.regions.length) + '</p><h1>' + (rg.vs ? '挑戦状に勝つ' : esc(rg.name) + 'を取る') + '</h1><p class="lead">持っている駒を手前の4列にドラッグして並べます。盤に置ける星は合計' + CAP + 'つまで。同じ駒が3つそろうと自動で★2、★2が3つで★3（最大）になります。戦いは自動で、数値どおりに決まります。</p><div class="regions">' + (st.vs ? '<button class="rg vs' + (st.region === -2 ? ' on' : '') + '" data-region="-2"' + (st.mode !== 'battle' ? '' : ' disabled') + '>⚔️ 挑戦状</button>' : '') + '<button class="rg day' + (st.region === -1 ? ' on' : '') + '" data-region="-1"' + (st.mode !== 'battle' ? '' : ' disabled') + '>📅 今日' + (dayLog().winTry ? ' ✓' : '') + '</button>' + D.regions.map(function (r, i) {
+    var h = [], rg = region(), scout = scoutTarget(rg);
+    app.dataset.mode = st.mode;
+    h.push('<section class="card"><p class="eyebrow">' + (rg.vs ? '挑戦状が届きました' : rg.daily ? '今日の地域・' + rg.date + (dayLog().winTry ? '・' + dayLog().winTry + '回目で勝ち' : dayLog().tries ? '・' + dayLog().tries + '回挑戦' : '') : '試作・地域 ' + (st.region + 1) + '/' + D.regions.length) + '</p><h1>' + (rg.vs ? '挑戦状に勝つ' : esc(rg.name) + 'を取る') + '</h1><div class="regions">' + (st.vs ? '<button class="rg vs' + (st.region === -2 ? ' on' : '') + '" data-region="-2"' + (st.mode !== 'battle' ? '' : ' disabled') + '>⚔️ 挑戦状</button>' : '') + '<button class="rg day' + (st.region === -1 ? ' on' : '') + '" data-region="-1"' + (st.mode !== 'battle' ? '' : ' disabled') + '>📅 今日' + (dayLog().winTry ? ' ✓' : '') + '</button>' + D.regions.map(function (r, i) {
       var c = st.cleared.indexOf(r.id) >= 0, u = unlocked(i);
       return '<button class="rg ' + r.color + (i === st.region ? ' on' : '') + '" data-region="' + i + '"' + (u && st.mode !== 'battle' ? '' : ' disabled') + '>' + (c ? '✓ ' : u ? '' : '🔒 ') + esc(r.name) + '</button>';
     }).join('') + '</div></section>');
@@ -248,7 +263,7 @@
         '<div class="row">' + (hasNext ? '<button class="btn" data-act="next">次の地域へ</button>' : '') + '<button class="btn' + (hasNext ? ' sub' : '') + '" data-act="again">' + (win ? 'もう一度' : '並べ直してもう一度') + '</button></div><div class="row" style="margin-top:8px"><button class="btn sub" style="flex:1" data-act="share">' + (st.copied ? '共有しました ✓' : '結果を共有') + '</button></div>' +
         (win && st.cleared.length === D.regions.length ? '<p style="margin:10px 0 0">5つの地域をすべて影響下に置きました！</p>' : '') + '</section>');
     }
-    h.push('<section class="card" style="padding:10px">' + boardHtml() + '<div class="mid" style="margin-top:8px"><span>' + (rg.vs ? '奥：相手の駒 ' : '奥：野生の敵 ') + rg.enemies.length + '体' + (st.mode === 'setup' ? (st.seen[rg.id] && !rg.vs ? '（配置を覚えている）' : '（配置は見えない）') : '') + '</span><span>星：<b>' + starsUsed() + '/' + CAP + '</b></span></div>' + bonusHtml() + '</section>');
+    h.push('<section class="card arena">' + boardHtml(scout) + '<div class="mid" style="margin-top:8px"><span>' + (rg.vs ? '奥：相手の駒 ' : '奥：野生の敵 ') + rg.enemies.length + '体' + (st.mode === 'setup' ? (st.seen[rg.id] && !rg.vs ? '（配置を覚えている）' : (scout ? '（正面を偵察）' : '（配置は見えない）')) : '') + '</span><span>星：<b>' + starsUsed() + '/' + CAP + '</b></span></div>' + bonusHtml() + '</section>');
     if (st.mode === 'setup') {
       var rw = rg.reward && !(rg.daily && dayLog().winTry) ? piece(rg.reward) : null, chips = [];
       D.pieces.forEach(function (q) {
@@ -259,10 +274,11 @@
           chips.push('<button class="chip ' + q.color + (on ? ' on' : '') + (l <= 0 ? ' placed' : '') + '" data-id="' + q.id + '" data-star="' + star + '"><span class="ic">' + q.icon + '</span><b>' + esc(q.name) + '</b><small>' + (star > 1 ? '<span class="cnt">' + starMark(star) + '</span> ' : '') + '残り' + l + '</small></button>');
         });
       });
-      h.push('<section class="card"><h2>持っている駒</h2>' + (rw ? '<p class="hint" style="margin:-2px 0 8px">' + (rg.daily ? '今日初めて勝つと ' : '勝つと ') + rw.icon + ' ' + esc(rw.name) + 'が1つ増えます（3つで★2）。</p>' : '') + (note ? '<p class="warn">' + esc(note) + '</p>' : '') + '<div class="bench">' + chips.join('') + '</div>' +
-        (st.sel && (st.sel.chip || st.sel.info) ? statsHtml(st.sel.chip || st.sel.info, st.sel.star) : '<p class="hint" style="margin-top:8px">駒を盤の手前にドラッグして置きます（押してからマスを押しても置けます）。盤の駒はドラッグで移動、盤の外へドラッグすると外せます。</p>') + '</section>');
+      h.push('<section class="card roster"><h2>持っている駒</h2>' + (note ? '<p class="warn">' + esc(note) + '</p>' : '') + '<div class="bench">' + chips.join('') + '</div>' + '</section>');
       h.push('<div class="row"><button class="btn" data-act="fight"' + (st.placement.length ? '' : ' disabled') + '>戦う</button><button class="btn sub" data-act="clear"' + (st.placement.length ? '' : ' disabled') + '>全部外す</button></div>');
       h.push('<div class="row" style="margin-top:8px"><button class="btn sub" style="flex:1" data-act="challenge"' + (st.placement.length ? '' : ' disabled') + '>' + (st.sent ? '挑戦状を送りました ✓' : 'この配置で挑戦状を作る') + '</button></div>');
+      var selected = st.sel && (st.sel.chip || st.sel.info || (at(st.sel.x, st.sel.y) || {}).id);
+      h.push('<details class="instructions"><summary>駒の能力・遊び方</summary>' + (rw ? '<p class="hint" style="margin:-2px 0 8px">' + (rg.daily ? '今日初めて勝つと ' : '勝つと ') + rw.icon + ' ' + esc(rw.name) + 'が1つ増えます（3つで★2）。</p>' : '') + (selected ? statsHtml(selected, st.sel.star || 1) : '') + '<p class="lead">持っている駒を手前の4列にドラッグして並べます。盤に置ける星は合計' + CAP + 'つまで。同じ駒が3つそろうと自動で★2、★2が3つで★3（最大）になります。戦いは自動で、数値どおりに決まります。</p><p class="hint">駒とマスを順にタップしても配置できます。ミナトを最前列に置くと、同じ列の最も近い敵を1体偵察します。</p></details>');
     } else if (st.mode === 'battle') {
       h.push('<div class="row"><button class="btn sub" style="flex:1" data-act="skip">結果まで飛ばす</button></div>');
     }
