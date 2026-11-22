@@ -230,7 +230,7 @@
     region.winRate = wr; return region;
   }
 
-  var api = { pvpBattle: pvpBattle, encodePlacement: encodePlacement, decodePlacement: decodePlacement, W: W, H: H, MAX_OWN: MAX_OWN, starsOf: starsOf, bonusColors: bonusColors, dailyRegion: dailyRegion, winRate: winRate, rng: rng, statsOf: statsOf, trialPoints: trialPoints, damage: damage, attackEvery: attackEvery, moveEvery: moveEvery, simulate: simulate, trialBattle: trialBattle };
+  var api = { distance: dist, pvpBattle: pvpBattle, encodePlacement: encodePlacement, decodePlacement: decodePlacement, W: W, H: H, MAX_OWN: MAX_OWN, starsOf: starsOf, bonusColors: bonusColors, dailyRegion: dailyRegion, winRate: winRate, rng: rng, statsOf: statsOf, trialPoints: trialPoints, damage: damage, attackEvery: attackEvery, moveEvery: moveEvery, simulate: simulate, trialBattle: trialBattle };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.TriChess = api;
 })(typeof window !== 'undefined' ? window : globalThis);

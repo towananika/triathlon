@@ -287,8 +287,20 @@
     }
     drag.ghost.style.transform = 'translate(' + (e.clientX - 26) + 'px,' + (e.clientY - 30) + 'px)';
     var over = document.elementFromPoint(e.clientX, e.clientY), c = over && over.closest('.cell.own');
-    app.querySelectorAll('.cell.over').forEach(function (el) { if (el !== c) el.classList.remove('over'); });
-    if (c) c.classList.add('over');
+    if (c && drag.fx === undefined) {
+      var occupying = at(+c.dataset.x, +c.dataset.y);
+      if (drag.star > CAP - starsUsed() + (occupying ? starOf(occupying) : 0)) c = null;
+    }
+    if (drag.over !== c) {
+      drag.over = c;
+      var origin = c && { x: +c.dataset.x, y: +c.dataset.y };
+      var range = piece(drag.id).range;
+      app.querySelectorAll('.board .cell').forEach(function (cell) {
+        var pos = { x: +cell.dataset.x, y: +cell.dataset.y };
+        cell.classList.toggle('in-range', !!origin && cell !== c && E.distance(origin, pos) <= range);
+        cell.classList.toggle('over', cell === c);
+      });
+    }
     e.preventDefault();
   }, { passive: false });
   document.addEventListener('pointerup', function (e) {

@@ -48,3 +48,8 @@ main>*{min-width:0}
 .bn b{color:var(--c)}.bn.on{background:color-mix(in srgb,var(--c) 12%,white);border-color:var(--c);color:var(--ink)}
 .rg.day{border-color:#f0b429}.rg.day.on{background:#fff3d6}
 .rg.vs{border-color:var(--R)}.rg.vs.on{background:#fde8e8}
+
+.chip:not(.placed),.cell.has{touch-action:none;user-select:none}
+.ghost{position:fixed;top:0;left:0;z-index:1000;pointer-events:none;font-size:26px}
+.cell.in-range::after{content:"";position:absolute;inset:0;background:rgba(56,201,175,.24);pointer-events:none}
+.cell.over{outline:3px solid #08776c;outline-offset:-3px}
